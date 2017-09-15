@@ -1,0 +1,32 @@
+{
+  "SSoTmeProjectId": "3c0c0e72-1963-4056-b302-5eff9444481c",
+  "Name": "SSoTme-Open-Source-Tools",
+  "Description": null,
+  "CreatedOn": null,
+  "RootPath": "C:/Development/SSoTme-Open-Source-Tools",
+  "ProjectSettings": [ ],
+  "ProjectTranspilers": [
+    {
+      "ProjectTranspilerId": "1eddb117-d84d-464d-ae0e-75617e875e84",
+      "SSoTmeProjectId": "00000000-0000-0000-0000-000000000000",
+      "Name": "OdxmlToCSharpPOCOs",
+      "RelativePath": "/Windows/Lib/DataClasses",
+      "CommandLine": "ODXMLToCSharpPOCOs -i ../../../ODXML/DataSchema.odxml -p namespace=SSoTme.OST.Lib.DataClasses",
+      "CreatedOn": null,
+      "LastTranspilerRequestId": "00000000-0000-0000-0000-000000000000",
+      "IsDisabled": false,
+      "SortOrder": 0
+    },
+    {
+      "ProjectTranspilerId": "e3da958b-2f62-4f6b-a72d-7ce36918b604",
+      "SSoTmeProjectId": "00000000-0000-0000-0000-000000000000",
+      "Name": "GSheetToPlossumCmdLineOptions",
+      "RelativePath": "/Windows/Lib/CLIOptions",
+      "CommandLine": "GSheetToPlossumCmdLineOptions https://docs.google.com/spreadsheets/d/1v3pAQu6h3FYAaNqAmcL6j38ohckACRUSOVC33okFwI0/export?gid=1074048491&format=csv -p handlerName=SSoTmeCLIHandler -p namespace=SSoTme.OST.Lib.CLIOptions",
+      "CreatedOn": null,
+      "LastTranspilerRequestId": "00000000-0000-0000-0000-000000000000",
+      "IsDisabled": false,
+      "SortOrder": 0
+    }
+  ]
+}

@@ -1,0 +1,241 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{1CFC5A6B-EFA3-4439-88E7-3D9B664E190D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SSoTme.OST.Lib</RootNamespace>
+    <AssemblyName>SSoTme.OST.Lib</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="C5, Version=1.0.2.0, Culture=neutral, PublicKeyToken=06a1b38866503b69, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\C5.1.0.2.0\lib\net40\C5.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="HtmlAgilityPack, Version=1.5.5.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\HtmlAgilityPack.1.5.5\lib\Net45\HtmlAgilityPack.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Diagnostics.Tracing.EventSource, Version=1.1.28.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Diagnostics.Tracing.EventSource.Redist.1.1.28\lib\net40\Microsoft.Diagnostics.Tracing.EventSource.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Plossum CommandLine, Version=0.3.0.14, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Plossum.CommandLine.0.3.0.14\lib\net40\Plossum CommandLine.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="RabbitMQ.Client, Version=5.0.0.0, Culture=neutral, PublicKeyToken=89e7d7c5feba84ce, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\RabbitMQ.Client.5.0.1\lib\net451\RabbitMQ.Client.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Configuration.Install" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Data.Entity.Design" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DataClasses\AccountHolder.cs" />
+    <Compile Include="DataClasses\AccountHolder.designer.cs">
+      <DependentUpon>AccountHolder.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataClasses\ExtendDataClasses\TranspileRequestStatusEnum.cs" />
+    <Compile Include="DataClasses\ExtendDataClasses\TranspileRequestStatusList.cs" />
+    <Compile Include="DataClasses\FileSet.cs" />
+    <Compile Include="DataClasses\FileSet.designer.cs">
+      <DependentUpon>FileSet.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataClasses\FileSetFile.cs" />
+    <Compile Include="DataClasses\FileSetFile.designer.cs">
+      <DependentUpon>FileSetFile.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataClasses\PlatformCategory.cs" />
+    <Compile Include="DataClasses\PlatformCategory.designer.cs">
+      <DependentUpon>PlatformCategory.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataClasses\ProjectSetting.cs" />
+    <Compile Include="DataClasses\ProjectSetting.designer.cs">
+      <DependentUpon>ProjectSetting.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataClasses\ProjectTranspiler.cs" />
+    <Compile Include="DataClasses\ProjectTranspiler.designer.cs">
+      <DependentUpon>ProjectTranspiler.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataClasses\PublicAccount.cs" />
+    <Compile Include="DataClasses\SSoTmeProject.cs" />
+    <Compile Include="DataClasses\SSoTmeProject.designer.cs">
+      <DependentUpon>SSoTmeProject.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataClasses\TranspileInputFile.cs" />
+    <Compile Include="DataClasses\TranspileInputFile.designer.cs">
+      <DependentUpon>TranspileInputFile.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataClasses\TranspileOutputFile.cs" />
+    <Compile Include="DataClasses\TranspileOutputFile.designer.cs">
+      <DependentUpon>TranspileOutputFile.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataClasses\Transpiler.cs" />
+    <Compile Include="DataClasses\Transpiler.designer.cs">
+      <DependentUpon>Transpiler.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataClasses\TranspileRequest.cs" />
+    <Compile Include="DataClasses\TranspileRequest.designer.cs">
+      <DependentUpon>TranspileRequest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataClasses\TranspileRequestStatus.cs" />
+    <Compile Include="DataClasses\TranspileRequestStatus.designer.cs">
+      <DependentUpon>TranspileRequestStatus.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataClasses\TranspilerFile.cs" />
+    <Compile Include="DataClasses\TranspilerFile.designer.cs">
+      <DependentUpon>TranspilerFile.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataClasses\TranspilerFileType.cs" />
+    <Compile Include="DataClasses\TranspilerFileType.designer.cs">
+      <DependentUpon>TranspilerFileType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataClasses\TranspilerHost.cs" />
+    <Compile Include="DataClasses\TranspilerHost.designer.cs">
+      <DependentUpon>TranspilerHost.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataClasses\TranspilerInputHint.cs" />
+    <Compile Include="DataClasses\TranspilerInputHint.designer.cs">
+      <DependentUpon>TranspilerInputHint.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataClasses\TranspilerInstance.cs" />
+    <Compile Include="DataClasses\TranspilerInstance.designer.cs">
+      <DependentUpon>TranspilerInstance.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataClasses\TranspilerPlatform.cs" />
+    <Compile Include="DataClasses\TranspilerPlatform.designer.cs">
+      <DependentUpon>TranspilerPlatform.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataClasses\TranspilerVersion.cs" />
+    <Compile Include="DataClasses\TranspilerVersion.designer.cs">
+      <DependentUpon>TranspilerVersion.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Exslt\ExsltCommon.cs" />
+    <Compile Include="Exslt\ExsltContext.cs" />
+    <Compile Include="Exslt\ExsltContextFunction.cs" />
+    <Compile Include="Exslt\ExsltDatesAndTimes.cs" />
+    <Compile Include="Exslt\ExsltMath.cs" />
+    <Compile Include="Exslt\ExsltNamespaces.cs" />
+    <Compile Include="Exslt\ExsltNodeList.cs" />
+    <Compile Include="Exslt\ExsltRegularExpressions.cs" />
+    <Compile Include="Exslt\ExsltSets.cs" />
+    <Compile Include="Exslt\ExsltStrings.cs" />
+    <Compile Include="Exslt\ExsltTransform.cs" />
+    <Compile Include="Exslt\ExtensionFunctionAttribute.cs" />
+    <Compile Include="Exslt\GDNDatesAndTimes.cs" />
+    <Compile Include="Exslt\GDNMath.cs" />
+    <Compile Include="Exslt\GDNRegularExpressions.cs" />
+    <Compile Include="Exslt\GDNSets.cs" />
+    <Compile Include="Exslt\GDNStrings.cs" />
+    <Compile Include="Exslt\MultiOutput\MultiXmlTextWriter.cs" />
+    <Compile Include="Exslt\MultiOutput\OutputState.cs" />
+    <Compile Include="Extensions\SSOTMEExtensions.cs" />
+    <Compile Include="Extensions\XsltHandler.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SassySDK\Derived\DMProxy.cs" />
+    <Compile Include="SassySDK\Derived\Extentions.cs" />
+    <Compile Include="SassySDK\Derived\InvokeEventArgs.cs" />
+    <Compile Include="SassySDK\Derived\LexiconTerm.cs" />
+    <Compile Include="SassySDK\Derived\PayloadEventArgs.cs" />
+    <Compile Include="SassySDK\Derived\SMQActorBase.cs" />
+    <Compile Include="SassySDK\Derived\StandardPayload.cs" />
+    <Compile Include="SassySDK\LexiconEnum.cs" />
+    <Compile Include="SassySDK\LexiconTerms.cs" />
+    <Compile Include="SassySDK\LexiconTerms.designer.cs">
+      <DependentUpon>LexiconTerms.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SassySDK\RMQActors\SMQAccountHolder.cs" />
+    <Compile Include="SassySDK\RMQActors\SMQAccountHolder.designer.cs">
+      <DependentUpon>SMQAccountHolder.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SassySDK\RMQActors\SMQPublicUser.cs" />
+    <Compile Include="SassySDK\RMQActors\SMQPublicUser.designer.cs">
+      <DependentUpon>SMQPublicUser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SassySDK\RMQActors\SMQSSOTMEAdmin.cs" />
+    <Compile Include="SassySDK\RMQActors\SMQSSOTMEAdmin.designer.cs">
+      <DependentUpon>SMQSSOTMEAdmin.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SassySDK\RMQActors\SMQSSOTMECoordinator.cs" />
+    <Compile Include="SassySDK\RMQActors\SMQSSOTMECoordinator.designer.cs">
+      <DependentUpon>SMQSSOTMECoordinator.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SassySDK\RMQActors\SMQTranspilerHost.cs" />
+    <Compile Include="SassySDK\RMQActors\SMQTranspilerHost.designer.cs">
+      <DependentUpon>SMQTranspilerHost.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SassySDK\SSOTMEActorBase.cs" />
+    <Compile Include="SassySDK\SSOTMEPayload.cs" />
+    <Compile Include="Transpilers\IHandlerFactory.cs" />
+    <Compile Include="CLIOptions\SSoTmeCLIHandler.cs" />
+    <Compile Include="CLIOptions\SSoTmeCLIHandler.designer.cs">
+      <DependentUpon>SSoTmeCLIHandler.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Auth\SSOTMEKey.cs" />
+    <Compile Include="Transpilers\BaseHandler.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="DataClasses\odxml-to-c-sharp-p-o-c-os.zfs" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="CLIOptions\g-sheet-to-plossum-cmd-line-options.zfs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="CLIOptions\SSoTmeCLIHandler.html" />
+    <Content Include="SassySDK\_fileSet.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Exslt\doc\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

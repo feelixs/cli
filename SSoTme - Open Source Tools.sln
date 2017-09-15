@@ -1,0 +1,47 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{CB9A8482-5981-467D-9BAF-D9A5D758BECE}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+		SSoTmeProject.json = SSoTmeProject.json
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Windows", "Windows", "{D6B2B68C-9C4F-41E9-859F-10A5EAA3938F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Python", "Python", "{FAD4C7E0-A867-46D2-A5F2-3B09D7DD0657}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SSoTme.OST.Lib", "Windows\Lib\SSoTme.OST.Lib.csproj", "{1CFC5A6B-EFA3-4439-88E7-3D9B664E190D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SSoTme.OST.CLI", "Windows\CLI\SSoTme.OST.CLI.csproj", "{C092D67B-26D9-4178-B4AA-504EE77D968F}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "SSoTmeWinCLISetup", "Windows\WinCLISetup\SSoTmeWinCLISetup\SSoTmeWinCLISetup.vdproj", "{6348DF1E-B567-4925-A521-DD4D4BA6296B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1CFC5A6B-EFA3-4439-88E7-3D9B664E190D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1CFC5A6B-EFA3-4439-88E7-3D9B664E190D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1CFC5A6B-EFA3-4439-88E7-3D9B664E190D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1CFC5A6B-EFA3-4439-88E7-3D9B664E190D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C092D67B-26D9-4178-B4AA-504EE77D968F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C092D67B-26D9-4178-B4AA-504EE77D968F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C092D67B-26D9-4178-B4AA-504EE77D968F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C092D67B-26D9-4178-B4AA-504EE77D968F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6348DF1E-B567-4925-A521-DD4D4BA6296B}.Debug|Any CPU.ActiveCfg = Debug
+		{6348DF1E-B567-4925-A521-DD4D4BA6296B}.Release|Any CPU.ActiveCfg = Release
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1CFC5A6B-EFA3-4439-88E7-3D9B664E190D} = {D6B2B68C-9C4F-41E9-859F-10A5EAA3938F}
+		{C092D67B-26D9-4178-B4AA-504EE77D968F} = {D6B2B68C-9C4F-41E9-859F-10A5EAA3938F}
+		{6348DF1E-B567-4925-A521-DD4D4BA6296B} = {D6B2B68C-9C4F-41E9-859F-10A5EAA3938F}
+	EndGlobalSection
+EndGlobal
