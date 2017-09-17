@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel;
                         
-namespace SSoTme.Default.Lib
+namespace SSoTme.OST.Lib.DataClasses
 {                            
     public partial class ProjectTranspiler 
     {
