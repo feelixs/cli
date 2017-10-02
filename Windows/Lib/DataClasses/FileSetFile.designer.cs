@@ -22,6 +22,12 @@ namespace SSoTme.OST.Lib.DataClasses
     
         public Byte[] ZippedFileContents { get; set; }
     
+        public Byte[] BinaryFileContents { get; set; }
+    
+        public Byte[] ZippedTextFileContents { get; set; }
+    
+        public Byte[] ZippedBinaryFileContents { get; set; }
+    
         public Boolean AlwaysOverwrite { get; set; }
     
         public Boolean SkipClean { get; set; }

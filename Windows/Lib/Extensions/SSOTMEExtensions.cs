@@ -7,7 +7,6 @@ License:    Mozilla Public License 2.0
 using HtmlAgilityPack;
 using Newtonsoft.Json;
 using SassyMQ.Lib.RabbitMQ;
-using SSoTme.Lib.XsltHandling;
 using SSoTme.OST.Lib.DataClasses;
 using SSOTME.TestConApp.Root.TranspileHandlers;
 using System;
@@ -22,7 +21,6 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 using System.Web;
 using System.Xml;
 using System.Xml.Linq;
@@ -33,16 +31,41 @@ namespace SSoTme.OST.Lib.Extensions
 {
     public static class SSOTMEExtensions
     {
-        public static void FindNS(this object anyObject)
+        public static String ToFriendlyFullTypeName(this Type type)
         {
-            // do nothing
+            return type.Name.SafeToString().ToTitle();
         }
 
         public static FileSet ToFileSet(this string fileSetXml)
         {
             XmlSerializer ser = new XmlSerializer(typeof(FileSet));
-            var ms = new MemoryStream(Encoding.UTF8.GetBytes(fileSetXml));
-            return ser.Deserialize(ms) as FileSet;
+            fileSetXml = fileSetXml.Substring(fileSetXml.IndexOf("<"));
+            XmlDocument doc = new XmlDocument();
+            doc.LoadXml(fileSetXml);
+            var fs = new FileSet();
+            foreach (var fsfNode in doc.SelectNodes("//FileSetFile").OfType<XmlElement>())
+            {
+                var fsf = new FileSetFile();
+                fs.FileSetFiles.Add(fsf);
+                var xmlNode = fsfNode.SelectSingleNode("AlwaysOverwrite");
+                if (!ReferenceEquals(xmlNode, null) && (xmlNode.InnerText == "true")) fsf.AlwaysOverwrite = true;
+
+                xmlNode = fsfNode.SelectSingleNode("OverwriteMode");
+                if (ReferenceEquals(xmlNode, null) || (xmlNode.InnerText != "Never")) fsf.AlwaysOverwrite = true;
+
+                xmlNode = fsfNode.SelectSingleNode("RelativePath");
+                if (!ReferenceEquals(xmlNode, null)) fsf.RelativePath = xmlNode.InnerText;
+
+                xmlNode = fsfNode.SelectSingleNode("FileContents");
+                if (!ReferenceEquals(xmlNode, null)) fsf.FileContents = HttpUtility.HtmlDecode(xmlNode.InnerXml);
+
+                xmlNode = fsfNode.SelectSingleNode("SkipClean");
+                if (!ReferenceEquals(xmlNode, null)) fsf.SkipClean = (xmlNode.InnerText == "true");
+
+                xmlNode = fsfNode.SelectSingleNode("ZippedFileContents");
+                if (!ReferenceEquals(xmlNode, null)) fsf.ZippedFileContents = Convert.FromBase64String(xmlNode.InnerXml);
+            }
+            return fs;
         }
 
         public static String ToName(this string nameCandidate)
@@ -52,26 +75,17 @@ namespace SSoTme.OST.Lib.Extensions
             return name;
         }
 
-        public static string GetTranspilersAsJson(string screenName)
+        public static FileSet GetTranspilersAsJson(string screenName)
         {
             var fs = new FileSet();
             var fsf = fs.FileSetFiles.AddNew();
             fsf.RelativePath = String.Format("{0}-transpilers.json", screenName);
             fsf.AlwaysOverwrite = true;
             var wc = new WebClient();
-            var myPublicTranspilersUrl = String.Format("http://www.ssot.me/Public/GetPublicAccounts?screenName={0}", screenName);
+            var myPublicTranspilersUrl = String.Format("http://ssot.me/Public/GetPublicAccounts?screenName={0}", screenName);
             var myTranspilersJson = wc.DownloadString(myPublicTranspilersUrl);
             fsf.FileContents = myTranspilersJson;
-            using (var ms = new MemoryStream())
-            {
-                var serializer = new XmlSerializer(typeof(FileSet));
-                serializer.Serialize(ms, fs);
-                ms.Position = 0;
-                using (var sr = new StreamReader(ms))
-                {
-                    return sr.ReadToEnd();
-                }
-            }
+            return fs;
         }
 
         public static string ToTitle(this string name)
@@ -117,16 +131,16 @@ namespace SSoTme.OST.Lib.Extensions
                         CleanFileByRelativeName(fileSetFileElem, relPathElem);
                     }
                 }
-
+                CleanEmptyFolders();
             }
         }
 
         private static void CleanEmptyFolders()
         {
-            CleanEmptyFolders(new DirectoryInfo("."));
+            new DirectoryInfo(".").CleanEmptyFolders();
         }
 
-        private static void CleanEmptyFolders(DirectoryInfo di)
+        private static void CleanEmptyFolders(this DirectoryInfo di)
         {
             if (di.Exists)
             {
@@ -150,11 +164,37 @@ namespace SSoTme.OST.Lib.Extensions
                 FileInfo fiToClean = new FileInfo(GetFullFileName(relPathElem.InnerText, new DirectoryInfo(".")));
                 if (fiToClean.Exists)
                 {
-                    XmlNode fileContentsNode = fileSetFileElem.SelectSingleNode("FileContents");
+                    bool neverOverwrite = true;
 
+                    XmlNode aoNode = fileSetFileElem.SelectSingleNode("AlwaysOverwrite");
+                    if (!ReferenceEquals(aoNode, null))
+                    {
+                        if (aoNode.InnerText == "true") neverOverwrite = false;
+                    }
+                    else
+                    {
+                        XmlNode omNode = fileSetFileElem.SelectSingleNode("OverwriteMode");
+                        if (!ReferenceEquals(omNode, null) && (omNode.InnerText != "Never"))
+                        {
+                            neverOverwrite = false;
+                        }
+                    }
+
+                    XmlNode fileContentsNode = fileSetFileElem.SelectSingleNode("FileContents");
+                    XmlNode zippedFileContents = fileSetFileElem.SelectSingleNode("ZippedTextFileContents");
+                    XmlNode binaryFileContentsNode = fileSetFileElem.SelectSingleNode("BinaryFileContents");
+                    byte[] data = new byte[] { };
+                    bool binaryEquals = false;
+                    if (!ReferenceEquals(binaryFileContentsNode, null))
+                    {
+                        data = Convert.FromBase64String(binaryFileContentsNode.InnerText);
+                        byte[] binaryFileContents = File.ReadAllBytes(fiToClean.FullName);
+                        binaryEquals = data.SequenceEqual(binaryFileContents);
+                    }
                     String value = String.Empty;
-                    if (!ReferenceEquals(fileContentsNode, null)) value = fileContentsNode.InnerXml;
-                    if (File.ReadAllText(fiToClean.FullName) == HttpUtility.HtmlDecode(value))
+                    if (!ReferenceEquals(fileContentsNode, null)) value = HttpUtility.HtmlDecode(fileContentsNode.InnerXml);
+                    else if (!ReferenceEquals(zippedFileContents, null)) value = Convert.FromBase64String(zippedFileContents.InnerXml).UnzipToString();
+                    if (!neverOverwrite || File.ReadAllText(fiToClean.FullName) == value || binaryEquals)
                     {
                         Console.WriteLine("SSoTme Cleaning {0}", fiToClean.FullName);
                         fiToClean.Delete();
@@ -163,26 +203,19 @@ namespace SSoTme.OST.Lib.Extensions
             }
         }
 
+        public static String GetFileSetFileContents(this FileSetFile fileSetFile)
+        {
+            if (!String.IsNullOrEmpty(fileSetFile.FileContents)) return fileSetFile.FileContents;
+            else if (!ReferenceEquals(fileSetFile.ZippedFileContents, null)) return fileSetFile.ZippedFileContents.UnzipToString();
+            else return String.Empty;
+        }
+
         private static string GetFullFileName(string relativeFileName, DirectoryInfo rootDI)
         {
             if (rootDI == null) rootDI = new DirectoryInfo(".");
             relativeFileName = relativeFileName.SafeToString().Trim("\r\n\t \\/".ToCharArray());
             FileInfo fi = new FileInfo(Path.Combine(rootDI.FullName, relativeFileName));
             return fi.FullName;
-        }
-
-        public static String ConvertXsdToOdxmlFileSetXml(BaseHandler handler, string xsd)
-        {
-            // Convert file
-            // Transpile a thing
-            XsltHandler xsltHandler = new XsltHandler(handler);
-            String fileName = "Odxml42TranspilerHost.XsltTools.XsdToODXML.xslt";
-            var xslt = new StreamReader(handler.GetType().Assembly.GetManifestResourceStream(fileName)).ReadToEnd();
-            xslt = xslt.Replace("<RelativePath>DataSchema.odxml</RelativePath>", String.Format("<RelativePath>{0}.odxml</RelativePath>", handler.Payload.CLIInput));
-            xsltHandler.LoadXslt(xslt);
-            xsltHandler.Xml = xsd;
-            xsltHandler.Cook();
-            return xsltHandler.FileSetXml;
         }
 
         public static FileSet ConvertXmlToXsdFileSet(string xml, String inputFileName)
@@ -335,6 +368,63 @@ namespace SSoTme.OST.Lib.Extensions
             return xdoc.OuterXml;
         }
 
+
+        private static void ConstructSchema(FileInfo theFile)
+        {
+            string schemaFileName = theFile.DirectoryName + @"\Schema.ini";
+            var schemaFI = new FileInfo(schemaFileName);
+            if (schemaFI.Exists) schemaFI.Delete();
+
+            StringBuilder schema = new StringBuilder();
+            DataTable data = LoadCSV(theFile);
+            schema.AppendLine("[" + theFile.Name + "]");
+            schema.AppendLine("ColNameHeader=True");
+            for (int i = 0; i < data.Columns.Count; i++)
+            {
+                schema.AppendLine("col" + (i + 1).ToString() + "=" + data.Columns[i].ColumnName + " Memo");
+            }
+            TextWriter tw = new StreamWriter(schemaFileName);
+            tw.WriteLine(schema.ToString());
+            tw.Close();
+        }
+
+        private static DataTable LoadCSV(FileInfo theFile)
+        {
+            string sqlString = "Select * FROM [" + theFile.Name + "];";
+            string conStr = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source="
+                + theFile.DirectoryName + ";" + "Extended Properties='text;HDR=YES;'";
+            DataTable theCSV = new DataTable();
+
+            using (OleDbConnection conn = new OleDbConnection(conStr))
+            {
+                using (OleDbCommand comm = new OleDbCommand(sqlString, conn))
+                {
+                    using (OleDbDataAdapter adapter = new OleDbDataAdapter(comm))
+                    {
+                        adapter.Fill(theCSV);
+                    }
+                }
+            }
+            return theCSV;
+        }
+
+        public static XElement GetXMLFromCSV(FileInfo theFile, string rootNodeName, string itemName)
+        {
+            XElement retVal;
+            DataTable data = CreateCsvAndSchema(theFile);
+            DataSet ds = new DataSet(rootNodeName);
+            data.TableName = itemName;
+            ds.Tables.Add(data);
+            retVal = XElement.Parse(ds.GetXml());
+            return retVal;
+        }
+
+        private static DataTable CreateCsvAndSchema(FileInfo theFile)
+        {
+            ConstructSchema(theFile);
+            return LoadCSV(theFile);
+        }
+
         public static string CsvToXml(this String csvText, String fileName)
         {
             String tempFile = String.Format("temp\\{0}", fileName);
@@ -344,45 +434,13 @@ namespace SSoTme.OST.Lib.Extensions
             try
             {
 
-                OleDbConnection conn = new OleDbConnection("Provider=Microsoft.Jet.OleDb.4.0; Data Source = " + Path.GetDirectoryName(fi.FullName) + "; Extended Properties = \"Text;HDR=YES;FMT=Delimited;CharacterSet=65001;\"");
-
-                conn.Open();
-
-                OleDbDataAdapter adapter = new OleDbDataAdapter("SELECT * FROM " + Path.GetFileName(fi.FullName), conn);
                 var pluralizer = PluralizationService.CreateService(CultureInfo.CurrentCulture);
                 fileName = Path.GetFileNameWithoutExtension(fileName);
                 var pluralFileName = pluralizer.Pluralize(fileName);
                 var singularFileName = pluralizer.Singularize(fileName);
-                DataSet ds = new DataSet(pluralFileName);
-                adapter.FillSchema(ds, SchemaType.Mapped);
-                var table = ds.Tables[0];
-                foreach (DataColumn col in table.Columns)
-                {
-                    col.DataType = typeof(String);
-                    col.MaxLength = 10000;
 
-                }
-                adapter.Fill(ds);
-
-
-                conn.Close();
-
-                table.TableName = singularFileName;
-
-                table.Rows
-                    .OfType<DataRow>()
-                    .ToList()
-                    .ForEach(feRow => CleanRow(feRow));
-
-                String xmlFileName = String.Format("{0}.xml", fi.Name);
-                FileStream fs = new FileStream(xmlFileName, FileMode.Create);
-
-                table.WriteXml(fs);
-                fs.Close();
-                String fileText = File.ReadAllText(xmlFileName);
-                string finalXml = fileText.Replace("&lt;![CDATA_START[", "<![CDATA[").Replace("]CDATA_END]&gt;", "]]>");
-                // File.WriteAllText(xmlFileName, finalXml);
-                return finalXml;
+                var xml = GetXMLFromCSV(fi, pluralFileName, singularFileName);
+                return xml.ToString();
             }
             finally
             {
@@ -412,15 +470,8 @@ namespace SSoTme.OST.Lib.Extensions
         }
 
 
-        public static string ConvertJsonToXml(string inputFileName, string inputFileContents, byte[] zippedInputBytes)
+        public static string ConvertJsonToXml(string inputFileName, string inputFileContents)
         {
-            String unzippedContents = zippedInputBytes.UnzipToString();
-            if (!String.IsNullOrEmpty(unzippedContents))
-            {
-                var fileSetFiles = unzippedContents.FileSetFilesFromFileSetXml();
-                inputFileContents = fileSetFiles.FirstOrDefault().GetFileContents();
-            }
-
             var inputExtension = Path.GetExtension(inputFileName);
             var inputName = "root";
             if (!String.IsNullOrEmpty(inputFileName))
@@ -535,6 +586,8 @@ namespace SSoTme.OST.Lib.Extensions
 
         private static void WriteAllText(string fileName, string fileContents)
         {
+            var fi = new FileInfo(fileName);
+            if (!fi.Directory.Exists) fi.Directory.Create();
             using (StreamWriter sw = new StreamWriter(File.Open(fileName, FileMode.Create), new UTF8Encoding(false)))
             {
                 sw.Write(fileContents.UnwrapCDATA());
@@ -566,6 +619,22 @@ namespace SSoTme.OST.Lib.Extensions
                 {
                     foreach (XmlElement elem in doc.DocumentElement.SelectNodes("//FileSetFile"))
                     {
+                        bool neverOverwrite = true;
+
+                        XmlNode aoNode = elem.SelectSingleNode("AlwaysOverwrite");
+                        if (!ReferenceEquals(aoNode, null))
+                        {
+                            if (aoNode.InnerText == "true") neverOverwrite = false;
+                        }
+                        else
+                        {
+                            XmlNode omNode = elem.SelectSingleNode("OverwriteMode");
+                            if (!ReferenceEquals(omNode, null) && (omNode.InnerText != "Never"))
+                            {
+                                neverOverwrite = false;
+                            }
+                        }
+
                         XmlNode contentsNode = elem.SelectSingleNode("FileContents");
                         XmlNode binaryContentsNode = elem.SelectSingleNode("BinaryFileContents");
                         XmlNode zippedBinaryContentsNode = elem.SelectSingleNode("ZippedBinaryFileContents");
@@ -598,27 +667,26 @@ namespace SSoTme.OST.Lib.Extensions
 
                                 if (!fileInfo.Directory.Exists) fileInfo.Directory.Create();
 
-                                if (!ReferenceEquals(zippedBinaryContentsNode, null))
-                                {
-                                    using (StreamWriter sw = new StreamWriter(File.Open(fileName.InnerText, FileMode.Create), new UTF8Encoding(false)))
-                                    {
-                                        sw.Write(data);
-                                    }
-                                }
-                                else if (!ReferenceEquals(zippedTextContentsNode, null))
+                                if (!fileInfo.Exists || !neverOverwrite)
                                 {
 
-                                    using (StreamWriter sw = new StreamWriter(File.Open(fileName.InnerText, FileMode.Create), new UTF8Encoding(false)))
+                                    if (!ReferenceEquals(zippedBinaryContentsNode, null))
                                     {
-                                        sw.WriteLine(data.UnzipToString());
+                                        File.WriteAllBytes(fileName.InnerText, data.Unzip());
                                     }
-                                }
-                                else
-                                {
-                                    using (StreamWriter sw = new StreamWriter(File.Open(fileName.InnerText, FileMode.Create), new UTF8Encoding(false)))
+                                    else if (!ReferenceEquals(zippedTextContentsNode, null))
                                     {
-                                        sw.Write(data);
+
+                                        using (StreamWriter sw = new StreamWriter(File.Open(fileName.InnerText, FileMode.Create), new UTF8Encoding(false)))
+                                        {
+                                            sw.WriteLine(data.UnzipToString());
+                                        }
                                     }
+                                    else
+                                    {
+                                        File.WriteAllBytes(fileName.InnerText, data);
+                                    }
+
                                 }
                             }
                         }
@@ -626,7 +694,14 @@ namespace SSoTme.OST.Lib.Extensions
                         {
                             foreach (XmlElement fileName in elem.SelectNodes("RelativePath"))
                             {
-                                WriteAllText(fileName.InnerText, "Can't write binary contents.");
+                                var fileInfo = new FileInfo(fileName.InnerText);
+
+                                if (!fileInfo.Directory.Exists) fileInfo.Directory.Create();
+
+                                if (!fileInfo.Exists || !neverOverwrite)
+                                {
+                                    WriteAllText(fileName.InnerText, "Can't write binary contents.");
+                                }
                             }
 
                         }
@@ -655,8 +730,23 @@ namespace SSoTme.OST.Lib.Extensions
             if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
             bool fileExists = File.Exists(relativeFileName);
             bool writeFile = true;
-            XmlNode ooNode = elem.SelectSingleNode("OverwriteMode");
-            if (fileExists && (!ReferenceEquals(ooNode, null) && (ooNode.InnerText == "Never")))
+            bool neverOverwrite = true;
+
+            XmlNode aoNode = elem.SelectSingleNode("AlwaysOverwrite");
+            if (!ReferenceEquals(aoNode, null))
+            {
+                if (aoNode.InnerText == "true") neverOverwrite = false;
+            }
+            else
+            {
+                XmlNode omNode = elem.SelectSingleNode("OverwriteMode");
+                if (!ReferenceEquals(omNode, null) && (omNode.InnerText != "Never"))
+                {
+                    neverOverwrite = false;
+                }
+            }
+
+            if (fileExists && neverOverwrite)
             {
                 writeFile = false;
                 //lastOutputFilesSkipped.Add(fullFileName);
@@ -780,7 +870,6 @@ namespace SSoTme.OST.Lib.Extensions
                 json = String.Format("{{ root: {0} }}", json);
                 return JsonConvert.DeserializeXmlNode(json);
             }
-
         }
 
         private static void CleanSPECDOCLink(this HtmlNode node)
@@ -897,11 +986,6 @@ namespace SSoTme.OST.Lib.Extensions
         public static bool IsAssignableTo(this Type childClass, Type parentClass)
         {
             return parentClass.IsAssignableFrom(childClass);
-        }
-
-        public static String ToFriendlyFullTypeName(this Type type)
-        {
-            return type.FullName;
         }
 
 
@@ -1031,6 +1115,11 @@ namespace SSoTme.OST.Lib.Extensions
                            .ToArray())
                         .Trim();
             }
+        }
+
+        public static object GetTranspilersAsJson(object screenName)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -64,7 +64,12 @@ namespace SSoTme.OST.Lib.CLIOptions
 
                 if (String.IsNullOrEmpty(this.transpiler))
                 {
-                    this.transpiler = parser.RemainingArguments.FirstOrDefault();
+                    this.transpiler = parser.RemainingArguments.FirstOrDefault().SafeToString();
+                    if (this.transpiler.Contains("/"))
+                    {
+                        this.account = this.transpiler.Substring(0, this.transpiler.IndexOf("/"));
+                        this.transpiler = this.transpiler.Substring(this.transpiler.IndexOf("/") + 1);
+                    }
                 }
 
                 var additionalArgs = parser.RemainingArguments.Skip(1).ToList();
@@ -185,6 +190,12 @@ namespace SSoTme.OST.Lib.CLIOptions
                         else
                         {
                             var finalResult = 0;
+
+                            if (!ReferenceEquals(result.Transpiler, null))
+                            {
+                                Console.WriteLine("\n\nTRANSPILER MATCHED: {0}\n\n", result.Transpiler.Name);
+                            }
+
                             if (this.clean) result.CleanFileSet();
                             else
                             {
@@ -241,15 +252,28 @@ namespace SSoTme.OST.Lib.CLIOptions
 
         private void ImportFile(string filePattern, FileSet fs)
         {
+            var fileNameReplacement = String.Empty;
+            if (filePattern.Contains("="))
+            {
+                fileNameReplacement = filePattern.Substring(0, filePattern.IndexOf("="));
+                filePattern = filePattern.Substring(filePattern.IndexOf("=") + 1);
+            }
             var di = new DirectoryInfo(Path.Combine(".", Path.GetDirectoryName(filePattern)));
-            foreach (var fi in di.GetFiles(Path.GetFileName(filePattern)))
+            filePattern = Path.GetFileName(filePattern);
+            var matchingFiles = di.GetFiles(filePattern);
+            if (!matchingFiles.Any()) Console.WriteLine("No files matched {0} in {1}", filePattern, di.FullName);
+
+            foreach (var fi in matchingFiles)
             {
                 if (fi.Exists)
                 {
                     var fsf = new FileSetFile();
-                    fsf.RelativePath = fi.Name;
+                    fsf.RelativePath = String.IsNullOrEmpty(fileNameReplacement) ? fi.Name : fileNameReplacement;
                     fsf.FileContents = File.ReadAllText(fi.FullName);
                     fs.FileSetFiles.Add(fsf);
+                } else {
+                    Console.WriteLine("INPUT Format: {0} did not match any files in {1}", filePattern, di.FullName);
+
                 }
             }
         }

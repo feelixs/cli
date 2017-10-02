@@ -9,7 +9,11 @@ namespace SSoTme.OST.Lib.DataClasses
         {
             this.InitPoco();
         }
-        // Your code goes here...
-        // The "default" code is in the designer file
+
+        public override string ToString()
+        {
+            return this.DisplayName;
+        }
+
     }
 }

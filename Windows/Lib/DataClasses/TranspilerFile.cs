@@ -9,6 +9,8 @@ namespace SSoTme.OST.Lib.DataClasses
         {
             this.InitPoco();
         }
+
+        public object TranspileFileIdTranspileInputFiles { get; set; }
         // Your code goes here...
         // The "default" code is in the designer file
     }

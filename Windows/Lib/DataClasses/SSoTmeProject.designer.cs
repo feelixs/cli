@@ -23,8 +23,8 @@ namespace SSoTme.OST.Lib.DataClasses
         public Nullable<DateTime> CreatedOn { get; set; }
     
         public String RootPath { get; set; }
-    
-        
+
+
         public BindingList<ProjectSetting> ProjectSettings { get; set; }
         public BindingList<ProjectTranspiler> ProjectTranspilers { get; set; }
     }

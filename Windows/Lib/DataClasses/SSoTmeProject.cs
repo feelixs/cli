@@ -166,7 +166,7 @@ namespace SSoTme.OST.Lib.DataClasses
             var relativePathDI = new DirectoryInfo(fullPath);
             var rootPathDI = new DirectoryInfo(this.RootPath);
             var relativePath = relativePathDI.FullName.Substring(rootPathDI.FullName.Length);
-            return relativePath;
+            return relativePath.Replace("\\","/");
         }
 
         public void Rebuild(string buildPath)
@@ -175,7 +175,7 @@ namespace SSoTme.OST.Lib.DataClasses
             try
             {
                 var relativePath = this.GetProjectRelativePath(buildPath);
-                var matchingProjectTranspilers = this.ProjectTranspilers.Where(wherePT => wherePT.RelativePath.StartsWith(relativePath));
+                var matchingProjectTranspilers = this.ProjectTranspilers.Where(wherePT => wherePT.IsAtPath(relativePath));
                 foreach (var pt in matchingProjectTranspilers)
                 {
                     pt.Rebuild(this);
@@ -198,7 +198,7 @@ namespace SSoTme.OST.Lib.DataClasses
             try
             {
                 var relativePath = this.GetProjectRelativePath(cleanPath);
-                var matchingProjectTranspilers = this.ProjectTranspilers.Where(wherePT => wherePT.RelativePath.StartsWith(relativePath));
+                var matchingProjectTranspilers = this.ProjectTranspilers.Where(wherePT => wherePT.IsAtPath(relativePath));
                 foreach (var pt in matchingProjectTranspilers)
                 {
                     pt.Clean(this, preserveZFS);
