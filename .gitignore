@@ -1,4 +1,6 @@
 /**/bin/**
 /**/obj/**
 /**/packages/**
+/**/Debug/**
 /.vs/config/applicationhost.config
+/.vs/SSoTme - Open Source Tools/v15/sqlite3/storage.ide
