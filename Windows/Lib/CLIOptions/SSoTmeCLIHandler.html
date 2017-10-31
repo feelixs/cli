@@ -1,5 +1,5 @@
 <html><head><title>Command Line Arguments - summary</title></head><body><h1>Command Line Arguments</h1><p>
-    There are 23 command line arguments defined at this time.  They are:
+    There are 28 command line arguments defined at this time.  They are:
       
       <div style=""><h3>
         -help  or -h    [bool]
@@ -30,7 +30,11 @@
       </h3><div style="font-size: 0.8em; margin-top: -1em;">
       Describes the current SSoTme project (and all transpilers)
       </div></div><div style=""><h3>
-        -input  or -i    [string]
+        -descibeAll  or -da    [bool]
+      </h3><div style="font-size: 0.8em; margin-top: -1em;">
+      Descibe all of the transpiler in the project
+      </div></div><div style=""><h3>
+        -input  or -i    [List of string]
       </h3><div style="font-size: 0.8em; margin-top: -1em;">
       Input filename or comma separated list of file names
       </div></div><div style=""><h3>
@@ -93,4 +97,20 @@
         -preserveZFS  or -rz    [bool]
       </h3><div style="font-size: 0.8em; margin-top: -1em;">
       Determines if the input should be preserved.
+      </div></div><div style=""><h3>
+        -checkResults  or -cr    [bool]
+      </h3><div style="font-size: 0.8em; margin-top: -1em;">
+      Checks the result of a build linking up input and output files of the transpiles.  Creates a SPXML file in the DSPXml folder of the project.
+      </div></div><div style=""><h3>
+        -createDocs  or -cd    [bool]
+      </h3><div style="font-size: 0.8em; margin-top: -1em;">
+      Creates documentation based on a DSPXml file created with the -checkResults flag.
+      </div></div><div style=""><h3>
+        -execute  or -exec    [string]
+      </h3><div style="font-size: 0.8em; margin-top: -1em;">
+      Executes the given command as a ProcessInfo.Start
+      </div></div><div style=""><h3>
+        -includeDisabled  or -id    [bool]
+      </h3><div style="font-size: 0.8em; margin-top: -1em;">
+      Include disabled tools in th ebuild
       </div></div><div></div></p></body></html>

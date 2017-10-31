@@ -28,27 +28,31 @@ namespace SSoTme.OST.Lib.CLIOptions
         {
             this.account = "";
             this.waitTimeout = 30000;
+            this.input = new List<string>();
             this.parameters = new List<string>();
             this.addSetting = new List<string>();
             this.removeSetting = new List<string>();
         }
 
-        public static int ProcessCommand(string[] args)
-        {
-            var cliOptions = new SSoTmeCLIHandler();
-            cliOptions.args = args;
-            return cliOptions.ProcessCommand();
-        }
-
-        public static int ProcessCommand(string commandLine)
+        public static SSoTmeCLIHandler CreateHandler(string commandLine)
         {
             var cliOptions = new SSoTmeCLIHandler();
             cliOptions.commandLine = commandLine;
-            return cliOptions.ProcessCommand();
+            cliOptions.ParseCommand();
+            return cliOptions;
         }
 
 
-        private int ProcessCommand()
+        public static SSoTmeCLIHandler CreateHandler(string[] args)
+        {
+            var cliOptions = new SSoTmeCLIHandler();
+            cliOptions.args = args;
+            cliOptions.ParseCommand();
+            return cliOptions;
+        }
+
+
+        private void ParseCommand()
         {
             try
             {
@@ -57,10 +61,7 @@ namespace SSoTme.OST.Lib.CLIOptions
                 if (!String.IsNullOrEmpty(this.commandLine)) parser.Parse(this.commandLine, false);
                 else parser.Parse(this.args, false);
 
-                Console.WriteLine("\n**************************************************");
-                Console.WriteLine(parser.UsageInfo.GetHeaderAsString(78));
-                Console.WriteLine("**************************************************\n");
-
+                this.HasRemainingArguments = parser.RemainingArguments.Any();
 
                 if (String.IsNullOrEmpty(this.transpiler))
                 {
@@ -82,130 +83,24 @@ namespace SSoTme.OST.Lib.CLIOptions
                 if (this.help)
                 {
                     Console.WriteLine(parser.UsageInfo.GetOptionsAsString(78));
-                    return 0;
                 }
                 else if (this.init) SSoTmeProject.Init();
                 else if (parser.HasErrors)
                 {
                     Console.WriteLine(parser.UsageInfo.GetErrorsAsString(78));
-                    return -1;
+                    this.ParseResult = -1;
                 }
                 else
                 {
-                    var project = SSoTmeProject.LoadOrFail(new DirectoryInfo(Environment.CurrentDirectory));
+                    this.SSoTmeProject = SSoTmeProject.LoadOrFail(new DirectoryInfo(Environment.CurrentDirectory));
 
-                    this.LoadInputFile();
+                    this.LoadInputFiles();
 
-                    var zfsFileSetFile = default(FileSetFile);
                     if (!ReferenceEquals(this.FileSet, null))
                     {
-                        zfsFileSetFile = this.FileSet.FileSetFiles.FirstOrDefault(fodFileSetFile => fodFileSetFile.RelativePath.EndsWith(".zfs", StringComparison.OrdinalIgnoreCase));
+                        this.ZFSFileSetFile = this.FileSet.FileSetFiles.FirstOrDefault(fodFileSetFile => fodFileSetFile.RelativePath.EndsWith(".zfs", StringComparison.OrdinalIgnoreCase));
                     }
 
-
-                    if (this.describe)
-                    {
-                        project.Describe();
-                    }
-                    else if (this.listSettings)
-                    {
-                        project.ListSettings();
-                    }
-                    else if (this.addSetting.Any())
-                    {
-                        foreach (var setting in this.addSetting)
-                        {
-                            project.AddSetting(setting);
-                        }
-                        project.Save();
-                    }
-                    else if (this.removeSetting.Any())
-                    {
-                        foreach (var setting in this.removeSetting)
-                        {
-                            project.RemoveSetting(setting);
-                        }
-                        project.Save();
-                    }
-                    else if (this.build)
-                    {
-                        project.Rebuild(Environment.CurrentDirectory);
-                    }
-                    else if (this.buildAll)
-                    {
-                        project.Rebuild();
-                    }
-                    else if (this.clean && !ReferenceEquals(zfsFileSetFile, null))
-                    {
-                        var zfsFI = new FileInfo(zfsFileSetFile.RelativePath);
-                        if (zfsFI.Exists)
-                        {
-                            var zippedFileSet = File.ReadAllBytes(zfsFI.FullName);
-                            zippedFileSet.CleanZippedFileSet();
-                            if (!this.preserveZFS) zfsFI.Delete();
-                        }
-                    }
-                    else if (this.clean && !parser.RemainingArguments.Any())
-                    {
-                        project.Clean(Environment.CurrentDirectory, this.preserveZFS);
-                    }
-                    else if (this.cleanAll && !parser.RemainingArguments.Any())
-                    {
-                        project.Clean(this.preserveZFS);
-                    }
-                    else if (!parser.RemainingArguments.Any() && !this.clean)
-                    {
-                        Console.WriteLine("Missing argument name of transpiler");
-                        return -1;
-                    }
-                    else
-                    {
-
-                        AccountHolder = new SMQAccountHolder();
-                        var currentSSoTmeKey = SSOTMEKey.GetSSoTmeKey(this.runAs);
-
-                        AccountHolder.ReplyTo += AccountHolder_ReplyTo;
-                        AccountHolder.Init(currentSSoTmeKey.EmailAddress, currentSSoTmeKey.Secret);
-
-
-                        var waitForCook = Task.Factory.StartNew(() =>
-                        {
-                            while (ReferenceEquals(result, null)) Thread.Sleep(100);
-                        });
-
-                        waitForCook.Wait(this.waitTimeout);
-
-                        if (ReferenceEquals(result, null))
-                        {
-                            result = AccountHolder.CreatePayload();
-                            result.Exception = new TimeoutException("Timed out waiting for cook");
-                        }
-
-                        if (!ReferenceEquals(result.Exception, null))
-                        {
-                            Console.WriteLine("ERROR: " + result.Exception.Message);
-                            Console.WriteLine(result.Exception.StackTrace);
-                            return -1;
-                        }
-                        else
-                        {
-                            var finalResult = 0;
-
-                            if (!ReferenceEquals(result.Transpiler, null))
-                            {
-                                Console.WriteLine("\n\nTRANSPILER MATCHED: {0}\n\n", result.Transpiler.Name);
-                            }
-
-                            if (this.clean) result.CleanFileSet();
-                            else
-                            {
-                                finalResult = result.SaveFileSet(this.skipClean);
-                                if (this.install) project.Install(result);
-                            }
-                            return finalResult;
-
-                        }
-                    }
                 }
             }
             catch (Exception ex)
@@ -213,15 +108,174 @@ namespace SSoTme.OST.Lib.CLIOptions
                 Console.WriteLine("\n********************************\nERROR: {0}\n********************************\n\n", ex.Message);
                 Console.WriteLine(ex.StackTrace);
                 Console.WriteLine("\n\nPress any key to continue...\n");
+                Console.WriteLine("\n\n");
+
                 Console.ReadKey();
+
+            }
+        }
+
+        public int TranspilerProject(ProjectTranspiler projectTranspiler = null)
+        {
+            bool updateProject = false;
+            try
+            {
+                var hasRemainingArguments = this.HasRemainingArguments;
+                var zfsFileSetFile = this.ZFSFileSetFile;
+                if (this.describe)
+                {
+                    this.SSoTmeProject.Describe(Environment.CurrentDirectory);
+                }
+                else if (this.descibeAll)
+                {
+                    this.SSoTmeProject.Describe();
+                }
+                else if (this.listSettings)
+                {
+                    this.SSoTmeProject.ListSettings();
+                }
+                else if (this.addSetting.Any())
+                {
+                    foreach (var setting in this.addSetting)
+                    {
+                        this.SSoTmeProject.AddSetting(setting);
+                    }
+                    this.SSoTmeProject.Save();
+                }
+                else if (this.removeSetting.Any())
+                {
+                    foreach (var setting in this.removeSetting)
+                    {
+                        this.SSoTmeProject.RemoveSetting(setting);
+                    }
+                    this.SSoTmeProject.Save();
+                }
+                else if (this.build)
+                {
+                    this.SSoTmeProject.Rebuild(Environment.CurrentDirectory, this.includeDisabled);
+                    if (this.checkResults) this.SSoTmeProject.CreateDocs();
+                }
+                else if (this.buildAll)
+                {
+                    this.SSoTmeProject.Rebuild(this.includeDisabled);
+                    this.SSoTmeProject.CreateDocs();
+
+                }
+                else if (this.checkResults || this.createDocs && !hasRemainingArguments)
+                {
+                    if (this.checkResults) this.SSoTmeProject.CheckResults();
+                    else this.SSoTmeProject.CreateDocs();
+                    updateProject = true;
+                }
+                else if (this.clean && !ReferenceEquals(zfsFileSetFile, null))
+                {
+                    var zfsFI = new FileInfo(zfsFileSetFile.RelativePath);
+                    if (zfsFI.Exists)
+                    {
+                        var zippedFileSet = File.ReadAllBytes(zfsFI.FullName);
+                        zippedFileSet.CleanZippedFileSet();
+                        if (!this.preserveZFS) zfsFI.Delete();
+                    }
+                }
+                else if (this.clean && !hasRemainingArguments)
+                {
+                    this.SSoTmeProject.Clean(Environment.CurrentDirectory, this.preserveZFS);
+                }
+                else if (this.cleanAll && !hasRemainingArguments)
+                {
+                    this.SSoTmeProject.Clean(this.preserveZFS);
+                }
+                else if (!hasRemainingArguments && !this.clean)
+                {
+                    Console.WriteLine("Missing argument name of transpiler");
+                    return -1;
+                }
+                else
+                {
+                    StartTranspile();
+
+                    if (!ReferenceEquals(result.Exception, null))
+                    {
+                        Console.WriteLine("ERROR: " + result.Exception.Message);
+                        Console.WriteLine(result.Exception.StackTrace);
+                        return -1;
+                    }
+                    else
+                    {
+                        var finalResult = 0;
+
+                        if (!ReferenceEquals(result.Transpiler, null))
+                        {
+                            Console.WriteLine("\n\nTRANSPILER MATCHED: {0}\n\n", result.Transpiler.Name);
+                        }
+
+                        if (this.clean) result.CleanFileSet();
+                        else
+                        {
+                            finalResult = result.SaveFileSet(this.skipClean);
+                            updateProject = true;
+                        }
+                        return finalResult;
+
+                    }
+                }
+
+                return 0;
             }
             finally
             {
-                Console.WriteLine("\n\n");
                 if (!ReferenceEquals(AccountHolder, null)) AccountHolder.Disconnect();
+                if (updateProject)
+                {
+                    if (this.install) this.SSoTmeProject.Install(result);
+                    else if (!ReferenceEquals(projectTranspiler, null))
+                    {
+                        this.SSoTmeProject.Update(projectTranspiler, result);
+                    }
+                }
             }
+        }
 
-            return 0;
+        internal void LoadOutputFiles(String lowerHyphoneName, String basePath, bool includeContents)
+        {
+            var zfsFileName = String.Format("{0}.zfs", lowerHyphoneName);
+            var zfsFI = new FileInfo(zfsFileName);
+            if (zfsFI.Exists)
+            {
+                var fileSetXml = File.ReadAllBytes(zfsFI.FullName).UnzipToString();
+                var fs = fileSetXml.ToFileSet();
+                foreach (var fsf in fs.FileSetFiles)
+                {
+                    var relativePath = fsf.RelativePath.Trim("\\/\r\n\t ".ToCharArray());
+                    fsf.OriginalRelativePath = Path.Combine(basePath, relativePath).Replace("\\", "/");
+                    if (!includeContents) fsf.ClearContents();
+                }
+                this.OutputFileSet = fs;
+            }
+        }
+
+        private void StartTranspile()
+        {
+            AccountHolder = new SMQAccountHolder();
+            var currentSSoTmeKey = SSOTMEKey.GetSSoTmeKey(this.runAs);
+            result = null;
+
+            AccountHolder.ReplyTo += AccountHolder_ReplyTo;
+            AccountHolder.Init(currentSSoTmeKey.EmailAddress, currentSSoTmeKey.Secret);
+
+
+            var waitForCook = Task.Factory.StartNew(() =>
+            {
+                while (ReferenceEquals(result, null)) Thread.Sleep(100);
+            });
+
+            waitForCook.Wait(this.waitTimeout);
+
+            if (ReferenceEquals(result, null))
+            {
+                result = AccountHolder.CreatePayload();
+                result.Exception = new TimeoutException("Timed out waiting for cook");
+            }
         }
 
         public string inputFileContents = "";
@@ -231,23 +285,34 @@ namespace SSoTme.OST.Lib.CLIOptions
         public string commandLine;
 
         public FileSet FileSet { get; private set; }
+        public bool HasRemainingArguments { get; private set; }
+        public FileSetFile ZFSFileSetFile { get; private set; }
+        public SSoTmeProject SSoTmeProject { get; set; }
+        public int ParseResult { get; private set; }
+        public FileSet OutputFileSet { get; private set; }
 
-        public void LoadInputFile()
+        public void LoadInputFiles()
         {
-            if (!String.IsNullOrEmpty(this.input))
+            var fs = new FileSet();
+            if (!ReferenceEquals(this.input, null) && this.input.Any())
             {
-                var fs = new FileSet();
-                var inputFilePatterns = this.input.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-                foreach (var filePattern in inputFilePatterns)
+                foreach (var input in this.input)
                 {
-                    this.ImportFile(filePattern, fs);
+                    if (!String.IsNullOrEmpty(input))
+                    {
+                        var inputFilePatterns = input.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                        foreach (var filePattern in inputFilePatterns)
+                        {
+                            this.ImportFile(filePattern, fs);
+                        }
+
+                        if (fs.FileSetFiles.Any()) this.inputFileContents = fs.FileSetFiles.First().FileContents;
+
+                    }
                 }
-
-                if (fs.FileSetFiles.Any()) this.inputFileContents = fs.FileSetFiles.First().FileContents;
-
-                this.inputFileSetXml = fs.ToXml();
-                this.FileSet = fs;
             }
+            this.inputFileSetXml = fs.ToXml();
+            this.FileSet = fs;
         }
 
         private void ImportFile(string filePattern, FileSet fs)
@@ -260,8 +325,16 @@ namespace SSoTme.OST.Lib.CLIOptions
             }
             var di = new DirectoryInfo(Path.Combine(".", Path.GetDirectoryName(filePattern)));
             filePattern = Path.GetFileName(filePattern);
-            var matchingFiles = di.GetFiles(filePattern);
-            if (!matchingFiles.Any()) Console.WriteLine("No files matched {0} in {1}", filePattern, di.FullName);
+            
+            var matchingFiles = new FileInfo[] { };
+            if (di.Exists)
+            {
+                matchingFiles = di.GetFiles(filePattern);
+            }
+            if (!matchingFiles.Any())
+            {
+                Console.WriteLine("\n\nERROR:\n\n - No INPUT files matched {0} in {1}\n", filePattern, di.FullName);
+            }
 
             foreach (var fi in matchingFiles)
             {
@@ -269,14 +342,26 @@ namespace SSoTme.OST.Lib.CLIOptions
                 {
                     var fsf = new FileSetFile();
                     fsf.RelativePath = String.IsNullOrEmpty(fileNameReplacement) ? fi.Name : fileNameReplacement;
-                    fsf.FileContents = File.ReadAllText(fi.FullName);
+                    fsf.OriginalRelativePath = fi.FullName.Substring(this.SSoTmeProject.RootPath.Length).Replace("\\", "/");
+                    if (fi.IsBinaryFile())
+                    {
+                        fsf.ZippedBinaryFileContents = File.ReadAllBytes(fi.FullName).Zip();
+                    }
+                    else
+                    {
+                        fsf.ZippedFileContents = File.ReadAllText(fi.FullName).Zip();
+                    }
                     fs.FileSetFiles.Add(fsf);
-                } else {
+                }
+                else
+                {
                     Console.WriteLine("INPUT Format: {0} did not match any files in {1}", filePattern, di.FullName);
 
                 }
             }
         }
+
+
 
         private void AccountHolder_ReplyTo(object sender, SassyMQ.Lib.RabbitMQ.PayloadEventArgs<SSOTMEPayload> e)
         {
@@ -287,7 +372,7 @@ namespace SSoTme.OST.Lib.CLIOptions
                 var payload = AccountHolder.CreatePayload();
                 payload.SaveCLIOptions(this);
                 payload.TranspileRequest = new TranspileRequest();
-                payload.TranspileRequest.ZippedInputFileSet = this.inputFileContents.ToSingleTextFileFileSetXml("input.txt").Zip();
+                payload.TranspileRequest.ZippedInputFileSet = this.inputFileSetXml.Zip();
                 payload.CLIInputFileContents = String.Empty;
                 AccountHolder.AccountHolderCommandLineTranspile(payload, CoordinatorProxy);
             }

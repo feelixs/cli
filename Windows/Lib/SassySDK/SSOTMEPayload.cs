@@ -90,7 +90,7 @@ namespace SassyMQ.SSOTME.Lib.RMQActors
         public List<PublicAccount> PublicAccounts { get; set; }
 
         public string CLIAccount { get; set; }
-        public string CLIInput { get; set; }
+        public List<string> CLIInput { get; set; }
         public string CLIInputFileContents { get; set; }
         public string CLIInputFileSetXml { get; set; }
         public string CLIOutput { get; set; }

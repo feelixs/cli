@@ -4,6 +4,7 @@ Created By: EJ Alexandra - 2016
             An Abstract Level, llc
 License:    Mozilla Public License 2.0
 *****************************/
+using ExcelDataReader;
 using HtmlAgilityPack;
 using Newtonsoft.Json;
 using SassyMQ.Lib.RabbitMQ;
@@ -64,6 +65,9 @@ namespace SSoTme.OST.Lib.Extensions
 
                 xmlNode = fsfNode.SelectSingleNode("ZippedFileContents");
                 if (!ReferenceEquals(xmlNode, null)) fsf.ZippedFileContents = Convert.FromBase64String(xmlNode.InnerXml);
+
+                xmlNode = fsfNode.SelectSingleNode("ZippedBinaryFileContents");
+                if (!ReferenceEquals(xmlNode, null)) fsf.ZippedBinaryFileContents = Convert.FromBase64String(xmlNode.InnerXml);
             }
             return fs;
         }
@@ -210,6 +214,16 @@ namespace SSoTme.OST.Lib.Extensions
             else return String.Empty;
         }
 
+        public static byte[] GetFileSetFileBinaryContents(this FileSetFile fileSetFile)
+        {
+            if (!ReferenceEquals(fileSetFile.ZippedBinaryFileContents, null))
+            {
+                return SSoTme.OST.Lib.Extensions.SSOTMEExtensions.Unzip(fileSetFile.ZippedBinaryFileContents);
+            }
+            else return new Byte[] { };
+        }
+
+
         private static string GetFullFileName(string relativeFileName, DirectoryInfo rootDI)
         {
             if (rootDI == null) rootDI = new DirectoryInfo(".");
@@ -352,6 +366,7 @@ namespace SSoTme.OST.Lib.Extensions
 
         public static String ToSingleTextFileFileSetXml(this string inputString, String fileName)
         {
+            if (String.IsNullOrEmpty(inputString)) inputString = String.Empty;
             var xdoc = new XmlDocument();
             var fileSet = xdoc.CreateElement("FileSet");
             xdoc.AppendChild(fileSet);
@@ -363,7 +378,9 @@ namespace SSoTme.OST.Lib.Extensions
             relativePath.InnerText = fileName;
             fileSetFile.AppendChild(relativePath);
             var fileContents = xdoc.CreateElement("ZippedTextFileContents");
-            fileContents.InnerXml = Convert.ToBase64String(inputString.Zip());
+            {
+                fileContents.InnerXml = Convert.ToBase64String(inputString.Zip());
+            }
             fileSetFile.AppendChild(fileContents);
             return xdoc.OuterXml;
         }
@@ -381,7 +398,7 @@ namespace SSoTme.OST.Lib.Extensions
             schema.AppendLine("ColNameHeader=True");
             for (int i = 0; i < data.Columns.Count; i++)
             {
-                schema.AppendLine("col" + (i + 1).ToString() + "=" + data.Columns[i].ColumnName + " Memo");
+                schema.AppendLine("col" + (i + 1).ToString() + "=\"" + data.Columns[i].ColumnName + "\" Memo");
             }
             TextWriter tw = new StreamWriter(schemaFileName);
             tw.WriteLine(schema.ToString());
@@ -392,7 +409,7 @@ namespace SSoTme.OST.Lib.Extensions
         {
             string sqlString = "Select * FROM [" + theFile.Name + "];";
             string conStr = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source="
-                + theFile.DirectoryName + ";" + "Extended Properties='text;HDR=YES;'";
+                + theFile.DirectoryName + ";" + "Extended Properties='text;HDR=YES;CharacterSet=65001;'";
             DataTable theCSV = new DataTable();
 
             using (OleDbConnection conn = new OleDbConnection(conStr))
@@ -425,12 +442,71 @@ namespace SSoTme.OST.Lib.Extensions
             return LoadCSV(theFile);
         }
 
+        public static FileSet XslxToCsvFileSet(this Byte[] xlsxFile, String fileName, bool alwaysOverwrite = false)
+        {
+
+            var result = default(DataSet);
+            FileSet fs = new FileSet();
+            if (fileName.EndsWith(".xlsx"))
+            {
+                // Reading from a binary Excel file (format; *.xlsx)
+                var stream = new MemoryStream(xlsxFile);
+                IExcelDataReader excelReader = ExcelReaderFactory.CreateOpenXmlReader(stream);
+                result = excelReader.AsDataSet();
+                excelReader.Close();
+            }
+
+            if (fileName.EndsWith(".xls"))
+            {
+                // Reading from a binary Excel file ('97-2003 format; *.xls)
+                var stream = new MemoryStream(xlsxFile);
+                IExcelDataReader excelReader = ExcelReaderFactory.CreateBinaryReader(stream);
+                result = excelReader.AsDataSet();
+                excelReader.Close();
+            }
+
+            var tableNames = result.Tables.OfType<DataTable>().Select(selectDT => selectDT.TableName);
+            foreach (var tableName in tableNames)
+            {
+                FileSetFile fsf = new FileSetFile();
+                fsf.RelativePath = String.Format("{0}.csv", tableName);
+                var csv = getCSV(result, tableName);
+                fsf.ZippedFileContents = csv.Zip();
+                fsf.AlwaysOverwrite = alwaysOverwrite;
+                fs.FileSetFiles.Add(fsf);
+            }
+
+            return fs;
+
+        }
+
+        private static string getCSV(DataSet xlsxDataSet, string table)
+        {
+            int row_no = 0;
+
+            var output = new StringBuilder();
+
+            while (row_no < xlsxDataSet.Tables[table].Rows.Count)
+            {
+                for (int i = 0; i < xlsxDataSet.Tables[table].Columns.Count; i++)
+                {
+                    var value = xlsxDataSet.Tables[table].Rows[row_no][i].ToString();
+                    value = value.Replace("\"", "\\\"");
+                    output.AppendFormat("\"{0}\",", value);
+                }
+                row_no++;
+                output.AppendLine();
+            }
+
+            return output.ToString();
+        }
+
         public static string CsvToXml(this String csvText, String fileName)
         {
             String tempFile = String.Format("temp\\{0}", fileName);
             FileInfo fi = new FileInfo(tempFile);
             if (!fi.Directory.Exists) fi.Directory.Create();
-            File.WriteAllText(fi.FullName, csvText);
+            File.WriteAllText(fi.FullName, csvText, new UTF8Encoding(false));
             try
             {
 
@@ -639,6 +715,10 @@ namespace SSoTme.OST.Lib.Extensions
                         XmlNode binaryContentsNode = elem.SelectSingleNode("BinaryFileContents");
                         XmlNode zippedBinaryContentsNode = elem.SelectSingleNode("ZippedBinaryFileContents");
                         XmlNode zippedTextContentsNode = elem.SelectSingleNode("ZippedTextFileContents");
+                        if (ReferenceEquals(zippedTextContentsNode, null))
+                        {
+                            zippedTextContentsNode = elem.SelectSingleNode("ZippedFileContents");
+                        }
 
                         if (!ReferenceEquals(contentsNode, null))
                         {
@@ -662,8 +742,8 @@ namespace SSoTme.OST.Lib.Extensions
                             {
                                 byte[] data = Convert.FromBase64String(contents);
 
-
-                                var fileInfo = new FileInfo(fileName.InnerText);
+                                var finalName = Path.Combine(basePath, fileName.InnerText.SafeToString().Trim("/".ToCharArray()));
+                                var fileInfo = new FileInfo(finalName);
 
                                 if (!fileInfo.Directory.Exists) fileInfo.Directory.Create();
 
@@ -672,19 +752,19 @@ namespace SSoTme.OST.Lib.Extensions
 
                                     if (!ReferenceEquals(zippedBinaryContentsNode, null))
                                     {
-                                        File.WriteAllBytes(fileName.InnerText, data.Unzip());
+                                        File.WriteAllBytes(fileInfo.FullName, data.Unzip());
                                     }
                                     else if (!ReferenceEquals(zippedTextContentsNode, null))
                                     {
 
-                                        using (StreamWriter sw = new StreamWriter(File.Open(fileName.InnerText, FileMode.Create), new UTF8Encoding(false)))
+                                        using (StreamWriter sw = new StreamWriter(File.Open(fileInfo.FullName, FileMode.Create), new UTF8Encoding(false)))
                                         {
                                             sw.WriteLine(data.UnzipToString());
                                         }
                                     }
                                     else
                                     {
-                                        File.WriteAllBytes(fileName.InnerText, data);
+                                        File.WriteAllBytes(fileInfo.FullName, data);
                                     }
 
                                 }
@@ -872,6 +952,13 @@ namespace SSoTme.OST.Lib.Extensions
             }
         }
 
+        public static String XmlToJson(this String xml)
+        {
+            var doc = new XmlDocument();
+            doc.LoadXml(xml);
+            return JsonConvert.SerializeXmlNode(doc.DocumentElement);
+        }
+
         private static void CleanSPECDOCLink(this HtmlNode node)
         {
             if (!ReferenceEquals(node.Attributes, null))
@@ -968,8 +1055,13 @@ namespace SSoTme.OST.Lib.Extensions
 
         public static byte[] Zip(this string str)
         {
+            if (String.IsNullOrEmpty(str)) str = String.Empty;
             var bytes = new UTF8Encoding(false).GetBytes(str);
+            return bytes.Zip();
+        }
 
+        public static byte[] Zip(this byte[] bytes)
+        {
             using (var msi = new MemoryStream(bytes))
             using (var mso = new MemoryStream())
             {
@@ -982,6 +1074,40 @@ namespace SSoTme.OST.Lib.Extensions
                 return mso.ToArray();
             }
         }
+
+        public static bool IsBinaryFile(this FileInfo fi)
+        {
+            long length = fi.Length;
+            if (length == 0) return false;
+
+            using (StreamReader stream = new StreamReader(fi.FullName))
+            {
+                int ch;
+                while ((ch = stream.Read()) != -1)
+                {
+                    if (isControlChar(ch))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        public static bool isControlChar(int ch)
+        {
+            return (ch > Chars.NUL && ch < Chars.BS)
+                || (ch > Chars.CR && ch < Chars.SUB);
+        }
+
+        public static class Chars
+        {
+            public static char NUL = (char)0; // Null char
+            public static char BS = (char)8; // Back Space
+            public static char CR = (char)13; // Carriage Return
+            public static char SUB = (char)26; // Substitute
+        }
+
 
         public static bool IsAssignableTo(this Type childClass, Type parentClass)
         {

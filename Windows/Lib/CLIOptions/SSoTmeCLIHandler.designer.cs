@@ -40,8 +40,11 @@ Options
         [CommandLineOption(Description = "Describes the current SSoTme project (and all transpilers)", MinOccurs = 0, Aliases = "d")]
         public bool describe { get; set; }
         
+        [CommandLineOption(Description = "Descibe all of the transpiler in the project", MinOccurs = 0, Aliases = "da")]
+        public bool descibeAll { get; set; }
+        
         [CommandLineOption(Description = "Input filename or comma separated list of file names", MinOccurs = 0, Aliases = "i")]
-        public string input { get; set; }
+        public List<string> input { get; set; }
         
         [CommandLineOption(Description = "Output filename", MinOccurs = 0, Aliases = "o")]
         public string output { get; set; }
@@ -87,6 +90,18 @@ Options
         
         [CommandLineOption(Description = "Determines if the input should be preserved.", MinOccurs = 0, Aliases = "rz")]
         public bool preserveZFS { get; set; }
+        
+        [CommandLineOption(Description = "Checks the result of a build linking up input and output files of the transpiles.  Creates a SPXML file in the DSPXml folder of the project.", MinOccurs = 0, Aliases = "cr")]
+        public bool checkResults { get; set; }
+        
+        [CommandLineOption(Description = "Creates documentation based on a DSPXml file created with the -checkResults flag.", MinOccurs = 0, Aliases = "cd")]
+        public bool createDocs { get; set; }
+        
+        [CommandLineOption(Description = "Executes the given command as a ProcessInfo.Start", MinOccurs = 0, Aliases = "exec")]
+        public string execute { get; set; }
+        
+        [CommandLineOption(Description = "Include disabled tools in th ebuild", MinOccurs = 0, Aliases = "id")]
+        public bool includeDisabled { get; set; }
         
     }
 }

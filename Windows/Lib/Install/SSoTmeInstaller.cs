@@ -21,10 +21,10 @@ namespace SSoTme.OST.Lib.Install
 
         public override void Commit(IDictionary savedState)
         {
-            base.Commit(savedState);
             String progFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
-            String finalPath = Path.Combine(progFiles, @"SSoT.me\BetaCLI");
+            String finalPath = Path.Combine(progFiles, @"SSoT.me\SSoTmeBetaCLI");
             AddPathSegments(finalPath);
+            base.Commit(savedState);
         }
 
         public override void Install(IDictionary stateSaver)

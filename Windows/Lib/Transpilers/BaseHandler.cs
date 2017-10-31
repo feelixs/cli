@@ -24,7 +24,7 @@ namespace SSOTME.TestConApp.Root.TranspileHandlers
         {
             this.Payload = payload;
             this.ScreenName = payload.ScreenName;
-            
+
             this.Parameters = new Dictionary<string, string>();
             this.OutputFileSet = new FileSet();
             this.OutputFileSet.FileSetId = sourceTranspiler.TranspilerId;
@@ -36,7 +36,12 @@ namespace SSOTME.TestConApp.Root.TranspileHandlers
             if (String.IsNullOrEmpty(this.Payload.CLIInputFileSetXml)) this.InputFileSet = new FileSet();
             else this.InputFileSet = this.Payload.CLIInputFileSetXml.ToFileSet();
 
-            this.InputFileName = this.Payload.CLIInput;
+            if (!ReferenceEquals(this.Payload.CLIInput, null) && this.Payload.CLIInput.Any())
+            {
+                this.InputFileName = this.Payload.CLIInput.First();
+            }
+            else this.InputFileName = "";
+
             this.OutputFileName = this.Payload.CLIOutput;
 
 
@@ -50,6 +55,16 @@ namespace SSOTME.TestConApp.Root.TranspileHandlers
             }
 
             this.Parameters = this.PopulateParameters();
+
+        }
+
+        public byte[] GetSingleBinaryFileContents()
+        {
+            if (this.InputFileSet.FileSetFiles.Any())
+            {
+                return this.InputFileSet.FileSetFiles[0].GetFileSetFileBinaryContents();
+            }
+            else return new Byte[] { };
 
         }
 
@@ -78,7 +93,7 @@ namespace SSOTME.TestConApp.Root.TranspileHandlers
             return this.ProcessXslt();
         }
 
-        public void AddResourceFolderToOutput(string resourceFolderPartialName)
+        public void AddResourceFolderToOutput(string resourceFolderPartialName, bool alwaysOvewrite = true)
         {
             var matchingResourceNames = this.GetType()
                                             .Assembly
@@ -87,11 +102,11 @@ namespace SSOTME.TestConApp.Root.TranspileHandlers
             foreach (var matchingResourceName in matchingResourceNames)
             {
                 var basePath = matchingResourceName.Substring(0, matchingResourceName.IndexOf(resourceFolderPartialName, StringComparison.OrdinalIgnoreCase) + resourceFolderPartialName.Length + 1);
-                this.AddResourceToOutput(basePath, matchingResourceName);
+                this.AddResourceToOutput(basePath, matchingResourceName, alwaysOvewrite);
             }
         }
 
-        private void AddResourceToOutput(String basePath, string matchingResourceName)
+        private void AddResourceToOutput(String basePath, string matchingResourceName, bool alwaysOvewrite)
         {
             var resourceStream = this.GetType()
                                      .Assembly
@@ -108,6 +123,7 @@ namespace SSOTME.TestConApp.Root.TranspileHandlers
 
             fsf.RelativePath = dotPath;
             fsf.BinaryFileContents = memoryStream.ToArray();
+            fsf.AlwaysOverwrite = alwaysOvewrite;
             this.OutputFileSet.FileSetFiles.Add(fsf);
         }
 
@@ -198,7 +214,7 @@ namespace SSOTME.TestConApp.Root.TranspileHandlers
         public void LoadInputFileSetFile(FileSetFile inputFileSetFile)
         {
             var finalPath = Path.Combine(this.RootDirInfo.FullName, Path.GetFileName(inputFileSetFile.RelativePath));
-            File.WriteAllText(finalPath, inputFileSetFile.FileContents);
+            File.WriteAllText(finalPath, inputFileSetFile.GetFileSetFileContents());
         }
 
         public void LoadXsltFromPartialResourceName(string xsltPartialName)
@@ -259,7 +275,7 @@ namespace SSOTME.TestConApp.Root.TranspileHandlers
 
                     ms.Position = 0;
 
-                    String currentDoc = (new UTF8Encoding(true)).GetString(ms.GetBuffer(), 0, (int)ms.Length);
+                    String currentDoc = (new UTF8Encoding(false)).GetString(ms.GetBuffer(), 0, (int)ms.Length);
                     if (currentDoc.StartsWith("<?xml")) currentDoc = currentDoc.Substring(currentDoc.IndexOf("?>") + 2);
                     currentDoc = currentDoc.Trim((char)65279);
                     if (currentDoc.Contains("<"))
@@ -273,11 +289,11 @@ namespace SSOTME.TestConApp.Root.TranspileHandlers
                             doc = new XmlDocument();
                             doc.LoadXml(currentDoc);
                             MemoryStream wms = new MemoryStream();
-                            XmlTextWriter writer = new XmlTextWriter(wms, (new UTF8Encoding(true)));
+                            XmlTextWriter writer = new XmlTextWriter(wms, (new UTF8Encoding(false)));
                             writer.Formatting = Formatting.Indented;
                             doc.WriteContentTo(writer);
                             writer.Flush();
-                            newFileContents = (new UTF8Encoding(true)).GetString(wms.GetBuffer(), 0, (int)writer.BaseStream.Length).Trim();
+                            newFileContents = (new UTF8Encoding(false)).GetString(wms.GetBuffer(), 0, (int)writer.BaseStream.Length).Trim();
                             wms.Close();
                         }
                         catch (Exception ex)
@@ -303,7 +319,7 @@ namespace SSOTME.TestConApp.Root.TranspileHandlers
         public ExsltTransform PrepareTransformationObject(String rootPath, string xsltText)
         {
             ExsltTransform xslt = new ExsltTransform();
-            MemoryStream ms = new MemoryStream((new UTF8Encoding(true)).GetBytes(xsltText));
+            MemoryStream ms = new MemoryStream((new UTF8Encoding(false)).GetBytes(xsltText));
             try
             {
                 XmlTextReader xmltr = new XmlTextReader(ms);
@@ -350,7 +366,7 @@ namespace SSOTME.TestConApp.Root.TranspileHandlers
         public String GetFirstTextFileSetFile()
         {
             if (!this.InputFileSet.FileSetFiles.Any()) throw new Exception("No input files provided to transpiler.");
-            else return this.InputFileSet.FileSetFiles.First().FileContents;
+            else return this.InputFileSet.FileSetFiles.First().GetFileSetFileContents();
         }
 
         public string DownloadFirstParamAsUrl()
@@ -415,7 +431,9 @@ namespace SSOTME.TestConApp.Root.TranspileHandlers
 
         public string InputFilePlus(string additionalExtension)
         {
-            return String.Format("{0}{1}", this.Payload.CLIInput, additionalExtension);
+            var fileName = this.Payload.CLIInput.FirstOrDefault();
+            if (String.IsNullOrEmpty(fileName)) throw new Exception("Input file missing - can't calculate output filename");
+            else return String.Format("{0}{1}", fileName, additionalExtension);
         }
 
         public abstract void Transpile();

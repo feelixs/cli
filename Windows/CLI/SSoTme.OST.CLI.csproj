@@ -52,17 +52,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Install\SSoTmeInstaller.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Install\SSoTmeInstaller.Designer.cs">
-      <DependentUpon>SSoTmeInstaller.cs</DependentUpon>
-    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

@@ -22,7 +22,8 @@ namespace SSoTme.OST.ConApp
         static int Main(string[] args)
         {
             // Thread.Sleep(20000);
-            var returnValue = SSoTmeCLIHandler.ProcessCommand(args);
+            var handler = SSoTmeCLIHandler.CreateHandler(args);
+            var returnValue = handler.TranspilerProject();
             if (returnValue != 0)
             {
                 Console.WriteLine("\n\nPress any key to continue.");

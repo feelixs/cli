@@ -5,6 +5,10 @@ using System.IO;
 using Newtonsoft.Json;
 using SassyMQ.Lib.RabbitMQ;
 using System.Linq;
+using SSoTme.OST.Lib.Extensions;
+using System.Xml;
+using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace SSoTme.OST.Lib.DataClasses
 {
@@ -39,8 +43,25 @@ namespace SSoTme.OST.Lib.DataClasses
 
         private void Save(DirectoryInfo rootDI)
         {
+            this.CheckUniqueIDs();
             string projectJson = JsonConvert.SerializeObject(this);
             File.WriteAllText(this.GetProjectFileName(), projectJson);
+        }
+
+        public void CheckUniqueIDs()
+        {
+            IEnumerable<ProjectTranspiler> dupTranspilers = GetDuplicateTranpsilers();
+            while (dupTranspilers.Any())
+            {
+                var firstDup = dupTranspilers.First();
+                firstDup.ProjectTranspilerId = Guid.NewGuid();
+                dupTranspilers = GetDuplicateTranpsilers();
+            }
+        }
+
+        private IEnumerable<ProjectTranspiler> GetDuplicateTranpsilers()
+        {
+            return this.ProjectTranspilers.Where(pt => this.ProjectTranspilers.Where(otherPT => otherPT != pt).Any(anyOtherPT => anyOtherPT.ProjectTranspilerId == pt.ProjectTranspilerId));
         }
 
         protected String GetProjectFileName()
@@ -62,6 +83,11 @@ namespace SSoTme.OST.Lib.DataClasses
             var projectJson = File.ReadAllText(projectFI.FullName);
             var ssotmeProject = JsonConvert.DeserializeObject<SSoTmeProject>(projectJson);
             ssotmeProject.RootPath = projectFI.Directory.FullName;
+            if (String.IsNullOrEmpty(ssotmeProject.Name))
+            {
+                ssotmeProject.Name = Path.GetFileName(ssotmeProject.RootPath);
+            }
+
             return ssotmeProject;
         }
 
@@ -126,10 +152,71 @@ namespace SSoTme.OST.Lib.DataClasses
             else Console.WriteLine("NO settings added to the project yet.");
         }
 
-        public void Describe()
+        public void CheckResults()
+        {
+
+            Console.WriteLine("Updating transpilers/inputs/outputs and project flow...");
+
+            // Load each tranpspiler and load it's input and output files.
+            foreach (var projectTranspiler in this.ProjectTranspilers)
+            {
+                Environment.CurrentDirectory = Path.Combine(this.RootPath, projectTranspiler.RelativePath.Trim("\\/".ToCharArray()));
+
+                projectTranspiler.LoadInputAndOuputFiles(this, false);
+            }
+
+            var json = JsonConvert.SerializeObject(this);
+            json = String.Format("{{ \"{0}\" : {1} }}", this.GetName(), json);
+            var xml = json.JsonToXml();
+            DirectoryInfo di = new DirectoryInfo(Path.Combine(this.RootPath, "DSPXml"));
+            if (!di.Exists) di.Create();
+
+            File.WriteAllText(Path.Combine(di.FullName, "SSoTmeProject.spxml"), xml.OuterXml);
+        }
+
+        public void CreateDocs()
+        {
+            this.CheckResults();
+
+            Console.WriteLine("Updating Docs from latest SPXml results.");
+
+            DirectoryInfo di = new DirectoryInfo(Path.Combine(this.RootPath, "DSPXml"));
+            if (!di.Exists) di.Create();
+
+            Environment.CurrentDirectory = di.FullName;
+
+            ProcessStartInfo psi = new ProcessStartInfo("ssotme");
+            psi.WorkingDirectory = di.FullName;
+
+            psi.Arguments = "spxml-to-detailed-spxml -i \"./SSoTmeProject.spxml\"";
+            var p = Process.Start(psi);
+            p.WaitForExit(100000);
+            if (!p.HasExited) throw new Exception("Failed waiting for Detailed SP Xml to be created.");
+            else
+            {
+                psi.Arguments = "detailed-spxml-to-html-docs -i \"./SSoTmeProject.dspxml\"";
+                p = Process.Start(psi);
+
+                p.WaitForExit(100000);
+                if (!p.HasExited) throw new Exception("Failed waiting for Docs to be created.");
+                else
+                {
+                    Console.WriteLine("Analyze completed");
+                }
+            }
+
+        }
+
+        public string GetName()
+        {
+            if (String.IsNullOrEmpty(this.Name)) return Path.GetFileName(this.RootPath);
+            else return this.Name;
+        }
+
+        public void Describe(string relativePath = "")
         {
             Console.WriteLine("\n==========================================");
-            Console.WriteLine("======  {0}", this.Name);
+            Console.WriteLine("======  {0}", this.Name);  
             Console.WriteLine("======    {0}", this.RootPath);
             Console.WriteLine("==========================================");
 
@@ -139,13 +226,18 @@ namespace SSoTme.OST.Lib.DataClasses
 
             Console.WriteLine();
 
-            this.ListTranspilers();
-        }
 
-        private void ListTranspilers()
-        {
             Console.WriteLine("\nTRANSPILERS: ");
-            foreach (var projectTranspiler in this.ProjectTranspilers) {
+            var matchingProjectTranspilers = this.ProjectTranspilers.ToList();
+
+            if (!String.IsNullOrEmpty(relativePath))
+            {
+                relativePath = this.GetProjectRelativePath(relativePath);
+                matchingProjectTranspilers = matchingProjectTranspilers.Where(wherePT => wherePT.IsAtPath(relativePath)).ToList();
+            }
+
+            foreach (var projectTranspiler in matchingProjectTranspilers)
+            {
                 projectTranspiler.Describe(this);
             }
         }
@@ -161,15 +253,23 @@ namespace SSoTme.OST.Lib.DataClasses
             this.Save();
         }
 
+        internal void Update(ProjectTranspiler projectTranspiler, SSOTMEPayload result)
+        {
+            projectTranspiler.MatchedTranspiler = ReferenceEquals(result, null) ? default(Transpiler) : result.Transpiler;
+            this.IntegrateExistingTranspiler(projectTranspiler);
+
+            this.Save();
+        }
+
         private string GetProjectRelativePath(String fullPath)
         {
             var relativePathDI = new DirectoryInfo(fullPath);
             var rootPathDI = new DirectoryInfo(this.RootPath);
             var relativePath = relativePathDI.FullName.Substring(rootPathDI.FullName.Length);
-            return relativePath.Replace("\\","/");
+            return relativePath.Replace("\\", "/");
         }
 
-        public void Rebuild(string buildPath)
+        public void Rebuild(string buildPath, bool includeDisabled)
         {
             var currentDirectory = Environment.CurrentDirectory;
             try
@@ -178,7 +278,8 @@ namespace SSoTme.OST.Lib.DataClasses
                 var matchingProjectTranspilers = this.ProjectTranspilers.Where(wherePT => wherePT.IsAtPath(relativePath));
                 foreach (var pt in matchingProjectTranspilers)
                 {
-                    pt.Rebuild(this);
+                    if (!pt.IsDisabled || includeDisabled) pt.Rebuild(this);
+                    else Console.WriteLine("\n\n - SKIPPING DISABLED TRANSPILER: {0}\n - {1}\n - {2}\n\n", pt.Name, pt.RelativePath, pt.CommandLine);
                 }
             }
             finally
@@ -186,6 +287,7 @@ namespace SSoTme.OST.Lib.DataClasses
                 Environment.CurrentDirectory = currentDirectory;
             }
         }
+
 
         public void Clean(bool preserveZFS)
         {
@@ -210,21 +312,36 @@ namespace SSoTme.OST.Lib.DataClasses
             }
         }
 
-        public void Rebuild()
+        public void Rebuild(bool includeDisabled)
         {
-            this.Rebuild(this.RootPath);
+            this.Rebuild(this.RootPath, includeDisabled);
+        }
+
+
+        private void IntegrateExistingTranspiler(ProjectTranspiler projectTranspiler)
+        {
+            this.IntegrateTranspiler(projectTranspiler, false);
         }
 
         private void IntegrateNewTranspiler(ProjectTranspiler projectTranspiler)
         {
+            this.IntegrateTranspiler(projectTranspiler, true);
+        }
+
+        private void IntegrateTranspiler(ProjectTranspiler projectTranspiler, bool addIfMissing)
+        {
             var matchingTranspiler = this.ProjectTranspilers.FirstOrDefault(fodPT => (fodPT.Name == projectTranspiler.Name) && (fodPT.RelativePath == projectTranspiler.RelativePath));
+            int firstIndex = -1;
             while (!ReferenceEquals(matchingTranspiler, null))
             {
+                if (firstIndex == -1) firstIndex = this.ProjectTranspilers.IndexOf(matchingTranspiler);
                 this.ProjectTranspilers.Remove(matchingTranspiler);
                 matchingTranspiler = this.ProjectTranspilers.FirstOrDefault(fodPT => (fodPT.Name == projectTranspiler.Name) && (fodPT.RelativePath == projectTranspiler.RelativePath));
             }
-            this.ProjectTranspilers.Add(projectTranspiler);
+            if (firstIndex >= 0) this.ProjectTranspilers.Insert(firstIndex, projectTranspiler);
+            else if (addIfMissing) this.ProjectTranspilers.Add(projectTranspiler);
         }
+
 
         public void RemoveSetting(string setting)
         {
