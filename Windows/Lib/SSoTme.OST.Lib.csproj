@@ -179,12 +179,6 @@
     <Compile Include="Exslt\MultiOutput\MultiXmlTextWriter.cs" />
     <Compile Include="Exslt\MultiOutput\OutputState.cs" />
     <Compile Include="Extensions\SSOTMEExtensions.cs" />
-    <Compile Include="Install\SSoTmeInstaller.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Install\SSoTmeInstaller.Designer.cs">
-      <DependentUpon>SSoTmeInstaller.cs</DependentUpon>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SassySDK\Derived\DMProxy.cs" />
     <Compile Include="SassySDK\Derived\Extentions.cs" />
