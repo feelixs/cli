@@ -11,12 +11,13 @@ namespace SSoTme.OST.Lib.DataClasses
             
             this.TranspilerVersionId = Guid.NewGuid();
             
-            this.TranspilerInputHints = new BindingList<TranspilerInputHint>();
+            this.TranspilerFileTypeId_TranspilerInputHints = new BindingList<TranspilerInputHint>();
             
             this.TranspilerInstances = new BindingList<TranspilerInstance>();
             
-            this.TranspilerVersions = new BindingList<TranspilerVersion>();
+            this.ReplacedByTranspilerVersionId_TranspilerVersions = new BindingList<TranspilerVersion>();
             
+
         }
         
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TranspilerVersionId")]
@@ -41,11 +42,11 @@ namespace SSoTme.OST.Lib.DataClasses
         public Nullable<Guid> ReplacedByTranspilerVersionId { get; set; }
     
         
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TranspilerInputHints")] // 
-        public BindingList<TranspilerInputHint> TranspilerInputHints { get; set; }
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TranspilerInstances")] // 
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TranspilerFileTypeId_TranspilerInputHints")]
+        public BindingList<TranspilerInputHint> TranspilerFileTypeId_TranspilerInputHints { get; set; }
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TranspilerInstances")]
         public BindingList<TranspilerInstance> TranspilerInstances { get; set; }
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TranspilerVersions")] // 
-        public BindingList<TranspilerVersion> TranspilerVersions { get; set; }
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ReplacedByTranspilerVersionId_TranspilerVersions")]
+        public BindingList<TranspilerVersion> ReplacedByTranspilerVersionId_TranspilerVersions { get; set; }
     }
 }

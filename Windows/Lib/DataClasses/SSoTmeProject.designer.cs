@@ -15,6 +15,7 @@ namespace SSoTme.OST.Lib.DataClasses
             
             this.ProjectTranspilers = new BindingList<ProjectTranspiler>();
             
+
         }
         
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "SSoTmeProjectId")]
@@ -33,9 +34,9 @@ namespace SSoTme.OST.Lib.DataClasses
         public String RootPath { get; set; }
     
         
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ProjectSettings")] // 
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ProjectSettings")]
         public BindingList<ProjectSetting> ProjectSettings { get; set; }
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ProjectTranspilers")] // 
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ProjectTranspilers")]
         public BindingList<ProjectTranspiler> ProjectTranspilers { get; set; }
     }
 }

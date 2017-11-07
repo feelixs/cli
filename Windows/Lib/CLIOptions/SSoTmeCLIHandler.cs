@@ -88,13 +88,27 @@ namespace SSoTme.OST.Lib.CLIOptions
 
                 if (this.help)
                 {
+
+                    Console.WriteLine(parser.UsageInfo.GetHeaderAsString(78));
+
+                    Console.WriteLine("\n\nSyntax: ssotme [account/]transpiler [Options]\n\n");
+
                     Console.WriteLine(parser.UsageInfo.GetOptionsAsString(78));
+                    this.SuppressTranspile = true;
                 }
-                else if (this.init) SSoTmeProject.Init();
+                else if (this.init)
+                {
+                    this.SuppressTranspile = true;
+                    SSoTmeProject.Init();
+                }
                 else if (parser.HasErrors)
                 {
+                    var curColor = Console.ForegroundColor;
+                    Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine(parser.UsageInfo.GetErrorsAsString(78));
                     this.ParseResult = -1;
+                    Console.ForegroundColor = curColor;
+                    this.SuppressTranspile = true;
                 }
                 else
                 {
@@ -106,15 +120,18 @@ namespace SSoTme.OST.Lib.CLIOptions
                     {
                         this.ZFSFileSetFile = this.FileSet.FileSetFiles.FirstOrDefault(fodFileSetFile => fodFileSetFile.RelativePath.EndsWith(".zfs", StringComparison.OrdinalIgnoreCase));
                     }
-
                 }
             }
             catch (Exception ex)
             {
+                var curColor = Console.ForegroundColor;
+                Console.ForegroundColor = ConsoleColor.Red;
+
                 Console.WriteLine("\n********************************\nERROR: {0}\n********************************\n\n", ex.Message);
                 Console.WriteLine(ex.StackTrace);
                 Console.WriteLine("\n\nPress any key to continue...\n");
                 Console.WriteLine("\n\n");
+                Console.ForegroundColor = curColor;
 
                 Console.ReadKey();
 
@@ -193,7 +210,10 @@ namespace SSoTme.OST.Lib.CLIOptions
                 }
                 else if (!hasRemainingArguments && !this.clean)
                 {
+                    var curColor = Console.ForegroundColor;
+                    Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("Missing argument name of transpiler");
+                    Console.ForegroundColor = curColor;
                     return -1;
                 }
                 else
@@ -202,8 +222,11 @@ namespace SSoTme.OST.Lib.CLIOptions
 
                     if (!ReferenceEquals(result.Exception, null))
                     {
+                        var curColor = Console.ForegroundColor;
+                        Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("ERROR: " + result.Exception.Message);
                         Console.WriteLine(result.Exception.StackTrace);
+                        Console.ForegroundColor = curColor;
                         return -1;
                     }
                     else
@@ -296,6 +319,7 @@ namespace SSoTme.OST.Lib.CLIOptions
         public SSoTmeProject SSoTmeProject { get; set; }
         public int ParseResult { get; private set; }
         public FileSet OutputFileSet { get; private set; }
+        public bool SuppressTranspile { get; private set; }
 
         public void LoadInputFiles()
         {
@@ -331,7 +355,7 @@ namespace SSoTme.OST.Lib.CLIOptions
             }
             var di = new DirectoryInfo(Path.Combine(".", Path.GetDirectoryName(filePattern)));
             filePattern = Path.GetFileName(filePattern);
-            
+
             var matchingFiles = new FileInfo[] { };
             if (di.Exists)
             {
@@ -339,16 +363,26 @@ namespace SSoTme.OST.Lib.CLIOptions
             }
             if (!matchingFiles.Any())
             {
+                var curColor = Console.ForegroundColor;
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("\n\nERROR:\n\n - No INPUT files matched {0} in {1}\n", filePattern, di.FullName);
+                var fsf = new FileSetFile();
+                fsf.RelativePath = Path.GetFileName(filePattern);
+                fs.FileSetFiles.Add(fsf);
+
+                Console.ForegroundColor = curColor;
+
             }
 
             foreach (var fi in matchingFiles)
             {
+                var fsf = new FileSetFile();
+                fsf.RelativePath = String.IsNullOrEmpty(fileNameReplacement) ? fi.Name : fileNameReplacement;
+                fsf.OriginalRelativePath = fi.FullName.Substring(this.SSoTmeProject.RootPath.Length).Replace("\\", "/");
+                fs.FileSetFiles.Add(fsf);
+
                 if (fi.Exists)
                 {
-                    var fsf = new FileSetFile();
-                    fsf.RelativePath = String.IsNullOrEmpty(fileNameReplacement) ? fi.Name : fileNameReplacement;
-                    fsf.OriginalRelativePath = fi.FullName.Substring(this.SSoTmeProject.RootPath.Length).Replace("\\", "/");
                     if (fi.IsBinaryFile())
                     {
                         fsf.ZippedBinaryFileContents = File.ReadAllBytes(fi.FullName).Zip();
@@ -357,12 +391,13 @@ namespace SSoTme.OST.Lib.CLIOptions
                     {
                         fsf.ZippedFileContents = File.ReadAllText(fi.FullName).Zip();
                     }
-                    fs.FileSetFiles.Add(fsf);
                 }
                 else
                 {
+                    var curColor = Console.ForegroundColor;
+                    Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("INPUT Format: {0} did not match any files in {1}", filePattern, di.FullName);
-
+                    Console.ForegroundColor = curColor;
                 }
             }
         }

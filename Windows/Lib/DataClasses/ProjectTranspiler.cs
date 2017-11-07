@@ -50,7 +50,8 @@ namespace SSoTme.OST.Lib.DataClasses
             this.RelativePath = relativePath.SafeToString().Replace("\\", "/");
             if (Environment.CommandLine.Contains(" "))
             {
-                this.CommandLine = Environment.CommandLine.Substring(Environment.CommandLine.IndexOf(" "));
+                var cmd1 = Environment.CommandLine.Substring(Environment.CommandLine.ToLower().IndexOf("ssotme.exe")) + " ";
+                this.CommandLine = cmd1.Substring(cmd1.IndexOf(" "));
                 this.CommandLine = this.CommandLine.Replace("-install", "").Trim();
             }
             else this.CommandLine = String.Empty;
@@ -60,7 +61,7 @@ namespace SSoTme.OST.Lib.DataClasses
 
         internal void Rebuild(SSoTmeProject project)
         {
-            Console.WriteLine("RE-transpiling: " + this.RelativePath + ": " + this.Name);
+            Console.WriteLine("\n\nRE-transpiling: " + this.RelativePath + ": " + this.Name);
             Console.WriteLine("CommandLine:> ssotme {0}", this.CommandLine);
             var transpileRootDI = new DirectoryInfo(Path.Combine(project.RootPath, this.RelativePath.Trim("\\/".ToCharArray())));
             if (!transpileRootDI.Exists) transpileRootDI.Create();

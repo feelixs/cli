@@ -11,6 +11,7 @@ namespace SSoTme.OST.Lib.DataClasses
             
             this.TranspilerInputHintId = Guid.NewGuid();
             
+
         }
         
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TranspilerInputHintId")]

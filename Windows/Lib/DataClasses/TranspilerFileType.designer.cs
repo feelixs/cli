@@ -13,6 +13,7 @@ namespace SSoTme.OST.Lib.DataClasses
             
             this.TranspilerFiles = new BindingList<TranspilerFile>();
             
+
         }
         
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TranspilerFileTypeId")]
@@ -31,7 +32,7 @@ namespace SSoTme.OST.Lib.DataClasses
         public String CommonExtension { get; set; }
     
         
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TranspilerFiles")] // 
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TranspilerFiles")]
         public BindingList<TranspilerFile> TranspilerFiles { get; set; }
     }
 }

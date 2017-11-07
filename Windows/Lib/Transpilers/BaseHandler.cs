@@ -64,6 +64,7 @@ namespace SSOTME.TestConApp.Root.TranspileHandlers
 
         }
 
+
         public byte[] GetSingleBinaryFileContents()
         {
             if (this.InputFileSet.FileSetFiles.Any())
@@ -114,12 +115,17 @@ namespace SSOTME.TestConApp.Root.TranspileHandlers
 
         private void AddResourceToOutput(String basePath, string matchingResourceName, bool alwaysOvewrite)
         {
+            FileSetFile fsf = FileSetFileFromResource(basePath, matchingResourceName, alwaysOvewrite);
+            this.OutputFileSet.FileSetFiles.Add(fsf);
+        }
+
+        private FileSetFile FileSetFileFromResource(string basePath, string matchingResourceName, bool alwaysOvewrite)
+        {
             var resourceStream = this.GetType()
                                      .Assembly
                                      .GetManifestResourceStream(matchingResourceName);
             var memoryStream = new MemoryStream();
             resourceStream.CopyTo(memoryStream);
-            FileSetFile fsf = new FileSetFile();
 
             var dotPath = matchingResourceName.Substring(basePath.Length);
             while (dotPath.Count(countChar => countChar == '.') > 1)
@@ -127,10 +133,11 @@ namespace SSOTME.TestConApp.Root.TranspileHandlers
                 dotPath = dotPath.Substring(0, dotPath.IndexOf(".")) + "/" + dotPath.Substring(dotPath.IndexOf(".") + 1);
             }
 
+            FileSetFile fsf = new FileSetFile();
             fsf.RelativePath = dotPath;
             fsf.BinaryFileContents = memoryStream.ToArray();
             fsf.AlwaysOverwrite = alwaysOvewrite;
-            this.OutputFileSet.FileSetFiles.Add(fsf);
+            return fsf;
         }
 
         public void AddFileSetToOutput(FileSet transpilersFileSet)
@@ -140,6 +147,7 @@ namespace SSOTME.TestConApp.Root.TranspileHandlers
                 this.OutputFileSet.FileSetFiles.Add(fileSetFile);
             }
         }
+
 
         public void AddOutputFile(string output, bool alwaysOverwrite = true)
         {
@@ -153,6 +161,15 @@ namespace SSOTME.TestConApp.Root.TranspileHandlers
                 return this.Parameters[parameterName];
             }
             else return String.Empty;
+        }
+
+        public void AddOutputFile(string relativePath, byte[] fileContents, bool alwaysOverwrite = true)
+        {
+            var fsf = new FileSetFile();
+            fsf.RelativePath = relativePath;
+            fsf.ZippedBinaryFileContents = fileContents.Zip();
+            fsf.AlwaysOverwrite = alwaysOverwrite;
+            this.OutputFileSet.FileSetFiles.Add(fsf);
         }
 
         public void AddOutputFile(string relativePath, string fileContents, bool alwaysOverwrite = true)
@@ -169,19 +186,54 @@ namespace SSOTME.TestConApp.Root.TranspileHandlers
             this.InputFileSet.WriteTo(this.RootDirInfo);
         }
 
+        public void WriteToRoot(string fileName, string textContents)
+        {
+            var fs = new FileSet();
+            var fsf = new FileSetFile();
+            fsf.RelativePath = fileName;
+            fsf.FileContents = textContents;
+            fs.FileSetFiles.Add(fsf);
+            fs.WriteTo(this.RootDirInfo);
+        }
+
+        public void WriteResourceToRoot(string resourceName)
+        {
+            var matchingResourceNames = this.GetType()
+                                .Assembly
+                                .GetManifestResourceNames()
+                                .Where(whereRN => whereRN.IndexOf(resourceName, StringComparison.OrdinalIgnoreCase) != -1);
+            foreach (var matchingResourceName in matchingResourceNames)
+            {
+                var basePath = matchingResourceName.Substring(0, matchingResourceName.IndexOf(resourceName, StringComparison.OrdinalIgnoreCase));
+                this.WriteResourceToRoot(basePath, matchingResourceName);
+            }
+
+        }
+
+        private void WriteResourceToRoot(string basePath, string matchingResourceName)
+        {
+            var fs = new FileSet();
+            var fsf = this.FileSetFileFromResource(basePath, matchingResourceName, true);
+            fs.FileSetFiles.Add(fsf);
+            fs.WriteTo(this.RootDirInfo);
+        }
+
         private Dictionary<string, string> PopulateParameters()
         {
             var dict = this.Parameters;
-
-            foreach (var cliParameter in this.Payload.CLIParams)
+            if (!ReferenceEquals(this.Payload.CLIParams, null))
             {
-                if (cliParameter.SafeToString().Contains("="))
+
+                foreach (var cliParameter in this.Payload.CLIParams)
                 {
-                    var key = cliParameter.Substring(0, cliParameter.IndexOf("="));
-                    var value = cliParameter.Substring(cliParameter.IndexOf("=") + 1);
-                    dict.Add(key, value);
+                    if (cliParameter.SafeToString().Contains("="))
+                    {
+                        var key = cliParameter.Substring(0, cliParameter.IndexOf("="));
+                        var value = cliParameter.Substring(cliParameter.IndexOf("=") + 1);
+                        dict.Add(key, value);
+                    }
+                    else dict.Add(cliParameter, String.Empty);
                 }
-                else dict.Add(cliParameter, String.Empty);
             }
 
             dict["input-filename"] = this.InputFileName;
@@ -466,6 +518,8 @@ namespace SSOTME.TestConApp.Root.TranspileHandlers
             }
             else return String.Empty;
         }
+
+    
     }
 }
 

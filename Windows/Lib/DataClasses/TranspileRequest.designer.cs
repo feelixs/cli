@@ -11,12 +11,13 @@ namespace SSoTme.OST.Lib.DataClasses
             
             this.TranspileRequestId = Guid.NewGuid();
             
-            this.ProjectTranspilers = new BindingList<ProjectTranspiler>();
+            this.LastTranspilerRequestId_ProjectTranspilers = new BindingList<ProjectTranspiler>();
             
             this.TranspileInputFiles = new BindingList<TranspileInputFile>();
             
             this.TranspileOutputFiles = new BindingList<TranspileOutputFile>();
             
+
         }
         
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TranspileRequestId")]
@@ -44,11 +45,11 @@ namespace SSoTme.OST.Lib.DataClasses
         public Nullable<Guid> TranspilerInstanceId { get; set; }
     
         
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ProjectTranspilers")] // 
-        public BindingList<ProjectTranspiler> ProjectTranspilers { get; set; }
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TranspileInputFiles")] // 
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "LastTranspilerRequestId_ProjectTranspilers")]
+        public BindingList<ProjectTranspiler> LastTranspilerRequestId_ProjectTranspilers { get; set; }
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TranspileInputFiles")]
         public BindingList<TranspileInputFile> TranspileInputFiles { get; set; }
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TranspileOutputFiles")] // 
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TranspileOutputFiles")]
         public BindingList<TranspileOutputFile> TranspileOutputFiles { get; set; }
     }
 }

@@ -67,6 +67,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Data.Entity" />
     <Reference Include="System.Data.Entity.Design" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.Net" />
     <Reference Include="System.Runtime.Serialization" />
@@ -93,6 +94,10 @@
     <Compile Include="DataClasses\FileSetFile.cs" />
     <Compile Include="DataClasses\FileSetFile.designer.cs">
       <DependentUpon>FileSetFile.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataClasses\FileType.cs" />
+    <Compile Include="DataClasses\FileType.designer.cs">
+      <DependentUpon>FileType.cs</DependentUpon>
     </Compile>
     <Compile Include="DataClasses\PlatformCategory.cs" />
     <Compile Include="DataClasses\PlatformCategory.designer.cs">

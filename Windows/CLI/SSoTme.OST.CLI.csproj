@@ -52,6 +52,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Install\SSoTmeInstaller.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Install\SSoTmeInstaller.Designer.cs">
+      <DependentUpon>SSoTmeInstaller.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

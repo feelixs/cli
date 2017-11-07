@@ -11,10 +11,11 @@ namespace SSoTme.OST.Lib.DataClasses
             
             this.TranspilerFileId = Guid.NewGuid();
             
-            this.TranspileInputFiles = new BindingList<TranspileInputFile>();
+            this.TranspileFileId_TranspileInputFiles = new BindingList<TranspileInputFile>();
             
-            this.TranspileOutputFiles = new BindingList<TranspileOutputFile>();
+            this.TranspileFileId_TranspileOutputFiles = new BindingList<TranspileOutputFile>();
             
+
         }
         
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TranspilerFileId")]
@@ -30,9 +31,9 @@ namespace SSoTme.OST.Lib.DataClasses
         public Byte[] ZippedBytes { get; set; }
     
         
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TranspileInputFiles")] // 
-        public BindingList<TranspileInputFile> TranspileInputFiles { get; set; }
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TranspileOutputFiles")] // 
-        public BindingList<TranspileOutputFile> TranspileOutputFiles { get; set; }
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TranspileFileId_TranspileInputFiles")]
+        public BindingList<TranspileInputFile> TranspileFileId_TranspileInputFiles { get; set; }
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TranspileFileId_TranspileOutputFiles")]
+        public BindingList<TranspileOutputFile> TranspileFileId_TranspileOutputFiles { get; set; }
     }
 }

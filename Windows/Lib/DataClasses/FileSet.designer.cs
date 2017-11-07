@@ -13,6 +13,7 @@ namespace SSoTme.OST.Lib.DataClasses
             
             this.FileSetFiles = new BindingList<FileSetFile>();
             
+
         }
         
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "FileSetId")]
@@ -22,7 +23,7 @@ namespace SSoTme.OST.Lib.DataClasses
         public Nullable<DateTime> CreatedOn { get; set; }
     
         
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "FileSetFiles")] // 
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "FileSetFiles")]
         public BindingList<FileSetFile> FileSetFiles { get; set; }
     }
 }

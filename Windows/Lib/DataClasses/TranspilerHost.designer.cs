@@ -13,6 +13,7 @@ namespace SSoTme.OST.Lib.DataClasses
             
             this.TranspilerInstances = new BindingList<TranspilerInstance>();
             
+
         }
         
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TranspilerHostId")]
@@ -43,7 +44,7 @@ namespace SSoTme.OST.Lib.DataClasses
         public Nullable<DateTime> TermatedOn { get; set; }
     
         
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TranspilerInstances")] // 
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TranspilerInstances")]
         public BindingList<TranspilerInstance> TranspilerInstances { get; set; }
     }
 }

@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity.Design.PluralizationServices;
 using System.Data.OleDb;
+using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
@@ -546,21 +547,32 @@ namespace SSoTme.OST.Lib.Extensions
         }
 
 
-        public static string ConvertJsonToXml(string inputFileName, string inputFileContents)
+        public static string ConvertJsonToXml(string inputFileName, string inputFileContents, bool removeAllExtensions = false)
         {
             var inputExtension = Path.GetExtension(inputFileName);
+
             var inputName = "root";
             if (!String.IsNullOrEmpty(inputFileName))
             {
-                inputName = Path.GetFileName(inputFileName).Replace(inputExtension, "");
+                inputName = Path.GetFileNameWithoutExtension(inputFileName);
+                while (removeAllExtensions && inputName.Contains("."))
+                {
+                    inputName = Path.GetFileNameWithoutExtension(inputName);
+                }
             }
 
             if (String.IsNullOrEmpty(inputFileContents)) inputFileContents = "[]";
 
-            String json = String.Format("{{ \"{0}\":{1}}}", inputName, inputFileContents);
+            // wrap if input doesn't start with inputName
+            var expectedStartingToken = String.Format("{{\"{0}\":", inputName);
+            bool startsAsExpected = inputFileContents.Replace(" ", "").Replace("\r", "").Replace("\n", "").Replace("\t", "").StartsWith(expectedStartingToken);
+            if (!startsAsExpected)
+            {
+                inputFileContents = String.Format("{{ \"{0}\":{1}}}", inputName, inputFileContents);
+            }
 
 
-            var xml = JsonToXml(json).OuterXml;
+            var xml = JsonToXml(inputFileContents).OuterXml;
             return xml;
         }
 
@@ -764,7 +776,10 @@ namespace SSoTme.OST.Lib.Extensions
                                     }
                                     else
                                     {
-                                        File.WriteAllBytes(fileInfo.FullName, data);
+                                        if (!fileInfo.Directory.Exists) fileInfo.Directory.Create();
+                                        var di = new DirectoryInfo(fileInfo.FullName);
+                                        if (di.Exists) throw new Exception(String.Format("Invalid filename for result file - {0} is a directory", fileInfo.FullName));
+                                        else File.WriteAllBytes(fileInfo.FullName, data);
                                     }
 
                                 }
@@ -1197,6 +1212,28 @@ namespace SSoTme.OST.Lib.Extensions
             {
                 dest.Write(bytes, 0, cnt);
             }
+        }
+
+        public static byte[] ToBytes(this Image imageIn)
+        {
+            MemoryStream ms = new MemoryStream();
+            imageIn.Save(ms, System.Drawing.Imaging.ImageFormat.Gif);
+            return ms.ToArray();
+        }
+
+
+        public static Bitmap ToGrayscale(this Image image)
+        {
+            Bitmap btm = new Bitmap(image);
+            for (int i = 0; i < btm.Width; i++)
+            {
+                for (int j = 0; j < btm.Height; j++)
+                {
+                    int ser = (btm.GetPixel(i, j).R + btm.GetPixel(i, j).G + btm.GetPixel(i, j).B) / 3;
+                    btm.SetPixel(i, j, Color.FromArgb(ser, ser, ser));
+                }
+            }
+            return btm;
         }
 
         public static Byte[] Unzip(this byte[] bytes)

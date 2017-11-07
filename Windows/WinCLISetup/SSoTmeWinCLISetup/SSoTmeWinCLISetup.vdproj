@@ -303,7 +303,7 @@
         "DisplayName" = "8:Debug"
         "IsDebugOnly" = "11:TRUE"
         "IsReleaseOnly" = "11:FALSE"
-        "OutputFilename" = "8:Debug\\SSoTmeWinCLISetup_20171031.msi"
+        "OutputFilename" = "8:Debug\\SSoTmeWinCLISetup_20171108.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
@@ -710,7 +710,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:SSoTme.OST.Lib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:SSoTme.OST.Lib, Version=2017.11.6.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                 }
@@ -788,15 +788,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:SSoTmeBetaCLI"
-        "ProductCode" = "8:{D4214DF3-684D-4165-BE36-F64642B84403}"
-        "PackageCode" = "8:{8F887233-19DC-4F38-B111-BF9403340989}"
+        "ProductCode" = "8:{6C128761-2881-4452-83E5-057CE2045C49}"
+        "PackageCode" = "8:{0A6023E3-2DFA-4405-BC15-1F6A0FB89094}"
         "UpgradeCode" = "8:{0BB06E2C-199B-4ED1-A9B1-517F6236BC7C}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:17.10.33"
+        "ProductVersion" = "8:17.11.08"
         "Manufacturer" = "8:SSoT.me"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"

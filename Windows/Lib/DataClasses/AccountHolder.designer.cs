@@ -17,6 +17,7 @@ namespace SSoTme.OST.Lib.DataClasses
             
             this.TranspilerHosts = new BindingList<TranspilerHost>();
             
+
         }
         
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AccountHolderId")]
@@ -35,11 +36,11 @@ namespace SSoTme.OST.Lib.DataClasses
         public String ScreenName { get; set; }
     
         
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "Transpilers")] // 
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "Transpilers")]
         public BindingList<Transpiler> Transpilers { get; set; }
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TranspileRequests")] // 
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TranspileRequests")]
         public BindingList<TranspileRequest> TranspileRequests { get; set; }
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TranspilerHosts")] // 
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TranspilerHosts")]
         public BindingList<TranspilerHost> TranspilerHosts { get; set; }
     }
 }

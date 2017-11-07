@@ -13,6 +13,7 @@ namespace SSoTme.OST.Lib.DataClasses
             
             this.TranspilerPlatforms = new BindingList<TranspilerPlatform>();
             
+
         }
         
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "PlatformCategoryId")]
@@ -46,7 +47,7 @@ namespace SSoTme.OST.Lib.DataClasses
         public String LowerHyphenName { get; set; }
     
         
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TranspilerPlatforms")] // 
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TranspilerPlatforms")]
         public BindingList<TranspilerPlatform> TranspilerPlatforms { get; set; }
     }
 }

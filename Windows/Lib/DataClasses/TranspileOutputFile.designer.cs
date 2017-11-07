@@ -11,6 +11,7 @@ namespace SSoTme.OST.Lib.DataClasses
             
             this.TranspileOutputFileId = Guid.NewGuid();
             
+
         }
         
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TranspileOutputFileId")]

@@ -35,22 +35,22 @@ namespace SSoTme.OST.Lib.SassySDK.Derived
         {
             FileInfo ssotmeKeyFI = GetKeyForAccount(runAs);
             var ssotmeKey = default(SSOTMEKey);
+
             if (ssotmeKeyFI.Exists) ssotmeKey = JsonConvert.DeserializeObject<SSOTMEKey>(File.ReadAllText(ssotmeKeyFI.FullName));
 
-            else ssotmeKey = new SSOTMEKey();
             return ssotmeKey;
         }
 
         private static FileInfo GetKeyForAccount(string accountUsername)
         {
 
-            var myDocsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            var myDocsPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
             var ssotmeKeyFI = default(FileInfo);
-            if (String.IsNullOrEmpty(accountUsername)) ssotmeKeyFI = new FileInfo(Path.Combine(myDocsPath, "SSOT.me", "ssotme.key"));
-            else ssotmeKeyFI = new FileInfo(Path.Combine(myDocsPath, "SSOT.me", String.Format("ssotme_{0}.key", accountUsername)));
+            if (String.IsNullOrEmpty(accountUsername)) ssotmeKeyFI = new FileInfo(Path.Combine(myDocsPath, ".ssotme", "ssotme.key"));
+            else ssotmeKeyFI = new FileInfo(Path.Combine(myDocsPath, ".ssotme", String.Format("ssotme_{0}.key", accountUsername)));
 
-            if (!ssotmeKeyFI.Exists) throw new Exception(String.Format("Can't find key for SSoTme Account: {0}", accountUsername));
+            if (!ssotmeKeyFI.Exists) throw new Exception(String.Format("Can't find key for SSoTme Account: {0} in {1}", accountUsername, ssotmeKeyFI.FullName));
             else return ssotmeKeyFI;
         }
     }

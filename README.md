@@ -1,9 +1,11 @@
 # SSoTme-Open-Source-Tools
-Open source tools for leveraging the SSoT.me toolset from any 
-platform or environment.
+[SSoT.me Platform](http://SSoT.me) - The Single Source of Truth Toolbox!
 
 ## About A Single Source of Truth
-Software based on a single source of truth is software that does not tolorate duplication.
+Software based on a single source of truth is software that does not tolorate duplication of 
+Authority.  "Source Code" is frequently a terrible place for decisions about how software
+should work.  SSoT development is based on the notion that there should always be one,
+Authoritative place for these decisions.  
 
 *SSoTme* is a command line package manager like NPM, Bower, Nuget, etc - however, the packages
 delivered are dynamic in nature.  If 100 projects install a bower package, they all get the
