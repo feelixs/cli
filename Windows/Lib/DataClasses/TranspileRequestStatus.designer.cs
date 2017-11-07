@@ -13,6 +13,7 @@ namespace SSoTme.OST.Lib.DataClasses
             
             this.TranspileRequests = new BindingList<TranspileRequest>();
             
+
         }
         
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TranspileRequestStatusId")]
@@ -28,7 +29,7 @@ namespace SSoTme.OST.Lib.DataClasses
         public Int32 SortOrder { get; set; }
     
         
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TranspileRequests")] // 
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TranspileRequests")]
         public BindingList<TranspileRequest> TranspileRequests { get; set; }
     }
 }
