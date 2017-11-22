@@ -25,10 +25,10 @@ namespace SSoTme.OST.Lib.DataClasses
             this.InitPoco();
         }
 
-        public static void Init()
+        public static void Init(bool force = false)
         {
             var currentProject = TryToLoad(new DirectoryInfo(Environment.CurrentDirectory));
-            if (!ReferenceEquals(currentProject, null))
+            if (!ReferenceEquals(currentProject, null) && !force)
             {
                 throw new Exception(String.Format("Project has already been initialized in: {0}", currentProject.RootPath));
             }
@@ -50,7 +50,7 @@ namespace SSoTme.OST.Lib.DataClasses
         private void Save(DirectoryInfo rootDI)
         {
             this.CheckUniqueIDs();
-            string projectJson = JsonConvert.SerializeObject(this);
+            string projectJson = JsonConvert.SerializeObject(this, Newtonsoft.Json.Formatting.Indented);
             File.WriteAllText(this.GetProjectFileName(), projectJson);
         }
 
@@ -107,6 +107,27 @@ namespace SSoTme.OST.Lib.DataClasses
             }
             else return proj;
         }
+
+        internal DirectoryInfo GetZFSDI(string relativePath)
+        {
+            var ssotmeDI = (DirectoryInfo)this.GetSSoTmeDI();
+            var zfsDI = new DirectoryInfo(Path.Combine(ssotmeDI.FullName, relativePath.Trim("\\/".ToCharArray())));
+            if (!zfsDI.Exists) zfsDI.Create();
+            return zfsDI;
+        }
+
+        private DirectoryInfo GetSSoTmeDI()
+        {
+            var ssotmeDI = new DirectoryInfo(Path.Combine(this.RootPath, ".ssotme"));
+            if (ssotmeDI.Exists)
+            {
+                ssotmeDI.Create();
+                ssotmeDI.Attributes = FileAttributes.Directory | FileAttributes.Hidden;
+            }
+            return ssotmeDI;
+
+        }
+
         public static SSoTmeProject TryToLoad(DirectoryInfo dirToCheck)
         {
             FileInfo projectFI = GetProjectFIAt(dirToCheck);
@@ -222,7 +243,7 @@ namespace SSoTme.OST.Lib.DataClasses
         public void Describe(string relativePath = "")
         {
             Console.WriteLine("\n==========================================");
-            Console.WriteLine("======  {0}", this.Name);  
+            Console.WriteLine("======  {0}", this.Name);
             Console.WriteLine("======    {0}", this.RootPath);
             Console.WriteLine("==========================================");
 

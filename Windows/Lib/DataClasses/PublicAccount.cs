@@ -23,5 +23,7 @@ namespace SSoTme.OST.Lib.DataClasses
         public Guid AccountHolderId { get; set; }
         public String ScreenName { get; set; }
         public List<Transpiler> Transpilers { get; set; }
+        public decimal? AccountSubscriptionFee { get; set; }
+        public string Description { get; set; }
     }
 }

@@ -229,11 +229,9 @@
     <Compile Include="Transpilers\SimpleHtmlPage.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="DataClasses\odxml-to-c-sharp-p-o-c-os.zfs" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="CLIOptions\g-sheet-to-plossum-cmd-line-options.zfs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="CLIOptions\SSoTmeCLIHandler.html" />

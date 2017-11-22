@@ -7,6 +7,8 @@ using System.IO;
 using System.Collections.Generic;
 using RabbitMQ.Client.Events;
 using SassyMQ.SSOTME.Lib.RabbitMQ;
+using System.Data.Entity.Design.PluralizationServices;
+using System.Globalization;
 
 namespace SassyMQ.Lib.RabbitMQ
 {
@@ -22,6 +24,38 @@ namespace SassyMQ.Lib.RabbitMQ
         {
             if (ReferenceEquals(value, null)) return String.Empty;
             else return value.ToString();
+        }
+
+        public static String ToPropperCase(this String value)
+        {
+            value = value.SafeToString();
+            if (value.Length <= 1) return value.ToUpper();
+            else return String.Join("", value.Substring(0, 1).ToUpper(), value.Substring(1));
+        }
+
+        public static String Pluralize(this String singlularText)
+        {
+            if (String.IsNullOrEmpty(singlularText)) return String.Empty;
+            var pluralizer = PluralizationService.CreateService(CultureInfo.CurrentCulture);
+            return pluralizer.Pluralize(singlularText.SafeToString());
+        }
+
+        public static bool IsSingular(this String singularCandidate)
+        {
+            if (String.IsNullOrEmpty(singularCandidate)) return false;
+            var pluralizer = PluralizationService.CreateService(CultureInfo.CurrentCulture);
+            return pluralizer.IsSingular(singularCandidate.SafeToString());
+        }
+
+        public static bool IsPlural(this String pluralCandidate) {
+            return !pluralCandidate.IsSingular();
+        }
+
+        public static String Singuluralize(this String pluralText)
+        {
+            if (String.IsNullOrEmpty(pluralText)) return String.Empty;
+            var pluralizer = PluralizationService.CreateService(CultureInfo.CurrentCulture);
+            return pluralizer.Singularize(pluralText.SafeToString());
         }
 
         public static void HandleInvoke<T>(this Form form, object sender, InvokeEventArgs<T> e)

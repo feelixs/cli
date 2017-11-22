@@ -97,6 +97,8 @@ namespace SassyMQ.SSOTME.Lib.RMQActors
         public List<String> CLIParams { get; set; }
         public String CLITranspiler { get; set; }
         public int CLIWaitTimeout { get; set; }
+        public List<FileType> FileTypes { get; set; }
+        public SSoTmeProject SSoTmeProject { get; internal set; }
 
         public void CleanFileSet()
         {
@@ -136,12 +138,23 @@ namespace SassyMQ.SSOTME.Lib.RMQActors
         public void SavePreviousFileSet(string fileSetXml)
         {
             var zfsFI = this.GetZFSFI();
+            if (!zfsFI.Directory.Exists) zfsFI.Directory.Create();
             File.WriteAllBytes(zfsFI.FullName, fileSetXml.Zip());
         }
 
         private FileInfo GetZFSFI()
         {
-            var zfsFileName = String.Format("{0}.zfs", this.Transpiler.LowerHyphenName);
+            var curDir = Environment.CurrentDirectory;
+            var relPath = curDir.Substring(this.SSoTmeProject.RootPath.Length);
+
+            var ssotmeDI = new DirectoryInfo(String.Format("{0}/.ssotme", this.SSoTmeProject.RootPath));
+            if (!ssotmeDI.Exists) {
+                ssotmeDI.Create();
+                ssotmeDI.Attributes = FileAttributes.Directory | FileAttributes.Hidden;
+            }
+
+            var zfsFileName = String.Format("{0}/{1}/{2}.zfs", ssotmeDI.FullName, relPath, this.Transpiler.LowerHyphenName, "", "");
+            //var zfsFileName = String.Format("{0}.zfs", this.Transpiler.LowerHyphenName);
             var zfsFI = new FileInfo(zfsFileName);
             return zfsFI;
         }

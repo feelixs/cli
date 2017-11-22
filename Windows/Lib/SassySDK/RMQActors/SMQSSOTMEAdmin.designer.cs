@@ -1,4 +1,4 @@
-﻿
+
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using RabbitMQ.Client.MessagePatterns;
@@ -8,7 +8,7 @@ using SassyMQ.Lib.RabbitMQ.Payload;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using SSoTme.OST.Lib.SassySDK;
+using SassyMQ.SSOTME.Lib;
 
 namespace SassyMQ.SSOTME.Lib.RMQActors
 {
@@ -19,7 +19,12 @@ namespace SassyMQ.SSOTME.Lib.RMQActors
             : base("ssotmeadmin.all", isAutoConnect)
         {
         }
-        // SSOTME - SSOTME
+        // SSoT - SSOTME
+        public virtual bool Connect(string virtualHost, string username, string password)
+        {
+            return base.Connect(virtualHost, username, password);
+        }   
+
         protected override void CheckRouting(SSOTMEPayload payload) 
         {
             this.CheckRouting(payload, false);
@@ -756,6 +761,25 @@ namespace SassyMQ.SSOTME.Lib.RMQActors
                 payload.IsDirectMessage = true;
                 this.SendMessage(payload, "Get All Platform Data - ",
                         "publicusermic", "ssotmecoordinator.general.publicuser.getallplatformdata", proxy.RoutingKey);
+             }
+
+ 
+        
+            public void PublicUserGetAllFileTypes(DMProxy proxy) {
+                this.PublicUserGetAllFileTypes(this.CreatePayload(), proxy);
+            }
+
+            public void PublicUserGetAllFileTypes(System.String content, DMProxy proxy) {
+                var payload = this.CreatePayload();
+                payload.Content = content;
+                this.PublicUserGetAllFileTypes(payload, proxy);
+            }
+
+            public void PublicUserGetAllFileTypes(SSOTMEPayload payload, DMProxy proxy)
+            {
+                payload.IsDirectMessage = true;
+                this.SendMessage(payload, "Get All File Types - ",
+                        "publicusermic", "ssotmecoordinator.general.publicuser.getallfiletypes", proxy.RoutingKey);
              }
 
  

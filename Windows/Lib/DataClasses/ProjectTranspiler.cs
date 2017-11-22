@@ -76,8 +76,12 @@ namespace SSoTme.OST.Lib.DataClasses
         {
             Console.WriteLine("CLEANING: " + this.RelativePath + ": " + this.Name);
             Console.WriteLine("CommandLine:> ssotme {0}", this.CommandLine);
-            Environment.CurrentDirectory = Path.Combine(project.RootPath, this.RelativePath.Trim("\\/".ToCharArray()));
-            String zsfFileName = String.Format("{0}.zfs", this.Name.ToTitle().ToLower().Replace(" ", "-"));
+            var di = new DirectoryInfo(Path.Combine(project.RootPath, this.RelativePath.Trim("\\/".ToCharArray())));
+            if (!di.Exists) di.Create();
+            Environment.CurrentDirectory = di.FullName;
+            var zfsDI = project.GetZFSDI(this.RelativePath);
+
+            String zsfFileName = String.Format("{0}/{1}.zfs", zfsDI.FullName, this.Name.ToTitle().ToLower().Replace(" ", "-"));
             var zfsFI = new FileInfo(zsfFileName);
             if (zfsFI.Exists)
             {

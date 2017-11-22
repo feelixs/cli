@@ -1,5 +1,5 @@
 <html><head><title>Command Line Arguments - summary</title></head><body><h1>Command Line Arguments</h1><p>
-    There are 28 command line arguments defined at this time.  They are:
+    There are 30 command line arguments defined at this time.  They are:
       
       <div style=""><h3>
         -help  or -h    [bool]
@@ -8,7 +8,7 @@
       </div></div><div style=""><h3>
         -init  [bool]
       </h3><div style="font-size: 0.8em; margin-top: -1em;">
-      Initialize the current folder as the root of an SSOT.me project
+      Initialize the current folder as the root of an SSOT.me project. An Optional parameter of force will create a sub-project.
       </div></div><div style=""><h3>
         -install  [bool]
       </h3><div style="font-size: 0.8em; margin-top: -1em;">
@@ -42,6 +42,18 @@
       </h3><div style="font-size: 0.8em; margin-top: -1em;">
       Output filename
       </div></div><div style=""><h3>
+        -clean  or -c    [bool]
+      </h3><div style="font-size: 0.8em; margin-top: -1em;">
+      Don't output the final results - instead, clean
+      </div></div><div style=""><h3>
+        -cleanAll  or -ca    [bool]
+      </h3><div style="font-size: 0.8em; margin-top: -1em;">
+      Don't output the final results - instead, clean
+      </div></div><div style=""><h3>
+        -skipClean  or -sc    [bool]
+      </h3><div style="font-size: 0.8em; margin-top: -1em;">
+      Don't clean the output before cooking
+      </div></div><div style=""><h3>
         -account  or -a    [string]
       </h3><div style="font-size: 0.8em; margin-top: -1em;">
       The account which the transpiler belongs to
@@ -64,7 +76,7 @@
       </div></div><div style=""><h3>
         -keyFile  or -f    [string]
       </h3><div style="font-size: 0.8em; margin-top: -1em;">
-      The keyfile to use.  By default it looks for ~/SSOT.me/ssotme.key.
+      The keyfile to use.  By default it looks for ~/.ssotme/ssotme.key. (or ~/.ssotme/ssotme.{username}.key)
       </div></div><div style=""><h3>
         -emailAddress  or -e    [string]
       </h3><div style="font-size: 0.8em; margin-top: -1em;">
@@ -74,21 +86,17 @@
       </h3><div style="font-size: 0.8em; margin-top: -1em;">
       The secret associated with that email address
       </div></div><div style=""><h3>
+        -addTranspiler  [string]
+      </h3><div style="font-size: 0.8em; margin-top: -1em;">
+      Add a transpiler to for the given account
+      </div></div><div style=""><h3>
+        -deleteTranspiler  [string]
+      </h3><div style="font-size: 0.8em; margin-top: -1em;">
+      Delete the transpiler with the given name
+      </div></div><div style=""><h3>
         -waitTimeout  or -w    [int]
       </h3><div style="font-size: 0.8em; margin-top: -1em;">
       The amount of time to wait for the command to continue
-      </div></div><div style=""><h3>
-        -clean  or -c    [bool]
-      </h3><div style="font-size: 0.8em; margin-top: -1em;">
-      Don't output the final results - instead, clean
-      </div></div><div style=""><h3>
-        -cleanAll  or -ca    [bool]
-      </h3><div style="font-size: 0.8em; margin-top: -1em;">
-      Don't output the final results - instead, clean
-      </div></div><div style=""><h3>
-        -skipClean  or -sc    [bool]
-      </h3><div style="font-size: 0.8em; margin-top: -1em;">
-      Don't clean the output before cooking
       </div></div><div style=""><h3>
         -runAs  or -ra    [string]
       </h3><div style="font-size: 0.8em; margin-top: -1em;">

@@ -1,4 +1,4 @@
-﻿
+
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using RabbitMQ.Client.MessagePatterns;
@@ -8,7 +8,7 @@ using SassyMQ.Lib.RabbitMQ.Payload;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using SSoTme.OST.Lib.SassySDK;
+using SassyMQ.SSOTME.Lib;
 
 namespace SassyMQ.SSOTME.Lib.RMQActors
 {
@@ -19,7 +19,12 @@ namespace SassyMQ.SSOTME.Lib.RMQActors
             : base("ssotmecoordinator.all", isAutoConnect)
         {
         }
-        // SSOTME - SSOTME
+        // SSoT - SSOTME
+        public virtual bool Connect(string virtualHost, string username, string password)
+        {
+            return base.Connect(virtualHost, username, password);
+        }   
+
         protected override void CheckRouting(SSOTMEPayload payload) 
         {
             this.CheckRouting(payload, false);
@@ -69,6 +74,12 @@ namespace SassyMQ.SSOTME.Lib.RMQActors
             else  if (payload.IsLexiconTerm(LexiconTermEnum.publicuser_getallplatformdata_ssotmecoordinator)) 
             {
                 this.OnPublicUserGetAllPlatformDataReceived(payload);
+                this.Reply(payload);
+            }
+        
+            else  if (payload.IsLexiconTerm(LexiconTermEnum.publicuser_getallfiletypes_ssotmecoordinator)) 
+            {
+                this.OnPublicUserGetAllFileTypesReceived(payload);
                 this.Reply(payload);
             }
         
@@ -338,6 +349,19 @@ namespace SassyMQ.SSOTME.Lib.RMQActors
 
             var plea = new PayloadEventArgs<SSOTMEPayload>(payload);
             this.Invoke(this.PublicUserGetAllPlatformDataReceived, plea);
+        }
+        
+        public event System.EventHandler<PayloadEventArgs<SSOTMEPayload>> PublicUserGetAllFileTypesReceived;
+        protected virtual void OnPublicUserGetAllFileTypesReceived(SSOTMEPayload payload)
+        {
+            if (IsDebugMode) 
+            {
+                System.Console.WriteLine("Get All File Types - ");
+                System.Console.WriteLine("payload: " + payload.SafeToString());
+            }
+
+            var plea = new PayloadEventArgs<SSOTMEPayload>(payload);
+            this.Invoke(this.PublicUserGetAllFileTypesReceived, plea);
         }
         
         public event System.EventHandler<PayloadEventArgs<SSOTMEPayload>> AccountHolderPingReceived;
@@ -1463,6 +1487,25 @@ namespace SassyMQ.SSOTME.Lib.RMQActors
                 payload.IsDirectMessage = true;
                 this.SendMessage(payload, "Get All Platform Data - ",
                         "publicusermic", "ssotmecoordinator.general.publicuser.getallplatformdata", proxy.RoutingKey);
+             }
+
+ 
+        
+            public void PublicUserGetAllFileTypes(DMProxy proxy) {
+                this.PublicUserGetAllFileTypes(this.CreatePayload(), proxy);
+            }
+
+            public void PublicUserGetAllFileTypes(System.String content, DMProxy proxy) {
+                var payload = this.CreatePayload();
+                payload.Content = content;
+                this.PublicUserGetAllFileTypes(payload, proxy);
+            }
+
+            public void PublicUserGetAllFileTypes(SSOTMEPayload payload, DMProxy proxy)
+            {
+                payload.IsDirectMessage = true;
+                this.SendMessage(payload, "Get All File Types - ",
+                        "publicusermic", "ssotmecoordinator.general.publicuser.getallfiletypes", proxy.RoutingKey);
              }
 
  

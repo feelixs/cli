@@ -99,7 +99,11 @@ namespace SSoTme.OST.Lib.CLIOptions
                 else if (this.init)
                 {
                     this.SuppressTranspile = true;
-                    SSoTmeProject.Init();
+                    
+                    var force = this.args.Count() == 2 &&
+                                this.args[1] == "force";
+
+                    SSoTmeProject.Init(force);
                 }
                 else if (parser.HasErrors)
                 {
@@ -267,7 +271,7 @@ namespace SSoTme.OST.Lib.CLIOptions
 
         internal void LoadOutputFiles(String lowerHyphoneName, String basePath, bool includeContents)
         {
-            var zfsFileName = String.Format("{0}.zfs", lowerHyphoneName);
+            var zfsFileName = String.Format("{0}/.ssotme/{1}{2}.zfs", this.SSoTmeProject.RootPath, basePath, lowerHyphoneName);
             var zfsFI = new FileInfo(zfsFileName);
             if (zfsFI.Exists)
             {
@@ -305,6 +309,7 @@ namespace SSoTme.OST.Lib.CLIOptions
                 result = AccountHolder.CreatePayload();
                 result.Exception = new TimeoutException("Timed out waiting for cook");
             }
+            result.SSoTmeProject = this.SSoTmeProject;
         }
 
         public string inputFileContents = "";

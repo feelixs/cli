@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SSoTme.OST.Lib.SassySDK
+namespace SassyMQ.SSOTME.Lib
 {
     public abstract class SSOTMEActorBase : SMQActorBase<SSOTMEPayload>
     {

@@ -51,7 +51,7 @@ to include the CLI.
 When you register for an account with [SSoT.me](http://ssot.me) - you will be emailed a secret key
 That file should be put in this location:
 
-*Key File:* `%USERPROFILE%\Documents\SSoT.me\ssotme.key`
+*Key File:* `%USERPROFILE%/.ssotme/ssotme.key`
 ```
 {
    "emailAddress": "you@domain.com",

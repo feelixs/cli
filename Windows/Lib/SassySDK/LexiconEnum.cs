@@ -24,6 +24,7 @@ namespace SassyMQ.SSOTME.Lib.RabbitMQ
         accountholder_requesttranspilerhost_ssotmecoordinator, 
         accountholder_updatetranspiler_ssotmecoordinator, 
         accountholder_updatetranspilerversion_ssotmecoordinator, 
+        publicuser_getallfiletypes_ssotmecoordinator, 
         publicuser_getallplatformdata_ssotmecoordinator, 
         publicuser_getalltranspilers_ssotmecoordinator, 
         publicuser_ping_ssotmecoordinator, 

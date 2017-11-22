@@ -22,7 +22,7 @@ Options
         [CommandLineOption(Description = "Show help about how to use the ssotme cli", MinOccurs = 0, Aliases = "h")]
         public bool help { get; set; }
         
-        [CommandLineOption(Description = "Initialize the current folder as the root of an SSOT.me project", MinOccurs = 0, Aliases = "")]
+        [CommandLineOption(Description = "Initialize the current folder as the root of an SSOT.me project. An Optional parameter of force will create a sub-project.", MinOccurs = 0, Aliases = "")]
         public bool init { get; set; }
         
         [CommandLineOption(Description = "Saves the current command into the SSoTmeProject file", MinOccurs = 0, Aliases = "")]
@@ -49,6 +49,15 @@ Options
         [CommandLineOption(Description = "Output filename", MinOccurs = 0, Aliases = "o")]
         public string output { get; set; }
         
+        [CommandLineOption(Description = "Don't output the final results - instead, clean", MinOccurs = 0, Aliases = "c")]
+        public bool clean { get; set; }
+        
+        [CommandLineOption(Description = "Don't output the final results - instead, clean", MinOccurs = 0, Aliases = "ca")]
+        public bool cleanAll { get; set; }
+        
+        [CommandLineOption(Description = "Don't clean the output before cooking", MinOccurs = 0, Aliases = "sc")]
+        public bool skipClean { get; set; }
+        
         [CommandLineOption(Description = "The account which the transpiler belongs to", MinOccurs = 0, Aliases = "a")]
         public string account { get; set; }
         
@@ -64,7 +73,7 @@ Options
         [CommandLineOption(Description = "REmoves a setting from the ssotme project", MinOccurs = 0, Aliases = "rs")]
         public List<string> removeSetting { get; set; }
         
-        [CommandLineOption(Description = "The keyfile to use.  By default it looks for ~/SSOT.me/ssotme.key.", MinOccurs = 0, Aliases = "f")]
+        [CommandLineOption(Description = "The keyfile to use.  By default it looks for ~/.ssotme/ssotme.key. (or ~/.ssotme/ssotme.{username}.key)", MinOccurs = 0, Aliases = "f")]
         public string keyFile { get; set; }
         
         [CommandLineOption(Description = "The email address for the account authenticating", MinOccurs = 0, Aliases = "e")]
@@ -73,17 +82,14 @@ Options
         [CommandLineOption(Description = "The secret associated with that email address", MinOccurs = 0, Aliases = "k")]
         public string secret { get; set; }
         
+        [CommandLineOption(Description = "Add a transpiler to for the given account", MinOccurs = 0, Aliases = "")]
+        public string addTranspiler { get; set; }
+        
+        [CommandLineOption(Description = "Delete the transpiler with the given name", MinOccurs = 0, Aliases = "")]
+        public string deleteTranspiler { get; set; }
+        
         [CommandLineOption(Description = "The amount of time to wait for the command to continue", MinOccurs = 0, Aliases = "w")]
         public int waitTimeout { get; set; }
-        
-        [CommandLineOption(Description = "Don't output the final results - instead, clean", MinOccurs = 0, Aliases = "c")]
-        public bool clean { get; set; }
-        
-        [CommandLineOption(Description = "Don't output the final results - instead, clean", MinOccurs = 0, Aliases = "ca")]
-        public bool cleanAll { get; set; }
-        
-        [CommandLineOption(Description = "Don't clean the output before cooking", MinOccurs = 0, Aliases = "sc")]
-        public bool skipClean { get; set; }
         
         [CommandLineOption(Description = "Run as this user (look for this user's key file)", MinOccurs = 0, Aliases = "ra")]
         public string runAs { get; set; }

@@ -64,6 +64,15 @@ namespace SSOTME.TestConApp.Root.TranspileHandlers
 
         }
 
+        public string GetFileName(string defaultFileName)
+        {
+            if (String.Equals(this.OutputFileName, "output.txt", StringComparison.OrdinalIgnoreCase))
+            {
+                this.OutputFileName = defaultFileName;
+                return defaultFileName;
+            }
+            else return this.OutputFileName;
+        }
 
         public byte[] GetSingleBinaryFileContents()
         {
@@ -92,6 +101,26 @@ namespace SSOTME.TestConApp.Root.TranspileHandlers
 
             return page;
         }
+
+        public SimpleHtmlPage DownloadGDocAsTextFile(string url, bool trimAfterHyphenInName = true)
+        {
+            url = url.SafeToString();
+            SimpleHtmlPage page = new SimpleHtmlPage();
+            var wc = new WebClient();
+
+            if (url.Contains("/edit")) url = url.Substring(0, url.IndexOf("/edit")) + "/export?format=txt";
+
+            page.HtmlContent = wc.DownloadString(url);
+
+            var contentDisposition = wc.ResponseHeaders["content-disposition"].SafeToString();
+            var matches = Regex.Match(contentDisposition, "filename=\\\"([a-z,A-Z,0-9,-]*).*");
+            page.Title = matches.Groups[1].Value;
+
+            if (page.Title.Contains("-")) page.Title = page.Title.Substring(page.Title.IndexOf("-") + 1);
+
+            return page;
+        }
+
 
         public FileSet ProcessXslt(string xml, string xslt)
         {
@@ -519,7 +548,7 @@ namespace SSOTME.TestConApp.Root.TranspileHandlers
             else return String.Empty;
         }
 
-    
+
     }
 }
 

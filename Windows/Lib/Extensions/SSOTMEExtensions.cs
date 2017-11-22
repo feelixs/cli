@@ -23,6 +23,8 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Web;
 using System.Xml;
 using System.Xml.Linq;
@@ -73,6 +75,7 @@ namespace SSoTme.OST.Lib.Extensions
             return fs;
         }
 
+
         public static String ToName(this string nameCandidate)
         {
             string name = nameCandidate.SafeToString();
@@ -106,6 +109,11 @@ namespace SSoTme.OST.Lib.Extensions
             ms.Position = 0;
             var fileSetXml = new StreamReader(ms).ReadToEnd();
             return fileSetXml;
+        }
+
+        public static void WriteTo(this FileSet fs, DirectoryInfo rootDirInfo)
+        {
+            fs.ToXml().SplitFileSetXml(false, rootDirInfo.FullName);
         }
 
 
@@ -153,7 +161,14 @@ namespace SSoTme.OST.Lib.Extensions
                 {
                     CleanEmptyFolders(diChildDir);
                 }
-                if (!di.GetDirectories().Any() && !di.GetFiles().Any()) di.Delete();
+                if (!di.GetDirectories().Any() && !di.GetFiles().Any())
+                {
+                    Task.Factory.StartNew(() =>
+                    {
+                        Thread.Sleep(150);
+                        di.Delete();
+                    });
+                }
             }
         }
 

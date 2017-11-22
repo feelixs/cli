@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 using System.Linq;
 using System.Collections.Generic;
@@ -12,7 +12,7 @@ namespace SassyMQ.SSOTME.Lib.RabbitMQ
     public partial class Lexicon  : IEnumerable<LexiconTerm>
     {
         public static Lexicon Terms = new Lexicon();
-        protected static Dictionary<LexiconTermEnum, LexiconTerm> TermsByKey { get; set; }
+        protected static new Dictionary<LexiconTermEnum, LexiconTerm> TermsByKey { get; set; }
 
         public LexiconTerm this[LexiconTermEnum termKey]
         {
@@ -76,6 +76,14 @@ namespace SassyMQ.SSOTME.Lib.RabbitMQ
                 Term = LexiconTermEnum.publicuser_getallplatformdata_ssotmecoordinator,
                 Sender = "publicuser",
                 Verb = "getallplatformdata",
+                Receiver = "ssotmecoordinator",
+                Category = "general"
+            };
+            
+            Lexicon.TermsByKey[LexiconTermEnum.publicuser_getallfiletypes_ssotmecoordinator] = new LexiconTerm() {
+                Term = LexiconTermEnum.publicuser_getallfiletypes_ssotmecoordinator,
+                Sender = "publicuser",
+                Verb = "getallfiletypes",
                 Receiver = "ssotmecoordinator",
                 Category = "general"
             };
