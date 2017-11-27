@@ -85,7 +85,6 @@ namespace SSoTme.OST.Lib.CLIOptions
                     this.parameters.Add(String.Format("param{0}={1}", i + 1, additionalArgs[i]));
                 }
 
-
                 if (this.help)
                 {
 
@@ -99,7 +98,7 @@ namespace SSoTme.OST.Lib.CLIOptions
                 else if (this.init)
                 {
                     this.SuppressTranspile = true;
-                    
+
                     var force = this.args.Count() == 2 &&
                                 this.args[1] == "force";
 
@@ -117,6 +116,14 @@ namespace SSoTme.OST.Lib.CLIOptions
                 else
                 {
                     this.SSoTmeProject = SSoTmeProject.LoadOrFail(new DirectoryInfo(Environment.CurrentDirectory));
+
+                    foreach (var projectSetting in this.SSoTmeProject.ProjectSettings)
+                    {
+                        if (!this.parameters.Any(anyParam => anyParam.StartsWith(String.Format("{0}=", projectSetting.Name))))
+                        {
+                            this.parameters.Add(String.Format("{0}={1}", projectSetting.Name, projectSetting.Value));
+                        }
+                    }
 
                     this.LoadInputFiles();
 
@@ -271,7 +278,8 @@ namespace SSoTme.OST.Lib.CLIOptions
 
         internal void LoadOutputFiles(String lowerHyphoneName, String basePath, bool includeContents)
         {
-            var zfsFileName = String.Format("{0}/.ssotme/{1}{2}.zfs", this.SSoTmeProject.RootPath, basePath, lowerHyphoneName);
+            var rootPath = ReferenceEquals(this.SSoTmeProject, null) ? Environment.CurrentDirectory : this.SSoTmeProject.RootPath;
+            var zfsFileName = String.Format("{0}/.ssotme/{1}{2}.zfs", rootPath, basePath, lowerHyphoneName);
             var zfsFI = new FileInfo(zfsFileName);
             if (zfsFI.Exists)
             {
