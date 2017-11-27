@@ -127,7 +127,9 @@ namespace SSoTme.OST.Lib.DataClasses
 
             if (!ReferenceEquals(this.MatchedTranspiler, null))
             {
+                cliHandler.SSoTmeProject = project;
                 cliHandler.LoadOutputFiles(this.MatchedTranspiler.LowerHyphenName, this.GetProjectRelativePath(project), includeContents);
+                cliHandler.SSoTmeProject = null;
             }
             this.CLIHandler = cliHandler;
         }

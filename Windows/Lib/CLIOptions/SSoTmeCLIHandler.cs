@@ -279,7 +279,10 @@ namespace SSoTme.OST.Lib.CLIOptions
         internal void LoadOutputFiles(String lowerHyphoneName, String basePath, bool includeContents)
         {
             var rootPath = ReferenceEquals(this.SSoTmeProject, null) ? Environment.CurrentDirectory : this.SSoTmeProject.RootPath;
-            var zfsFileName = String.Format("{0}/.ssotme/{1}{2}.zfs", rootPath, basePath, lowerHyphoneName);
+            var zfsRelativePath = String.Format("{0}.zfs", lowerHyphoneName);
+            basePath = basePath.Trim("\\/".ToCharArray());
+            var zfsFileName = Path.Combine(rootPath, ".ssotme", basePath, zfsRelativePath);
+
             var zfsFI = new FileInfo(zfsFileName);
             if (zfsFI.Exists)
             {

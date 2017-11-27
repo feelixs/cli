@@ -165,8 +165,7 @@ namespace SSoTme.OST.Lib.Extensions
                 {
                     Task.Factory.StartNew(() =>
                     {
-                        Thread.Sleep(2500);
-
+                        Thread.Sleep(150);
                         di.Delete();
                     });
                 }
@@ -424,18 +423,21 @@ namespace SSoTme.OST.Lib.Extensions
 
         private static DataTable LoadCSV(FileInfo theFile)
         {
-            string sqlString = "Select * FROM [" + theFile.Name + "];";
-            string conStr = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source="
-                + theFile.DirectoryName + ";" + "Extended Properties='text;HDR=YES;CharacterSet=65001;'";
             DataTable theCSV = new DataTable();
-
-            using (OleDbConnection conn = new OleDbConnection(conStr))
+            if (theFile.Length > 0)
             {
-                using (OleDbCommand comm = new OleDbCommand(sqlString, conn))
+                string sqlString = "Select * FROM [" + theFile.Name + "];";
+                string conStr = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source="
+                    + theFile.DirectoryName + ";" + "Extended Properties='text;HDR=YES;CharacterSet=65001;'";
+
+                using (OleDbConnection conn = new OleDbConnection(conStr))
                 {
-                    using (OleDbDataAdapter adapter = new OleDbDataAdapter(comm))
+                    using (OleDbCommand comm = new OleDbCommand(sqlString, conn))
                     {
-                        adapter.Fill(theCSV);
+                        using (OleDbDataAdapter adapter = new OleDbDataAdapter(comm))
+                        {
+                            adapter.Fill(theCSV);
+                        }
                     }
                 }
             }
