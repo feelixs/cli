@@ -1,7 +1,10 @@
 using System;
 using System.ComponentModel;
 using Newtonsoft.Json;
-                        
+using System.Collections.Generic;
+using System.Linq;
+using CoreLibrary.Extensions;
+
 namespace SSoTme.OST.Lib.DataClasses
 {                            
     public partial class TranspilerInputHint
@@ -13,6 +16,7 @@ namespace SSoTme.OST.Lib.DataClasses
             
 
         }
+
         
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TranspilerInputHintId")]
         public Guid TranspilerInputHintId { get; set; }
@@ -29,6 +33,21 @@ namespace SSoTme.OST.Lib.DataClasses
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "SortOrder")]
         public Int32 SortOrder { get; set; }
     
+
+        
+
+        
+
+        private static string CreateTranspilerInputHintWhere(IEnumerable<TranspilerInputHint> transpilerInputHints)
+        {
+            if (!transpilerInputHints.Any()) return "1=1";
+            else 
+            {
+                var idList = transpilerInputHints.Select(selectTranspilerInputHint => String.Format("'{0}'", selectTranspilerInputHint.TranspilerInputHintId));
+                var csIdList = String.Join(",", idList);
+                return String.Format("TranspilerInputHintId in ({0})", csIdList);
+            }
+        }
         
     }
 }

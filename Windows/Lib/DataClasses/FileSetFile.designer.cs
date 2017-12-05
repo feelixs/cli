@@ -1,7 +1,10 @@
 using System;
 using System.ComponentModel;
 using Newtonsoft.Json;
-                        
+using System.Collections.Generic;
+using System.Linq;
+using CoreLibrary.Extensions;
+
 namespace SSoTme.OST.Lib.DataClasses
 {                            
     public partial class FileSetFile
@@ -13,6 +16,7 @@ namespace SSoTme.OST.Lib.DataClasses
             
 
         }
+
         
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "FileSetFileId")]
         public Guid FileSetFileId { get; set; }
@@ -44,6 +48,21 @@ namespace SSoTme.OST.Lib.DataClasses
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "SkipClean")]
         public Boolean SkipClean { get; set; }
     
+
+        
+
+        
+
+        private static string CreateFileSetFileWhere(IEnumerable<FileSetFile> fileSetFiles)
+        {
+            if (!fileSetFiles.Any()) return "1=1";
+            else 
+            {
+                var idList = fileSetFiles.Select(selectFileSetFile => String.Format("'{0}'", selectFileSetFile.FileSetFileId));
+                var csIdList = String.Join(",", idList);
+                return String.Format("FileSetFileId in ({0})", csIdList);
+            }
+        }
         
     }
 }

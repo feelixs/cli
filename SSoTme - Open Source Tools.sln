@@ -6,6 +6,7 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{CB9A8482-5981-467D-9BAF-D9A5D758BECE}"
 	ProjectSection(SolutionItems) = preProject
 		Windows\CLI\AddCLIToExplorer.reg = Windows\CLI\AddCLIToExplorer.reg
+		docs\CreateSSoTmeDocs.xslt = docs\CreateSSoTmeDocs.xslt
 		README.md = README.md
 		SSoTmeProject.json = SSoTmeProject.json
 	EndProjectSection

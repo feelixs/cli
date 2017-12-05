@@ -1,7 +1,10 @@
 using System;
 using System.ComponentModel;
 using Newtonsoft.Json;
-                        
+using System.Collections.Generic;
+using System.Linq;
+using CoreLibrary.Extensions;
+
 namespace SSoTme.OST.Lib.DataClasses
 {                            
     public partial class TranspileOutputFile
@@ -13,6 +16,7 @@ namespace SSoTme.OST.Lib.DataClasses
             
 
         }
+
         
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TranspileOutputFileId")]
         public Guid TranspileOutputFileId { get; set; }
@@ -23,6 +27,21 @@ namespace SSoTme.OST.Lib.DataClasses
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TranspileFileId")]
         public Guid TranspileFileId { get; set; }
     
+
+        
+
+        
+
+        private static string CreateTranspileOutputFileWhere(IEnumerable<TranspileOutputFile> transpileOutputFiles)
+        {
+            if (!transpileOutputFiles.Any()) return "1=1";
+            else 
+            {
+                var idList = transpileOutputFiles.Select(selectTranspileOutputFile => String.Format("'{0}'", selectTranspileOutputFile.TranspileOutputFileId));
+                var csIdList = String.Join(",", idList);
+                return String.Format("TranspileOutputFileId in ({0})", csIdList);
+            }
+        }
         
     }
 }

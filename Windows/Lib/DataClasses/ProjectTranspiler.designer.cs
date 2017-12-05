@@ -1,7 +1,10 @@
 using System;
 using System.ComponentModel;
 using Newtonsoft.Json;
-                        
+using System.Collections.Generic;
+using System.Linq;
+using CoreLibrary.Extensions;
+
 namespace SSoTme.OST.Lib.DataClasses
 {                            
     public partial class ProjectTranspiler
@@ -13,6 +16,7 @@ namespace SSoTme.OST.Lib.DataClasses
             
 
         }
+
         
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ProjectTranspilerId")]
         public Guid ProjectTranspilerId { get; set; }
@@ -41,6 +45,21 @@ namespace SSoTme.OST.Lib.DataClasses
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "SortOrder")]
         public Int32 SortOrder { get; set; }
     
+
+        
+
+        
+
+        private static string CreateProjectTranspilerWhere(IEnumerable<ProjectTranspiler> projectTranspilers)
+        {
+            if (!projectTranspilers.Any()) return "1=1";
+            else 
+            {
+                var idList = projectTranspilers.Select(selectProjectTranspiler => String.Format("'{0}'", selectProjectTranspiler.ProjectTranspilerId));
+                var csIdList = String.Join(",", idList);
+                return String.Format("ProjectTranspilerId in ({0})", csIdList);
+            }
+        }
         
     }
 }

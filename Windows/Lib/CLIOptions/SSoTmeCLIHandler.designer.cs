@@ -109,5 +109,8 @@ Options
         [CommandLineOption(Description = "Include disabled tools in th ebuild", MinOccurs = 0, Aliases = "id")]
         public bool includeDisabled { get; set; }
         
+        [CommandLineOption(Description = "Name of the project (optional parameter to the init command)", MinOccurs = 0, Aliases = "name")]
+        public string projectName { get; set; }
+        
     }
 }
