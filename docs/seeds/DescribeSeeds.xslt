@@ -3,7 +3,6 @@
     xmlns:msxsl="urn:schemas-microsoft-com:xslt" exclude-result-prefixes="msxsl"
 >
     <xsl:output method="xml" indent="yes"/>
-    <xsl:param name="project-name" select="'Single Source of Truth - SSoT.me'" />
 
     <xsl:param name="output-filename" select="'output.txt'" />
 
@@ -18,25 +17,20 @@
             <FileSetFiles>
                 <FileSetFile>
                     <RelativePath>
-                        <xsl:text>index.md</xsl:text>
+                        <xsl:text>../seeds.md</xsl:text>
                     </RelativePath>
-                    <xsl:element name="FileContents" xml:space="preserve"># <xsl:value-of select="$project-name"/> Project Documentation
+                    <xsl:element name="FileContents" xml:space="preserve"># SSoT.me offers the following <xsl:value-of select="count(//Seed)"/> seeds.
 
-This documentation provides background on these open source tools.
+### [Home](./)
 
+<xsl:for-each select="//Seed">
+## <xsl:value-of select="DisplayName"/>
 
-# SSoT.me Schema
-The SSoT.me infrastructure is all based on the following (relatively) [simple schema](./schema/SinglePageDocs.html).
+[Github Repo](https://github.com/SSoTme/<xsl:value-of select="RepoName"/>)
 
+<xsl:value-of select="Description"/>
 
-# Helpful Links
-
-[Github Repo](https://github.com/SSoTme/SSoTme-Open-Source-Tools)
-[Github Pages Docs](https://ssotme.github.io/SSoTme-Open-Source-Tools/)
-[SSoT.me Schema](https://ssotme.github.io/SSoTme-Open-Source-Tools/schema/SinglePageDocs.html)
-
-# Contact
-Contact EJ Alexandra for further details.
+</xsl:for-each>
 </xsl:element>
                 </FileSetFile>
             </FileSetFiles>

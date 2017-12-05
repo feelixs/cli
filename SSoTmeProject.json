@@ -262,6 +262,92 @@
       "Name": "XmlXsltTransform",
       "RelativePath": "/docs",
       "CommandLine": "xml-xslt-transform -i ..\\ODXML\\DataSchema.odxml -i CreateSSoTmeDocs.xslt"
+    },
+    {
+      "MatchedTranspiler": {
+        "TranspilerId": "057f66f1-86b0-43c3-ad19-b1b0bb2027d2",
+        "AccountHolderId": "1e876e4f-d63b-4698-bd68-3bc27876e41e",
+        "Name": "PublicGSheetToXml",
+        "DisplayName": "Public G Sheet To Xml",
+        "Description": "Downloads a public google spreadsheet as an XML file.  ",
+        "CreatedOn": "2017-09-21T17:56:38.527",
+        "IsActive": true,
+        "CurrentRoutingKey": "amq.gen-jWBa32Jd3OAy32tcP7I0iA",
+        "LowerName": "publicgsheettoxml",
+        "UpperName": "PUBLICGSHEETTOXML",
+        "LowerHyphenName": "public-g-sheet-to-xml",
+        "ReadMeMD": "Since XML is easily converted into many other formats, this provides a simple hop from a GSheet (which is easily shared among even a distributed team), into a format that can easily drive a SSoT.me pipeline.",
+        "InputDescriptionMD": "The URL to a google spreadsheet.",
+        "OutputDescriptionMD": "An xml file with the contents of the GSheet.",
+        "ExampleMD": "ssotme public-gsheet-to-xml https://yourgsheeturl",
+        "InputFileTypeId": "3c31d7c2-5c85-434b-a5a0-a5bd1dbc0a96",
+        "OutputFileTypeId": "f1b92a2a-3f83-4000-9b37-57f920e14419",
+        "UsageCount": 793,
+        "Category": "type-conversion",
+        "IsRecommended": true,
+        "TranspileRequests": [],
+        "TranspilerInstances": [],
+        "TranspilerVersions": [
+          {
+            "TranspilerVersionId": "66024602-c8b0-4b43-8410-2ffbf1fd24c4",
+            "TranspilerId": "057f66f1-86b0-43c3-ad19-b1b0bb2027d2",
+            "Name": "v1",
+            "CreatedOn": "2017-09-21T17:56:59.367",
+            "IsActive": true,
+            "TranspilerFileTypeId_TranspilerInputHints": [],
+            "TranspilerInstances": [],
+            "ReplacedByTranspilerVersionId_TranspilerVersions": []
+          }
+        ]
+      },
+      "CLIHandler": null,
+      "ProjectTranspilerId": "91e64c8e-4546-4566-a421-f50161d0649a",
+      "Name": "PublicGSheetToXml",
+      "RelativePath": "/docs/seeds",
+      "CommandLine": "public-gsheet-to-xml https://docs.google.com/spreadsheets/d/1v3pAQu6h3FYAaNqAmcL6j38ohckACRUSOVC33okFwI0/edit#gid=2133303844 -o Seeds.xml"
+    },
+    {
+      "MatchedTranspiler": {
+        "TranspilerId": "4b713f03-1d9f-42f2-b02f-e3cdbd237bb3",
+        "AccountHolderId": "1e876e4f-d63b-4698-bd68-3bc27876e41e",
+        "Name": "XmlXsltTransform",
+        "DisplayName": "Xml Xslt Transform",
+        "Description": "Given an Xml and Xslt file, will process and \"split\" a resulting fileset.",
+        "CreatedOn": "2017-08-30T15:45:09.907",
+        "IsActive": true,
+        "CurrentRoutingKey": "amq.gen-pwRUdyqwEq8fPN8gkK7ADg",
+        "LowerName": "xmlxslttransform",
+        "UpperName": "XMLXSLTTRANSFORM",
+        "LowerHyphenName": "xml-xslt-transform",
+        "ReadMeMD": "The tool processes the first text file it finds (which is presumed to be in xml format), with the first Xslt file provided, and includes any parameters that are passed to ssotme as well.\r\n\r\nThe output is expected to be a FileSet Xml blob with the results of the transform.",
+        "InputDescriptionMD": "At least 1 input Xml file, An Xslt file to use for the Transform operation and any additional parameters that the Xslt file uses for it's transpiling functionality.  These could be options, values, namespaces, etc.",
+        "OutputDescriptionMD": "A fileset with the result of the Xslt transform, usually including at least 1 or more files.  The example command might produce an HTML Document that describes (in english) the contents of the Xml file.  Essentially a \"report\" about the xml file. ",
+        "ExampleMD": "ssotme -install xml-xslt-transform -i MyData.xml -i CreateDocs.xslt",
+        "InputFileTypeId": "f1b92a2a-3f83-4000-9b37-57f920e14419",
+        "OutputFileTypeId": "952e47eb-3448-4627-8dc4-93dab494c957",
+        "UsageCount": 4561,
+        "Category": "type-conversion",
+        "IsRecommended": true,
+        "TranspileRequests": [],
+        "TranspilerInstances": [],
+        "TranspilerVersions": [
+          {
+            "TranspilerVersionId": "7e941388-752b-4b0f-9631-939b790be10f",
+            "TranspilerId": "4b713f03-1d9f-42f2-b02f-e3cdbd237bb3",
+            "Name": "v1",
+            "CreatedOn": "2017-08-30T15:45:10.653",
+            "IsActive": true,
+            "TranspilerFileTypeId_TranspilerInputHints": [],
+            "TranspilerInstances": [],
+            "ReplacedByTranspilerVersionId_TranspilerVersions": []
+          }
+        ]
+      },
+      "CLIHandler": null,
+      "ProjectTranspilerId": "c1a92ab2-7ce3-4825-b35f-d533bde9db88",
+      "Name": "XmlXsltTransform",
+      "RelativePath": "/docs/seeds",
+      "CommandLine": "xml-xslt-transform -i .\\Seeds.xml -i DescribeSeeds.xslt"
     }
   ]
 }
