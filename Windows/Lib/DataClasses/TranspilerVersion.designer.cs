@@ -50,42 +50,12 @@ namespace SSoTme.OST.Lib.DataClasses
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TranspilerFileTypeId_TranspilerInputHints")]
         public BindingList<TranspilerInputHint> TranspilerFileTypeId_TranspilerInputHints { get; set; }
             
-        /// <summary>
-        /// Find the related TranspilerInputHints (from the list provided) and attach them locally to the TranspilerInputHints list.
-        /// </summary>
-        public void LoadTranspilerInputHints(IEnumerable<TranspilerInputHint> transpilerInputHints)
-        {
-            transpilerInputHints.Where(whereTranspilerInputHint => whereTranspilerInputHint.TranspilerFileTypeId == this.TranspilerVersionId)
-                    .ToList()
-                    .ForEach(feTranspilerInputHint => this.TranspilerFileTypeId_TranspilerInputHints.Add(feTranspilerInputHint));
-        }
-        
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TranspilerInstances")]
         public BindingList<TranspilerInstance> TranspilerInstances { get; set; }
             
-        /// <summary>
-        /// Find the related TranspilerInstances (from the list provided) and attach them locally to the TranspilerInstances list.
-        /// </summary>
-        public void LoadTranspilerInstances(IEnumerable<TranspilerInstance> transpilerInstances)
-        {
-            transpilerInstances.Where(whereTranspilerInstance => whereTranspilerInstance.TranspilerVersionId == this.TranspilerVersionId)
-                    .ToList()
-                    .ForEach(feTranspilerInstance => this.TranspilerInstances.Add(feTranspilerInstance));
-        }
-        
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ReplacedByTranspilerVersionId_TranspilerVersions")]
         public BindingList<TranspilerVersion> ReplacedByTranspilerVersionId_TranspilerVersions { get; set; }
             
-        /// <summary>
-        /// Find the related TranspilerVersions (from the list provided) and attach them locally to the TranspilerVersions list.
-        /// </summary>
-        public void LoadTranspilerVersions(IEnumerable<TranspilerVersion> transpilerVersions)
-        {
-            transpilerVersions.Where(whereTranspilerVersion => whereTranspilerVersion.ReplacedByTranspilerVersionId == this.TranspilerVersionId)
-                    .ToList()
-                    .ForEach(feTranspilerVersion => this.ReplacedByTranspilerVersionId_TranspilerVersions.Add(feTranspilerVersion));
-        }
-        
 
         
 

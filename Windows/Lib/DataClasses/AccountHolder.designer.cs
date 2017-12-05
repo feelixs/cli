@@ -50,42 +50,12 @@ namespace SSoTme.OST.Lib.DataClasses
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "Transpilers")]
         public BindingList<Transpiler> Transpilers { get; set; }
             
-        /// <summary>
-        /// Find the related Transpilers (from the list provided) and attach them locally to the Transpilers list.
-        /// </summary>
-        public void LoadTranspilers(IEnumerable<Transpiler> transpilers)
-        {
-            transpilers.Where(whereTranspiler => whereTranspiler.AccountHolderId == this.AccountHolderId)
-                    .ToList()
-                    .ForEach(feTranspiler => this.Transpilers.Add(feTranspiler));
-        }
-        
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TranspileRequests")]
         public BindingList<TranspileRequest> TranspileRequests { get; set; }
             
-        /// <summary>
-        /// Find the related TranspileRequests (from the list provided) and attach them locally to the TranspileRequests list.
-        /// </summary>
-        public void LoadTranspileRequests(IEnumerable<TranspileRequest> transpileRequests)
-        {
-            transpileRequests.Where(whereTranspileRequest => whereTranspileRequest.AccountHolderId == this.AccountHolderId)
-                    .ToList()
-                    .ForEach(feTranspileRequest => this.TranspileRequests.Add(feTranspileRequest));
-        }
-        
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TranspilerHosts")]
         public BindingList<TranspilerHost> TranspilerHosts { get; set; }
             
-        /// <summary>
-        /// Find the related TranspilerHosts (from the list provided) and attach them locally to the TranspilerHosts list.
-        /// </summary>
-        public void LoadTranspilerHosts(IEnumerable<TranspilerHost> transpilerHosts)
-        {
-            transpilerHosts.Where(whereTranspilerHost => whereTranspilerHost.AccountHolderId == this.AccountHolderId)
-                    .ToList()
-                    .ForEach(feTranspilerHost => this.TranspilerHosts.Add(feTranspilerHost));
-        }
-        
 
         
 

@@ -31,16 +31,6 @@ namespace SSoTme.OST.Lib.DataClasses
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "FileSetFiles")]
         public BindingList<FileSetFile> FileSetFiles { get; set; }
             
-        /// <summary>
-        /// Find the related FileSetFiles (from the list provided) and attach them locally to the FileSetFiles list.
-        /// </summary>
-        public void LoadFileSetFiles(IEnumerable<FileSetFile> fileSetFiles)
-        {
-            fileSetFiles.Where(whereFileSetFile => whereFileSetFile.FileSetId == this.FileSetId)
-                    .ToList()
-                    .ForEach(feFileSetFile => this.FileSetFiles.Add(feFileSetFile));
-        }
-        
 
         
 

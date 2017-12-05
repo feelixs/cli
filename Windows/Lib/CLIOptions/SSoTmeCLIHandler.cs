@@ -69,6 +69,8 @@ namespace SSoTme.OST.Lib.CLIOptions
 
                 this.HasRemainingArguments = parser.RemainingArguments.Any();
 
+                bool continueToLoad = false;
+
                 if (String.IsNullOrEmpty(this.transpiler))
                 {
                     this.transpiler = parser.RemainingArguments.FirstOrDefault().SafeToString();
@@ -97,12 +99,13 @@ namespace SSoTme.OST.Lib.CLIOptions
                 }
                 else if (this.init)
                 {
-                    this.SuppressTranspile = true;
-
                     var force = this.args.Count() == 2 &&
                                 this.args[1] == "force";
 
-                    SSoTmeProject.Init(force);
+                    SSoTmeProject.Init(force, this.projectName);
+
+                    continueToLoad = true;
+                    this.build = true;
                 }
                 else if (parser.HasErrors)
                 {
@@ -113,7 +116,9 @@ namespace SSoTme.OST.Lib.CLIOptions
                     Console.ForegroundColor = curColor;
                     this.SuppressTranspile = true;
                 }
-                else
+                else continueToLoad = true;
+
+                if (continueToLoad)
                 {
                     this.SSoTmeProject = SSoTmeProject.LoadOrFail(new DirectoryInfo(Environment.CurrentDirectory));
 
@@ -174,6 +179,7 @@ namespace SSoTme.OST.Lib.CLIOptions
                     {
                         this.SSoTmeProject.AddSetting(setting);
                     }
+
                     this.SSoTmeProject.Save();
                 }
                 else if (this.removeSetting.Any())

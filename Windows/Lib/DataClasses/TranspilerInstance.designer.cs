@@ -43,16 +43,6 @@ namespace SSoTme.OST.Lib.DataClasses
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TranspileRequests")]
         public BindingList<TranspileRequest> TranspileRequests { get; set; }
             
-        /// <summary>
-        /// Find the related TranspileRequests (from the list provided) and attach them locally to the TranspileRequests list.
-        /// </summary>
-        public void LoadTranspileRequests(IEnumerable<TranspileRequest> transpileRequests)
-        {
-            transpileRequests.Where(whereTranspileRequest => whereTranspileRequest.TranspilerInstanceId == this.TranspilerInstanceId)
-                    .ToList()
-                    .ForEach(feTranspileRequest => this.TranspileRequests.Add(feTranspileRequest));
-        }
-        
 
         
 

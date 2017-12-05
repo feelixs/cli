@@ -42,29 +42,9 @@ namespace SSoTme.OST.Lib.DataClasses
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ProjectSettings")]
         public BindingList<ProjectSetting> ProjectSettings { get; set; }
             
-        /// <summary>
-        /// Find the related ProjectSettings (from the list provided) and attach them locally to the ProjectSettings list.
-        /// </summary>
-        public void LoadProjectSettings(IEnumerable<ProjectSetting> projectSettings)
-        {
-            projectSettings.Where(whereProjectSetting => whereProjectSetting.SSoTmeProjectId == this.SSoTmeProjectId)
-                    .ToList()
-                    .ForEach(feProjectSetting => this.ProjectSettings.Add(feProjectSetting));
-        }
-        
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ProjectTranspilers")]
         public BindingList<ProjectTranspiler> ProjectTranspilers { get; set; }
             
-        /// <summary>
-        /// Find the related ProjectTranspilers (from the list provided) and attach them locally to the ProjectTranspilers list.
-        /// </summary>
-        public void LoadProjectTranspilers(IEnumerable<ProjectTranspiler> projectTranspilers)
-        {
-            projectTranspilers.Where(whereProjectTranspiler => whereProjectTranspiler.SSoTmeProjectId == this.SSoTmeProjectId)
-                    .ToList()
-                    .ForEach(feProjectTranspiler => this.ProjectTranspilers.Add(feProjectTranspiler));
-        }
-        
 
         
 

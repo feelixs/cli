@@ -95,42 +95,12 @@ namespace SSoTme.OST.Lib.DataClasses
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TranspileRequests")]
         public BindingList<TranspileRequest> TranspileRequests { get; set; }
             
-        /// <summary>
-        /// Find the related TranspileRequests (from the list provided) and attach them locally to the TranspileRequests list.
-        /// </summary>
-        public void LoadTranspileRequests(IEnumerable<TranspileRequest> transpileRequests)
-        {
-            transpileRequests.Where(whereTranspileRequest => whereTranspileRequest.TranspilerId == this.TranspilerId)
-                    .ToList()
-                    .ForEach(feTranspileRequest => this.TranspileRequests.Add(feTranspileRequest));
-        }
-        
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TranspilerInstances")]
         public BindingList<TranspilerInstance> TranspilerInstances { get; set; }
             
-        /// <summary>
-        /// Find the related TranspilerInstances (from the list provided) and attach them locally to the TranspilerInstances list.
-        /// </summary>
-        public void LoadTranspilerInstances(IEnumerable<TranspilerInstance> transpilerInstances)
-        {
-            transpilerInstances.Where(whereTranspilerInstance => whereTranspilerInstance.TranspilerId == this.TranspilerId)
-                    .ToList()
-                    .ForEach(feTranspilerInstance => this.TranspilerInstances.Add(feTranspilerInstance));
-        }
-        
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TranspilerVersions")]
         public BindingList<TranspilerVersion> TranspilerVersions { get; set; }
             
-        /// <summary>
-        /// Find the related TranspilerVersions (from the list provided) and attach them locally to the TranspilerVersions list.
-        /// </summary>
-        public void LoadTranspilerVersions(IEnumerable<TranspilerVersion> transpilerVersions)
-        {
-            transpilerVersions.Where(whereTranspilerVersion => whereTranspilerVersion.TranspilerId == this.TranspilerId)
-                    .ToList()
-                    .ForEach(feTranspilerVersion => this.TranspilerVersions.Add(feTranspilerVersion));
-        }
-        
 
         
 

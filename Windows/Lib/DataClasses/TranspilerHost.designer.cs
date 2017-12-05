@@ -52,16 +52,6 @@ namespace SSoTme.OST.Lib.DataClasses
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TranspilerInstances")]
         public BindingList<TranspilerInstance> TranspilerInstances { get; set; }
             
-        /// <summary>
-        /// Find the related TranspilerInstances (from the list provided) and attach them locally to the TranspilerInstances list.
-        /// </summary>
-        public void LoadTranspilerInstances(IEnumerable<TranspilerInstance> transpilerInstances)
-        {
-            transpilerInstances.Where(whereTranspilerInstance => whereTranspilerInstance.TranspilerHostId == this.TranspilerHostId)
-                    .ToList()
-                    .ForEach(feTranspilerInstance => this.TranspilerInstances.Add(feTranspilerInstance));
-        }
-        
 
         
 

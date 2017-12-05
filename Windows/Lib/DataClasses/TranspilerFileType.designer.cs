@@ -40,16 +40,6 @@ namespace SSoTme.OST.Lib.DataClasses
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TranspilerFiles")]
         public BindingList<TranspilerFile> TranspilerFiles { get; set; }
             
-        /// <summary>
-        /// Find the related TranspilerFiles (from the list provided) and attach them locally to the TranspilerFiles list.
-        /// </summary>
-        public void LoadTranspilerFiles(IEnumerable<TranspilerFile> transpilerFiles)
-        {
-            transpilerFiles.Where(whereTranspilerFile => whereTranspilerFile.TranspilerFileTypeId == this.TranspilerFileTypeId)
-                    .ToList()
-                    .ForEach(feTranspilerFile => this.TranspilerFiles.Add(feTranspilerFile));
-        }
-        
 
         
 

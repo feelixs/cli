@@ -39,29 +39,9 @@ namespace SSoTme.OST.Lib.DataClasses
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TranspileFileId_TranspileInputFiles")]
         public BindingList<TranspileInputFile> TranspileFileId_TranspileInputFiles { get; set; }
             
-        /// <summary>
-        /// Find the related TranspileInputFiles (from the list provided) and attach them locally to the TranspileInputFiles list.
-        /// </summary>
-        public void LoadTranspileInputFiles(IEnumerable<TranspileInputFile> transpileInputFiles)
-        {
-            transpileInputFiles.Where(whereTranspileInputFile => whereTranspileInputFile.TranspileFileId == this.TranspilerFileId)
-                    .ToList()
-                    .ForEach(feTranspileInputFile => this.TranspileFileId_TranspileInputFiles.Add(feTranspileInputFile));
-        }
-        
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TranspileFileId_TranspileOutputFiles")]
         public BindingList<TranspileOutputFile> TranspileFileId_TranspileOutputFiles { get; set; }
             
-        /// <summary>
-        /// Find the related TranspileOutputFiles (from the list provided) and attach them locally to the TranspileOutputFiles list.
-        /// </summary>
-        public void LoadTranspileOutputFiles(IEnumerable<TranspileOutputFile> transpileOutputFiles)
-        {
-            transpileOutputFiles.Where(whereTranspileOutputFile => whereTranspileOutputFile.TranspileFileId == this.TranspilerFileId)
-                    .ToList()
-                    .ForEach(feTranspileOutputFile => this.TranspileFileId_TranspileOutputFiles.Add(feTranspileOutputFile));
-        }
-        
 
         
 

@@ -166,7 +166,19 @@ namespace SSoTme.OST.Lib.Extensions
                     Task.Factory.StartNew(() =>
                     {
                         Thread.Sleep(150);
-                        di.Delete();
+                        try
+                        {
+                            di.Delete();
+                        }
+                        catch
+                        {
+                            Thread.Sleep(2500);
+                            try
+                            {
+                                di.Delete();
+                            }
+                            catch { } // ignore errors
+                        }
                     });
                 }
             }

@@ -1,6 +1,10 @@
 # SSoTme-Open-Source-Tools
 [SSoT.me Platform](http://SSoT.me) - The Single Source of Truth Toolbox!
 
+## Additional Docs
+In addition to the summary below - there is [additional documentation](https://ssotme.github.io/SSoTme-Open-Source-Tools/) on
+the github.io site.
+
 ## About A Single Source of Truth
 Software based on a single source of truth is software that does not tolorate duplication of 
 Authority.  "Source Code" is frequently a terrible place for decisions about how software

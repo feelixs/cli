@@ -25,18 +25,26 @@ namespace SSoTme.OST.Lib.DataClasses
             this.InitPoco();
         }
 
-        public static void Init(bool force = false)
+        public static void Init(bool force = false, String projectName = "")
         {
+
             var currentProject = TryToLoad(new DirectoryInfo(Environment.CurrentDirectory));
+
+
             if (!ReferenceEquals(currentProject, null) && !force)
             {
-                throw new Exception(String.Format("Project has already been initialized in: {0}", currentProject.RootPath));
+                if (!String.IsNullOrEmpty(projectName))
+                {
+                    currentProject.Name = projectName.SafeToString().Replace(" ", "");
+                    currentProject.Save();
+                }
+                else throw new Exception(String.Format("Project has already been initialized in: {0}", currentProject.RootPath));
             }
             else
             {
                 var newProject = new SSoTmeProject();
                 newProject.RootPath = Environment.CurrentDirectory;
-                newProject.Name = Path.GetFileName(Environment.CurrentDirectory);
+                newProject.Name = String.IsNullOrEmpty(projectName) ? Path.GetFileName(Environment.CurrentDirectory) : projectName;
                 newProject.Save();
                 Console.WriteLine("SSoTme Project Created and Initialized Successfully.");
             }
@@ -50,6 +58,7 @@ namespace SSoTme.OST.Lib.DataClasses
         private void Save(DirectoryInfo rootDI)
         {
             this.CheckUniqueIDs();
+            this.AddSetting(string.Format("project-name={0}", this.Name));
             string projectJson = JsonConvert.SerializeObject(this, Newtonsoft.Json.Formatting.Indented);
             File.WriteAllText(this.GetProjectFileName(), projectJson);
         }
@@ -156,12 +165,31 @@ namespace SSoTme.OST.Lib.DataClasses
             if (string.IsNullOrEmpty(settingName)) throw new Exception("Settings must be in the format of 'name=value'");
             else
             {
-                this.ProjectSettings.Add(new ProjectSetting()
+                var currentSettings = this.ProjectSettings.Where(whereSetting => String.Equals(whereSetting.Name, settingName, StringComparison.OrdinalIgnoreCase));
+
+                var addSetting = true;
+
+                if ((currentSettings.Count() == 1) && (currentSettings.First().Value == settingValue))
                 {
-                    Name = settingName,
-                    Value = settingValue
-                });
-                Console.WriteLine("Added Setting: {0}: '{1}'", settingName, settingValue);
+                    addSetting = false;
+                }
+
+                if (addSetting)
+                {
+                    currentSettings.ToList().ForEach(feSettingToRemove => this.ProjectSettings.Remove(feSettingToRemove));
+
+                    this.ProjectSettings.Add(new ProjectSetting()
+                    {
+                        Name = settingName,
+                        Value = settingValue
+                    });
+                    Console.WriteLine("Added Setting: {0}: '{1}'", settingName, settingValue);
+                }
+
+                if (String.Equals(settingName, "project-name", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (!String.IsNullOrEmpty(settingValue) && (settingValue != this.Name)) this.Name = settingValue;
+                }
             }
         }
 
@@ -187,6 +215,8 @@ namespace SSoTme.OST.Lib.DataClasses
             // Load each tranpspiler and load it's input and output files.
             foreach (var projectTranspiler in this.ProjectTranspilers)
             {
+                var ptDI = new DirectoryInfo(Path.Combine(this.RootPath, projectTranspiler.RelativePath.Trim("\\/".ToCharArray())));
+                if (!ptDI.Exists) ptDI.Create();
                 Environment.CurrentDirectory = Path.Combine(this.RootPath, projectTranspiler.RelativePath.Trim("\\/".ToCharArray()));
 
                 projectTranspiler.LoadInputAndOuputFiles(this, false);

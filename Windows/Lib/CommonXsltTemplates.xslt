@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:msxsl="urn:schemas-microsoft-com:xslt"
-                exclude-result-prefixes="msxsl"
-                xmlns:date="urn:sample"
-                xmlns:uscdl="uscdl.net">
+    xmlns:msxml="urn:schemas-microsoft-com:xslt"
+    xmlns:ms="http://www.microsoft.com/msxsl"
+    exclude-result-prefixes="msxml msxsl ms"
+    xmlns:date="urn:sample"
+    xmlns:uscdl="uscdl.net">
 <!--*****************************
-    Project:    Codee42 (ODXML4)
-    Created By: EJ Alexandra - 2016
+    Project:    Codee42 (ODXML7)
+    Created By: EJ Alexandra - 2017
                 An Abstract Level, llc
     License:    Mozilla Public License 2.0
     *****************************  -->  
@@ -21,6 +23,19 @@
     </xsl:template>
 
     -->
+
+    <msxml:script implements-prefix="ms">
+        function range(min, max)
+        {
+            var dist = max - min + 1;
+            return Math.floor(Math.random() * dist + min);
+        }
+
+        function uuid()
+        {
+            return System.Guid.NewGuid();
+        }
+    </msxml:script>
     <xsl:template match="*" mode="escape">
         <!-- Begin opening tag -->
         <xsl:text>&lt;</xsl:text>

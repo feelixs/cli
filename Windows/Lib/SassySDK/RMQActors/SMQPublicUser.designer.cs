@@ -19,7 +19,7 @@ namespace SassyMQ.SSOTME.Lib.RMQActors
             : base("publicuser.all", isAutoConnect)
         {
         }
-        // SSoT - SST
+        // SSoT - SSOTME
         public virtual bool Connect(string virtualHost, string username, string password)
         {
             return base.Connect(virtualHost, username, password);

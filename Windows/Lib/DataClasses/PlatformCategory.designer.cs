@@ -55,16 +55,6 @@ namespace SSoTme.OST.Lib.DataClasses
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TranspilerPlatforms")]
         public BindingList<TranspilerPlatform> TranspilerPlatforms { get; set; }
             
-        /// <summary>
-        /// Find the related TranspilerPlatforms (from the list provided) and attach them locally to the TranspilerPlatforms list.
-        /// </summary>
-        public void LoadTranspilerPlatforms(IEnumerable<TranspilerPlatform> transpilerPlatforms)
-        {
-            transpilerPlatforms.Where(whereTranspilerPlatform => whereTranspilerPlatform.PlatformCategoryId == this.PlatformCategoryId)
-                    .ToList()
-                    .ForEach(feTranspilerPlatform => this.TranspilerPlatforms.Add(feTranspilerPlatform));
-        }
-        
 
         
 

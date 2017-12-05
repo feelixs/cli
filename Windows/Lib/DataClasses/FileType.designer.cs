@@ -51,29 +51,9 @@ namespace SSoTme.OST.Lib.DataClasses
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "InputFileTypeId_Transpilers")]
         public BindingList<Transpiler> InputFileTypeId_Transpilers { get; set; }
             
-        /// <summary>
-        /// Find the related Transpilers (from the list provided) and attach them locally to the Transpilers list.
-        /// </summary>
-        public void LoadInputFileTypeIdTranspilers(IEnumerable<Transpiler> transpilers)
-        {
-            transpilers.Where(whereTranspiler => whereTranspiler.InputFileTypeId == this.FileTypeId)
-                    .ToList()
-                    .ForEach(feTranspiler => this.InputFileTypeId_Transpilers.Add(feTranspiler));
-        }
-        
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "OutputFileTypeId_Transpilers")]
         public BindingList<Transpiler> OutputFileTypeId_Transpilers { get; set; }
             
-        /// <summary>
-        /// Find the related Transpilers (from the list provided) and attach them locally to the Transpilers list.
-        /// </summary>
-        public void LoadOutputFileTypeIdTranspilers(IEnumerable<Transpiler> transpilers)
-        {
-            transpilers.Where(whereTranspiler => whereTranspiler.OutputFileTypeId == this.FileTypeId)
-                    .ToList()
-                    .ForEach(feTranspiler => this.OutputFileTypeId_Transpilers.Add(feTranspiler));
-        }
-        
 
         
 
