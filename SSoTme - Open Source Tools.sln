@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SSoTme.OST.CLI", "Windows\C
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "SSoTmeWinCLISetup", "Windows\WinCLISetup\SSoTmeWinCLISetup\SSoTmeWinCLISetup.vdproj", "{03D99850-C417-4B82-8A07-28B06F588D90}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SSoTmeProject.WinApp", "..\SSoTmeOST\Windows\ProjectEditor\SSoTmeProjectWinApp\SSoTmeProject.WinApp.csproj", "{9B93757B-D06B-4670-92A6-C9AAC6C619BC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{03D99850-C417-4B82-8A07-28B06F588D90}.Debug|Any CPU.Build.0 = Debug
 		{03D99850-C417-4B82-8A07-28B06F588D90}.Release|Any CPU.ActiveCfg = Release
 		{03D99850-C417-4B82-8A07-28B06F588D90}.Release|Any CPU.Build.0 = Release
+		{9B93757B-D06B-4670-92A6-C9AAC6C619BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B93757B-D06B-4670-92A6-C9AAC6C619BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B93757B-D06B-4670-92A6-C9AAC6C619BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B93757B-D06B-4670-92A6-C9AAC6C619BC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -47,6 +53,7 @@ Global
 		{1CFC5A6B-EFA3-4439-88E7-3D9B664E190D} = {D6B2B68C-9C4F-41E9-859F-10A5EAA3938F}
 		{C092D67B-26D9-4178-B4AA-504EE77D968F} = {D6B2B68C-9C4F-41E9-859F-10A5EAA3938F}
 		{03D99850-C417-4B82-8A07-28B06F588D90} = {D6B2B68C-9C4F-41E9-859F-10A5EAA3938F}
+		{9B93757B-D06B-4670-92A6-C9AAC6C619BC} = {D6B2B68C-9C4F-41E9-859F-10A5EAA3938F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {85AFE0A5-60DA-4DFB-AF27-3CB06DBFE721}

@@ -57,7 +57,7 @@ namespace SSoTme.OST.Lib.DataClasses
             
 
         
-
+        
         private static string CreatePlatformCategoryWhere(IEnumerable<PlatformCategory> platformCategories)
         {
             if (!platformCategories.Any()) return "1=1";

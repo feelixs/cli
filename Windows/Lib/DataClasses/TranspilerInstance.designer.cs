@@ -45,7 +45,7 @@ namespace SSoTme.OST.Lib.DataClasses
             
 
         
-
+        
         private static string CreateTranspilerInstanceWhere(IEnumerable<TranspilerInstance> transpilerInstances)
         {
             if (!transpilerInstances.Any()) return "1=1";

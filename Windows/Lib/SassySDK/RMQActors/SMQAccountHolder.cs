@@ -10,8 +10,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System;
 using SassyMQ.SSOTME.Lib.RabbitMQ;
-using SSoTme.OST.Lib.DataClasses;
-using SSOTME.TestConApp.Root.TranspileHandlers;
 using SSoTme.OST.Lib.SassySDK.Derived;
 
 namespace SassyMQ.SSOTME.Lib.RMQActors

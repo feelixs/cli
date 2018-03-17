@@ -39,7 +39,7 @@ namespace SSoTme.OST.Lib.DataClasses
             
 
         
-
+        
         private static string CreateTranspileRequestStatusWhere(IEnumerable<TranspileRequestStatus> transpileRequestStatuses)
         {
             if (!transpileRequestStatuses.Any()) return "1=1";

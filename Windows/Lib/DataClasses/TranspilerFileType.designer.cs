@@ -42,7 +42,7 @@ namespace SSoTme.OST.Lib.DataClasses
             
 
         
-
+        
         private static string CreateTranspilerFileTypeWhere(IEnumerable<TranspilerFileType> transpilerFileTypes)
         {
             if (!transpilerFileTypes.Any()) return "1=1";

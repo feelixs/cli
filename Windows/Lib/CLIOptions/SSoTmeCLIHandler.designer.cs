@@ -112,5 +112,8 @@ Options
         [CommandLineOption(Description = "Name of the project (optional parameter to the init command)", MinOccurs = 0, Aliases = "name")]
         public string projectName { get; set; }
         
+        [CommandLineOption(Description = "Name of a group to put a transpiler in within a specific folder", MinOccurs = 0, Aliases = "tg")]
+        public string transpilerGroup { get; set; }
+        
     }
 }

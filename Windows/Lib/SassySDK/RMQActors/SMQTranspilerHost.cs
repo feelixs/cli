@@ -11,8 +11,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using SSoTme.OST.Lib.DataClasses;
 using System;
-using SSOTME.TestConApp.Root;
-using SSOTME.TestConApp.Root.TranspileHandlers;
 using SassyMQ.SSOTME.Lib.RabbitMQ;
 using System.Threading;
 

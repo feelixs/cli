@@ -20,12 +20,10 @@ using System.Xml.Xsl;
 using SSoTme.OST.Lib.Transpilers;
 using System.Text.RegularExpressions;
 
-namespace SSOTME.TestConApp.Root.TranspileHandlers
+namespace SSoTme.OST.Transpilers
 {
     public abstract class BaseHandler
     {
-
-
         public BaseHandler(Transpiler sourceTranspiler, SSOTMEPayload payload)
         {
             this.Payload = payload;
@@ -273,7 +271,16 @@ namespace SSOTME.TestConApp.Root.TranspileHandlers
 
 
         public Transpiler SourceTranspiler;
-        public DirectoryInfo RootDirInfo { get; private set; }
+        private DirectoryInfo _rootDirInfo;
+        public DirectoryInfo RootDirInfo
+        {
+            get
+            {
+                if (!_rootDirInfo.Exists) _rootDirInfo.Create();
+                return _rootDirInfo;
+            }
+            private set { _rootDirInfo = value; }
+        }
         public Dictionary<string, string> Parameters { get; private set; }
 
         public void LoadXmlFromFileInfo(FileInfo inputFI)
@@ -295,7 +302,9 @@ namespace SSOTME.TestConApp.Root.TranspileHandlers
 
         public string ReadRootFile(string fileName)
         {
-            return File.ReadAllText(Path.Combine(this.RootDirInfo.FullName, fileName));
+            var fileToRead = new FileInfo(Path.Combine(this.RootDirInfo.FullName, fileName));
+            if (!fileToRead.Exists) return String.Empty;
+            else return File.ReadAllText(fileToRead.FullName);
         }
 
         public void LoadInputFileSetFile(FileSetFile inputFileSetFile)
@@ -491,7 +500,16 @@ namespace SSOTME.TestConApp.Root.TranspileHandlers
         public FileSet InputFileSet { get; private set; }
         public FileSet OutputFileSet { get; private set; }
         public string InputFileName { get; private set; }
-        public string OutputFileName { get; set; }
+        private string _outputFileName;
+        public string OutputFileName
+        {
+            get { return _outputFileName; }
+            set
+            {
+                _outputFileName = value;
+                this.AddParameter("output-filename", value);
+            }
+        }
         public string ScreenName { get; private set; }
 
         public void TranspileWithXslt(string inputXml, string xsltPartialName)

@@ -45,11 +45,14 @@ namespace SSoTme.OST.Lib.DataClasses
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "SortOrder")]
         public Int32 SortOrder { get; set; }
     
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TranspilerGroup")]
+        public String TranspilerGroup { get; set; }
+    
 
         
 
         
-
+        
         private static string CreateProjectTranspilerWhere(IEnumerable<ProjectTranspiler> projectTranspilers)
         {
             if (!projectTranspilers.Any()) return "1=1";

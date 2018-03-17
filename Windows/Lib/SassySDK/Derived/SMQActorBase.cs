@@ -135,7 +135,7 @@ namespace SassyMQ.Lib.RabbitMQ.Payload
                 this.RMQConnection = null;
             }
 
-            this.RMQFactory = new ConnectionFactory() { HostName = this.RabbitEndpoint, VirtualHost = this.VirtualHost, UserName = this.Username, Password = this.Password };
+            this.RMQFactory = new ConnectionFactory() { HostName = this.RabbitEndpoint, Port = 5671, VirtualHost = this.VirtualHost, UserName = this.Username, Password = this.Password, Ssl = new SslOption() { ServerName = "anabstractlevel.com", Enabled = true } };
             this.RMQConnection = this.RMQFactory.CreateConnection();
             this.RMQChannel = this.RMQConnection.CreateModel();
 

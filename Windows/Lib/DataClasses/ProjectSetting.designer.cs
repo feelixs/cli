@@ -34,7 +34,7 @@ namespace SSoTme.OST.Lib.DataClasses
         
 
         
-
+        
         private static string CreateProjectSettingWhere(IEnumerable<ProjectSetting> projectSettings)
         {
             if (!projectSettings.Any()) return "1=1";

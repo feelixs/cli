@@ -36,6 +36,44 @@
             return System.Guid.NewGuid();
         }
     </msxml:script>
+
+
+    <xsl:template name="object-def-type-to-mysql">
+        <xsl:param name="object-def-type-name" />
+        <xsl:param name="length" select="''" />
+        <xsl:choose>
+            <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'GUID')">CHAR(36)</xsl:when>
+            <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'TEXT') or
+                      contains(translate($object-def-type-name, $lcletters, $ucletters), 'STRING')">
+                <xsl:choose>
+                    <xsl:when test="normalize-space(translate($length, $ucletters, $lcletters)) = 'max'">LONGTEXT</xsl:when>
+                    <xsl:when test="$length = -1">LONGTEXT</xsl:when>
+                    <xsl:when test="$length = 0">LONGTEXT</xsl:when>
+                    <xsl:when test="$length > 0">
+                        NVARCHAR(<xsl:value-of select="$length" />)
+                    </xsl:when>
+                    <xsl:otherwise >NVARCHAR(100)</xsl:otherwise>
+                </xsl:choose>
+            </xsl:when>
+            <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'DATETIME')">DATETIME</xsl:when>
+            <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'DATE')">DATE</xsl:when>
+            <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'TIME')">TIME</xsl:when>
+            <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'BYTE[]')">VARBINARY(MAX)</xsl:when>
+            <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'BYTE')">INT</xsl:when>
+            <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'INT16')">INT</xsl:when>
+            <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'INT32')">INT</xsl:when>
+            <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'BOOLEAN')">BIT</xsl:when>
+            <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'INT64')">BIGINT</xsl:when>
+            <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'DECIMAL')">DECIMAL(18,2)</xsl:when>
+            <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'MONEY')">DECIMAL(18,2)</xsl:when>
+            <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'REAL')">DECIMAL(18,2)</xsl:when>
+            <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'FLOAT')">FLOAT</xsl:when>
+            <xsl:otherwise>
+                <xsl:value-of select="object-def-type-name" />
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+
     <xsl:template match="*" mode="escape">
         <!-- Begin opening tag -->
         <xsl:text>&lt;</xsl:text>
@@ -551,7 +589,7 @@
         <xsl:when test="$length = -1">(max)</xsl:when>
         <xsl:when test="$length = 0">(max)</xsl:when>
         <xsl:when test="$length > 0">(<xsl:value-of select="$length" />)</xsl:when>
-        <xsl:otherwise >(100)</xsl:otherwise>
+        <xsl:otherwise>(100)</xsl:otherwise>
       </xsl:choose></xsl:when>
       <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'DATETIME')">DATETIME</xsl:when>
       <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'DATE')">DATE</xsl:when>

@@ -4,6 +4,7 @@
              An Abstract Level, llc
  License:    Mozilla Public License 2.0
  *******************************************/
+using CoreLibrary.Extensions;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -24,6 +25,33 @@ namespace SSoTme.OST.Lib.SassySDK.Derived
             set { SetSSoTmeKey(value); }
         }
 
+        private static List<SSOTMEKey> _allKeys;
+        public static List<SSOTMEKey> AllKeys
+        {
+            get
+            {
+                if (ReferenceEquals(_allKeys, null))
+                {
+                    _allKeys = new List<SSOTMEKey>();
+                    foreach (var keyFile in SSoTmeDir.GetFiles("*.key")) {
+                        var username = keyFile.Name 
+                                              .Split('_')
+                                              .Skip(1)
+                                              .FirstOrDefault()
+                                              .SafeToString()
+                                              .ToLower()
+                                              .Replace(".key", "");
+        
+                        
+                        var newKey = GetSSoTmeKey(username);
+                        _allKeys.Add(newKey);
+                    }
+                }
+                return _allKeys;
+            }
+            set { _allKeys = value; }
+        }
+
         public static void SetSSoTmeKey(SSOTMEKey value, string account = "")
         {
             FileInfo ssotmeKeyFI = GetKeyForAccount(account);
@@ -41,17 +69,30 @@ namespace SSoTme.OST.Lib.SassySDK.Derived
             return ssotmeKey;
         }
 
+        public static DirectoryInfo SSoTmeDir
+        {
+            get
+            {
+                var ssoTmeDir = new DirectoryInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".ssotme"));
+                if (!ssoTmeDir.Exists) ssoTmeDir.Create();
+                return ssoTmeDir;
+            }
+
+        }
+
         private static FileInfo GetKeyForAccount(string accountUsername)
         {
-
-            var myDocsPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-
             var ssotmeKeyFI = default(FileInfo);
-            if (String.IsNullOrEmpty(accountUsername)) ssotmeKeyFI = new FileInfo(Path.Combine(myDocsPath, ".ssotme", "ssotme.key"));
-            else ssotmeKeyFI = new FileInfo(Path.Combine(myDocsPath, ".ssotme", String.Format("ssotme_{0}.key", accountUsername)));
+            if (String.IsNullOrEmpty(accountUsername)) ssotmeKeyFI = new FileInfo(Path.Combine(SSoTmeDir.FullName, "ssotme.key"));
+            else ssotmeKeyFI = new FileInfo(Path.Combine(SSoTmeDir.FullName, String.Format("ssotme_{0}.key", accountUsername)));
 
             if (!ssotmeKeyFI.Exists) throw new Exception(String.Format("Can't find key for SSoTme Account: {0} in {1}", accountUsername, ssotmeKeyFI.FullName));
             else return ssotmeKeyFI;
+        }
+
+        public override string ToString()
+        {
+            return this.EmailAddress;
         }
     }
 }

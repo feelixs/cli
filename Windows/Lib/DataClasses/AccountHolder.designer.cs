@@ -58,7 +58,7 @@ namespace SSoTme.OST.Lib.DataClasses
             
 
         
-
+        
         private static string CreateAccountHolderWhere(IEnumerable<AccountHolder> accountHolders)
         {
             if (!accountHolders.Any()) return "1=1";

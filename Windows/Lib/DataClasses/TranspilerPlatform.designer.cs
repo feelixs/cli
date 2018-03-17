@@ -57,7 +57,7 @@ namespace SSoTme.OST.Lib.DataClasses
             
 
         
-
+        
         private static string CreateTranspilerPlatformWhere(IEnumerable<TranspilerPlatform> transpilerPlatforms)
         {
             if (!transpilerPlatforms.Any()) return "1=1";

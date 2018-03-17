@@ -13,6 +13,7 @@ using SSoTme.OST.Lib.Extensions;
 using SSoTme.OST.Lib.SassySDK.Derived;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -99,6 +100,11 @@ namespace SSoTme.OST.Lib.CLIOptions
                 }
                 else if (this.init)
                 {
+                    if (String.IsNullOrEmpty(this.projectName))
+                    {
+                        this.projectName = Path.GetFileName(Environment.CurrentDirectory);
+                    }
+
                     var force = this.args.Count() == 2 &&
                                 this.args[1] == "force";
 
@@ -120,7 +126,7 @@ namespace SSoTme.OST.Lib.CLIOptions
 
                 if (continueToLoad)
                 {
-                    this.SSoTmeProject = SSoTmeProject.LoadOrFail(new DirectoryInfo(Environment.CurrentDirectory));
+                    this.SSoTmeProject = SSoTmeProject.LoadOrFail(new DirectoryInfo(Environment.CurrentDirectory), false);
 
                     foreach (var projectSetting in this.SSoTmeProject.ProjectSettings)
                     {
@@ -189,6 +195,11 @@ namespace SSoTme.OST.Lib.CLIOptions
                         this.SSoTmeProject.RemoveSetting(setting);
                     }
                     this.SSoTmeProject.Save();
+                }
+                else if (!String.IsNullOrEmpty(this.execute))
+                {
+                    this.ProcessCommandLine(this.execute);
+
                 }
                 else if (this.build)
                 {
@@ -273,13 +284,25 @@ namespace SSoTme.OST.Lib.CLIOptions
                 if (!ReferenceEquals(AccountHolder, null)) AccountHolder.Disconnect();
                 if (updateProject)
                 {
-                    if (this.install) this.SSoTmeProject.Install(result);
+                    if (this.install) this.SSoTmeProject.Install(result, this.transpilerGroup);
                     else if (!ReferenceEquals(projectTranspiler, null))
                     {
                         this.SSoTmeProject.Update(projectTranspiler, result);
                     }
                 }
             }
+        }
+
+        private void ProcessCommandLine(string commandLine)
+        {
+            var process = Process.Start(commandLine);
+            process.WaitForExit(this.waitTimeout);
+            if (!process.HasExited)
+            {
+                process.Close();
+                throw new Exception(String.Format("Timed out waiting for process to complete: {0}", commandLine));
+            }
+
         }
 
         internal void LoadOutputFiles(String lowerHyphoneName, String basePath, bool includeContents)
@@ -386,8 +409,8 @@ namespace SSoTme.OST.Lib.CLIOptions
             if (!matchingFiles.Any())
             {
                 var curColor = Console.ForegroundColor;
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("\n\nERROR:\n\n - No INPUT files matched {0} in {1}\n", filePattern, di.FullName);
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("\n\nWARNING:\n\n - No INPUT files matched {0} in {1}\n", filePattern, di.FullName);
                 var fsf = new FileSetFile();
                 fsf.RelativePath = Path.GetFileName(filePattern);
                 fs.FileSetFiles.Add(fsf);
@@ -417,7 +440,7 @@ namespace SSoTme.OST.Lib.CLIOptions
                 else
                 {
                     var curColor = Console.ForegroundColor;
-                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.ForegroundColor = ConsoleColor.Yellow;
                     Console.WriteLine("INPUT Format: {0} did not match any files in {1}", filePattern, di.FullName);
                     Console.ForegroundColor = curColor;
                 }

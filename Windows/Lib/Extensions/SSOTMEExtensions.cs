@@ -9,7 +9,6 @@ using HtmlAgilityPack;
 using Newtonsoft.Json;
 using SassyMQ.Lib.RabbitMQ;
 using SSoTme.OST.Lib.DataClasses;
-using SSOTME.TestConApp.Root.TranspileHandlers;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -23,6 +22,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
@@ -35,6 +35,12 @@ namespace SSoTme.OST.Lib.Extensions
 {
     public static class SSOTMEExtensions
     {
+
+        static SSOTMEExtensions()
+        {
+            SSOTMEExtensions.Pluralizer = PluralizationService.CreateService(CultureInfo.CurrentCulture);
+        }
+
         public static String ToFriendlyFullTypeName(this Type type)
         {
             return type.Name.SafeToString().ToTitle();
@@ -68,6 +74,9 @@ namespace SSoTme.OST.Lib.Extensions
 
                 xmlNode = fsfNode.SelectSingleNode("ZippedFileContents");
                 if (!ReferenceEquals(xmlNode, null)) fsf.ZippedFileContents = Convert.FromBase64String(xmlNode.InnerXml);
+
+                xmlNode = fsfNode.SelectSingleNode("BinaryFileContents");
+                if (!ReferenceEquals(xmlNode, null)) fsf.BinaryFileContents = Convert.FromBase64String(xmlNode.InnerXml);
 
                 xmlNode = fsfNode.SelectSingleNode("ZippedBinaryFileContents");
                 if (!ReferenceEquals(xmlNode, null)) fsf.ZippedBinaryFileContents = Convert.FromBase64String(xmlNode.InnerXml);
@@ -110,6 +119,220 @@ namespace SSoTme.OST.Lib.Extensions
             var fileSetXml = new StreamReader(ms).ReadToEnd();
             return fileSetXml;
         }
+
+        public static String HtmlToText(this String html, String nodeId = "", String stopNodeId = "")
+        {
+            HtmlDocument doc = new HtmlDocument();
+            doc.LoadHtml(html);
+            return doc.HtmlToText(nodeId, stopNodeId);
+        }
+
+
+        #region https://stackoverflow.com/questions/731649/how-can-i-convert-html-to-text-in-c
+        // FROM https://stackoverflow.com/questions/731649/how-can-i-convert-html-to-text-in-c
+        public static string HtmlToText(this HtmlDocument doc, String nodeId = "", String stopNodeId = "")
+        {
+            using (StringWriter sw = new StringWriter())
+            {
+                var node = doc.DocumentNode;
+
+                if (!String.IsNullOrEmpty(nodeId))
+                {
+                    var rootNode = doc.DocumentNode.SelectSingleNode(String.Format("//*[normalize-space(@id) = '{0}']", nodeId));
+                    if (!ReferenceEquals(rootNode, null) && !String.IsNullOrEmpty(stopNodeId))
+                    {
+                        node = rootNode;
+                        var firstStopChild = node.SelectSingleNode(String.Format(".//*[normalize-space(@id) = '{0}']", stopNodeId));
+                        if (!ReferenceEquals(firstStopChild, null))
+                        {
+                            while (!ReferenceEquals(firstStopChild.NextSibling, null))
+                            {
+                                firstStopChild.ParentNode.ChildNodes.Remove(firstStopChild.NextSibling);
+                            }
+                        }
+
+                        var catlinks = node.SelectSingleNode(".//*[normalize-space(@id) = 'catlinks']");
+                        if (!ReferenceEquals(catlinks, null)) catlinks.Remove();
+                    }
+                }
+
+                ConvertTo(node, sw);
+                sw.Flush();
+                return sw.ToString();
+            }
+        }
+
+        internal static void ConvertContentTo(HtmlNode node, TextWriter outText, PreceedingDomTextInfo textInfo)
+        {
+            foreach (HtmlNode subnode in node.ChildNodes)
+            {
+                ConvertTo(subnode, outText, textInfo);
+            }
+        }
+        public static void ConvertTo(HtmlNode node, TextWriter outText)
+        {
+            ConvertTo(node, outText, new PreceedingDomTextInfo(false));
+        }
+        internal static void ConvertTo(HtmlNode node, TextWriter outText, PreceedingDomTextInfo textInfo)
+        {
+            string html;
+            switch (node.NodeType)
+            {
+                case HtmlNodeType.Comment:
+                    // don't output comments
+                    break;
+                case HtmlNodeType.Document:
+                    ConvertContentTo(node, outText, textInfo);
+                    break;
+                case HtmlNodeType.Text:
+                    // script and style must not be output
+                    string parentName = node.ParentNode.Name;
+                    if ((parentName == "script") || (parentName == "style"))
+                    {
+                        break;
+                    }
+                    // get text
+                    html = ((HtmlTextNode)node).Text;
+                    // is it in fact a special closing node output as text?
+                    if (HtmlNode.IsOverlappedClosingElement(html))
+                    {
+                        break;
+                    }
+                    // check the text is meaningful and not a bunch of whitespaces
+                    if (html.Length == 0)
+                    {
+                        break;
+                    }
+                    if (!textInfo.WritePrecedingWhiteSpace || textInfo.LastCharWasSpace)
+                    {
+                        html = html.TrimStart();
+                        if (html.Length == 0) { break; }
+                        textInfo.IsFirstTextOfDocWritten.Value = textInfo.WritePrecedingWhiteSpace = true;
+                    }
+                    outText.Write(HtmlEntity.DeEntitize(Regex.Replace(html.TrimEnd(), @"\s{2,}", " ")));
+                    if (textInfo.LastCharWasSpace = char.IsWhiteSpace(html[html.Length - 1]))
+                    {
+                        outText.Write(' ');
+                    }
+                    break;
+                case HtmlNodeType.Element:
+                    string endElementString = null;
+                    bool isInline;
+                    bool skip = false;
+                    int listIndex = 0;
+                    switch (node.Name)
+                    {
+                        case "nav":
+                            skip = true;
+                            isInline = false;
+                            break;
+                        case "body":
+                        case "section":
+                        case "article":
+                        case "aside":
+                        case "h1":
+                        case "h2":
+                        case "header":
+                        case "footer":
+                        case "address":
+                        case "main":
+                        case "div":
+                        case "p": // stylistic - adjust as you tend to use
+                            if (textInfo.IsFirstTextOfDocWritten)
+                            {
+                                outText.Write("\r\n");
+                            }
+                            endElementString = "\r\n";
+                            isInline = false;
+                            break;
+                        case "br":
+                            outText.Write("\r\n");
+                            skip = true;
+                            textInfo.WritePrecedingWhiteSpace = false;
+                            isInline = true;
+                            break;
+                        case "a":
+                            if (node.Attributes.Contains("href"))
+                            {
+                                string href = node.Attributes["href"].Value.Trim();
+                                if (node.InnerText.IndexOf(href, StringComparison.InvariantCultureIgnoreCase) == -1)
+                                {
+                                    endElementString = "<" + href + ">";
+                                }
+                            }
+                            isInline = true;
+                            break;
+                        case "li":
+                            if (textInfo.ListIndex > 0)
+                            {
+                                outText.Write("\r\n{0}.\t", textInfo.ListIndex++);
+                            }
+                            else
+                            {
+                                outText.Write("\r\n*\t"); //using '*' as bullet char, with tab after, but whatever you want eg "\t->", if utf-8 0x2022
+                            }
+                            isInline = false;
+                            break;
+                        case "ol":
+                            listIndex = 1;
+                            goto case "ul";
+                        case "ul": //not handling nested lists any differently at this stage - that is getting close to rendering problems
+                            endElementString = "\r\n";
+                            isInline = false;
+                            break;
+                        case "img": //inline-block in reality
+                            if (node.Attributes.Contains("alt"))
+                            {
+                                outText.Write('[' + node.Attributes["alt"].Value);
+                                endElementString = "]";
+                            }
+                            if (node.Attributes.Contains("src"))
+                            {
+                                outText.Write('<' + node.Attributes["src"].Value + '>');
+                            }
+                            isInline = true;
+                            break;
+                        default:
+                            isInline = true;
+                            break;
+                    }
+                    if (!skip && node.HasChildNodes)
+                    {
+                        ConvertContentTo(node, outText, isInline ? textInfo : new PreceedingDomTextInfo(textInfo.IsFirstTextOfDocWritten) { ListIndex = listIndex });
+                    }
+                    if (endElementString != null)
+                    {
+                        outText.Write(endElementString);
+                    }
+                    break;
+            }
+
+        }
+        internal class PreceedingDomTextInfo
+        {
+            public PreceedingDomTextInfo(BoolWrapper isFirstTextOfDocWritten)
+            {
+                IsFirstTextOfDocWritten = isFirstTextOfDocWritten;
+            }
+            public bool WritePrecedingWhiteSpace { get; set; }
+            public bool LastCharWasSpace { get; set; }
+            public readonly BoolWrapper IsFirstTextOfDocWritten;
+            public int ListIndex { get; set; }
+        }
+        internal class BoolWrapper
+        {
+            public BoolWrapper() { }
+            public bool Value { get; set; }
+            public static implicit operator bool(BoolWrapper boolWrapper)
+            {
+                return boolWrapper.Value;
+            }
+            public static implicit operator BoolWrapper(bool boolWrapper)
+            {
+                return new BoolWrapper { Value = boolWrapper };
+            }
+        }
+        #endregion
 
         public static void WriteTo(this FileSet fs, DirectoryInfo rootDirInfo)
         {
@@ -522,7 +745,7 @@ namespace SSoTme.OST.Lib.Extensions
                 for (int i = 0; i < xlsxDataSet.Tables[table].Columns.Count; i++)
                 {
                     var value = xlsxDataSet.Tables[table].Rows[row_no][i].ToString();
-                    value = value.Replace("\"", "\\\"");
+                    value = value.Replace("\"", "\"\"");
                     output.AppendFormat("\"{0}\",", value);
                 }
                 row_no++;
@@ -1315,4 +1538,9 @@ namespace SSoTme.OST.Lib.Extensions
             throw new NotImplementedException();
         }
     }
+}
+
+namespace CoreLibrary.SassyMQ
+{
+    public class PHClass { }
 }

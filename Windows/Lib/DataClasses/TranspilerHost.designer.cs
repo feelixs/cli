@@ -54,7 +54,7 @@ namespace SSoTme.OST.Lib.DataClasses
             
 
         
-
+        
         private static string CreateTranspilerHostWhere(IEnumerable<TranspilerHost> transpilerHosts)
         {
             if (!transpilerHosts.Any()) return "1=1";

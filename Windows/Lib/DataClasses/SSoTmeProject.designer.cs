@@ -47,7 +47,7 @@ namespace SSoTme.OST.Lib.DataClasses
             
 
         
-
+        
         private static string CreateSSoTmeProjectWhere(IEnumerable<SSoTmeProject> sSoTmeProjects)
         {
             if (!sSoTmeProjects.Any()) return "1=1";
