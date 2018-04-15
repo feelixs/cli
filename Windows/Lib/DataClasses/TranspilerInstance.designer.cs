@@ -46,14 +46,14 @@ namespace SSoTme.OST.Lib.DataClasses
 
         
         
-        private static string CreateTranspilerInstanceWhere(IEnumerable<TranspilerInstance> transpilerInstances)
+        private static string CreateTranspilerInstanceWhere(IEnumerable<TranspilerInstance> transpilerInstances, String forignKeyFieldName = "TranspilerInstanceId")
         {
             if (!transpilerInstances.Any()) return "1=1";
             else 
             {
                 var idList = transpilerInstances.Select(selectTranspilerInstance => String.Format("'{0}'", selectTranspilerInstance.TranspilerInstanceId));
                 var csIdList = String.Join(",", idList);
-                return String.Format("TranspilerInstanceId in ({0})", csIdList);
+                return String.Format("{0} in ({1})", forignKeyFieldName, csIdList);
             }
         }
         

@@ -1,4 +1,5 @@
-
+using System;
+using System.Linq;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using RabbitMQ.Client.MessagePatterns;
@@ -47,986 +48,939 @@ namespace SassyMQ.SSOTME.Lib.RMQActors
         {
             // if (payload.IsDirectMessage && !isDirectMessage) return;
 
-            
+            try {
+                
              if (payload.IsLexiconTerm(LexiconTermEnum.ssotmecoordinator_getinstances_transpilerhost)) 
             {
                 this.OnSSOTMECoordinatorGetInstancesReceived(payload);
-                this.Reply(payload);
             }
         
             else  if (payload.IsLexiconTerm(LexiconTermEnum.ssotmecoordinator_transpilerequested_transpilerhost)) 
             {
                 this.OnSSOTMECoordinatorTranspileRequestedReceived(payload);
-                this.Reply(payload);
             }
         
             else  if (payload.IsLexiconTerm(LexiconTermEnum.ssotmecoordinator_stopinstance_transpilerhost)) 
             {
                 this.OnSSOTMECoordinatorStopInstanceReceived(payload);
-                this.Reply(payload);
             }
         
             else  if (payload.IsLexiconTerm(LexiconTermEnum.ssotmecoordinator_stophost_transpilerhost)) 
             {
                 this.OnSSOTMECoordinatorStopHostReceived(payload);
-                this.Reply(payload);
             }
         
-            // And can also hear everything which : SSOTMEAdmin hears.
+            // And can also hear everything which : AccountHolder hears.
             
-            // And can also hear everything which : SSOTMECoordinator hears.
+            // And can also hear everything which : PublicUser hears.
             
-             if (payload.IsLexiconTerm(LexiconTermEnum.publicuser_ping_ssotmecoordinator)) 
+             if (payload.IsLexiconTerm(LexiconTermEnum.ssotmecoordinator_transpileronline_publicuser)) 
             {
-                this.OnPublicUserPingReceived(payload);
-                this.Reply(payload);
+                this.OnSSOTMECoordinatorTranspilerOnlineReceived(payload);
             }
         
-            else  if (payload.IsLexiconTerm(LexiconTermEnum.publicuser_register_ssotmecoordinator)) 
+            else  if (payload.IsLexiconTerm(LexiconTermEnum.ssotmecoordinator_transpileroffline_publicuser)) 
             {
-                this.OnPublicUserRegisterReceived(payload);
-                this.Reply(payload);
+                this.OnSSOTMECoordinatorTranspilerOfflineReceived(payload);
             }
         
-            else  if (payload.IsLexiconTerm(LexiconTermEnum.publicuser_recover_ssotmecoordinator)) 
-            {
-                this.OnPublicUserRecoverReceived(payload);
-                this.Reply(payload);
+            } catch (Exception ex) {
+                payload.Exception = ex;
             }
-        
-            else  if (payload.IsLexiconTerm(LexiconTermEnum.publicuser_getalltranspilers_ssotmecoordinator)) 
-            {
-                this.OnPublicUserGetAllTranspilersReceived(payload);
-                this.Reply(payload);
-            }
-        
-            else  if (payload.IsLexiconTerm(LexiconTermEnum.publicuser_getallplatformdata_ssotmecoordinator)) 
-            {
-                this.OnPublicUserGetAllPlatformDataReceived(payload);
-                this.Reply(payload);
-            }
-        
-            else  if (payload.IsLexiconTerm(LexiconTermEnum.publicuser_getallfiletypes_ssotmecoordinator)) 
-            {
-                this.OnPublicUserGetAllFileTypesReceived(payload);
-                this.Reply(payload);
-            }
-        
-            else  if (payload.IsLexiconTerm(LexiconTermEnum.accountholder_ping_ssotmecoordinator)) 
-            {
-                this.OnAccountHolderPingReceived(payload);
-                this.Reply(payload);
-            }
-        
-            else  if (payload.IsLexiconTerm(LexiconTermEnum.accountholder_login_ssotmecoordinator)) 
-            {
-                this.OnAccountHolderLoginReceived(payload);
-                this.Reply(payload);
-            }
-        
-            else  if (payload.IsLexiconTerm(LexiconTermEnum.accountholder_logout_ssotmecoordinator)) 
-            {
-                this.OnAccountHolderLogoutReceived(payload);
-                this.Reply(payload);
-            }
-        
-            else  if (payload.IsLexiconTerm(LexiconTermEnum.accountholder_addtranspiler_ssotmecoordinator)) 
-            {
-                this.OnAccountHolderAddTranspilerReceived(payload);
-                this.Reply(payload);
-            }
-        
-            else  if (payload.IsLexiconTerm(LexiconTermEnum.accountholder_deletetranspiler_ssotmecoordinator)) 
-            {
-                this.OnAccountHolderDeleteTranspilerReceived(payload);
-                this.Reply(payload);
-            }
-        
-            else  if (payload.IsLexiconTerm(LexiconTermEnum.accountholder_updatetranspiler_ssotmecoordinator)) 
-            {
-                this.OnAccountHolderUpdateTranspilerReceived(payload);
-                this.Reply(payload);
-            }
-        
-            else  if (payload.IsLexiconTerm(LexiconTermEnum.accountholder_gettranspiler_ssotmecoordinator)) 
-            {
-                this.OnAccountHolderGetTranspilerReceived(payload);
-                this.Reply(payload);
-            }
-        
-            else  if (payload.IsLexiconTerm(LexiconTermEnum.accountholder_addtranspilerversion_ssotmecoordinator)) 
-            {
-                this.OnAccountHolderAddTranspilerVersionReceived(payload);
-                this.Reply(payload);
-            }
-        
-            else  if (payload.IsLexiconTerm(LexiconTermEnum.accountholder_deletetranspilerversion_ssotmecoordinator)) 
-            {
-                this.OnAccountHolderDeleteTranspilerVersionReceived(payload);
-                this.Reply(payload);
-            }
-        
-            else  if (payload.IsLexiconTerm(LexiconTermEnum.accountholder_updatetranspilerversion_ssotmecoordinator)) 
-            {
-                this.OnAccountHolderUpdateTranspilerVersionReceived(payload);
-                this.Reply(payload);
-            }
-        
-            else  if (payload.IsLexiconTerm(LexiconTermEnum.accountholder_gettranspilerlist_ssotmecoordinator)) 
-            {
-                this.OnAccountHolderGetTranspilerListReceived(payload);
-                this.Reply(payload);
-            }
-        
-            else  if (payload.IsLexiconTerm(LexiconTermEnum.accountholder_createproject_ssotmecoordinator)) 
-            {
-                this.OnAccountHolderCreateProjectReceived(payload);
-                this.Reply(payload);
-            }
-        
-            else  if (payload.IsLexiconTerm(LexiconTermEnum.accountholder_requesttranspile_ssotmecoordinator)) 
-            {
-                this.OnAccountHolderRequestTranspileReceived(payload);
-                this.Reply(payload);
-            }
-        
-            else  if (payload.IsLexiconTerm(LexiconTermEnum.accountholder_requesttranspilerhost_ssotmecoordinator)) 
-            {
-                this.OnAccountHolderRequestTranspilerHostReceived(payload);
-                this.Reply(payload);
-            }
-        
-            else  if (payload.IsLexiconTerm(LexiconTermEnum.accountholder_requeststopinstance_ssotmecoordinator)) 
-            {
-                this.OnAccountHolderRequestStopInstanceReceived(payload);
-                this.Reply(payload);
-            }
-        
-            else  if (payload.IsLexiconTerm(LexiconTermEnum.accountholder_requeststophost_ssotmecoordinator)) 
-            {
-                this.OnAccountHolderRequestStopHostReceived(payload);
-                this.Reply(payload);
-            }
-        
-            else  if (payload.IsLexiconTerm(LexiconTermEnum.accountholder_commandlinetranspile_ssotmecoordinator)) 
-            {
-                this.OnAccountHolderCommandLineTranspileReceived(payload);
-                this.Reply(payload);
-            }
-        
-            else  if (payload.IsLexiconTerm(LexiconTermEnum.transpilerhost_ping_ssotmecoordinator)) 
-            {
-                this.OnTranspilerHostPingReceived(payload);
-                this.Reply(payload);
-            }
-        
-            else  if (payload.IsLexiconTerm(LexiconTermEnum.transpilerhost_offline_ssotmecoordinator)) 
-            {
-                this.OnTranspilerHostOfflineReceived(payload);
-                this.Reply(payload);
-            }
-        
-            else  if (payload.IsLexiconTerm(LexiconTermEnum.transpilerhost_instancestarted_ssotmecoordinator)) 
-            {
-                this.OnTranspilerHostInstanceStartedReceived(payload);
-                this.Reply(payload);
-            }
-        
-            else  if (payload.IsLexiconTerm(LexiconTermEnum.transpilerhost_instancestopped_ssotmecoordinator)) 
-            {
-                this.OnTranspilerHostInstanceStoppedReceived(payload);
-                this.Reply(payload);
-            }
-        
-            else  if (payload.IsLexiconTerm(LexiconTermEnum.ssotmeadmin_ping_ssotmecoordinator)) 
-            {
-                this.OnSSOTMEAdminPingReceived(payload);
-                this.Reply(payload);
-            }
-        
-            else  if (payload.IsLexiconTerm(LexiconTermEnum.ssotmeadmin_addplatformcategory_ssotmecoordinator)) 
-            {
-                this.OnSSOTMEAdminAddPlatformCategoryReceived(payload);
-                this.Reply(payload);
-            }
-        
-            else  if (payload.IsLexiconTerm(LexiconTermEnum.ssotmeadmin_updateplatformcategory_ssotmecoordinator)) 
-            {
-                this.OnSSOTMEAdminUpdatePlatformCategoryReceived(payload);
-                this.Reply(payload);
-            }
-        
-            else  if (payload.IsLexiconTerm(LexiconTermEnum.ssotmeadmin_addtranspilerplatform_ssotmecoordinator)) 
-            {
-                this.OnSSOTMEAdminAddTranspilerPlatformReceived(payload);
-                this.Reply(payload);
-            }
-        
-            else  if (payload.IsLexiconTerm(LexiconTermEnum.ssotmeadmin_updatetranspilerplatform_ssotmecoordinator)) 
-            {
-                this.OnSSOTMEAdminUpdateTranspilerPlatformReceived(payload);
-                this.Reply(payload);
-            }
-        
+            this.Reply(payload);
         }
 
         
+        /// <summary>
+        /// Responds to: Get Instances - 
+        /// </summary>
         public event System.EventHandler<PayloadEventArgs<SSOTMEPayload>> SSOTMECoordinatorGetInstancesReceived;
         protected virtual void OnSSOTMECoordinatorGetInstancesReceived(SSOTMEPayload payload)
         {
-            if (IsDebugMode) 
-            {
-                System.Console.WriteLine("Get Instances - ");
-                System.Console.WriteLine("payload: " + payload.SafeToString());
-            }
-
+            this.LogMessage(payload, "Get Instances - ");
             var plea = new PayloadEventArgs<SSOTMEPayload>(payload);
             this.Invoke(this.SSOTMECoordinatorGetInstancesReceived, plea);
         }
         
+        /// <summary>
+        /// Responds to: Transpile Requested - 
+        /// </summary>
         public event System.EventHandler<PayloadEventArgs<SSOTMEPayload>> SSOTMECoordinatorTranspileRequestedReceived;
         protected virtual void OnSSOTMECoordinatorTranspileRequestedReceived(SSOTMEPayload payload)
         {
-            if (IsDebugMode) 
-            {
-                System.Console.WriteLine("Transpile Requested - ");
-                System.Console.WriteLine("payload: " + payload.SafeToString());
-            }
-
+            this.LogMessage(payload, "Transpile Requested - ");
             var plea = new PayloadEventArgs<SSOTMEPayload>(payload);
             this.Invoke(this.SSOTMECoordinatorTranspileRequestedReceived, plea);
         }
         
+        /// <summary>
+        /// Responds to: Stop Instance - 
+        /// </summary>
         public event System.EventHandler<PayloadEventArgs<SSOTMEPayload>> SSOTMECoordinatorStopInstanceReceived;
         protected virtual void OnSSOTMECoordinatorStopInstanceReceived(SSOTMEPayload payload)
         {
-            if (IsDebugMode) 
-            {
-                System.Console.WriteLine("Stop Instance - ");
-                System.Console.WriteLine("payload: " + payload.SafeToString());
-            }
-
+            this.LogMessage(payload, "Stop Instance - ");
             var plea = new PayloadEventArgs<SSOTMEPayload>(payload);
             this.Invoke(this.SSOTMECoordinatorStopInstanceReceived, plea);
         }
         
+        /// <summary>
+        /// Responds to: Stop Host - 
+        /// </summary>
         public event System.EventHandler<PayloadEventArgs<SSOTMEPayload>> SSOTMECoordinatorStopHostReceived;
         protected virtual void OnSSOTMECoordinatorStopHostReceived(SSOTMEPayload payload)
         {
-            if (IsDebugMode) 
-            {
-                System.Console.WriteLine("Stop Host - ");
-                System.Console.WriteLine("payload: " + payload.SafeToString());
-            }
-
+            this.LogMessage(payload, "Stop Host - ");
             var plea = new PayloadEventArgs<SSOTMEPayload>(payload);
             this.Invoke(this.SSOTMECoordinatorStopHostReceived, plea);
         }
         
-            public void TranspilerHostPing() {
+        /// <summary>
+        /// Ping - 
+        /// </summary>
+        public void TranspilerHostPing() 
+        {
             this.TranspilerHostPing(this.CreatePayload());
-            }
+        }
 
-            public void TranspilerHostPing(System.String content) {
+        /// <summary>
+        /// Ping - 
+        /// </summary>
+        public void TranspilerHostPing(System.String content) 
+        {
             var payload = this.CreatePayload();
             payload.Content = content;
             this.TranspilerHostPing(payload);
-            }
+        }
 
-            public void TranspilerHostPing(SSOTMEPayload payload)
-            {
+        /// <summary>
+        /// Ping - 
+        /// </summary>
+        public void TranspilerHostPing(SSOTMEPayload payload)
+        {
             
             this.SendMessage(payload, "Ping - ",
             "transpilerhostmic", "ssotmecoordinator.general.transpilerhost.ping");
-            }
+        }
 
 
         
-            public void TranspilerHostOffline(DMProxy proxy) {
+        /// <summary>
+        /// Offline - 
+        /// </summary>
+        public void TranspilerHostOffline(DMProxy proxy) 
+        {
             this.TranspilerHostOffline(this.CreatePayload(), proxy);
-            }
+        }
 
-            public void TranspilerHostOffline(System.String content, DMProxy proxy) {
+        /// <summary>
+        /// Offline - 
+        /// </summary>
+        public void TranspilerHostOffline(System.String content, DMProxy proxy) 
+        {
             var payload = this.CreatePayload();
             payload.Content = content;
             this.TranspilerHostOffline(payload, proxy);
-            }
+        }
 
-            public void TranspilerHostOffline(SSOTMEPayload payload, DMProxy proxy)
-            {
+        /// <summary>
+        /// Offline - 
+        /// </summary>
+        public void TranspilerHostOffline(SSOTMEPayload payload, DMProxy proxy)
+        {
             payload.IsDirectMessage = true;
             this.SendMessage(payload, "Offline - ",
             "transpilerhostmic", "ssotmecoordinator.general.transpilerhost.offline", proxy.RoutingKey);
-            }
+        }
 
 
         
-            public void TranspilerHostInstanceStarted(DMProxy proxy) {
+        /// <summary>
+        /// Instance Started - 
+        /// </summary>
+        public void TranspilerHostInstanceStarted(DMProxy proxy) 
+        {
             this.TranspilerHostInstanceStarted(this.CreatePayload(), proxy);
-            }
+        }
 
-            public void TranspilerHostInstanceStarted(System.String content, DMProxy proxy) {
+        /// <summary>
+        /// Instance Started - 
+        /// </summary>
+        public void TranspilerHostInstanceStarted(System.String content, DMProxy proxy) 
+        {
             var payload = this.CreatePayload();
             payload.Content = content;
             this.TranspilerHostInstanceStarted(payload, proxy);
-            }
+        }
 
-            public void TranspilerHostInstanceStarted(SSOTMEPayload payload, DMProxy proxy)
-            {
+        /// <summary>
+        /// Instance Started - 
+        /// </summary>
+        public void TranspilerHostInstanceStarted(SSOTMEPayload payload, DMProxy proxy)
+        {
             payload.IsDirectMessage = true;
             this.SendMessage(payload, "Instance Started - ",
             "transpilerhostmic", "ssotmecoordinator.general.transpilerhost.instancestarted", proxy.RoutingKey);
-            }
+        }
 
 
         
-            public void TranspilerHostInstanceStopped(DMProxy proxy) {
+        /// <summary>
+        /// Instance Stopped - 
+        /// </summary>
+        public void TranspilerHostInstanceStopped(DMProxy proxy) 
+        {
             this.TranspilerHostInstanceStopped(this.CreatePayload(), proxy);
-            }
+        }
 
-            public void TranspilerHostInstanceStopped(System.String content, DMProxy proxy) {
+        /// <summary>
+        /// Instance Stopped - 
+        /// </summary>
+        public void TranspilerHostInstanceStopped(System.String content, DMProxy proxy) 
+        {
             var payload = this.CreatePayload();
             payload.Content = content;
             this.TranspilerHostInstanceStopped(payload, proxy);
-            }
+        }
 
-            public void TranspilerHostInstanceStopped(SSOTMEPayload payload, DMProxy proxy)
-            {
+        /// <summary>
+        /// Instance Stopped - 
+        /// </summary>
+        public void TranspilerHostInstanceStopped(SSOTMEPayload payload, DMProxy proxy)
+        {
             payload.IsDirectMessage = true;
             this.SendMessage(payload, "Instance Stopped - ",
             "transpilerhostmic", "ssotmecoordinator.general.transpilerhost.instancestopped", proxy.RoutingKey);
-            }
+        }
 
 
         
-            // And can also say/hear everything which : SSOTMEAdmin hears.
+            // And can also say/hear everything which : AccountHolder hears.
             
-            public void SSOTMEAdminPing(DMProxy proxy) {
-            this.SSOTMEAdminPing(this.CreatePayload(), proxy);
-            }
+        /// <summary>
+        /// Ping - 
+        /// </summary>
+        public void AccountHolderPing() 
+        {
+            this.AccountHolderPing(this.CreatePayload());
+        }
 
-            public void SSOTMEAdminPing(System.String content, DMProxy proxy) {
+        /// <summary>
+        /// Ping - 
+        /// </summary>
+        public void AccountHolderPing(System.String content) 
+        {
             var payload = this.CreatePayload();
             payload.Content = content;
-            this.SSOTMEAdminPing(payload, proxy);
-            }
+            this.AccountHolderPing(payload);
+        }
 
-            public void SSOTMEAdminPing(SSOTMEPayload payload, DMProxy proxy)
-            {
-            payload.IsDirectMessage = true;
+        /// <summary>
+        /// Ping - 
+        /// </summary>
+        public void AccountHolderPing(SSOTMEPayload payload)
+        {
+            
             this.SendMessage(payload, "Ping - ",
-            "ssotmeadminmic", "ssotmecoordinator.general.ssotmeadmin.ping", proxy.RoutingKey);
-            }
+            "accountholdermic", "ssotmecoordinator.general.accountholder.ping");
+        }
 
 
         
-            public void SSOTMEAdminAddPlatformCategory(DMProxy proxy) {
-            this.SSOTMEAdminAddPlatformCategory(this.CreatePayload(), proxy);
-            }
+        /// <summary>
+        /// Login - 
+        /// </summary>
+        public void AccountHolderLogin(DMProxy proxy) 
+        {
+            this.AccountHolderLogin(this.CreatePayload(), proxy);
+        }
 
-            public void SSOTMEAdminAddPlatformCategory(System.String content, DMProxy proxy) {
+        /// <summary>
+        /// Login - 
+        /// </summary>
+        public void AccountHolderLogin(System.String content, DMProxy proxy) 
+        {
             var payload = this.CreatePayload();
             payload.Content = content;
-            this.SSOTMEAdminAddPlatformCategory(payload, proxy);
-            }
+            this.AccountHolderLogin(payload, proxy);
+        }
 
-            public void SSOTMEAdminAddPlatformCategory(SSOTMEPayload payload, DMProxy proxy)
-            {
+        /// <summary>
+        /// Login - 
+        /// </summary>
+        public void AccountHolderLogin(SSOTMEPayload payload, DMProxy proxy)
+        {
             payload.IsDirectMessage = true;
-            this.SendMessage(payload, "Add Platform Category - ",
-            "ssotmeadminmic", "ssotmecoordinator.general.ssotmeadmin.addplatformcategory", proxy.RoutingKey);
-            }
+            this.SendMessage(payload, "Login - ",
+            "accountholdermic", "ssotmecoordinator.general.accountholder.login", proxy.RoutingKey);
+        }
 
 
         
-            public void SSOTMEAdminUpdatePlatformCategory(DMProxy proxy) {
-            this.SSOTMEAdminUpdatePlatformCategory(this.CreatePayload(), proxy);
-            }
+        /// <summary>
+        /// Logout - 
+        /// </summary>
+        public void AccountHolderLogout(DMProxy proxy) 
+        {
+            this.AccountHolderLogout(this.CreatePayload(), proxy);
+        }
 
-            public void SSOTMEAdminUpdatePlatformCategory(System.String content, DMProxy proxy) {
+        /// <summary>
+        /// Logout - 
+        /// </summary>
+        public void AccountHolderLogout(System.String content, DMProxy proxy) 
+        {
             var payload = this.CreatePayload();
             payload.Content = content;
-            this.SSOTMEAdminUpdatePlatformCategory(payload, proxy);
-            }
+            this.AccountHolderLogout(payload, proxy);
+        }
 
-            public void SSOTMEAdminUpdatePlatformCategory(SSOTMEPayload payload, DMProxy proxy)
-            {
+        /// <summary>
+        /// Logout - 
+        /// </summary>
+        public void AccountHolderLogout(SSOTMEPayload payload, DMProxy proxy)
+        {
             payload.IsDirectMessage = true;
-            this.SendMessage(payload, "Update Platform Category - ",
-            "ssotmeadminmic", "ssotmecoordinator.general.ssotmeadmin.updateplatformcategory", proxy.RoutingKey);
-            }
+            this.SendMessage(payload, "Logout - ",
+            "accountholdermic", "ssotmecoordinator.general.accountholder.logout", proxy.RoutingKey);
+        }
 
 
         
-            public void SSOTMEAdminAddTranspilerPlatform(DMProxy proxy) {
-            this.SSOTMEAdminAddTranspilerPlatform(this.CreatePayload(), proxy);
-            }
+        /// <summary>
+        /// Add Transpiler - 
+        /// </summary>
+        public void AccountHolderAddTranspiler(DMProxy proxy) 
+        {
+            this.AccountHolderAddTranspiler(this.CreatePayload(), proxy);
+        }
 
-            public void SSOTMEAdminAddTranspilerPlatform(System.String content, DMProxy proxy) {
+        /// <summary>
+        /// Add Transpiler - 
+        /// </summary>
+        public void AccountHolderAddTranspiler(System.String content, DMProxy proxy) 
+        {
             var payload = this.CreatePayload();
             payload.Content = content;
-            this.SSOTMEAdminAddTranspilerPlatform(payload, proxy);
-            }
+            this.AccountHolderAddTranspiler(payload, proxy);
+        }
 
-            public void SSOTMEAdminAddTranspilerPlatform(SSOTMEPayload payload, DMProxy proxy)
-            {
+        /// <summary>
+        /// Add Transpiler - 
+        /// </summary>
+        public void AccountHolderAddTranspiler(SSOTMEPayload payload, DMProxy proxy)
+        {
             payload.IsDirectMessage = true;
-            this.SendMessage(payload, "Add Transpiler Platform - ",
-            "ssotmeadminmic", "ssotmecoordinator.general.ssotmeadmin.addtranspilerplatform", proxy.RoutingKey);
-            }
+            this.SendMessage(payload, "Add Transpiler - ",
+            "accountholdermic", "ssotmecoordinator.general.accountholder.addtranspiler", proxy.RoutingKey);
+        }
 
 
         
-            public void SSOTMEAdminUpdateTranspilerPlatform(DMProxy proxy) {
-            this.SSOTMEAdminUpdateTranspilerPlatform(this.CreatePayload(), proxy);
-            }
+        /// <summary>
+        /// Delete Transpiler - 
+        /// </summary>
+        public void AccountHolderDeleteTranspiler(DMProxy proxy) 
+        {
+            this.AccountHolderDeleteTranspiler(this.CreatePayload(), proxy);
+        }
 
-            public void SSOTMEAdminUpdateTranspilerPlatform(System.String content, DMProxy proxy) {
+        /// <summary>
+        /// Delete Transpiler - 
+        /// </summary>
+        public void AccountHolderDeleteTranspiler(System.String content, DMProxy proxy) 
+        {
             var payload = this.CreatePayload();
             payload.Content = content;
-            this.SSOTMEAdminUpdateTranspilerPlatform(payload, proxy);
-            }
+            this.AccountHolderDeleteTranspiler(payload, proxy);
+        }
 
-            public void SSOTMEAdminUpdateTranspilerPlatform(SSOTMEPayload payload, DMProxy proxy)
-            {
+        /// <summary>
+        /// Delete Transpiler - 
+        /// </summary>
+        public void AccountHolderDeleteTranspiler(SSOTMEPayload payload, DMProxy proxy)
+        {
             payload.IsDirectMessage = true;
-            this.SendMessage(payload, "Update Transpiler Platform - ",
-            "ssotmeadminmic", "ssotmecoordinator.general.ssotmeadmin.updatetranspilerplatform", proxy.RoutingKey);
-            }
+            this.SendMessage(payload, "Delete Transpiler - ",
+            "accountholdermic", "ssotmecoordinator.general.accountholder.deletetranspiler", proxy.RoutingKey);
+        }
 
 
         
-            // And can also say/hear everything which : SSOTMECoordinator hears.
+        /// <summary>
+        /// Update Transpiler - 
+        /// </summary>
+        public void AccountHolderUpdateTranspiler(DMProxy proxy) 
+        {
+            this.AccountHolderUpdateTranspiler(this.CreatePayload(), proxy);
+        }
+
+        /// <summary>
+        /// Update Transpiler - 
+        /// </summary>
+        public void AccountHolderUpdateTranspiler(System.String content, DMProxy proxy) 
+        {
+            var payload = this.CreatePayload();
+            payload.Content = content;
+            this.AccountHolderUpdateTranspiler(payload, proxy);
+        }
+
+        /// <summary>
+        /// Update Transpiler - 
+        /// </summary>
+        public void AccountHolderUpdateTranspiler(SSOTMEPayload payload, DMProxy proxy)
+        {
+            payload.IsDirectMessage = true;
+            this.SendMessage(payload, "Update Transpiler - ",
+            "accountholdermic", "ssotmecoordinator.general.accountholder.updatetranspiler", proxy.RoutingKey);
+        }
+
+
+        
+        /// <summary>
+        /// Get Transpiler - 
+        /// </summary>
+        public void AccountHolderGetTranspiler(DMProxy proxy) 
+        {
+            this.AccountHolderGetTranspiler(this.CreatePayload(), proxy);
+        }
+
+        /// <summary>
+        /// Get Transpiler - 
+        /// </summary>
+        public void AccountHolderGetTranspiler(System.String content, DMProxy proxy) 
+        {
+            var payload = this.CreatePayload();
+            payload.Content = content;
+            this.AccountHolderGetTranspiler(payload, proxy);
+        }
+
+        /// <summary>
+        /// Get Transpiler - 
+        /// </summary>
+        public void AccountHolderGetTranspiler(SSOTMEPayload payload, DMProxy proxy)
+        {
+            payload.IsDirectMessage = true;
+            this.SendMessage(payload, "Get Transpiler - ",
+            "accountholdermic", "ssotmecoordinator.general.accountholder.gettranspiler", proxy.RoutingKey);
+        }
+
+
+        
+        /// <summary>
+        /// Add Transpiler Version - 
+        /// </summary>
+        public void AccountHolderAddTranspilerVersion(DMProxy proxy) 
+        {
+            this.AccountHolderAddTranspilerVersion(this.CreatePayload(), proxy);
+        }
+
+        /// <summary>
+        /// Add Transpiler Version - 
+        /// </summary>
+        public void AccountHolderAddTranspilerVersion(System.String content, DMProxy proxy) 
+        {
+            var payload = this.CreatePayload();
+            payload.Content = content;
+            this.AccountHolderAddTranspilerVersion(payload, proxy);
+        }
+
+        /// <summary>
+        /// Add Transpiler Version - 
+        /// </summary>
+        public void AccountHolderAddTranspilerVersion(SSOTMEPayload payload, DMProxy proxy)
+        {
+            payload.IsDirectMessage = true;
+            this.SendMessage(payload, "Add Transpiler Version - ",
+            "accountholdermic", "ssotmecoordinator.general.accountholder.addtranspilerversion", proxy.RoutingKey);
+        }
+
+
+        
+        /// <summary>
+        /// Delete Transpiler Version - 
+        /// </summary>
+        public void AccountHolderDeleteTranspilerVersion(DMProxy proxy) 
+        {
+            this.AccountHolderDeleteTranspilerVersion(this.CreatePayload(), proxy);
+        }
+
+        /// <summary>
+        /// Delete Transpiler Version - 
+        /// </summary>
+        public void AccountHolderDeleteTranspilerVersion(System.String content, DMProxy proxy) 
+        {
+            var payload = this.CreatePayload();
+            payload.Content = content;
+            this.AccountHolderDeleteTranspilerVersion(payload, proxy);
+        }
+
+        /// <summary>
+        /// Delete Transpiler Version - 
+        /// </summary>
+        public void AccountHolderDeleteTranspilerVersion(SSOTMEPayload payload, DMProxy proxy)
+        {
+            payload.IsDirectMessage = true;
+            this.SendMessage(payload, "Delete Transpiler Version - ",
+            "accountholdermic", "ssotmecoordinator.general.accountholder.deletetranspilerversion", proxy.RoutingKey);
+        }
+
+
+        
+        /// <summary>
+        /// Update Transpiler Version - 
+        /// </summary>
+        public void AccountHolderUpdateTranspilerVersion(DMProxy proxy) 
+        {
+            this.AccountHolderUpdateTranspilerVersion(this.CreatePayload(), proxy);
+        }
+
+        /// <summary>
+        /// Update Transpiler Version - 
+        /// </summary>
+        public void AccountHolderUpdateTranspilerVersion(System.String content, DMProxy proxy) 
+        {
+            var payload = this.CreatePayload();
+            payload.Content = content;
+            this.AccountHolderUpdateTranspilerVersion(payload, proxy);
+        }
+
+        /// <summary>
+        /// Update Transpiler Version - 
+        /// </summary>
+        public void AccountHolderUpdateTranspilerVersion(SSOTMEPayload payload, DMProxy proxy)
+        {
+            payload.IsDirectMessage = true;
+            this.SendMessage(payload, "Update Transpiler Version - ",
+            "accountholdermic", "ssotmecoordinator.general.accountholder.updatetranspilerversion", proxy.RoutingKey);
+        }
+
+
+        
+        /// <summary>
+        /// Get Transpiler List - 
+        /// </summary>
+        public void AccountHolderGetTranspilerList(DMProxy proxy) 
+        {
+            this.AccountHolderGetTranspilerList(this.CreatePayload(), proxy);
+        }
+
+        /// <summary>
+        /// Get Transpiler List - 
+        /// </summary>
+        public void AccountHolderGetTranspilerList(System.String content, DMProxy proxy) 
+        {
+            var payload = this.CreatePayload();
+            payload.Content = content;
+            this.AccountHolderGetTranspilerList(payload, proxy);
+        }
+
+        /// <summary>
+        /// Get Transpiler List - 
+        /// </summary>
+        public void AccountHolderGetTranspilerList(SSOTMEPayload payload, DMProxy proxy)
+        {
+            payload.IsDirectMessage = true;
+            this.SendMessage(payload, "Get Transpiler List - ",
+            "accountholdermic", "ssotmecoordinator.general.accountholder.gettranspilerlist", proxy.RoutingKey);
+        }
+
+
+        
+        /// <summary>
+        /// Create Project - 
+        /// </summary>
+        public void AccountHolderCreateProject(DMProxy proxy) 
+        {
+            this.AccountHolderCreateProject(this.CreatePayload(), proxy);
+        }
+
+        /// <summary>
+        /// Create Project - 
+        /// </summary>
+        public void AccountHolderCreateProject(System.String content, DMProxy proxy) 
+        {
+            var payload = this.CreatePayload();
+            payload.Content = content;
+            this.AccountHolderCreateProject(payload, proxy);
+        }
+
+        /// <summary>
+        /// Create Project - 
+        /// </summary>
+        public void AccountHolderCreateProject(SSOTMEPayload payload, DMProxy proxy)
+        {
+            payload.IsDirectMessage = true;
+            this.SendMessage(payload, "Create Project - ",
+            "accountholdermic", "ssotmecoordinator.general.accountholder.createproject", proxy.RoutingKey);
+        }
+
+
+        
+        /// <summary>
+        /// Request Transpile - 
+        /// </summary>
+        public void AccountHolderRequestTranspile(DMProxy proxy) 
+        {
+            this.AccountHolderRequestTranspile(this.CreatePayload(), proxy);
+        }
+
+        /// <summary>
+        /// Request Transpile - 
+        /// </summary>
+        public void AccountHolderRequestTranspile(System.String content, DMProxy proxy) 
+        {
+            var payload = this.CreatePayload();
+            payload.Content = content;
+            this.AccountHolderRequestTranspile(payload, proxy);
+        }
+
+        /// <summary>
+        /// Request Transpile - 
+        /// </summary>
+        public void AccountHolderRequestTranspile(SSOTMEPayload payload, DMProxy proxy)
+        {
+            payload.IsDirectMessage = true;
+            this.SendMessage(payload, "Request Transpile - ",
+            "accountholdermic", "ssotmecoordinator.general.accountholder.requesttranspile", proxy.RoutingKey);
+        }
+
+
+        
+        /// <summary>
+        /// Request Transpiler Host - 
+        /// </summary>
+        public void AccountHolderRequestTranspilerHost(DMProxy proxy) 
+        {
+            this.AccountHolderRequestTranspilerHost(this.CreatePayload(), proxy);
+        }
+
+        /// <summary>
+        /// Request Transpiler Host - 
+        /// </summary>
+        public void AccountHolderRequestTranspilerHost(System.String content, DMProxy proxy) 
+        {
+            var payload = this.CreatePayload();
+            payload.Content = content;
+            this.AccountHolderRequestTranspilerHost(payload, proxy);
+        }
+
+        /// <summary>
+        /// Request Transpiler Host - 
+        /// </summary>
+        public void AccountHolderRequestTranspilerHost(SSOTMEPayload payload, DMProxy proxy)
+        {
+            payload.IsDirectMessage = true;
+            this.SendMessage(payload, "Request Transpiler Host - ",
+            "accountholdermic", "ssotmecoordinator.general.accountholder.requesttranspilerhost", proxy.RoutingKey);
+        }
+
+
+        
+        /// <summary>
+        /// Request Stop Instance - 
+        /// </summary>
+        public void AccountHolderRequestStopInstance(DMProxy proxy) 
+        {
+            this.AccountHolderRequestStopInstance(this.CreatePayload(), proxy);
+        }
+
+        /// <summary>
+        /// Request Stop Instance - 
+        /// </summary>
+        public void AccountHolderRequestStopInstance(System.String content, DMProxy proxy) 
+        {
+            var payload = this.CreatePayload();
+            payload.Content = content;
+            this.AccountHolderRequestStopInstance(payload, proxy);
+        }
+
+        /// <summary>
+        /// Request Stop Instance - 
+        /// </summary>
+        public void AccountHolderRequestStopInstance(SSOTMEPayload payload, DMProxy proxy)
+        {
+            payload.IsDirectMessage = true;
+            this.SendMessage(payload, "Request Stop Instance - ",
+            "accountholdermic", "ssotmecoordinator.general.accountholder.requeststopinstance", proxy.RoutingKey);
+        }
+
+
+        
+        /// <summary>
+        /// Request Stop Host - 
+        /// </summary>
+        public void AccountHolderRequestStopHost(DMProxy proxy) 
+        {
+            this.AccountHolderRequestStopHost(this.CreatePayload(), proxy);
+        }
+
+        /// <summary>
+        /// Request Stop Host - 
+        /// </summary>
+        public void AccountHolderRequestStopHost(System.String content, DMProxy proxy) 
+        {
+            var payload = this.CreatePayload();
+            payload.Content = content;
+            this.AccountHolderRequestStopHost(payload, proxy);
+        }
+
+        /// <summary>
+        /// Request Stop Host - 
+        /// </summary>
+        public void AccountHolderRequestStopHost(SSOTMEPayload payload, DMProxy proxy)
+        {
+            payload.IsDirectMessage = true;
+            this.SendMessage(payload, "Request Stop Host - ",
+            "accountholdermic", "ssotmecoordinator.general.accountholder.requeststophost", proxy.RoutingKey);
+        }
+
+
+        
+        /// <summary>
+        /// Command Line Transpile - 
+        /// </summary>
+        public void AccountHolderCommandLineTranspile(DMProxy proxy) 
+        {
+            this.AccountHolderCommandLineTranspile(this.CreatePayload(), proxy);
+        }
+
+        /// <summary>
+        /// Command Line Transpile - 
+        /// </summary>
+        public void AccountHolderCommandLineTranspile(System.String content, DMProxy proxy) 
+        {
+            var payload = this.CreatePayload();
+            payload.Content = content;
+            this.AccountHolderCommandLineTranspile(payload, proxy);
+        }
+
+        /// <summary>
+        /// Command Line Transpile - 
+        /// </summary>
+        public void AccountHolderCommandLineTranspile(SSOTMEPayload payload, DMProxy proxy)
+        {
+            payload.IsDirectMessage = true;
+            this.SendMessage(payload, "Command Line Transpile - ",
+            "accountholdermic", "ssotmecoordinator.general.accountholder.commandlinetranspile", proxy.RoutingKey);
+        }
+
+
+        
+            // And can also say/hear everything which : PublicUser hears.
             
-        public event System.EventHandler<PayloadEventArgs<SSOTMEPayload>> PublicUserPingReceived;
-        protected virtual void OnPublicUserPingReceived(SSOTMEPayload payload)
+        /// <summary>
+        /// Responds to: Transpiler Online - 
+        /// </summary>
+        public event System.EventHandler<PayloadEventArgs<SSOTMEPayload>> SSOTMECoordinatorTranspilerOnlineReceived;
+        protected virtual void OnSSOTMECoordinatorTranspilerOnlineReceived(SSOTMEPayload payload)
         {
-            if (IsDebugMode) 
-            {
-                System.Console.WriteLine("Ping - ");
-                System.Console.WriteLine("payload: " + payload.SafeToString());
-            }
-
+            this.LogMessage(payload, "Transpiler Online - ");
             var plea = new PayloadEventArgs<SSOTMEPayload>(payload);
-            this.Invoke(this.PublicUserPingReceived, plea);
+            this.Invoke(this.SSOTMECoordinatorTranspilerOnlineReceived, plea);
         }
         
-        public event System.EventHandler<PayloadEventArgs<SSOTMEPayload>> PublicUserRegisterReceived;
-        protected virtual void OnPublicUserRegisterReceived(SSOTMEPayload payload)
+        /// <summary>
+        /// Responds to: Transpiler Offline - 
+        /// </summary>
+        public event System.EventHandler<PayloadEventArgs<SSOTMEPayload>> SSOTMECoordinatorTranspilerOfflineReceived;
+        protected virtual void OnSSOTMECoordinatorTranspilerOfflineReceived(SSOTMEPayload payload)
         {
-            if (IsDebugMode) 
-            {
-                System.Console.WriteLine("Register - ");
-                System.Console.WriteLine("payload: " + payload.SafeToString());
-            }
-
+            this.LogMessage(payload, "Transpiler Offline - ");
             var plea = new PayloadEventArgs<SSOTMEPayload>(payload);
-            this.Invoke(this.PublicUserRegisterReceived, plea);
+            this.Invoke(this.SSOTMECoordinatorTranspilerOfflineReceived, plea);
         }
         
-        public event System.EventHandler<PayloadEventArgs<SSOTMEPayload>> PublicUserRecoverReceived;
-        protected virtual void OnPublicUserRecoverReceived(SSOTMEPayload payload)
+        /// <summary>
+        /// Ping - 
+        /// </summary>
+        public void PublicUserPing() 
         {
-            if (IsDebugMode) 
-            {
-                System.Console.WriteLine("Recover - ");
-                System.Console.WriteLine("payload: " + payload.SafeToString());
-            }
-
-            var plea = new PayloadEventArgs<SSOTMEPayload>(payload);
-            this.Invoke(this.PublicUserRecoverReceived, plea);
+            this.PublicUserPing(this.CreatePayload());
         }
-        
-        public event System.EventHandler<PayloadEventArgs<SSOTMEPayload>> PublicUserGetAllTranspilersReceived;
-        protected virtual void OnPublicUserGetAllTranspilersReceived(SSOTMEPayload payload)
+
+        /// <summary>
+        /// Ping - 
+        /// </summary>
+        public void PublicUserPing(System.String content) 
         {
-            if (IsDebugMode) 
-            {
-                System.Console.WriteLine("Get All Transpilers - ");
-                System.Console.WriteLine("payload: " + payload.SafeToString());
-            }
-
-            var plea = new PayloadEventArgs<SSOTMEPayload>(payload);
-            this.Invoke(this.PublicUserGetAllTranspilersReceived, plea);
-        }
-        
-        public event System.EventHandler<PayloadEventArgs<SSOTMEPayload>> PublicUserGetAllPlatformDataReceived;
-        protected virtual void OnPublicUserGetAllPlatformDataReceived(SSOTMEPayload payload)
-        {
-            if (IsDebugMode) 
-            {
-                System.Console.WriteLine("Get All Platform Data - ");
-                System.Console.WriteLine("payload: " + payload.SafeToString());
-            }
-
-            var plea = new PayloadEventArgs<SSOTMEPayload>(payload);
-            this.Invoke(this.PublicUserGetAllPlatformDataReceived, plea);
-        }
-        
-        public event System.EventHandler<PayloadEventArgs<SSOTMEPayload>> PublicUserGetAllFileTypesReceived;
-        protected virtual void OnPublicUserGetAllFileTypesReceived(SSOTMEPayload payload)
-        {
-            if (IsDebugMode) 
-            {
-                System.Console.WriteLine("Get All File Types - ");
-                System.Console.WriteLine("payload: " + payload.SafeToString());
-            }
-
-            var plea = new PayloadEventArgs<SSOTMEPayload>(payload);
-            this.Invoke(this.PublicUserGetAllFileTypesReceived, plea);
-        }
-        
-        public event System.EventHandler<PayloadEventArgs<SSOTMEPayload>> AccountHolderPingReceived;
-        protected virtual void OnAccountHolderPingReceived(SSOTMEPayload payload)
-        {
-            if (IsDebugMode) 
-            {
-                System.Console.WriteLine("Ping - ");
-                System.Console.WriteLine("payload: " + payload.SafeToString());
-            }
-
-            var plea = new PayloadEventArgs<SSOTMEPayload>(payload);
-            this.Invoke(this.AccountHolderPingReceived, plea);
-        }
-        
-        public event System.EventHandler<PayloadEventArgs<SSOTMEPayload>> AccountHolderLoginReceived;
-        protected virtual void OnAccountHolderLoginReceived(SSOTMEPayload payload)
-        {
-            if (IsDebugMode) 
-            {
-                System.Console.WriteLine("Login - ");
-                System.Console.WriteLine("payload: " + payload.SafeToString());
-            }
-
-            var plea = new PayloadEventArgs<SSOTMEPayload>(payload);
-            this.Invoke(this.AccountHolderLoginReceived, plea);
-        }
-        
-        public event System.EventHandler<PayloadEventArgs<SSOTMEPayload>> AccountHolderLogoutReceived;
-        protected virtual void OnAccountHolderLogoutReceived(SSOTMEPayload payload)
-        {
-            if (IsDebugMode) 
-            {
-                System.Console.WriteLine("Logout - ");
-                System.Console.WriteLine("payload: " + payload.SafeToString());
-            }
-
-            var plea = new PayloadEventArgs<SSOTMEPayload>(payload);
-            this.Invoke(this.AccountHolderLogoutReceived, plea);
-        }
-        
-        public event System.EventHandler<PayloadEventArgs<SSOTMEPayload>> AccountHolderAddTranspilerReceived;
-        protected virtual void OnAccountHolderAddTranspilerReceived(SSOTMEPayload payload)
-        {
-            if (IsDebugMode) 
-            {
-                System.Console.WriteLine("Add Transpiler - ");
-                System.Console.WriteLine("payload: " + payload.SafeToString());
-            }
-
-            var plea = new PayloadEventArgs<SSOTMEPayload>(payload);
-            this.Invoke(this.AccountHolderAddTranspilerReceived, plea);
-        }
-        
-        public event System.EventHandler<PayloadEventArgs<SSOTMEPayload>> AccountHolderDeleteTranspilerReceived;
-        protected virtual void OnAccountHolderDeleteTranspilerReceived(SSOTMEPayload payload)
-        {
-            if (IsDebugMode) 
-            {
-                System.Console.WriteLine("Delete Transpiler - ");
-                System.Console.WriteLine("payload: " + payload.SafeToString());
-            }
-
-            var plea = new PayloadEventArgs<SSOTMEPayload>(payload);
-            this.Invoke(this.AccountHolderDeleteTranspilerReceived, plea);
-        }
-        
-        public event System.EventHandler<PayloadEventArgs<SSOTMEPayload>> AccountHolderUpdateTranspilerReceived;
-        protected virtual void OnAccountHolderUpdateTranspilerReceived(SSOTMEPayload payload)
-        {
-            if (IsDebugMode) 
-            {
-                System.Console.WriteLine("Update Transpiler - ");
-                System.Console.WriteLine("payload: " + payload.SafeToString());
-            }
-
-            var plea = new PayloadEventArgs<SSOTMEPayload>(payload);
-            this.Invoke(this.AccountHolderUpdateTranspilerReceived, plea);
-        }
-        
-        public event System.EventHandler<PayloadEventArgs<SSOTMEPayload>> AccountHolderGetTranspilerReceived;
-        protected virtual void OnAccountHolderGetTranspilerReceived(SSOTMEPayload payload)
-        {
-            if (IsDebugMode) 
-            {
-                System.Console.WriteLine("Get Transpiler - ");
-                System.Console.WriteLine("payload: " + payload.SafeToString());
-            }
-
-            var plea = new PayloadEventArgs<SSOTMEPayload>(payload);
-            this.Invoke(this.AccountHolderGetTranspilerReceived, plea);
-        }
-        
-        public event System.EventHandler<PayloadEventArgs<SSOTMEPayload>> AccountHolderAddTranspilerVersionReceived;
-        protected virtual void OnAccountHolderAddTranspilerVersionReceived(SSOTMEPayload payload)
-        {
-            if (IsDebugMode) 
-            {
-                System.Console.WriteLine("Add Transpiler Version - ");
-                System.Console.WriteLine("payload: " + payload.SafeToString());
-            }
-
-            var plea = new PayloadEventArgs<SSOTMEPayload>(payload);
-            this.Invoke(this.AccountHolderAddTranspilerVersionReceived, plea);
-        }
-        
-        public event System.EventHandler<PayloadEventArgs<SSOTMEPayload>> AccountHolderDeleteTranspilerVersionReceived;
-        protected virtual void OnAccountHolderDeleteTranspilerVersionReceived(SSOTMEPayload payload)
-        {
-            if (IsDebugMode) 
-            {
-                System.Console.WriteLine("Delete Transpiler Version - ");
-                System.Console.WriteLine("payload: " + payload.SafeToString());
-            }
-
-            var plea = new PayloadEventArgs<SSOTMEPayload>(payload);
-            this.Invoke(this.AccountHolderDeleteTranspilerVersionReceived, plea);
-        }
-        
-        public event System.EventHandler<PayloadEventArgs<SSOTMEPayload>> AccountHolderUpdateTranspilerVersionReceived;
-        protected virtual void OnAccountHolderUpdateTranspilerVersionReceived(SSOTMEPayload payload)
-        {
-            if (IsDebugMode) 
-            {
-                System.Console.WriteLine("Update Transpiler Version - ");
-                System.Console.WriteLine("payload: " + payload.SafeToString());
-            }
-
-            var plea = new PayloadEventArgs<SSOTMEPayload>(payload);
-            this.Invoke(this.AccountHolderUpdateTranspilerVersionReceived, plea);
-        }
-        
-        public event System.EventHandler<PayloadEventArgs<SSOTMEPayload>> AccountHolderGetTranspilerListReceived;
-        protected virtual void OnAccountHolderGetTranspilerListReceived(SSOTMEPayload payload)
-        {
-            if (IsDebugMode) 
-            {
-                System.Console.WriteLine("Get Transpiler List - ");
-                System.Console.WriteLine("payload: " + payload.SafeToString());
-            }
-
-            var plea = new PayloadEventArgs<SSOTMEPayload>(payload);
-            this.Invoke(this.AccountHolderGetTranspilerListReceived, plea);
-        }
-        
-        public event System.EventHandler<PayloadEventArgs<SSOTMEPayload>> AccountHolderCreateProjectReceived;
-        protected virtual void OnAccountHolderCreateProjectReceived(SSOTMEPayload payload)
-        {
-            if (IsDebugMode) 
-            {
-                System.Console.WriteLine("Create Project - ");
-                System.Console.WriteLine("payload: " + payload.SafeToString());
-            }
-
-            var plea = new PayloadEventArgs<SSOTMEPayload>(payload);
-            this.Invoke(this.AccountHolderCreateProjectReceived, plea);
-        }
-        
-        public event System.EventHandler<PayloadEventArgs<SSOTMEPayload>> AccountHolderRequestTranspileReceived;
-        protected virtual void OnAccountHolderRequestTranspileReceived(SSOTMEPayload payload)
-        {
-            if (IsDebugMode) 
-            {
-                System.Console.WriteLine("Request Transpile - ");
-                System.Console.WriteLine("payload: " + payload.SafeToString());
-            }
-
-            var plea = new PayloadEventArgs<SSOTMEPayload>(payload);
-            this.Invoke(this.AccountHolderRequestTranspileReceived, plea);
-        }
-        
-        public event System.EventHandler<PayloadEventArgs<SSOTMEPayload>> AccountHolderRequestTranspilerHostReceived;
-        protected virtual void OnAccountHolderRequestTranspilerHostReceived(SSOTMEPayload payload)
-        {
-            if (IsDebugMode) 
-            {
-                System.Console.WriteLine("Request Transpiler Host - ");
-                System.Console.WriteLine("payload: " + payload.SafeToString());
-            }
-
-            var plea = new PayloadEventArgs<SSOTMEPayload>(payload);
-            this.Invoke(this.AccountHolderRequestTranspilerHostReceived, plea);
-        }
-        
-        public event System.EventHandler<PayloadEventArgs<SSOTMEPayload>> AccountHolderRequestStopInstanceReceived;
-        protected virtual void OnAccountHolderRequestStopInstanceReceived(SSOTMEPayload payload)
-        {
-            if (IsDebugMode) 
-            {
-                System.Console.WriteLine("Request Stop Instance - ");
-                System.Console.WriteLine("payload: " + payload.SafeToString());
-            }
-
-            var plea = new PayloadEventArgs<SSOTMEPayload>(payload);
-            this.Invoke(this.AccountHolderRequestStopInstanceReceived, plea);
-        }
-        
-        public event System.EventHandler<PayloadEventArgs<SSOTMEPayload>> AccountHolderRequestStopHostReceived;
-        protected virtual void OnAccountHolderRequestStopHostReceived(SSOTMEPayload payload)
-        {
-            if (IsDebugMode) 
-            {
-                System.Console.WriteLine("Request Stop Host - ");
-                System.Console.WriteLine("payload: " + payload.SafeToString());
-            }
-
-            var plea = new PayloadEventArgs<SSOTMEPayload>(payload);
-            this.Invoke(this.AccountHolderRequestStopHostReceived, plea);
-        }
-        
-        public event System.EventHandler<PayloadEventArgs<SSOTMEPayload>> AccountHolderCommandLineTranspileReceived;
-        protected virtual void OnAccountHolderCommandLineTranspileReceived(SSOTMEPayload payload)
-        {
-            if (IsDebugMode) 
-            {
-                System.Console.WriteLine("Command Line Transpile - ");
-                System.Console.WriteLine("payload: " + payload.SafeToString());
-            }
-
-            var plea = new PayloadEventArgs<SSOTMEPayload>(payload);
-            this.Invoke(this.AccountHolderCommandLineTranspileReceived, plea);
-        }
-        
-        public event System.EventHandler<PayloadEventArgs<SSOTMEPayload>> TranspilerHostPingReceived;
-        protected virtual void OnTranspilerHostPingReceived(SSOTMEPayload payload)
-        {
-            if (IsDebugMode) 
-            {
-                System.Console.WriteLine("Ping - ");
-                System.Console.WriteLine("payload: " + payload.SafeToString());
-            }
-
-            var plea = new PayloadEventArgs<SSOTMEPayload>(payload);
-            this.Invoke(this.TranspilerHostPingReceived, plea);
-        }
-        
-        public event System.EventHandler<PayloadEventArgs<SSOTMEPayload>> TranspilerHostOfflineReceived;
-        protected virtual void OnTranspilerHostOfflineReceived(SSOTMEPayload payload)
-        {
-            if (IsDebugMode) 
-            {
-                System.Console.WriteLine("Offline - ");
-                System.Console.WriteLine("payload: " + payload.SafeToString());
-            }
-
-            var plea = new PayloadEventArgs<SSOTMEPayload>(payload);
-            this.Invoke(this.TranspilerHostOfflineReceived, plea);
-        }
-        
-        public event System.EventHandler<PayloadEventArgs<SSOTMEPayload>> TranspilerHostInstanceStartedReceived;
-        protected virtual void OnTranspilerHostInstanceStartedReceived(SSOTMEPayload payload)
-        {
-            if (IsDebugMode) 
-            {
-                System.Console.WriteLine("Instance Started - ");
-                System.Console.WriteLine("payload: " + payload.SafeToString());
-            }
-
-            var plea = new PayloadEventArgs<SSOTMEPayload>(payload);
-            this.Invoke(this.TranspilerHostInstanceStartedReceived, plea);
-        }
-        
-        public event System.EventHandler<PayloadEventArgs<SSOTMEPayload>> TranspilerHostInstanceStoppedReceived;
-        protected virtual void OnTranspilerHostInstanceStoppedReceived(SSOTMEPayload payload)
-        {
-            if (IsDebugMode) 
-            {
-                System.Console.WriteLine("Instance Stopped - ");
-                System.Console.WriteLine("payload: " + payload.SafeToString());
-            }
-
-            var plea = new PayloadEventArgs<SSOTMEPayload>(payload);
-            this.Invoke(this.TranspilerHostInstanceStoppedReceived, plea);
-        }
-        
-        public event System.EventHandler<PayloadEventArgs<SSOTMEPayload>> SSOTMEAdminPingReceived;
-        protected virtual void OnSSOTMEAdminPingReceived(SSOTMEPayload payload)
-        {
-            if (IsDebugMode) 
-            {
-                System.Console.WriteLine("Ping - ");
-                System.Console.WriteLine("payload: " + payload.SafeToString());
-            }
-
-            var plea = new PayloadEventArgs<SSOTMEPayload>(payload);
-            this.Invoke(this.SSOTMEAdminPingReceived, plea);
-        }
-        
-        public event System.EventHandler<PayloadEventArgs<SSOTMEPayload>> SSOTMEAdminAddPlatformCategoryReceived;
-        protected virtual void OnSSOTMEAdminAddPlatformCategoryReceived(SSOTMEPayload payload)
-        {
-            if (IsDebugMode) 
-            {
-                System.Console.WriteLine("Add Platform Category - ");
-                System.Console.WriteLine("payload: " + payload.SafeToString());
-            }
-
-            var plea = new PayloadEventArgs<SSOTMEPayload>(payload);
-            this.Invoke(this.SSOTMEAdminAddPlatformCategoryReceived, plea);
-        }
-        
-        public event System.EventHandler<PayloadEventArgs<SSOTMEPayload>> SSOTMEAdminUpdatePlatformCategoryReceived;
-        protected virtual void OnSSOTMEAdminUpdatePlatformCategoryReceived(SSOTMEPayload payload)
-        {
-            if (IsDebugMode) 
-            {
-                System.Console.WriteLine("Update Platform Category - ");
-                System.Console.WriteLine("payload: " + payload.SafeToString());
-            }
-
-            var plea = new PayloadEventArgs<SSOTMEPayload>(payload);
-            this.Invoke(this.SSOTMEAdminUpdatePlatformCategoryReceived, plea);
-        }
-        
-        public event System.EventHandler<PayloadEventArgs<SSOTMEPayload>> SSOTMEAdminAddTranspilerPlatformReceived;
-        protected virtual void OnSSOTMEAdminAddTranspilerPlatformReceived(SSOTMEPayload payload)
-        {
-            if (IsDebugMode) 
-            {
-                System.Console.WriteLine("Add Transpiler Platform - ");
-                System.Console.WriteLine("payload: " + payload.SafeToString());
-            }
-
-            var plea = new PayloadEventArgs<SSOTMEPayload>(payload);
-            this.Invoke(this.SSOTMEAdminAddTranspilerPlatformReceived, plea);
-        }
-        
-        public event System.EventHandler<PayloadEventArgs<SSOTMEPayload>> SSOTMEAdminUpdateTranspilerPlatformReceived;
-        protected virtual void OnSSOTMEAdminUpdateTranspilerPlatformReceived(SSOTMEPayload payload)
-        {
-            if (IsDebugMode) 
-            {
-                System.Console.WriteLine("Update Transpiler Platform - ");
-                System.Console.WriteLine("payload: " + payload.SafeToString());
-            }
-
-            var plea = new PayloadEventArgs<SSOTMEPayload>(payload);
-            this.Invoke(this.SSOTMEAdminUpdateTranspilerPlatformReceived, plea);
-        }
-        
-            public void SSOTMECoordinatorGetInstances(DMProxy proxy) {
-            this.SSOTMECoordinatorGetInstances(this.CreatePayload(), proxy);
-            }
-
-            public void SSOTMECoordinatorGetInstances(System.String content, DMProxy proxy) {
             var payload = this.CreatePayload();
             payload.Content = content;
-            this.SSOTMECoordinatorGetInstances(payload, proxy);
-            }
+            this.PublicUserPing(payload);
+        }
 
-            public void SSOTMECoordinatorGetInstances(SSOTMEPayload payload, DMProxy proxy)
-            {
-            payload.IsDirectMessage = true;
-            this.SendMessage(payload, "Get Instances - ",
-            "ssotmecoordinatormic", "transpilerhost.general.ssotmecoordinator.getinstances", proxy.RoutingKey);
-            }
-
-
-        
-            public void SSOTMECoordinatorTranspileRequested(DMProxy proxy) {
-            this.SSOTMECoordinatorTranspileRequested(this.CreatePayload(), proxy);
-            }
-
-            public void SSOTMECoordinatorTranspileRequested(System.String content, DMProxy proxy) {
-            var payload = this.CreatePayload();
-            payload.Content = content;
-            this.SSOTMECoordinatorTranspileRequested(payload, proxy);
-            }
-
-            public void SSOTMECoordinatorTranspileRequested(SSOTMEPayload payload, DMProxy proxy)
-            {
-            payload.IsDirectMessage = true;
-            this.SendMessage(payload, "Transpile Requested - ",
-            "ssotmecoordinatormic", "transpilerhost.general.ssotmecoordinator.transpilerequested", proxy.RoutingKey);
-            }
-
-
-        
-            public void SSOTMECoordinatorTranspilerOnline() {
-            this.SSOTMECoordinatorTranspilerOnline(this.CreatePayload());
-            }
-
-            public void SSOTMECoordinatorTranspilerOnline(System.String content) {
-            var payload = this.CreatePayload();
-            payload.Content = content;
-            this.SSOTMECoordinatorTranspilerOnline(payload);
-            }
-
-            public void SSOTMECoordinatorTranspilerOnline(SSOTMEPayload payload)
-            {
+        /// <summary>
+        /// Ping - 
+        /// </summary>
+        public void PublicUserPing(SSOTMEPayload payload)
+        {
             
-            this.SendMessage(payload, "Transpiler Online - ",
-            "ssotmecoordinatormic", "publicuser.general.ssotmecoordinator.transpileronline");
-            }
+            this.SendMessage(payload, "Ping - ",
+            "publicusermic", "ssotmecoordinator.general.publicuser.ping");
+        }
 
 
         
-            public void SSOTMECoordinatorTranspilerOffline() {
-            this.SSOTMECoordinatorTranspilerOffline(this.CreatePayload());
-            }
+        /// <summary>
+        /// Register - 
+        /// </summary>
+        public void PublicUserRegister(DMProxy proxy) 
+        {
+            this.PublicUserRegister(this.CreatePayload(), proxy);
+        }
 
-            public void SSOTMECoordinatorTranspilerOffline(System.String content) {
+        /// <summary>
+        /// Register - 
+        /// </summary>
+        public void PublicUserRegister(System.String content, DMProxy proxy) 
+        {
             var payload = this.CreatePayload();
             payload.Content = content;
-            this.SSOTMECoordinatorTranspilerOffline(payload);
-            }
+            this.PublicUserRegister(payload, proxy);
+        }
 
-            public void SSOTMECoordinatorTranspilerOffline(SSOTMEPayload payload)
-            {
-            
-            this.SendMessage(payload, "Transpiler Offline - ",
-            "ssotmecoordinatormic", "publicuser.general.ssotmecoordinator.transpileroffline");
-            }
-
-
-        
-            public void SSOTMECoordinatorStopInstance(DMProxy proxy) {
-            this.SSOTMECoordinatorStopInstance(this.CreatePayload(), proxy);
-            }
-
-            public void SSOTMECoordinatorStopInstance(System.String content, DMProxy proxy) {
-            var payload = this.CreatePayload();
-            payload.Content = content;
-            this.SSOTMECoordinatorStopInstance(payload, proxy);
-            }
-
-            public void SSOTMECoordinatorStopInstance(SSOTMEPayload payload, DMProxy proxy)
-            {
+        /// <summary>
+        /// Register - 
+        /// </summary>
+        public void PublicUserRegister(SSOTMEPayload payload, DMProxy proxy)
+        {
             payload.IsDirectMessage = true;
-            this.SendMessage(payload, "Stop Instance - ",
-            "ssotmecoordinatormic", "transpilerhost.general.ssotmecoordinator.stopinstance", proxy.RoutingKey);
-            }
+            this.SendMessage(payload, "Register - ",
+            "publicusermic", "ssotmecoordinator.general.publicuser.register", proxy.RoutingKey);
+        }
 
 
         
-            public void SSOTMECoordinatorStopHost(DMProxy proxy) {
-            this.SSOTMECoordinatorStopHost(this.CreatePayload(), proxy);
-            }
+        /// <summary>
+        /// Recover - 
+        /// </summary>
+        public void PublicUserRecover(DMProxy proxy) 
+        {
+            this.PublicUserRecover(this.CreatePayload(), proxy);
+        }
 
-            public void SSOTMECoordinatorStopHost(System.String content, DMProxy proxy) {
+        /// <summary>
+        /// Recover - 
+        /// </summary>
+        public void PublicUserRecover(System.String content, DMProxy proxy) 
+        {
             var payload = this.CreatePayload();
             payload.Content = content;
-            this.SSOTMECoordinatorStopHost(payload, proxy);
-            }
+            this.PublicUserRecover(payload, proxy);
+        }
 
-            public void SSOTMECoordinatorStopHost(SSOTMEPayload payload, DMProxy proxy)
-            {
+        /// <summary>
+        /// Recover - 
+        /// </summary>
+        public void PublicUserRecover(SSOTMEPayload payload, DMProxy proxy)
+        {
             payload.IsDirectMessage = true;
-            this.SendMessage(payload, "Stop Host - ",
-            "ssotmecoordinatormic", "transpilerhost.general.ssotmecoordinator.stophost", proxy.RoutingKey);
+            this.SendMessage(payload, "Recover - ",
+            "publicusermic", "ssotmecoordinator.general.publicuser.recover", proxy.RoutingKey);
+        }
+
+
+        
+        /// <summary>
+        /// Get All Transpilers - 
+        /// </summary>
+        public void PublicUserGetAllTranspilers(DMProxy proxy) 
+        {
+            this.PublicUserGetAllTranspilers(this.CreatePayload(), proxy);
+        }
+
+        /// <summary>
+        /// Get All Transpilers - 
+        /// </summary>
+        public void PublicUserGetAllTranspilers(System.String content, DMProxy proxy) 
+        {
+            var payload = this.CreatePayload();
+            payload.Content = content;
+            this.PublicUserGetAllTranspilers(payload, proxy);
+        }
+
+        /// <summary>
+        /// Get All Transpilers - 
+        /// </summary>
+        public void PublicUserGetAllTranspilers(SSOTMEPayload payload, DMProxy proxy)
+        {
+            payload.IsDirectMessage = true;
+            this.SendMessage(payload, "Get All Transpilers - ",
+            "publicusermic", "ssotmecoordinator.general.publicuser.getalltranspilers", proxy.RoutingKey);
+        }
+
+
+        
+        /// <summary>
+        /// Get All Platform Data - 
+        /// </summary>
+        public void PublicUserGetAllPlatformData(DMProxy proxy) 
+        {
+            this.PublicUserGetAllPlatformData(this.CreatePayload(), proxy);
+        }
+
+        /// <summary>
+        /// Get All Platform Data - 
+        /// </summary>
+        public void PublicUserGetAllPlatformData(System.String content, DMProxy proxy) 
+        {
+            var payload = this.CreatePayload();
+            payload.Content = content;
+            this.PublicUserGetAllPlatformData(payload, proxy);
+        }
+
+        /// <summary>
+        /// Get All Platform Data - 
+        /// </summary>
+        public void PublicUserGetAllPlatformData(SSOTMEPayload payload, DMProxy proxy)
+        {
+            payload.IsDirectMessage = true;
+            this.SendMessage(payload, "Get All Platform Data - ",
+            "publicusermic", "ssotmecoordinator.general.publicuser.getallplatformdata", proxy.RoutingKey);
+        }
+
+
+        
+        /// <summary>
+        /// Get All File Types - 
+        /// </summary>
+        public void PublicUserGetAllFileTypes(DMProxy proxy) 
+        {
+            this.PublicUserGetAllFileTypes(this.CreatePayload(), proxy);
+        }
+
+        /// <summary>
+        /// Get All File Types - 
+        /// </summary>
+        public void PublicUserGetAllFileTypes(System.String content, DMProxy proxy) 
+        {
+            var payload = this.CreatePayload();
+            payload.Content = content;
+            this.PublicUserGetAllFileTypes(payload, proxy);
+        }
+
+        /// <summary>
+        /// Get All File Types - 
+        /// </summary>
+        public void PublicUserGetAllFileTypes(SSOTMEPayload payload, DMProxy proxy)
+        {
+            payload.IsDirectMessage = true;
+            this.SendMessage(payload, "Get All File Types - ",
+            "publicusermic", "ssotmecoordinator.general.publicuser.getallfiletypes", proxy.RoutingKey);
+        }
+
+
+        
+
+        
+        public void LogMessage(SSOTMEPayload payload, System.String msg)
+        {
+            if (IsDebugMode)
+            {
+                System.Diagnostics.Debug.WriteLine(msg);
+                System.Diagnostics.Debug.WriteLine("payload: " + payload.SafeToString());
             }
-
-
+        }
         
     }
 }

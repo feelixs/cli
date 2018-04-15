@@ -124,19 +124,30 @@ namespace SSoTme.OST.Lib.CLIOptions
                 }
                 else continueToLoad = true;
 
+                // Check for api keys
+
                 if (continueToLoad)
                 {
-                    this.SSoTmeProject = SSoTmeProject.LoadOrFail(new DirectoryInfo(Environment.CurrentDirectory), false);
-
-                    foreach (var projectSetting in this.SSoTmeProject.ProjectSettings)
+                    if (this.install)
                     {
-                        if (!this.parameters.Any(anyParam => anyParam.StartsWith(String.Format("{0}=", projectSetting.Name))))
+                        this.SSoTmeProject = SSoTmeProject.LoadOrFail(new DirectoryInfo(Environment.CurrentDirectory), false);
+
+                        foreach (var projectSetting in this.SSoTmeProject.ProjectSettings)
                         {
-                            this.parameters.Add(String.Format("{0}={1}", projectSetting.Name, projectSetting.Value));
+                            if (!this.parameters.Any(anyParam => anyParam.StartsWith(String.Format("{0}=", projectSetting.Name))))
+                            {
+                                this.parameters.Add(String.Format("{0}={1}", projectSetting.Name, projectSetting.Value));
+                            }
                         }
                     }
 
                     this.LoadInputFiles();
+
+                    var key = SSOTMEKey.GetSSoTmeKey(this.runAs);
+                    if (key.APIKeys.ContainsKey(this.account))
+                    {
+                        this.parameters.Add(String.Format("apiKey={0}", key.APIKeys[this.account]));
+                    }
 
                     if (!ReferenceEquals(this.FileSet, null))
                     {
@@ -160,7 +171,7 @@ namespace SSoTme.OST.Lib.CLIOptions
             }
         }
 
-        public int TranspilerProject(ProjectTranspiler projectTranspiler = null)
+        public int TranspileProject(ProjectTranspiler projectTranspiler = null)
         {
             bool updateProject = false;
             try
@@ -196,9 +207,22 @@ namespace SSoTme.OST.Lib.CLIOptions
                     }
                     this.SSoTmeProject.Save();
                 }
+                else if (!String.IsNullOrEmpty(this.setAccountAPIKey))
+                {
+                    var key = SSOTMEKey.GetSSoTmeKey(this.runAs);
+                    if (ReferenceEquals(key.APIKeys, null)) key.APIKeys = new Dictionary<String, String>();
+                    var values = this.setAccountAPIKey.SafeToString().Split("=".ToCharArray());
+                    key.APIKeys[values[0]] = values[1];
+                    SSOTMEKey.SetSSoTmeKey(key, this.runAs);
+                }
                 else if (!String.IsNullOrEmpty(this.execute))
                 {
                     this.ProcessCommandLine(this.execute);
+                    if (this.install)
+                    {
+                        object o = 1; // Need to write code to save the execute command line
+
+                    }
 
                 }
                 else if (this.build)

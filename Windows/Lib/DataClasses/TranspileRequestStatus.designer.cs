@@ -40,14 +40,14 @@ namespace SSoTme.OST.Lib.DataClasses
 
         
         
-        private static string CreateTranspileRequestStatusWhere(IEnumerable<TranspileRequestStatus> transpileRequestStatuses)
+        private static string CreateTranspileRequestStatusWhere(IEnumerable<TranspileRequestStatus> transpileRequestStatuses, String forignKeyFieldName = "TranspileRequestStatusId")
         {
             if (!transpileRequestStatuses.Any()) return "1=1";
             else 
             {
                 var idList = transpileRequestStatuses.Select(selectTranspileRequestStatus => String.Format("'{0}'", selectTranspileRequestStatus.TranspileRequestStatusId));
                 var csIdList = String.Join(",", idList);
-                return String.Format("TranspileRequestStatusId in ({0})", csIdList);
+                return String.Format("{0} in ({1})", forignKeyFieldName, csIdList);
             }
         }
         

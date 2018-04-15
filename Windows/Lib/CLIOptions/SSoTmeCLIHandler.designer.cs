@@ -115,5 +115,8 @@ Options
         [CommandLineOption(Description = "Name of a group to put a transpiler in within a specific folder", MinOccurs = 0, Aliases = "tg")]
         public string transpilerGroup { get; set; }
         
+        [CommandLineOption(Description = "Add an account api key", MinOccurs = 0, Aliases = "api")]
+        public string setAccountAPIKey { get; set; }
+        
     }
 }

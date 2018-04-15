@@ -55,14 +55,14 @@ namespace SSoTme.OST.Lib.DataClasses
 
         
         
-        private static string CreateTranspilerHostWhere(IEnumerable<TranspilerHost> transpilerHosts)
+        private static string CreateTranspilerHostWhere(IEnumerable<TranspilerHost> transpilerHosts, String forignKeyFieldName = "TranspilerHostId")
         {
             if (!transpilerHosts.Any()) return "1=1";
             else 
             {
                 var idList = transpilerHosts.Select(selectTranspilerHost => String.Format("'{0}'", selectTranspilerHost.TranspilerHostId));
                 var csIdList = String.Join(",", idList);
-                return String.Format("TranspilerHostId in ({0})", csIdList);
+                return String.Format("{0} in ({1})", forignKeyFieldName, csIdList);
             }
         }
         

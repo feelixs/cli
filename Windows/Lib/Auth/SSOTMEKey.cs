@@ -80,6 +80,8 @@ namespace SSoTme.OST.Lib.SassySDK.Derived
 
         }
 
+        public Dictionary<string, string> APIKeys { get; set; }
+
         private static FileInfo GetKeyForAccount(string accountUsername)
         {
             var ssotmeKeyFI = default(FileInfo);

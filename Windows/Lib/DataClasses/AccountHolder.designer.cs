@@ -59,14 +59,14 @@ namespace SSoTme.OST.Lib.DataClasses
 
         
         
-        private static string CreateAccountHolderWhere(IEnumerable<AccountHolder> accountHolders)
+        private static string CreateAccountHolderWhere(IEnumerable<AccountHolder> accountHolders, String forignKeyFieldName = "AccountHolderId")
         {
             if (!accountHolders.Any()) return "1=1";
             else 
             {
                 var idList = accountHolders.Select(selectAccountHolder => String.Format("'{0}'", selectAccountHolder.AccountHolderId));
                 var csIdList = String.Join(",", idList);
-                return String.Format("AccountHolderId in ({0})", csIdList);
+                return String.Format("{0} in ({1})", forignKeyFieldName, csIdList);
             }
         }
         

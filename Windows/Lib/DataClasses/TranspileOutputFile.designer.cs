@@ -32,14 +32,14 @@ namespace SSoTme.OST.Lib.DataClasses
 
         
         
-        private static string CreateTranspileOutputFileWhere(IEnumerable<TranspileOutputFile> transpileOutputFiles)
+        private static string CreateTranspileOutputFileWhere(IEnumerable<TranspileOutputFile> transpileOutputFiles, String forignKeyFieldName = "TranspileOutputFileId")
         {
             if (!transpileOutputFiles.Any()) return "1=1";
             else 
             {
                 var idList = transpileOutputFiles.Select(selectTranspileOutputFile => String.Format("'{0}'", selectTranspileOutputFile.TranspileOutputFileId));
                 var csIdList = String.Join(",", idList);
-                return String.Format("TranspileOutputFileId in ({0})", csIdList);
+                return String.Format("{0} in ({1})", forignKeyFieldName, csIdList);
             }
         }
         

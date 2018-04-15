@@ -41,6 +41,28 @@ namespace SSoTme.OST.Lib.Extensions
             SSOTMEExtensions.Pluralizer = PluralizationService.CreateService(CultureInfo.CurrentCulture);
         }
 
+
+        public static String XlsxToXml(this byte[] xlsx, String inputFileName)
+        {
+
+            var csvFileSet = xlsx.XslxToCsvFileSet(inputFileName, true);
+
+            // - Convert them into one big file
+            var xmlSB = new StringBuilder();
+            var rootNode = Path.GetFileNameWithoutExtension(inputFileName);
+            xmlSB.AppendFormat("<{0}>", rootNode);
+            foreach (var csv in csvFileSet.FileSetFiles)
+            {
+                var csvXML = csv.GetFileSetFileContents().CsvToXml(csv.RelativePath);
+                xmlSB.Append(csvXML);
+            }
+            xmlSB.AppendFormat("</{0}>", rootNode);
+
+            var xml = xmlSB.ToString();
+
+            return xml;
+        }
+
         public static String ToFriendlyFullTypeName(this Type type)
         {
             return type.Name.SafeToString().ToTitle();
@@ -460,9 +482,13 @@ namespace SSoTme.OST.Lib.Extensions
 
         public static String GetFileSetFileContents(this FileSetFile fileSetFile)
         {
-            if (!String.IsNullOrEmpty(fileSetFile.FileContents)) return fileSetFile.FileContents;
-            else if (!ReferenceEquals(fileSetFile.ZippedFileContents, null)) return fileSetFile.ZippedFileContents.UnzipToString();
-            else return String.Empty;
+            if (ReferenceEquals(fileSetFile, null)) return String.Empty;
+            else
+            {
+                if (!String.IsNullOrEmpty(fileSetFile.FileContents)) return fileSetFile.FileContents;
+                else if (!ReferenceEquals(fileSetFile.ZippedFileContents, null)) return fileSetFile.ZippedFileContents.UnzipToString();
+                else return String.Empty;
+            }
         }
 
         public static byte[] GetFileSetFileBinaryContents(this FileSetFile fileSetFile)
@@ -1211,7 +1237,8 @@ namespace SSoTme.OST.Lib.Extensions
         {
             try
             {
-                return JsonConvert.DeserializeXmlNode(json);
+                var serializedJson = json;
+                return JsonConvert.DeserializeXmlNode(serializedJson);
             }
             catch // (JsonSerializationException jse)
             {

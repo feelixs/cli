@@ -466,6 +466,7 @@ namespace SSoTme.OST.Lib.DataClasses
                 try
                 {
                     File.WriteAllText(Path.Combine(di.FullName, "SSoTmeProject.spxml"), xml.OuterXml);
+                    break;
                 }
                 catch (System.IO.IOException ioex)
                 {

@@ -68,7 +68,7 @@ namespace SSoTme.OST.Lib.DataClasses
 
             Environment.CurrentDirectory = transpileRootDI.FullName;
             var cliHandler = SSoTmeCLIHandler.CreateHandler(this.CommandLine);
-            var cliResult = cliHandler.TranspilerProject(this);
+            var cliResult = cliHandler.TranspileProject(this);
             if (cliResult != 0) throw new Exception("Error RE-Transpiling");
         }
 
@@ -92,7 +92,7 @@ namespace SSoTme.OST.Lib.DataClasses
         }
 
         public void Describe(SSoTmeProject project)
-        {
+        { 
             Console.WriteLine("\n-----------------------------------");
             Console.WriteLine("---- {0}{1}", this.Name, this.IsDisabled ? "    **** DISABLED ****" : "");
             Console.WriteLine("---- .{0}/", this.RelativePath.Replace("\\", "/"));

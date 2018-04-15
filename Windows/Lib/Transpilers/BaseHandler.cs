@@ -100,6 +100,18 @@ namespace SSoTme.OST.Transpilers
             return page;
         }
 
+        public byte[] DownloadGsheetAsXlsx(string url)
+        {
+            url = url.SafeToString();
+            var wc = new WebClient();
+
+            if (url.Contains("/edit#gid=")) url = url.Replace("/edit#gid=", "/export?format=xlsx&gid=");
+            else if (url.Contains("/edit")) url = url.Replace("/edit", "/export?format=xlsx");
+            var bytes = wc.DownloadData(url);
+
+            return bytes;
+        }
+
         public SimpleHtmlPage DownloadGDocAsTextFile(string url, bool trimAfterHyphenInName = true)
         {
             url = url.SafeToString();
@@ -219,6 +231,16 @@ namespace SSoTme.OST.Transpilers
             var fsf = new FileSetFile();
             fsf.RelativePath = fileName;
             fsf.FileContents = textContents;
+            fs.FileSetFiles.Add(fsf);
+            fs.WriteTo(this.RootDirInfo);
+        }
+
+        public void WriteToRoot(string fileName, byte[] bytes)
+        {
+            var fs = new FileSet();
+            var fsf = new FileSetFile();
+            fsf.RelativePath = fileName;
+            fsf.BinaryFileContents = bytes;
             fs.FileSetFiles.Add(fsf);
             fs.WriteTo(this.RootDirInfo);
         }

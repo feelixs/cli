@@ -38,14 +38,14 @@ namespace SSoTme.OST.Lib.DataClasses
 
         
         
-        private static string CreateTranspilerInputHintWhere(IEnumerable<TranspilerInputHint> transpilerInputHints)
+        private static string CreateTranspilerInputHintWhere(IEnumerable<TranspilerInputHint> transpilerInputHints, String forignKeyFieldName = "TranspilerInputHintId")
         {
             if (!transpilerInputHints.Any()) return "1=1";
             else 
             {
                 var idList = transpilerInputHints.Select(selectTranspilerInputHint => String.Format("'{0}'", selectTranspilerInputHint.TranspilerInputHintId));
                 var csIdList = String.Join(",", idList);
-                return String.Format("TranspilerInputHintId in ({0})", csIdList);
+                return String.Format("{0} in ({1})", forignKeyFieldName, csIdList);
             }
         }
         

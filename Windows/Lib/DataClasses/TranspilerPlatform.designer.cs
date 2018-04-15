@@ -58,14 +58,14 @@ namespace SSoTme.OST.Lib.DataClasses
 
         
         
-        private static string CreateTranspilerPlatformWhere(IEnumerable<TranspilerPlatform> transpilerPlatforms)
+        private static string CreateTranspilerPlatformWhere(IEnumerable<TranspilerPlatform> transpilerPlatforms, String forignKeyFieldName = "TranspilerPlatformId")
         {
             if (!transpilerPlatforms.Any()) return "1=1";
             else 
             {
                 var idList = transpilerPlatforms.Select(selectTranspilerPlatform => String.Format("'{0}'", selectTranspilerPlatform.TranspilerPlatformId));
                 var csIdList = String.Join(",", idList);
-                return String.Format("TranspilerPlatformId in ({0})", csIdList);
+                return String.Format("{0} in ({1})", forignKeyFieldName, csIdList);
             }
         }
         
