@@ -150,6 +150,66 @@ namespace SassyMQ.SSOTME.Lib.RMQActors
 
         
         /// <summary>
+        /// Authenticate - 
+        /// </summary>
+        public void PublicUserAuthenticate(DMProxy proxy) 
+        {
+            this.PublicUserAuthenticate(this.CreatePayload(), proxy);
+        }
+
+        /// <summary>
+        /// Authenticate - 
+        /// </summary>
+        public void PublicUserAuthenticate(System.String content, DMProxy proxy) 
+        {
+            var payload = this.CreatePayload();
+            payload.Content = content;
+            this.PublicUserAuthenticate(payload, proxy);
+        }
+
+        /// <summary>
+        /// Authenticate - 
+        /// </summary>
+        public void PublicUserAuthenticate(SSOTMEPayload payload, DMProxy proxy)
+        {
+            payload.IsDirectMessage = true;
+            this.SendMessage(payload, "Authenticate - ",
+            "publicusermic", "ssotmecoordinator.general.publicuser.authenticate", proxy.RoutingKey);
+        }
+
+
+        
+        /// <summary>
+        /// Validate Auth Token - 
+        /// </summary>
+        public void PublicUserValidateAuthToken(DMProxy proxy) 
+        {
+            this.PublicUserValidateAuthToken(this.CreatePayload(), proxy);
+        }
+
+        /// <summary>
+        /// Validate Auth Token - 
+        /// </summary>
+        public void PublicUserValidateAuthToken(System.String content, DMProxy proxy) 
+        {
+            var payload = this.CreatePayload();
+            payload.Content = content;
+            this.PublicUserValidateAuthToken(payload, proxy);
+        }
+
+        /// <summary>
+        /// Validate Auth Token - 
+        /// </summary>
+        public void PublicUserValidateAuthToken(SSOTMEPayload payload, DMProxy proxy)
+        {
+            payload.IsDirectMessage = true;
+            this.SendMessage(payload, "Validate Auth Token - ",
+            "publicusermic", "ssotmecoordinator.general.publicuser.validateauthtoken", proxy.RoutingKey);
+        }
+
+
+        
+        /// <summary>
         /// Recover - 
         /// </summary>
         public void PublicUserRecover(DMProxy proxy) 

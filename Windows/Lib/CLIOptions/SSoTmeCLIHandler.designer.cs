@@ -118,5 +118,11 @@ Options
         [CommandLineOption(Description = "Add an account api key", MinOccurs = 0, Aliases = "api")]
         public string setAccountAPIKey { get; set; }
         
+        [CommandLineOption(Description = "Send an authentication email to validate user", MinOccurs = 0, Aliases = "auth")]
+        public bool authenticate { get; set; }
+        
+        [CommandLineOption(Description = "Send a registration email to create a new user", MinOccurs = 0, Aliases = "reg")]
+        public bool register { get; set; }
+        
     }
 }

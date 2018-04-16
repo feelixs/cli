@@ -447,7 +447,7 @@
         "DisplayName" = "8:Debug"
         "IsDebugOnly" = "11:TRUE"
         "IsReleaseOnly" = "11:FALSE"
-        "OutputFilename" = "8:Debug\\SSoTmeWinCLISetup_20180401.msi"
+        "OutputFilename" = "8:Debug\\SSoTmeWinCLISetup_20180415.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
@@ -597,6 +597,11 @@
             "AssemblyAsmDisplayName" = "8:ExcelDataReader.DataSet, Version=3.2.0.0, Culture=neutral, PublicKeyToken=93517dbe6a4012fa, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
+                    "_1BCCEC62C26075B0C9CE1F50745A122F"
+                    {
+                    "Name" = "8:ExcelDataReader.DataSet.dll"
+                    "Attributes" = "3:512"
+                    }
                 }
             "SourcePath" = "8:ExcelDataReader.DataSet.dll"
             "TargetName" = "8:"
@@ -623,6 +628,11 @@
             "AssemblyAsmDisplayName" = "8:Plossum CommandLine, Version=0.3.0.14, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
+                    "_1EBD2F6BD80251EE5603C7A61C6F4F14"
+                    {
+                    "Name" = "8:Plossum CommandLine.dll"
+                    "Attributes" = "3:512"
+                    }
                 }
             "SourcePath" = "8:Plossum CommandLine.dll"
             "TargetName" = "8:"
@@ -649,6 +659,11 @@
             "AssemblyAsmDisplayName" = "8:Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
+                    "_45739BE525661F3D47B7D4594D4B233C"
+                    {
+                    "Name" = "8:Newtonsoft.Json.dll"
+                    "Attributes" = "3:512"
+                    }
                 }
             "SourcePath" = "8:Newtonsoft.Json.dll"
             "TargetName" = "8:"
@@ -675,6 +690,11 @@
             "AssemblyAsmDisplayName" = "8:SSoTme.OST.Lib, Version=2018.3.1.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
+                    "_48DC543E2F0D28F6F07E33AE75165BE0"
+                    {
+                    "Name" = "8:SSoTme.OST.Lib.dll"
+                    "Attributes" = "3:512"
+                    }
                 }
             "SourcePath" = "8:SSoTme.OST.Lib.dll"
             "TargetName" = "8:"
@@ -701,6 +721,11 @@
             "AssemblyAsmDisplayName" = "8:Microsoft.Diagnostics.Tracing.EventSource, Version=1.1.28.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
+                    "_51078817BAB92317970E18A2B42D8A7C"
+                    {
+                    "Name" = "8:Microsoft.Diagnostics.Tracing.EventSource.dll"
+                    "Attributes" = "3:512"
+                    }
                 }
             "SourcePath" = "8:Microsoft.Diagnostics.Tracing.EventSource.dll"
             "TargetName" = "8:"
@@ -727,6 +752,11 @@
             "AssemblyAsmDisplayName" = "8:System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
                 "ScatterAssemblies"
                 {
+                    "_72EF57C76ECEAB717F786A8835530CBD"
+                    {
+                    "Name" = "8:System.Net.Http.dll"
+                    "Attributes" = "3:512"
+                    }
                 }
             "SourcePath" = "8:System.Net.Http.dll"
             "TargetName" = "8:"
@@ -753,6 +783,11 @@
             "AssemblyAsmDisplayName" = "8:System.IO.Compression, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"
                 "ScatterAssemblies"
                 {
+                    "_82BF969311656F583EC2EC10A062D82B"
+                    {
+                    "Name" = "8:System.IO.Compression.dll"
+                    "Attributes" = "3:512"
+                    }
                 }
             "SourcePath" = "8:System.IO.Compression.dll"
             "TargetName" = "8:"
@@ -799,6 +834,11 @@
             "AssemblyAsmDisplayName" = "8:HtmlAgilityPack, Version=1.5.5.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
+                    "_A1C2132F21B33AFB8E0989EDA0D48C4B"
+                    {
+                    "Name" = "8:HtmlAgilityPack.dll"
+                    "Attributes" = "3:512"
+                    }
                 }
             "SourcePath" = "8:HtmlAgilityPack.dll"
             "TargetName" = "8:"
@@ -825,6 +865,11 @@
             "AssemblyAsmDisplayName" = "8:C5, Version=1.0.2.0, Culture=neutral, PublicKeyToken=06a1b38866503b69, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
+                    "_B266D36B87201D4574CF5DE20D6D6A0B"
+                    {
+                    "Name" = "8:C5.dll"
+                    "Attributes" = "3:512"
+                    }
                 }
             "SourcePath" = "8:C5.dll"
             "TargetName" = "8:"
@@ -851,6 +896,11 @@
             "AssemblyAsmDisplayName" = "8:ExcelDataReader, Version=3.2.0.0, Culture=neutral, PublicKeyToken=93517dbe6a4012fa, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
+                    "_BD3EBBB4B78D571B1BF39CC1BCEC487F"
+                    {
+                    "Name" = "8:ExcelDataReader.dll"
+                    "Attributes" = "3:512"
+                    }
                 }
             "SourcePath" = "8:ExcelDataReader.dll"
             "TargetName" = "8:"
@@ -877,6 +927,11 @@
             "AssemblyAsmDisplayName" = "8:RabbitMQ.Client, Version=5.0.0.0, Culture=neutral, PublicKeyToken=89e7d7c5feba84ce, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
+                    "_E15EB095F7550719F4E4DFDE1735B86F"
+                    {
+                    "Name" = "8:RabbitMQ.Client.dll"
+                    "Attributes" = "3:512"
+                    }
                 }
             "SourcePath" = "8:RabbitMQ.Client.dll"
             "TargetName" = "8:"
@@ -903,6 +958,11 @@
             "AssemblyAsmDisplayName" = "8:Plossum CommandLine, Version=0.3.0.14, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
+                    "_F84EBD9FD51F3B04C11667C9B70C0663"
+                    {
+                    "Name" = "8:Plossum CommandLine.dll"
+                    "Attributes" = "3:512"
+                    }
                 }
             "SourcePath" = "8:Plossum CommandLine.dll"
             "TargetName" = "8:"
@@ -929,6 +989,11 @@
             "AssemblyAsmDisplayName" = "8:SSoTme.OST.Lib, Version=2018.3.1.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
+                    "_FC8BFC56D8281828258D0507D225511B"
+                    {
+                    "Name" = "8:SSoTme.OST.Lib.dll"
+                    "Attributes" = "3:512"
+                    }
                 }
             "SourcePath" = "8:SSoTme.OST.Lib.dll"
             "TargetName" = "8:"
@@ -1004,15 +1069,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:SSoTmeBetaCLI"
-        "ProductCode" = "8:{29E05E2E-810D-48EA-B79B-F5EE8DB11E56}"
-        "PackageCode" = "8:{3BA29505-7F1D-47D1-88B2-E48303CB82B5}"
+        "ProductCode" = "8:{ED7A1E23-7A09-4356-96CF-C84BB3E29C41}"
+        "PackageCode" = "8:{72E56621-D35F-4DCE-8F8C-0FBC616F7CA0}"
         "UpgradeCode" = "8:{0BB06E2C-199B-4ED1-A9B1-517F6236BC7C}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:18.04.01"
+        "ProductVersion" = "8:18.04.15"
         "Manufacturer" = "8:SSoT.me"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"

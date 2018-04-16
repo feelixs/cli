@@ -16,5 +16,6 @@ namespace SSoTme.OST.Lib.DataClasses
         }
 
         public string NonPersistentOneTimeSecret { get; set; }
+
     }
 }

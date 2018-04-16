@@ -185,6 +185,12 @@
     <Compile Include="Exslt\MultiOutput\OutputState.cs" />
     <Compile Include="Extensions\Extensions.cs" />
     <Compile Include="Extensions\SSOTMEExtensions.cs" />
+    <Compile Include="Install\SSoTmeInstaller.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Install\SSoTmeInstaller.Designer.cs">
+      <DependentUpon>SSoTmeInstaller.cs</DependentUpon>
+    </Compile>
     <Compile Include="ODXMLClasses\ObjectDef.cs" />
     <Compile Include="ODXMLClasses\Ontology.cs" />
     <Compile Include="ODXMLClasses\OntologyGroup.cs" />

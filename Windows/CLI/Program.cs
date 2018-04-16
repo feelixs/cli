@@ -22,8 +22,8 @@ namespace SSoTme.OST.ConApp
         static int Main(string[] args)
         {
             // Thread.Sleep(20000);
-            var handler = SSoTmeCLIHandler.CreateHandler(args);
             var returnValue = -1;
+            var handler = SSoTmeCLIHandler.CreateHandler(args);
             if (!handler.SuppressTranspile) returnValue = handler.TranspileProject();
 
             if (returnValue != 0)

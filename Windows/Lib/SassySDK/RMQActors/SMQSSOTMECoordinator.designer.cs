@@ -60,6 +60,16 @@ namespace SassyMQ.SSOTME.Lib.RMQActors
                 this.OnPublicUserRegisterReceived(payload);
             }
         
+            else  if (payload.IsLexiconTerm(LexiconTermEnum.publicuser_authenticate_ssotmecoordinator)) 
+            {
+                this.OnPublicUserAuthenticateReceived(payload);
+            }
+        
+            else  if (payload.IsLexiconTerm(LexiconTermEnum.publicuser_validateauthtoken_ssotmecoordinator)) 
+            {
+                this.OnPublicUserValidateAuthTokenReceived(payload);
+            }
+        
             else  if (payload.IsLexiconTerm(LexiconTermEnum.publicuser_recover_ssotmecoordinator)) 
             {
                 this.OnPublicUserRecoverReceived(payload);
@@ -275,6 +285,28 @@ namespace SassyMQ.SSOTME.Lib.RMQActors
             this.LogMessage(payload, "Register - ");
             var plea = new PayloadEventArgs<SSOTMEPayload>(payload);
             this.Invoke(this.PublicUserRegisterReceived, plea);
+        }
+        
+        /// <summary>
+        /// Responds to: Authenticate - 
+        /// </summary>
+        public event System.EventHandler<PayloadEventArgs<SSOTMEPayload>> PublicUserAuthenticateReceived;
+        protected virtual void OnPublicUserAuthenticateReceived(SSOTMEPayload payload)
+        {
+            this.LogMessage(payload, "Authenticate - ");
+            var plea = new PayloadEventArgs<SSOTMEPayload>(payload);
+            this.Invoke(this.PublicUserAuthenticateReceived, plea);
+        }
+        
+        /// <summary>
+        /// Responds to: Validate Auth Token - 
+        /// </summary>
+        public event System.EventHandler<PayloadEventArgs<SSOTMEPayload>> PublicUserValidateAuthTokenReceived;
+        protected virtual void OnPublicUserValidateAuthTokenReceived(SSOTMEPayload payload)
+        {
+            this.LogMessage(payload, "Validate Auth Token - ");
+            var plea = new PayloadEventArgs<SSOTMEPayload>(payload);
+            this.Invoke(this.PublicUserValidateAuthTokenReceived, plea);
         }
         
         /// <summary>
@@ -1697,6 +1729,66 @@ namespace SassyMQ.SSOTME.Lib.RMQActors
             payload.IsDirectMessage = true;
             this.SendMessage(payload, "Register - ",
             "publicusermic", "ssotmecoordinator.general.publicuser.register", proxy.RoutingKey);
+        }
+
+
+        
+        /// <summary>
+        /// Authenticate - 
+        /// </summary>
+        public void PublicUserAuthenticate(DMProxy proxy) 
+        {
+            this.PublicUserAuthenticate(this.CreatePayload(), proxy);
+        }
+
+        /// <summary>
+        /// Authenticate - 
+        /// </summary>
+        public void PublicUserAuthenticate(System.String content, DMProxy proxy) 
+        {
+            var payload = this.CreatePayload();
+            payload.Content = content;
+            this.PublicUserAuthenticate(payload, proxy);
+        }
+
+        /// <summary>
+        /// Authenticate - 
+        /// </summary>
+        public void PublicUserAuthenticate(SSOTMEPayload payload, DMProxy proxy)
+        {
+            payload.IsDirectMessage = true;
+            this.SendMessage(payload, "Authenticate - ",
+            "publicusermic", "ssotmecoordinator.general.publicuser.authenticate", proxy.RoutingKey);
+        }
+
+
+        
+        /// <summary>
+        /// Validate Auth Token - 
+        /// </summary>
+        public void PublicUserValidateAuthToken(DMProxy proxy) 
+        {
+            this.PublicUserValidateAuthToken(this.CreatePayload(), proxy);
+        }
+
+        /// <summary>
+        /// Validate Auth Token - 
+        /// </summary>
+        public void PublicUserValidateAuthToken(System.String content, DMProxy proxy) 
+        {
+            var payload = this.CreatePayload();
+            payload.Content = content;
+            this.PublicUserValidateAuthToken(payload, proxy);
+        }
+
+        /// <summary>
+        /// Validate Auth Token - 
+        /// </summary>
+        public void PublicUserValidateAuthToken(SSOTMEPayload payload, DMProxy proxy)
+        {
+            payload.IsDirectMessage = true;
+            this.SendMessage(payload, "Validate Auth Token - ",
+            "publicusermic", "ssotmecoordinator.general.publicuser.validateauthtoken", proxy.RoutingKey);
         }
 
 

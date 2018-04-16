@@ -128,7 +128,7 @@ namespace SSoTme.OST.Lib.CLIOptions
 
                 if (continueToLoad)
                 {
-                    if (this.install)
+                    if (String.IsNullOrEmpty(this.setAccountAPIKey) && !this.help && !this.register && !this.authenticate)
                     {
                         this.SSoTmeProject = SSoTmeProject.LoadOrFail(new DirectoryInfo(Environment.CurrentDirectory), false);
 
@@ -215,15 +215,40 @@ namespace SSoTme.OST.Lib.CLIOptions
                     key.APIKeys[values[0]] = values[1];
                     SSOTMEKey.SetSSoTmeKey(key, this.runAs);
                 }
+                else if (this.register)
+                {
+                    if (String.IsNullOrEmpty(this.emailAddress) || String.IsNullOrEmpty(this.account))
+                    {
+                        ShowError("Syntax: ssotme -register -emailAddress=you@domain.com -account=pickAccount");
+                        return -1;
+                    }
+                    else
+                    {
+                        this.AccountHolder = new SMQAccountHolder();
+                        object o = 1;
+                    }
+                }
+                else if (this.authenticate)
+                {
+                    if (String.IsNullOrEmpty(this.emailAddress))
+                    {
+                        ShowError("Syntax: ssotme -auth -emailAddress=you@domain.com");
+                        return -1;
+                    }
+                    else
+                    {
+                        this.PublicUser = new SMQPublicUser();
+                        this.PublicUser.ReplyTo += PublicUser_ReplyTo;
+                        this.PublicUser.PublicUserPing();
+                    }
+                }
                 else if (!String.IsNullOrEmpty(this.execute))
                 {
                     this.ProcessCommandLine(this.execute);
                     if (this.install)
                     {
                         object o = 1; // Need to write code to save the execute command line
-
                     }
-
                 }
                 else if (this.build)
                 {
@@ -262,10 +287,7 @@ namespace SSoTme.OST.Lib.CLIOptions
                 }
                 else if (!hasRemainingArguments && !this.clean)
                 {
-                    var curColor = Console.ForegroundColor;
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Missing argument name of transpiler");
-                    Console.ForegroundColor = curColor;
+                    ShowError("Missing argument name of transpiler");
                     return -1;
                 }
                 else
@@ -274,11 +296,8 @@ namespace SSoTme.OST.Lib.CLIOptions
 
                     if (!ReferenceEquals(result.Exception, null))
                     {
-                        var curColor = Console.ForegroundColor;
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("ERROR: " + result.Exception.Message);
-                        Console.WriteLine(result.Exception.StackTrace);
-                        Console.ForegroundColor = curColor;
+                        ShowError("ERROR: " + result.Exception.Message);
+                        ShowError(result.Exception.StackTrace);
                         return -1;
                     }
                     else
@@ -317,6 +336,42 @@ namespace SSoTme.OST.Lib.CLIOptions
             }
         }
 
+        private void PublicUser_ReplyTo(object sender, PayloadEventArgs<SSOTMEPayload> e)
+        {
+            if (e.Payload.IsLexiconTerm(LexiconTermEnum.publicuser_ping_ssotmecoordinator))
+            {
+                this.CoordinatorProxy = new DMProxy(e.Payload.DirectMessageQueue);
+                var payload = this.PublicUser.CreatePayload();
+                payload.EmailAddress = this.emailAddress;
+                this.PublicUser.PublicUserAuthenticate(payload, this.CoordinatorProxy);
+                Console.WriteLine("We sent you an auth key to your email address.");
+                Console.WriteLine("AUTH Code:");
+                payload.AuthToken = Console.ReadLine();
+                if (!String.IsNullOrEmpty(payload.AuthToken))
+                {
+                    this.PublicUser.PublicUserValidateAuthToken(payload, this.CoordinatorProxy);
+                }
+
+            }
+            else if (e.Payload.IsLexiconTerm(LexiconTermEnum.publicuser_validateauthtoken_ssotmecoordinator))
+            {
+                this.PublicUser.Disconnect();
+             
+                var key = SSOTMEKey.GetSSoTmeKey(this.account);
+                key.EmailAddress = e.Payload.EmailAddress;
+                key.Secret = e.Payload.Secret;
+                SSOTMEKey.SetSSoTmeKey(key, this.account);
+            }
+        }
+
+        private static void ShowError(string msg)
+        {
+            var curColor = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(msg);
+            Console.ForegroundColor = curColor;
+        }
+
         private void ProcessCommandLine(string commandLine)
         {
             var process = Process.Start(commandLine);
@@ -353,12 +408,12 @@ namespace SSoTme.OST.Lib.CLIOptions
 
         private void StartTranspile()
         {
-            AccountHolder = new SMQAccountHolder();
+            this.AccountHolder = new SMQAccountHolder();
             var currentSSoTmeKey = SSOTMEKey.GetSSoTmeKey(this.runAs);
             result = null;
 
-            AccountHolder.ReplyTo += AccountHolder_ReplyTo;
-            AccountHolder.Init(currentSSoTmeKey.EmailAddress, currentSSoTmeKey.Secret);
+            this.AccountHolder.ReplyTo += AccountHolder_ReplyTo;
+            this.AccountHolder.Init(currentSSoTmeKey.EmailAddress, currentSSoTmeKey.Secret);
 
 
             var waitForCook = Task.Factory.StartNew(() =>
@@ -381,6 +436,7 @@ namespace SSoTme.OST.Lib.CLIOptions
         public string inputFileSetXml;
         public string[] args;
         public string commandLine;
+        private SMQPublicUser PublicUser;
 
         public FileSet FileSet { get; private set; }
         public bool HasRemainingArguments { get; private set; }

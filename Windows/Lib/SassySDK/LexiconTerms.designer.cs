@@ -56,6 +56,22 @@ namespace SassyMQ.SSOTME.Lib.RabbitMQ
                 Category = "general"
             };
             
+            Lexicon.TermsByKey[LexiconTermEnum.publicuser_authenticate_ssotmecoordinator] = new LexiconTerm() {
+                Term = LexiconTermEnum.publicuser_authenticate_ssotmecoordinator,
+                Sender = "publicuser",
+                Verb = "authenticate",
+                Receiver = "ssotmecoordinator",
+                Category = "general"
+            };
+            
+            Lexicon.TermsByKey[LexiconTermEnum.publicuser_validateauthtoken_ssotmecoordinator] = new LexiconTerm() {
+                Term = LexiconTermEnum.publicuser_validateauthtoken_ssotmecoordinator,
+                Sender = "publicuser",
+                Verb = "validateauthtoken",
+                Receiver = "ssotmecoordinator",
+                Category = "general"
+            };
+            
             Lexicon.TermsByKey[LexiconTermEnum.publicuser_recover_ssotmecoordinator] = new LexiconTerm() {
                 Term = LexiconTermEnum.publicuser_recover_ssotmecoordinator,
                 Sender = "publicuser",

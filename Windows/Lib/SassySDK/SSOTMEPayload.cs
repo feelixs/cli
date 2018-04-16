@@ -77,6 +77,7 @@ namespace SassyMQ.SSOTME.Lib.RMQActors
             else return this.Settings[settingName];
         }
 
+        public string AuthToken { get; set; }
         public string ScreenName { get; set; }
         public string Secret { get; set; }
         public Transpiler Transpiler { get; set; }
@@ -98,7 +99,8 @@ namespace SassyMQ.SSOTME.Lib.RMQActors
         public String CLITranspiler { get; set; }
         public int CLIWaitTimeout { get; set; }
         public List<FileType> FileTypes { get; set; }
-        public SSoTmeProject SSoTmeProject { get; internal set; }
+        public SSoTmeProject SSoTmeProject { get; set; }
+        public SSOTMEKey SSoTmeKey { get; set; }
 
         public void CleanFileSet()
         {

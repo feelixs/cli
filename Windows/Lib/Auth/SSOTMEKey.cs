@@ -33,16 +33,17 @@ namespace SSoTme.OST.Lib.SassySDK.Derived
                 if (ReferenceEquals(_allKeys, null))
                 {
                     _allKeys = new List<SSOTMEKey>();
-                    foreach (var keyFile in SSoTmeDir.GetFiles("*.key")) {
-                        var username = keyFile.Name 
+                    foreach (var keyFile in SSoTmeDir.GetFiles("*.key"))
+                    {
+                        var username = keyFile.Name
                                               .Split('_')
                                               .Skip(1)
                                               .FirstOrDefault()
                                               .SafeToString()
                                               .ToLower()
                                               .Replace(".key", "");
-        
-                        
+
+
                         var newKey = GetSSoTmeKey(username);
                         _allKeys.Add(newKey);
                     }
@@ -80,7 +81,16 @@ namespace SSoTme.OST.Lib.SassySDK.Derived
 
         }
 
-        public Dictionary<string, string> APIKeys { get; set; }
+        private Dictionary<string, string> _APIKeys;
+        public Dictionary<string, string> APIKeys
+        {
+            get
+            {
+                if (ReferenceEquals(_APIKeys, null)) _APIKeys = new Dictionary<string, string>();
+                return _APIKeys;
+            }
+            set { _APIKeys = value; }
+        }
 
         private static FileInfo GetKeyForAccount(string accountUsername)
         {
@@ -95,6 +105,11 @@ namespace SSoTme.OST.Lib.SassySDK.Derived
         public override string ToString()
         {
             return this.EmailAddress;
+        }
+
+        internal static void SetSSoTmeKey(object sSoTmeKey, string account)
+        {
+            throw new NotImplementedException();
         }
     }
 }
