@@ -344,19 +344,21 @@ namespace SSoTme.OST.Lib.CLIOptions
                 var payload = this.PublicUser.CreatePayload();
                 payload.EmailAddress = this.emailAddress;
                 this.PublicUser.PublicUserAuthenticate(payload, this.CoordinatorProxy);
-                Console.WriteLine("We sent you an auth key to your email address.");
+            }
+            else if (e.Payload.IsLexiconTerm(LexiconTermEnum.publicuser_authenticate_ssotmecoordinator))
+            {
+                Console.WriteLine("We sent an auth key to {0}.", e.Payload.EmailAddress);
                 Console.WriteLine("AUTH Code:");
-                payload.AuthToken = Console.ReadLine();
-                if (!String.IsNullOrEmpty(payload.AuthToken))
+                e.Payload.AuthToken = Console.ReadLine();
+                if (!String.IsNullOrEmpty(e.Payload.AuthToken))
                 {
-                    this.PublicUser.PublicUserValidateAuthToken(payload, this.CoordinatorProxy);
+                    this.PublicUser.PublicUserValidateAuthToken(e.Payload, this.CoordinatorProxy);
                 }
-
             }
             else if (e.Payload.IsLexiconTerm(LexiconTermEnum.publicuser_validateauthtoken_ssotmecoordinator))
             {
                 this.PublicUser.Disconnect();
-             
+
                 var key = SSOTMEKey.GetSSoTmeKey(this.account);
                 key.EmailAddress = e.Payload.EmailAddress;
                 key.Secret = e.Payload.Secret;

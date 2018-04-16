@@ -1,16 +1,16 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("ConApp")]
+[assembly: AssemblyTitle("SSoT.me windows CLI Tool")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("ConApp")]
-[assembly: AssemblyCopyright("Copyright ©  2017")]
+[assembly: AssemblyProduct("SSoT.me Tools")]
+[assembly: AssemblyCopyright("Copyright © EJ Alexandra, An Abstract Level, llc, 2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("c092d67b-26d9-4178-b4aa-504ee77d968f")]
+[assembly: Guid("fcedb781-68df-4d8b-9eba-4133dfd12dad")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("2018.04.15.0")]
-[assembly: AssemblyFileVersion("2018.04.15.0")]
+[assembly: AssemblyVersion("2018.04.19.0")]
+[assembly: AssemblyFileVersion("2018.04.19.0")]

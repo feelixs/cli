@@ -1,4 +1,10 @@
 {
+  "HiddenPaths": [],
+  "ExpandedPaths": [],
+  "ShowHidden": false,
+  "ShowAllFiles": false,
+  "CurrentPath": null,
+  "SaveDisabled": false,
   "SSoTmeProjectId": "3c0c0e72-1963-4056-b302-5eff9444481c",
   "Name": "SSoTme-Open-Source-Tools",
   "RootPath": "C:\\Development\\SSoTme-Open-Source-Tools",
@@ -26,7 +32,6 @@
         "ReadMeMD": "param name=\"include-list-prefix\" select=\"true\"\r\nWill include the fieldname of the referenced object before lists so that if a child object has multiple references to an object, the collections on the parent will be distinguished by the name of the child properties.\r\n\r\nparam name=include-sdm-expand=false\r\nparam name=include-load-methods=true\r\n\r\nparam name=\"include-inheritance\" select=\"true\"\r\nIf a relationship exists on the primary key fo the object, it will be infered to \"descend\" from the refrenced object.\r\n\r\nparam name=\"pluralize-json-references\" select=\"true\"\r\nDetermines if the \"original name\" should be pluraized in the Json serialization header.\r\n\r\nparam name=sdm--namespace = 'using KP.ODXML7.SqlDataManager.{project-name}.SqlDataManagement;'\r\n\r\n\r\nparam name=extensions-namespace = 'CoreLibrary.Extensions'\r\n\r\nparam name=serialize-to-original-names=\"'false\"  \r\nInidicates if the json formatting should use original names\r\n\r\nparam name=\"csproj-filename\" = ''\r\nparam name=\"output-csproj-filename\" = ''\r\nparam name=\"relative-path\" = ''\r\n",
         "InputFileTypeId": "33de424c-cfe0-498e-ae70-44da375a8fb2",
         "OutputFileTypeId": "47f5fc9f-0c22-4f73-8d18-0544a7f05d7b",
-        "UsageCount": 1152,
         "Category": "dot-net",
         "IsRecommended": true,
         "TranspileRequests": [],
@@ -44,7 +49,274 @@
           }
         ]
       },
-      "CLIHandler": null,
+      "CLIHandler": {
+        "inputFileContents": null,
+        "transpiler": "ODXMLToCSharpPOCOs",
+        "inputFileSetXml": "",
+        "args": null,
+        "commandLine": "ODXMLToCSharpPOCOs -i ../../../ODXML/DataSchema.odxml -p namespace=SSoTme.OST.Lib.DataClasses",
+        "AccountHolder": null,
+        "CoordinatorProxy": null,
+        "FileSet": {
+          "FileSetId": "6fa7e9f4-5d3a-4b78-a5fd-3bf046ad798b",
+          "FileSetFiles": [
+            {
+              "OriginalRelativePath": "/ODXML/DataSchema.odxml",
+              "RelativePath": "DataSchema.odxml"
+            }
+          ]
+        },
+        "HasRemainingArguments": true,
+        "ZFSFileSetFile": null,
+        "SSoTmeProject": null,
+        "ParseResult": 0,
+        "OutputFileSet": {
+          "FileSetId": "35c90cca-72d3-4edc-bd2b-f54e81b6153f",
+          "FileSetFiles": [
+            {
+              "OriginalRelativePath": "Windows/Lib/DataClasses/AccountHolder.designer.cs",
+              "RelativePath": "AccountHolder.designer.cs",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "Windows/Lib/DataClasses/AccountHolder.cs",
+              "RelativePath": "AccountHolder.cs",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "Windows/Lib/DataClasses/FileSet.designer.cs",
+              "RelativePath": "FileSet.designer.cs",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "Windows/Lib/DataClasses/FileSet.cs",
+              "RelativePath": "FileSet.cs",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "Windows/Lib/DataClasses/FileSetFile.designer.cs",
+              "RelativePath": "FileSetFile.designer.cs",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "Windows/Lib/DataClasses/FileSetFile.cs",
+              "RelativePath": "FileSetFile.cs",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "Windows/Lib/DataClasses/FileType.designer.cs",
+              "RelativePath": "FileType.designer.cs",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "Windows/Lib/DataClasses/FileType.cs",
+              "RelativePath": "FileType.cs",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "Windows/Lib/DataClasses/PlatformCategory.designer.cs",
+              "RelativePath": "PlatformCategory.designer.cs",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "Windows/Lib/DataClasses/PlatformCategory.cs",
+              "RelativePath": "PlatformCategory.cs",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "Windows/Lib/DataClasses/ProjectSetting.designer.cs",
+              "RelativePath": "ProjectSetting.designer.cs",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "Windows/Lib/DataClasses/ProjectSetting.cs",
+              "RelativePath": "ProjectSetting.cs",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "Windows/Lib/DataClasses/ProjectTranspiler.designer.cs",
+              "RelativePath": "ProjectTranspiler.designer.cs",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "Windows/Lib/DataClasses/ProjectTranspiler.cs",
+              "RelativePath": "ProjectTranspiler.cs",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "Windows/Lib/DataClasses/SSoTmeProject.designer.cs",
+              "RelativePath": "SSoTmeProject.designer.cs",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "Windows/Lib/DataClasses/SSoTmeProject.cs",
+              "RelativePath": "SSoTmeProject.cs",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "Windows/Lib/DataClasses/TranspileInputFile.designer.cs",
+              "RelativePath": "TranspileInputFile.designer.cs",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "Windows/Lib/DataClasses/TranspileInputFile.cs",
+              "RelativePath": "TranspileInputFile.cs",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "Windows/Lib/DataClasses/TranspileOutputFile.designer.cs",
+              "RelativePath": "TranspileOutputFile.designer.cs",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "Windows/Lib/DataClasses/TranspileOutputFile.cs",
+              "RelativePath": "TranspileOutputFile.cs",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "Windows/Lib/DataClasses/Transpiler.designer.cs",
+              "RelativePath": "Transpiler.designer.cs",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "Windows/Lib/DataClasses/Transpiler.cs",
+              "RelativePath": "Transpiler.cs",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "Windows/Lib/DataClasses/TranspileRequest.designer.cs",
+              "RelativePath": "TranspileRequest.designer.cs",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "Windows/Lib/DataClasses/TranspileRequest.cs",
+              "RelativePath": "TranspileRequest.cs",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "Windows/Lib/DataClasses/TranspileRequestStatus.designer.cs",
+              "RelativePath": "TranspileRequestStatus.designer.cs",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "Windows/Lib/DataClasses/TranspileRequestStatus.cs",
+              "RelativePath": "TranspileRequestStatus.cs",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "Windows/Lib/DataClasses/TranspilerFile.designer.cs",
+              "RelativePath": "TranspilerFile.designer.cs",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "Windows/Lib/DataClasses/TranspilerFile.cs",
+              "RelativePath": "TranspilerFile.cs",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "Windows/Lib/DataClasses/TranspilerFileType.designer.cs",
+              "RelativePath": "TranspilerFileType.designer.cs",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "Windows/Lib/DataClasses/TranspilerFileType.cs",
+              "RelativePath": "TranspilerFileType.cs",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "Windows/Lib/DataClasses/TranspilerHost.designer.cs",
+              "RelativePath": "TranspilerHost.designer.cs",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "Windows/Lib/DataClasses/TranspilerHost.cs",
+              "RelativePath": "TranspilerHost.cs",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "Windows/Lib/DataClasses/TranspilerInputHint.designer.cs",
+              "RelativePath": "TranspilerInputHint.designer.cs",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "Windows/Lib/DataClasses/TranspilerInputHint.cs",
+              "RelativePath": "TranspilerInputHint.cs",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "Windows/Lib/DataClasses/TranspilerInstance.designer.cs",
+              "RelativePath": "TranspilerInstance.designer.cs",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "Windows/Lib/DataClasses/TranspilerInstance.cs",
+              "RelativePath": "TranspilerInstance.cs",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "Windows/Lib/DataClasses/TranspilerPlatform.designer.cs",
+              "RelativePath": "TranspilerPlatform.designer.cs",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "Windows/Lib/DataClasses/TranspilerPlatform.cs",
+              "RelativePath": "TranspilerPlatform.cs",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "Windows/Lib/DataClasses/TranspilerVersion.designer.cs",
+              "RelativePath": "TranspilerVersion.designer.cs",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "Windows/Lib/DataClasses/TranspilerVersion.cs",
+              "RelativePath": "TranspilerVersion.cs",
+              "AlwaysOverwrite": true
+            }
+          ]
+        },
+        "SuppressTranspile": false,
+        "help": false,
+        "init": false,
+        "install": false,
+        "uninstall": false,
+        "build": false,
+        "buildAll": false,
+        "describe": false,
+        "descibeAll": false,
+        "input": [
+          "../../../ODXML/DataSchema.odxml"
+        ],
+        "output": null,
+        "clean": false,
+        "cleanAll": false,
+        "skipClean": false,
+        "account": "",
+        "parameters": [
+          "namespace=SSoTme.OST.Lib.DataClasses",
+          "project-name=SSoTme-Open-Source-Tools"
+        ],
+        "listSettings": false,
+        "addSetting": [],
+        "removeSetting": [],
+        "keyFile": null,
+        "emailAddress": null,
+        "secret": null,
+        "addTranspiler": null,
+        "deleteTranspiler": null,
+        "waitTimeout": 30000,
+        "runAs": null,
+        "preserveZFS": false,
+        "checkResults": false,
+        "createDocs": false,
+        "execute": null,
+        "includeDisabled": false,
+        "projectName": null,
+        "transpilerGroup": null,
+        "setAccountAPIKey": null,
+        "authenticate": false,
+        "register": false
+      },
       "ProjectTranspilerId": "1eddb117-d84d-464d-ae0e-75617e875e84",
       "Name": "OdxmlToCSharpPOCOs",
       "RelativePath": "/Windows/Lib/DataClasses",
@@ -68,7 +340,6 @@
         "ExampleMD": "ssotme GSheetToPlossumCmdLineOption https://docs.google.com/spreadsheets/d/1v3pAQu6h3FYAaNqAmcL6j38ohckACRUSOVC33okFwI0/edit#gid=1074048491",
         "InputFileTypeId": "3c31d7c2-5c85-434b-a5a0-a5bd1dbc0a96",
         "OutputFileTypeId": "47f5fc9f-0c22-4f73-8d18-0544a7f05d7b",
-        "UsageCount": 192,
         "Category": "cli",
         "TranspileRequests": [],
         "TranspilerInstances": [],
@@ -85,7 +356,84 @@
           }
         ]
       },
-      "CLIHandler": null,
+      "CLIHandler": {
+        "inputFileContents": "",
+        "transpiler": "GSheetToPlossumCmdLineOptions",
+        "inputFileSetXml": "",
+        "args": null,
+        "commandLine": "GSheetToPlossumCmdLineOptions https://docs.google.com/spreadsheets/d/1v3pAQu6h3FYAaNqAmcL6j38ohckACRUSOVC33okFwI0/export?gid=1074048491&format=csv -p handlerName=SSoTmeCLIHandler -p namespace=SSoTme.OST.Lib.CLIOptions",
+        "AccountHolder": null,
+        "CoordinatorProxy": null,
+        "FileSet": {
+          "FileSetId": "81936363-8fe5-405c-9189-f7c5dfd905b8",
+          "FileSetFiles": []
+        },
+        "HasRemainingArguments": true,
+        "ZFSFileSetFile": null,
+        "SSoTmeProject": null,
+        "ParseResult": 0,
+        "OutputFileSet": {
+          "FileSetId": "64126d1b-3000-4193-b650-10159f7fd136",
+          "FileSetFiles": [
+            {
+              "OriginalRelativePath": "Windows/Lib/CLIOptions/SSoTmeCLIHandler.cs",
+              "RelativePath": "SSoTmeCLIHandler.cs",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "Windows/Lib/CLIOptions/SSoTmeCLIHandler.designer.cs",
+              "RelativePath": "SSoTmeCLIHandler.designer.cs",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "Windows/Lib/CLIOptions/SSoTmeCLIHandler.html",
+              "RelativePath": "SSoTmeCLIHandler.html",
+              "AlwaysOverwrite": true
+            }
+          ]
+        },
+        "SuppressTranspile": false,
+        "help": false,
+        "init": false,
+        "install": false,
+        "uninstall": false,
+        "build": false,
+        "buildAll": false,
+        "describe": false,
+        "descibeAll": false,
+        "input": [],
+        "output": null,
+        "clean": false,
+        "cleanAll": false,
+        "skipClean": false,
+        "account": "",
+        "parameters": [
+          "handlerName=SSoTmeCLIHandler",
+          "namespace=SSoTme.OST.Lib.CLIOptions",
+          "param1=https://docs.google.com/spreadsheets/d/1v3pAQu6h3FYAaNqAmcL6j38ohckACRUSOVC33okFwI0/export?gid=1074048491&format=csv",
+          "project-name=SSoTme-Open-Source-Tools"
+        ],
+        "listSettings": false,
+        "addSetting": [],
+        "removeSetting": [],
+        "keyFile": null,
+        "emailAddress": null,
+        "secret": null,
+        "addTranspiler": null,
+        "deleteTranspiler": null,
+        "waitTimeout": 30000,
+        "runAs": null,
+        "preserveZFS": false,
+        "checkResults": false,
+        "createDocs": false,
+        "execute": null,
+        "includeDisabled": false,
+        "projectName": null,
+        "transpilerGroup": null,
+        "setAccountAPIKey": null,
+        "authenticate": false,
+        "register": false
+      },
       "ProjectTranspilerId": "e3da958b-2f62-4f6b-a72d-7ce36918b604",
       "Name": "GSheetToPlossumCmdLineOptions",
       "RelativePath": "/Windows/Lib/CLIOptions",
@@ -93,7 +441,62 @@
     },
     {
       "MatchedTranspiler": null,
-      "CLIHandler": null,
+      "CLIHandler": {
+        "inputFileContents": "",
+        "transpiler": "",
+        "inputFileSetXml": "",
+        "args": null,
+        "commandLine": "-checkresults",
+        "AccountHolder": null,
+        "CoordinatorProxy": null,
+        "FileSet": {
+          "FileSetId": "51d4a868-c8f0-45cd-9808-f6bc9cc4c7d1",
+          "FileSetFiles": []
+        },
+        "HasRemainingArguments": false,
+        "ZFSFileSetFile": null,
+        "SSoTmeProject": null,
+        "ParseResult": 0,
+        "OutputFileSet": null,
+        "SuppressTranspile": false,
+        "help": false,
+        "init": false,
+        "install": false,
+        "uninstall": false,
+        "build": false,
+        "buildAll": false,
+        "describe": false,
+        "descibeAll": false,
+        "input": [],
+        "output": null,
+        "clean": false,
+        "cleanAll": false,
+        "skipClean": false,
+        "account": "",
+        "parameters": [
+          "project-name=SSoTme-Open-Source-Tools"
+        ],
+        "listSettings": false,
+        "addSetting": [],
+        "removeSetting": [],
+        "keyFile": null,
+        "emailAddress": null,
+        "secret": null,
+        "addTranspiler": null,
+        "deleteTranspiler": null,
+        "waitTimeout": 30000,
+        "runAs": null,
+        "preserveZFS": false,
+        "checkResults": true,
+        "createDocs": false,
+        "execute": null,
+        "includeDisabled": false,
+        "projectName": null,
+        "transpilerGroup": null,
+        "setAccountAPIKey": null,
+        "authenticate": false,
+        "register": false
+      },
       "ProjectTranspilerId": "fa2adf67-bb5c-4360-a362-78bf401a81e9",
       "Name": "LocalCommand",
       "RelativePath": "/Windows/Lib/CLIOptions",
@@ -118,7 +521,6 @@
         "ExampleMD": "ssotme -createDocs",
         "InputFileTypeId": "f1b92a2a-3f83-4000-9b37-57f920e14419",
         "OutputFileTypeId": "f1b92a2a-3f83-4000-9b37-57f920e14419",
-        "UsageCount": 473,
         "Category": "ssotme",
         "TranspileRequests": [],
         "TranspilerInstances": [],
@@ -135,7 +537,78 @@
           }
         ]
       },
-      "CLIHandler": null,
+      "CLIHandler": {
+        "inputFileContents": null,
+        "transpiler": "spxml-to-detailed-spxml",
+        "inputFileSetXml": "",
+        "args": null,
+        "commandLine": "spxml-to-detailed-spxml -i .\\SSoTmeProject.spxml",
+        "AccountHolder": null,
+        "CoordinatorProxy": null,
+        "FileSet": {
+          "FileSetId": "d6305f4d-17da-432a-9b5d-8ef1000c9897",
+          "FileSetFiles": [
+            {
+              "OriginalRelativePath": "/DSPXml/SSoTmeProject.spxml",
+              "RelativePath": "SSoTmeProject.spxml"
+            }
+          ]
+        },
+        "HasRemainingArguments": true,
+        "ZFSFileSetFile": null,
+        "SSoTmeProject": null,
+        "ParseResult": 0,
+        "OutputFileSet": {
+          "FileSetId": "964a1f3f-0126-4c43-b805-4d6a042e75a2",
+          "FileSetFiles": [
+            {
+              "OriginalRelativePath": "DSPXml/SSoTmeProject.dspxml",
+              "RelativePath": "SSoTmeProject.dspxml",
+              "AlwaysOverwrite": true
+            }
+          ]
+        },
+        "SuppressTranspile": false,
+        "help": false,
+        "init": false,
+        "install": false,
+        "uninstall": false,
+        "build": false,
+        "buildAll": false,
+        "describe": false,
+        "descibeAll": false,
+        "input": [
+          ".\\SSoTmeProject.spxml"
+        ],
+        "output": null,
+        "clean": false,
+        "cleanAll": false,
+        "skipClean": false,
+        "account": "",
+        "parameters": [
+          "project-name=SSoTme-Open-Source-Tools"
+        ],
+        "listSettings": false,
+        "addSetting": [],
+        "removeSetting": [],
+        "keyFile": null,
+        "emailAddress": null,
+        "secret": null,
+        "addTranspiler": null,
+        "deleteTranspiler": null,
+        "waitTimeout": 30000,
+        "runAs": null,
+        "preserveZFS": false,
+        "checkResults": false,
+        "createDocs": false,
+        "execute": null,
+        "includeDisabled": false,
+        "projectName": null,
+        "transpilerGroup": null,
+        "setAccountAPIKey": null,
+        "authenticate": false,
+        "register": false
+      },
       "ProjectTranspilerId": "f493ceec-b029-4f2e-a27b-c0f6c56543ec",
       "Name": "SPXmlToDetailedSPXml",
       "RelativePath": "/DSPXml",
@@ -157,7 +630,6 @@
         "ReadMeMD": "This system tool turns a detailed SPXml file into detailed Html Documentation about how the SSoT.me project is organized. Specifically, how does the tech \"flow\" thorugh the project. ",
         "InputFileTypeId": "f1b92a2a-3f83-4000-9b37-57f920e14419",
         "OutputFileTypeId": "d8fc84b7-442d-4c7a-92a0-eefc11391934",
-        "UsageCount": 423,
         "Category": "ssotme",
         "TranspileRequests": [],
         "TranspilerInstances": [],
@@ -174,7 +646,413 @@
           }
         ]
       },
-      "CLIHandler": null,
+      "CLIHandler": {
+        "inputFileContents": null,
+        "transpiler": "detailed-spxml-to-html-docs",
+        "inputFileSetXml": "",
+        "args": null,
+        "commandLine": "detailed-spxml-to-html-docs -i .\\SSoTmeProject.dspxml",
+        "AccountHolder": null,
+        "CoordinatorProxy": null,
+        "FileSet": {
+          "FileSetId": "a5b7b7a7-590d-45c7-8110-551f5838f260",
+          "FileSetFiles": [
+            {
+              "OriginalRelativePath": "/DSPXml/SSoTmeProject.dspxml",
+              "RelativePath": "SSoTmeProject.dspxml"
+            }
+          ]
+        },
+        "HasRemainingArguments": true,
+        "ZFSFileSetFile": null,
+        "SSoTmeProject": null,
+        "ParseResult": 0,
+        "OutputFileSet": {
+          "FileSetId": "efadf328-2273-4731-ad9b-86c3e4d02b05",
+          "FileSetFiles": [
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/-to-.png",
+              "RelativePath": "FileTypeImages/-to-.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/black.png",
+              "RelativePath": "FileTypeImages/black.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/blue-gear.png",
+              "RelativePath": "FileTypeImages/blue-gear.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/blue.png",
+              "RelativePath": "FileTypeImages/blue.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/brown.png",
+              "RelativePath": "FileTypeImages/brown.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/compare.png",
+              "RelativePath": "FileTypeImages/compare.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/configure.png",
+              "RelativePath": "FileTypeImages/configure.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/configure2.png",
+              "RelativePath": "FileTypeImages/configure2.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/csharp.png",
+              "RelativePath": "FileTypeImages/csharp.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/csv.png",
+              "RelativePath": "FileTypeImages/csv.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/cyan.png",
+              "RelativePath": "FileTypeImages/cyan.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/db.png",
+              "RelativePath": "FileTypeImages/db.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/dbml.png",
+              "RelativePath": "FileTypeImages/dbml.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/directory.png",
+              "RelativePath": "FileTypeImages/directory.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/edit.png",
+              "RelativePath": "FileTypeImages/edit.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/ext-props-xml.png",
+              "RelativePath": "FileTypeImages/ext-props-xml.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/gray.png",
+              "RelativePath": "FileTypeImages/gray.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/green-gear.png",
+              "RelativePath": "FileTypeImages/green-gear.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/green.png",
+              "RelativePath": "FileTypeImages/green.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/gsheet.png",
+              "RelativePath": "FileTypeImages/gsheet.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/html.png",
+              "RelativePath": "FileTypeImages/html.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/java.png",
+              "RelativePath": "FileTypeImages/java.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/javascript.png",
+              "RelativePath": "FileTypeImages/javascript.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/json.png",
+              "RelativePath": "FileTypeImages/json.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/markdown.png",
+              "RelativePath": "FileTypeImages/markdown.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/odxml.png",
+              "RelativePath": "FileTypeImages/odxml.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/orange.png",
+              "RelativePath": "FileTypeImages/orange.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/parent-folder.png",
+              "RelativePath": "FileTypeImages/parent-folder.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/php.png",
+              "RelativePath": "FileTypeImages/php.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/plus.png",
+              "RelativePath": "FileTypeImages/plus.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/preview.png",
+              "RelativePath": "FileTypeImages/preview.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/purple-gear.png",
+              "RelativePath": "FileTypeImages/purple-gear.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/python.png",
+              "RelativePath": "FileTypeImages/python.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/red-gear.png",
+              "RelativePath": "FileTypeImages/red-gear.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/red.png",
+              "RelativePath": "FileTypeImages/red.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/settings.png",
+              "RelativePath": "FileTypeImages/settings.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/shellscript.png",
+              "RelativePath": "FileTypeImages/shellscript.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/smql.png",
+              "RelativePath": "FileTypeImages/smql.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/source.png",
+              "RelativePath": "FileTypeImages/source.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/sql-query.png",
+              "RelativePath": "FileTypeImages/sql-query.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/sql.png",
+              "RelativePath": "FileTypeImages/sql.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/sqlxml.png",
+              "RelativePath": "FileTypeImages/sqlxml.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/swagger.png",
+              "RelativePath": "FileTypeImages/swagger.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/txt.png",
+              "RelativePath": "FileTypeImages/txt.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/typescript.png",
+              "RelativePath": "FileTypeImages/typescript.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/unknown.png",
+              "RelativePath": "FileTypeImages/unknown.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/wcf.png",
+              "RelativePath": "FileTypeImages/wcf.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/wsdl.png",
+              "RelativePath": "FileTypeImages/wsdl.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/xlsx.png",
+              "RelativePath": "FileTypeImages/xlsx.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/xml.png",
+              "RelativePath": "FileTypeImages/xml.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/xsd.png",
+              "RelativePath": "FileTypeImages/xsd.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/xslt.png",
+              "RelativePath": "FileTypeImages/xslt.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/yellow-gear.png",
+              "RelativePath": "FileTypeImages/yellow-gear.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/fileset.png",
+              "RelativePath": "FileTypeImages/fileset.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/image.png",
+              "RelativePath": "FileTypeImages/image.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/uri.png",
+              "RelativePath": "FileTypeImages/uri.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/mswin10.png",
+              "RelativePath": "FileTypeImages/mswin10.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/dotnetdll.png",
+              "RelativePath": "FileTypeImages/dotnetdll.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/androidapp.png",
+              "RelativePath": "FileTypeImages/androidapp.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/c.png",
+              "RelativePath": "FileTypeImages/c.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/conapp.png",
+              "RelativePath": "FileTypeImages/conapp.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/cpp.png",
+              "RelativePath": "FileTypeImages/cpp.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/docx.png",
+              "RelativePath": "FileTypeImages/docx.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/zippedfileset.png",
+              "RelativePath": "FileTypeImages/zippedfileset.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/gdoc.png",
+              "RelativePath": "FileTypeImages/gdoc.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/iosapp.png",
+              "RelativePath": "FileTypeImages/iosapp.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/FileTypeImages/zip.png",
+              "RelativePath": "FileTypeImages/zip.png",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "DSPXml/SSoTmeProject.html",
+              "RelativePath": "SSoTmeProject.html",
+              "AlwaysOverwrite": true
+            }
+          ]
+        },
+        "SuppressTranspile": false,
+        "help": false,
+        "init": false,
+        "install": false,
+        "uninstall": false,
+        "build": false,
+        "buildAll": false,
+        "describe": false,
+        "descibeAll": false,
+        "input": [
+          ".\\SSoTmeProject.dspxml"
+        ],
+        "output": null,
+        "clean": false,
+        "cleanAll": false,
+        "skipClean": false,
+        "account": "",
+        "parameters": [
+          "project-name=SSoTme-Open-Source-Tools"
+        ],
+        "listSettings": false,
+        "addSetting": [],
+        "removeSetting": [],
+        "keyFile": null,
+        "emailAddress": null,
+        "secret": null,
+        "addTranspiler": null,
+        "deleteTranspiler": null,
+        "waitTimeout": 30000,
+        "runAs": null,
+        "preserveZFS": false,
+        "checkResults": false,
+        "createDocs": false,
+        "execute": null,
+        "includeDisabled": false,
+        "projectName": null,
+        "transpilerGroup": null,
+        "setAccountAPIKey": null,
+        "authenticate": false,
+        "register": false
+      },
       "ProjectTranspilerId": "9edf5887-59f7-4c17-a7b5-cbcd2733244d",
       "Name": "DetailedSPXmlToHtmlDocs",
       "RelativePath": "/DSPXml",
@@ -196,7 +1074,6 @@
         "ReadMeMD": "Examines the schema defined by an Odxml file and creates an interactive DataModel explorer for exploring the structure of the data model defined. \r\n\r\nCreates both a single page version of the docs, as well as a Node.JS website that can be started on demand to explore the data model more interactively.",
         "InputFileTypeId": "33de424c-cfe0-498e-ae70-44da375a8fb2",
         "OutputFileTypeId": "d8fc84b7-442d-4c7a-92a0-eefc11391934",
-        "UsageCount": 1022,
         "Category": "documentation",
         "IsRecommended": true,
         "TranspileRequests": [],
@@ -214,7 +1091,98 @@
           }
         ]
       },
-      "CLIHandler": null,
+      "CLIHandler": {
+        "inputFileContents": null,
+        "transpiler": "odxml-to-nodejs-docs",
+        "inputFileSetXml": "",
+        "args": null,
+        "commandLine": "odxml42/odxml-to-nodejs-docs -i ..\\..\\ODXML\\DataSchema.odxml",
+        "AccountHolder": null,
+        "CoordinatorProxy": null,
+        "FileSet": {
+          "FileSetId": "61a60163-5a13-4aaa-b872-a31281868b7c",
+          "FileSetFiles": [
+            {
+              "OriginalRelativePath": "/ODXML/DataSchema.odxml",
+              "RelativePath": "DataSchema.odxml"
+            }
+          ]
+        },
+        "HasRemainingArguments": true,
+        "ZFSFileSetFile": null,
+        "SSoTmeProject": null,
+        "ParseResult": 0,
+        "OutputFileSet": {
+          "FileSetId": "c0903981-775d-4d32-979c-e2491dc60b18",
+          "FileSetFiles": [
+            {
+              "OriginalRelativePath": "docs/schema/app.js",
+              "RelativePath": "app.js",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "docs/schema/Index.html",
+              "RelativePath": "Index.html",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "docs/schema/SinglePageDocs.html",
+              "RelativePath": "SinglePageDocs.html",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "docs/schema/StartServer.sh",
+              "RelativePath": "StartServer.sh",
+              "AlwaysOverwrite": true
+            },
+            {
+              "OriginalRelativePath": "docs/schema/DataSchema.json",
+              "RelativePath": "DataSchema.json",
+              "AlwaysOverwrite": true
+            }
+          ]
+        },
+        "SuppressTranspile": false,
+        "help": false,
+        "init": false,
+        "install": false,
+        "uninstall": false,
+        "build": false,
+        "buildAll": false,
+        "describe": false,
+        "descibeAll": false,
+        "input": [
+          "..\\..\\ODXML\\DataSchema.odxml"
+        ],
+        "output": null,
+        "clean": false,
+        "cleanAll": false,
+        "skipClean": false,
+        "account": "odxml42",
+        "parameters": [
+          "project-name=SSoTme-Open-Source-Tools"
+        ],
+        "listSettings": false,
+        "addSetting": [],
+        "removeSetting": [],
+        "keyFile": null,
+        "emailAddress": null,
+        "secret": null,
+        "addTranspiler": null,
+        "deleteTranspiler": null,
+        "waitTimeout": 30000,
+        "runAs": null,
+        "preserveZFS": false,
+        "checkResults": false,
+        "createDocs": false,
+        "execute": null,
+        "includeDisabled": false,
+        "projectName": null,
+        "transpilerGroup": null,
+        "setAccountAPIKey": null,
+        "authenticate": false,
+        "register": false
+      },
       "ProjectTranspilerId": "90de4191-f578-4573-ae42-3fcc2cb4d4ae",
       "Name": "OdxmlToNodeJSDocs",
       "RelativePath": "/docs/schema",
@@ -239,7 +1207,6 @@
         "ExampleMD": "ssotme -install xml-xslt-transform -i MyData.xml -i CreateDocs.xslt",
         "InputFileTypeId": "f1b92a2a-3f83-4000-9b37-57f920e14419",
         "OutputFileTypeId": "952e47eb-3448-4627-8dc4-93dab494c957",
-        "UsageCount": 4561,
         "Category": "type-conversion",
         "IsRecommended": true,
         "TranspileRequests": [],
@@ -257,7 +1224,83 @@
           }
         ]
       },
-      "CLIHandler": null,
+      "CLIHandler": {
+        "inputFileContents": null,
+        "transpiler": "xml-xslt-transform",
+        "inputFileSetXml": "",
+        "args": null,
+        "commandLine": "xml-xslt-transform -i ..\\ODXML\\DataSchema.odxml -i CreateSSoTmeDocs.xslt",
+        "AccountHolder": null,
+        "CoordinatorProxy": null,
+        "FileSet": {
+          "FileSetId": "bfaaac01-03ab-4ea7-944f-d8be911a4e9d",
+          "FileSetFiles": [
+            {
+              "OriginalRelativePath": "/ODXML/DataSchema.odxml",
+              "RelativePath": "DataSchema.odxml"
+            },
+            {
+              "OriginalRelativePath": "/docs/CreateSSoTmeDocs.xslt",
+              "RelativePath": "CreateSSoTmeDocs.xslt"
+            }
+          ]
+        },
+        "HasRemainingArguments": true,
+        "ZFSFileSetFile": null,
+        "SSoTmeProject": null,
+        "ParseResult": 0,
+        "OutputFileSet": {
+          "FileSetId": "4ed5aeb5-f4e3-4414-a130-739159873bba",
+          "FileSetFiles": [
+            {
+              "OriginalRelativePath": "docs/index.md",
+              "RelativePath": "index.md",
+              "AlwaysOverwrite": true
+            }
+          ]
+        },
+        "SuppressTranspile": false,
+        "help": false,
+        "init": false,
+        "install": false,
+        "uninstall": false,
+        "build": false,
+        "buildAll": false,
+        "describe": false,
+        "descibeAll": false,
+        "input": [
+          "..\\ODXML\\DataSchema.odxml",
+          "CreateSSoTmeDocs.xslt"
+        ],
+        "output": null,
+        "clean": false,
+        "cleanAll": false,
+        "skipClean": false,
+        "account": "",
+        "parameters": [
+          "project-name=SSoTme-Open-Source-Tools"
+        ],
+        "listSettings": false,
+        "addSetting": [],
+        "removeSetting": [],
+        "keyFile": null,
+        "emailAddress": null,
+        "secret": null,
+        "addTranspiler": null,
+        "deleteTranspiler": null,
+        "waitTimeout": 30000,
+        "runAs": null,
+        "preserveZFS": false,
+        "checkResults": false,
+        "createDocs": false,
+        "execute": null,
+        "includeDisabled": false,
+        "projectName": null,
+        "transpilerGroup": null,
+        "setAccountAPIKey": null,
+        "authenticate": false,
+        "register": false
+      },
       "ProjectTranspilerId": "8c3bfc5f-b195-4a5b-ba51-038ed0855520",
       "Name": "XmlXsltTransform",
       "RelativePath": "/docs",
@@ -282,7 +1325,6 @@
         "ExampleMD": "ssotme public-gsheet-to-xml https://yourgsheeturl",
         "InputFileTypeId": "3c31d7c2-5c85-434b-a5a0-a5bd1dbc0a96",
         "OutputFileTypeId": "f1b92a2a-3f83-4000-9b37-57f920e14419",
-        "UsageCount": 793,
         "Category": "type-conversion",
         "IsRecommended": true,
         "TranspileRequests": [],
@@ -300,7 +1342,72 @@
           }
         ]
       },
-      "CLIHandler": null,
+      "CLIHandler": {
+        "inputFileContents": "",
+        "transpiler": "public-gsheet-to-xml",
+        "inputFileSetXml": "",
+        "args": null,
+        "commandLine": "public-gsheet-to-xml https://docs.google.com/spreadsheets/d/1v3pAQu6h3FYAaNqAmcL6j38ohckACRUSOVC33okFwI0/edit#gid=2133303844 -o Seeds.xml",
+        "AccountHolder": null,
+        "CoordinatorProxy": null,
+        "FileSet": {
+          "FileSetId": "b0c74de2-145c-493b-a68a-63269d85a115",
+          "FileSetFiles": []
+        },
+        "HasRemainingArguments": true,
+        "ZFSFileSetFile": null,
+        "SSoTmeProject": null,
+        "ParseResult": 0,
+        "OutputFileSet": {
+          "FileSetId": "c6a8dcfc-a71a-4d03-8fd6-c087cfdf6bd7",
+          "FileSetFiles": [
+            {
+              "OriginalRelativePath": "docs/seeds/Seeds.xml",
+              "RelativePath": "Seeds.xml",
+              "AlwaysOverwrite": true
+            }
+          ]
+        },
+        "SuppressTranspile": false,
+        "help": false,
+        "init": false,
+        "install": false,
+        "uninstall": false,
+        "build": false,
+        "buildAll": false,
+        "describe": false,
+        "descibeAll": false,
+        "input": [],
+        "output": "Seeds.xml",
+        "clean": false,
+        "cleanAll": false,
+        "skipClean": false,
+        "account": "",
+        "parameters": [
+          "param1=https://docs.google.com/spreadsheets/d/1v3pAQu6h3FYAaNqAmcL6j38ohckACRUSOVC33okFwI0/edit#gid=2133303844",
+          "project-name=SSoTme-Open-Source-Tools"
+        ],
+        "listSettings": false,
+        "addSetting": [],
+        "removeSetting": [],
+        "keyFile": null,
+        "emailAddress": null,
+        "secret": null,
+        "addTranspiler": null,
+        "deleteTranspiler": null,
+        "waitTimeout": 30000,
+        "runAs": null,
+        "preserveZFS": false,
+        "checkResults": false,
+        "createDocs": false,
+        "execute": null,
+        "includeDisabled": false,
+        "projectName": null,
+        "transpilerGroup": null,
+        "setAccountAPIKey": null,
+        "authenticate": false,
+        "register": false
+      },
       "ProjectTranspilerId": "91e64c8e-4546-4566-a421-f50161d0649a",
       "Name": "PublicGSheetToXml",
       "RelativePath": "/docs/seeds",
@@ -325,7 +1432,6 @@
         "ExampleMD": "ssotme -install xml-xslt-transform -i MyData.xml -i CreateDocs.xslt",
         "InputFileTypeId": "f1b92a2a-3f83-4000-9b37-57f920e14419",
         "OutputFileTypeId": "952e47eb-3448-4627-8dc4-93dab494c957",
-        "UsageCount": 4561,
         "Category": "type-conversion",
         "IsRecommended": true,
         "TranspileRequests": [],
@@ -343,7 +1449,83 @@
           }
         ]
       },
-      "CLIHandler": null,
+      "CLIHandler": {
+        "inputFileContents": null,
+        "transpiler": "xml-xslt-transform",
+        "inputFileSetXml": "",
+        "args": null,
+        "commandLine": "xml-xslt-transform -i .\\Seeds.xml -i DescribeSeeds.xslt",
+        "AccountHolder": null,
+        "CoordinatorProxy": null,
+        "FileSet": {
+          "FileSetId": "6d3cc1aa-d7dc-41ae-bd6d-de5b8fad7ab4",
+          "FileSetFiles": [
+            {
+              "OriginalRelativePath": "/docs/seeds/Seeds.xml",
+              "RelativePath": "Seeds.xml"
+            },
+            {
+              "OriginalRelativePath": "/docs/seeds/DescribeSeeds.xslt",
+              "RelativePath": "DescribeSeeds.xslt"
+            }
+          ]
+        },
+        "HasRemainingArguments": true,
+        "ZFSFileSetFile": null,
+        "SSoTmeProject": null,
+        "ParseResult": 0,
+        "OutputFileSet": {
+          "FileSetId": "19552f3c-4611-4522-88d1-e434e17b02ff",
+          "FileSetFiles": [
+            {
+              "OriginalRelativePath": "docs/seeds/../seeds.md",
+              "RelativePath": "../seeds.md",
+              "AlwaysOverwrite": true
+            }
+          ]
+        },
+        "SuppressTranspile": false,
+        "help": false,
+        "init": false,
+        "install": false,
+        "uninstall": false,
+        "build": false,
+        "buildAll": false,
+        "describe": false,
+        "descibeAll": false,
+        "input": [
+          ".\\Seeds.xml",
+          "DescribeSeeds.xslt"
+        ],
+        "output": null,
+        "clean": false,
+        "cleanAll": false,
+        "skipClean": false,
+        "account": "",
+        "parameters": [
+          "project-name=SSoTme-Open-Source-Tools"
+        ],
+        "listSettings": false,
+        "addSetting": [],
+        "removeSetting": [],
+        "keyFile": null,
+        "emailAddress": null,
+        "secret": null,
+        "addTranspiler": null,
+        "deleteTranspiler": null,
+        "waitTimeout": 30000,
+        "runAs": null,
+        "preserveZFS": false,
+        "checkResults": false,
+        "createDocs": false,
+        "execute": null,
+        "includeDisabled": false,
+        "projectName": null,
+        "transpilerGroup": null,
+        "setAccountAPIKey": null,
+        "authenticate": false,
+        "register": false
+      },
       "ProjectTranspilerId": "c1a92ab2-7ce3-4825-b35f-d533bde9db88",
       "Name": "XmlXsltTransform",
       "RelativePath": "/docs/seeds",
