@@ -246,7 +246,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="CLIOptions\SSoTmeCLIHandler.html" />
-    <EmbeddedResource Include="CommonXsltTemplates.xslt" />
+    <EmbeddedResource Include="CommonXsltTemplates.xslt">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <Content Include="SassySDK\_fileSet.xml" />
   </ItemGroup>
   <ItemGroup>

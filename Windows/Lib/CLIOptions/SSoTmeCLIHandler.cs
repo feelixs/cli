@@ -122,6 +122,10 @@ namespace SSoTme.OST.Lib.CLIOptions
                     Console.ForegroundColor = curColor;
                     this.SuppressTranspile = true;
                 }
+                else if (this.authenticate || this.register)
+                {
+                    continueToLoad = false;
+                }
                 else continueToLoad = true;
 
                 // Check for api keys
@@ -178,7 +182,34 @@ namespace SSoTme.OST.Lib.CLIOptions
             {
                 var hasRemainingArguments = this.HasRemainingArguments;
                 var zfsFileSetFile = this.ZFSFileSetFile;
-                if (this.describe)
+                if (this.register)
+                {
+                    if (String.IsNullOrEmpty(this.emailAddress) || String.IsNullOrEmpty(this.account))
+                    {
+                        ShowError("Syntax: ssotme -register -emailAddress=you@domain.com -account=pickAccount");
+                        return -1;
+                    }
+                    else
+                    {
+                        this.AccountHolder = new SMQAccountHolder();
+                        throw new NotImplementedException();
+                    }
+                }
+                else if (this.authenticate)
+                {
+                    if (String.IsNullOrEmpty(this.emailAddress))
+                    {
+                        ShowError("Syntax: ssotme -auth -emailAddress=\"you@domain.com\"");
+                        return -1;
+                    }
+                    else
+                    {
+                        this.PublicUser = new SMQPublicUser();
+                        this.PublicUser.ReplyTo += PublicUser_ReplyTo;
+                        this.PublicUser.PublicUserPing();
+                    }
+                }
+                else if (this.describe)
                 {
                     this.SSoTmeProject.Describe(Environment.CurrentDirectory);
                 }
@@ -211,36 +242,11 @@ namespace SSoTme.OST.Lib.CLIOptions
                 {
                     var key = SSOTMEKey.GetSSoTmeKey(this.runAs);
                     if (ReferenceEquals(key.APIKeys, null)) key.APIKeys = new Dictionary<String, String>();
-                    var values = this.setAccountAPIKey.SafeToString().Split("=".ToCharArray());
+                    var apiKey = this.setAccountAPIKey.SafeToString().Replace("=", "/");
+                    var values = apiKey.Split("/".ToCharArray());
+                    if (!values.Skip(1).Any()) throw new Exception("Sytnax: -setAccountAPIKey=account/KEY");
                     key.APIKeys[values[0]] = values[1];
                     SSOTMEKey.SetSSoTmeKey(key, this.runAs);
-                }
-                else if (this.register)
-                {
-                    if (String.IsNullOrEmpty(this.emailAddress) || String.IsNullOrEmpty(this.account))
-                    {
-                        ShowError("Syntax: ssotme -register -emailAddress=you@domain.com -account=pickAccount");
-                        return -1;
-                    }
-                    else
-                    {
-                        this.AccountHolder = new SMQAccountHolder();
-                        object o = 1;
-                    }
-                }
-                else if (this.authenticate)
-                {
-                    if (String.IsNullOrEmpty(this.emailAddress))
-                    {
-                        ShowError("Syntax: ssotme -auth -emailAddress=you@domain.com");
-                        return -1;
-                    }
-                    else
-                    {
-                        this.PublicUser = new SMQPublicUser();
-                        this.PublicUser.ReplyTo += PublicUser_ReplyTo;
-                        this.PublicUser.PublicUserPing();
-                    }
                 }
                 else if (!String.IsNullOrEmpty(this.execute))
                 {
@@ -348,21 +354,42 @@ namespace SSoTme.OST.Lib.CLIOptions
             else if (e.Payload.IsLexiconTerm(LexiconTermEnum.publicuser_authenticate_ssotmecoordinator))
             {
                 Console.WriteLine("We sent an auth key to {0}.", e.Payload.EmailAddress);
-                Console.WriteLine("AUTH Code:");
+                Console.Write("AUTH Code: ");
                 e.Payload.AuthToken = Console.ReadLine();
                 if (!String.IsNullOrEmpty(e.Payload.AuthToken))
                 {
+                    Console.WriteLine("Validating AUTH Code.  One moment...");
                     this.PublicUser.PublicUserValidateAuthToken(e.Payload, this.CoordinatorProxy);
+                }
+                else
+                {
+                    Console.WriteLine("Aborting. No AUTH Code recieved.");
                 }
             }
             else if (e.Payload.IsLexiconTerm(LexiconTermEnum.publicuser_validateauthtoken_ssotmecoordinator))
             {
+                if (String.IsNullOrEmpty(e.Payload.Secret))
+                {
+                    Console.WriteLine("AUTH Code Validated Failed.");
+                }
+                else
+                {
+                    Console.WriteLine("AUTH Code Validated.");
+                    try
+                    {
+                        var key = SSOTMEKey.GetSSoTmeKey(this.account);
+                        key.EmailAddress = e.Payload.EmailAddress;
+                        key.Secret = e.Payload.Secret;
+                        SSOTMEKey.SetSSoTmeKey(key, this.account);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("ERROR: {0}", ex.Message);
+                    }
+                }
+                Console.WriteLine("Press enter to continue.");
+                Console.ReadLine();
                 this.PublicUser.Disconnect();
-
-                var key = SSOTMEKey.GetSSoTmeKey(this.account);
-                key.EmailAddress = e.Payload.EmailAddress;
-                key.Secret = e.Payload.Secret;
-                SSOTMEKey.SetSSoTmeKey(key, this.account);
             }
         }
 
