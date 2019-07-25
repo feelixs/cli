@@ -16,6 +16,14 @@ namespace SSoTme.OST.Lib.DataClasses
             
 
         }
+        
+        partial void AfterGet();
+        partial void BeforeInsert();
+        partial void AfterInsert();
+        partial void BeforeUpdate();
+        partial void AfterUpdate();
+
+        
 
         
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TranspileInputFileId")]

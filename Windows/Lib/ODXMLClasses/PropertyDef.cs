@@ -18,5 +18,9 @@ namespace SSoTme.OST.ODXMLClasses
         public string Namespace;
 
         public String[] AttributeNames;
+
+        public int IsNullable { get; set; }
+        public int IsCollection { get; set; }
+        public int IsPrimaryKey { get; set; }
     }
 }

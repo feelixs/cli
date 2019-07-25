@@ -40,7 +40,9 @@ namespace SassyMQ.SSOTME.Lib.RMQActors
             {
                 payload.DirectMessageQueue = this.QueueName;
                 this.CheckPayload(payload);
-                this.RMQChannel.BasicPublish("", payload.ReplyTo, body: Encoding.UTF8.GetBytes(payload.ToJSonString()));
+                IBasicProperties props = this.RMQChannel.CreateBasicProperties();
+                props.CorrelationId = payload.CorrelationId;
+                this.RMQChannel.BasicPublish("", payload.ReplyTo, props, Encoding.UTF8.GetBytes(payload.ToJSonString()));
             }
         }
 
@@ -342,5 +344,5 @@ namespace SassyMQ.SSOTME.Lib.RMQActors
         
     }
 }
-
+namespace CoreLibrary.SassyMQ {}
                     

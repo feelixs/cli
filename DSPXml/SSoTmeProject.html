@@ -25,7 +25,26 @@ body {
     margin: 0.25em;
     margin-bottom: 0.8s5em;
 }
-        </style></head><body><h1>SSoTme-Open-Source-Tools Project Summary</h1><h2>Input Files</h2><div><h3>DataSchema.odxml</h3><div style="background-color: #EEEEEE; margin: 0.25em; border: solid #CCCCCC 1px;"><div style="margin-left: 1em;"><div class="project-transpiler-link-box"><div class="pull-left"><div class="pull-left" style="height: 3em; width: 3em;">
+
+.pre {
+    font-family: monospace;
+ white-space: pre-wrap;       /* css-3 */
+ white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+ white-space: -pre-wrap;      /* Opera 4-6 */
+ white-space: -o-pre-wrap;    /* Opera 7 */
+ word-wrap: break-word;       /* Internet Explorer 5.5+ */
+
+}
+        </style></head><body><h1>SSoTme-Open-Source-Tools Project Summary</h1><h2>Build Plan</h2><div style="margin-top: 0.75em;"><b>[SSoTme-root] </b>/Windows/Lib/DataClasses/>
+            <div class="pre" style="padding-left: 15em; text-indent:-15em; font-size: 0.8em;">ODXMLToCSharpPOCOs -i ../../../ODXML/DataSchema.odxml -p namespace=SSoTme.OST.Lib.DataClasses</div></div><div style="margin-top: 0.75em;"><b>[SSoTme-root] </b>/Windows/Lib/CLIOptions/>
+            <div class="pre" style="padding-left: 15em; text-indent:-15em; font-size: 0.8em;">GSheetToPlossumCmdLineOptions https://docs.google.com/spreadsheets/d/1v3pAQu6h3FYAaNqAmcL6j38ohckACRUSOVC33okFwI0/export?gid=1074048491&format=csv -p handlerName=SSoTmeCLIHandler -p namespace=SSoTme.OST.Lib.CLIOptions</div></div><div style="margin-top: 0.75em;"><b>[SSoTme-root] </b>/Windows/Lib/CLIOptions/>
+            <div class="pre" style="padding-left: 15em; text-indent:-15em; font-size: 0.8em;">-checkresults</div></div><div style="margin-top: 0.75em;"><b>[SSoTme-root] </b>/DSPXml/>
+            <div class="pre" style="padding-left: 15em; text-indent:-15em; font-size: 0.8em;">spxml-to-detailed-spxml -i .\SSoTmeProject.spxml</div></div><div style="margin-top: 0.75em;"><b>[SSoTme-root] </b>/DSPXml/>
+            <div class="pre" style="padding-left: 15em; text-indent:-15em; font-size: 0.8em;">detailed-spxml-to-html-docs -i .\SSoTmeProject.dspxml</div></div><div style="margin-top: 0.75em;"><b>[SSoTme-root] </b>/docs/schema/>
+            <div class="pre" style="padding-left: 15em; text-indent:-15em; font-size: 0.8em;">odxml42/odxml-to-nodejs-docs -i ..\..\ODXML\DataSchema.odxml</div></div><div style="margin-top: 0.75em;"><b>[SSoTme-root] </b>/docs/>
+            <div class="pre" style="padding-left: 15em; text-indent:-15em; font-size: 0.8em;">xml-xslt-transform -i ..\ODXML\DataSchema.odxml -i CreateSSoTmeDocs.xslt</div></div><div style="margin-top: 0.75em;"><b>[SSoTme-root] </b>/docs/seeds/>
+            <div class="pre" style="padding-left: 15em; text-indent:-15em; font-size: 0.8em;">public-gsheet-to-xml https://docs.google.com/spreadsheets/d/1v3pAQu6h3FYAaNqAmcL6j38ohckACRUSOVC33okFwI0/edit#gid=2133303844 -o Seeds.xml</div></div><div style="margin-top: 0.75em;"><b>[SSoTme-root] </b>/docs/seeds/>
+            <div class="pre" style="padding-left: 15em; text-indent:-15em; font-size: 0.8em;">xml-xslt-transform -i .\Seeds.xml -i DescribeSeeds.xslt</div></div><h2>Input Files</h2><div><h3>DataSchema.odxml</h3><div style="background-color: #EEEEEE; margin: 0.25em; border: solid #CCCCCC 1px;"><div style="margin-left: 1em;"><div class="project-transpiler-link-box"><div class="pull-left"><div class="pull-left" style="height: 3em; width: 3em;">
                 <img  style="width: 2.5em; height: 2.5em;" src="FileTypeImages/odxml.png"  />
             </div><div class="pull-left" style="height: 3em; width: 3em;">
                 <img  style="width: 2.5em; height: 2.5em;" src="FileTypeImages/csharp.png"  />
@@ -34,8 +53,24 @@ body {
                                 /AccountHolder.designer.cs</div><div>
                                 /AccountHolder.cs</div><div>
                                 /FileSet.designer.cs</div>
-                        .../ (+37 more)
-                    </div></div></div></div></div></div><div><h3>SSoTmeProject.spxml</h3><div style="background-color: #EEEEEE; margin: 0.25em; border: solid #CCCCCC 1px;"><div style="margin-left: 1em;"><div class="project-transpiler-link-box"><div class="pull-left"><div class="pull-left" style="height: 3em; width: 3em;">
+                        .../ (+38 more)
+                    </div></div></div></div><div style="margin-left: 1em;"><div class="project-transpiler-link-box"><div class="pull-left"><div class="pull-left" style="height: 3em; width: 3em;">
+                <img  style="width: 2.5em; height: 2.5em;" src="FileTypeImages/odxml.png"  />
+            </div><div class="pull-left" style="height: 3em; width: 3em;">
+                <img  style="width: 2.5em; height: 2.5em;" src="FileTypeImages/html.png"  />
+            </div></div><h3>Odxml To Node J S Docs</h3><div style="font-weight: bold; padding-after: 1em;"><div style="padding: 0.2em; white-space: pre-wrap; font-family: monospace"><span class="ssotme-root">[SSoTme-root]</span><span class="relative-path">/docs/schema</span><br />/> <b>ssotme </b> <a href="#90de4191-f578-4573-ae42-3fcc2cb4d4ae" >odxml-to-node-j-s-docs</a> -i " /ODXML/DataSchema.odxml, ..."
+                </div><div style="padding-left: 2em;"><div>
+                                /app.js</div><div>
+                                /Index.html</div><div>
+                                /SinglePageDocs.html</div>
+                        .../ (+2 more)
+                    </div></div></div></div><div style="margin-left: 1em;"><div class="project-transpiler-link-box"><div class="pull-left"><div class="pull-left" style="height: 3em; width: 3em;">
+                <img  style="width: 2.5em; height: 2.5em;" src="FileTypeImages/xml.png"  />
+            </div><div class="pull-left" style="height: 3em; width: 3em;">
+                <img  style="width: 2.5em; height: 2.5em;" src="FileTypeImages/fileset.png"  />
+            </div></div><h3>Xml Xslt Transform</h3><div style="font-weight: bold; padding-after: 1em;"><div style="padding: 0.2em; white-space: pre-wrap; font-family: monospace"><span class="ssotme-root">[SSoTme-root]</span><span class="relative-path">/docs</span><br />/> <b>ssotme </b> <a href="#8c3bfc5f-b195-4a5b-ba51-038ed0855520" >xml-xslt-transform</a> -i " /ODXML/DataSchema.odxml, ..."
+                </div><div style="padding-left: 2em;"><div>
+                                /index.md</div></div></div></div></div></div></div><div><h3>SSoTmeProject.spxml</h3><div style="background-color: #EEEEEE; margin: 0.25em; border: solid #CCCCCC 1px;"><div style="margin-left: 1em;"><div class="project-transpiler-link-box"><div class="pull-left"><div class="pull-left" style="height: 3em; width: 3em;">
                 <img  style="width: 2.5em; height: 2.5em;" src="FileTypeImages/xml.png"  />
             </div><div class="pull-left" style="height: 3em; width: 3em;">
                 <img  style="width: 2.5em; height: 2.5em;" src="FileTypeImages/xml.png"  />
@@ -51,7 +86,13 @@ body {
                                 /FileTypeImages/black.png</div><div>
                                 /FileTypeImages/blue-gear.png</div>
                         .../ (+65 more)
-                    </div></div></div></div></div></div><hr /><H3>All Transpilers</H3>
+                    </div></div></div></div></div></div><div><h3>Seeds.xml</h3><div style="background-color: #EEEEEE; margin: 0.25em; border: solid #CCCCCC 1px;"><div style="margin-left: 1em;"><div class="project-transpiler-link-box"><div class="pull-left"><div class="pull-left" style="height: 3em; width: 3em;">
+                <img  style="width: 2.5em; height: 2.5em;" src="FileTypeImages/xml.png"  />
+            </div><div class="pull-left" style="height: 3em; width: 3em;">
+                <img  style="width: 2.5em; height: 2.5em;" src="FileTypeImages/fileset.png"  />
+            </div></div><h3>Xml Xslt Transform</h3><div style="font-weight: bold; padding-after: 1em;"><div style="padding: 0.2em; white-space: pre-wrap; font-family: monospace"><span class="ssotme-root">[SSoTme-root]</span><span class="relative-path">/docs/seeds</span><br />/> <b>ssotme </b> <a href="#c1a92ab2-7ce3-4825-b35f-d533bde9db88" >xml-xslt-transform</a> -i " /docs/seeds/Seeds.xml, ..."
+                </div><div style="padding-left: 2em;"><div>
+                                /../seeds.md</div></div></div></div></div></div></div><hr /><H3>All Transpilers</H3>
         
         <hr id="1eddb117-d84d-464d-ae0e-75617e875e84 6/>
 
@@ -64,8 +105,8 @@ body {
                                 /AccountHolder.designer.cs</div><div>
                                 /AccountHolder.cs</div><div>
                                 /FileSet.designer.cs</div>
-                        .../ (+37 more)
-                    </div></div></div></div><div style="clear: both;"><div style="white-space: pre-wrap; font-size: 0.8em; margin-top: -1.2em; padding: 0.2em;">Odxml To CSharp POCOs</div></div><div style="white-space: pre-wrap; clear: both"><span class="command-line"></span></div><div style="margin-left: 1em; padding: 0.5em;"><div>/ODXML/DataSchema.odxml ----->
+                        .../ (+38 more)
+                    </div></div></div></div><div style="clear: both;"><div style="white-space: pre-wrap; font-size: 0.8em; margin-top: -1.2em; padding: 0.2em;">Odxml To CSharp POCOs</div></div><div style="white-space: pre-wrap; clear: both"><span class="command-line">ODXMLToCSharpPOCOs -i ../../../ODXML/DataSchema.odxml -p namespace=SSoTme.OST.Lib.DataClasses</span></div><div style="margin-left: 1em; padding: 0.5em;"><div>/ODXML/DataSchema.odxml ----->
                         </div></div><div style="margin-left: 2em; padding: 0.5em;"><div>
                     -> Windows/Lib/DataClasses/AccountHolder.designer.cs</div><div>
                     -> Windows/Lib/DataClasses/AccountHolder.cs</div><div>
@@ -106,7 +147,8 @@ body {
                     -> Windows/Lib/DataClasses/TranspilerPlatform.designer.cs</div><div>
                     -> Windows/Lib/DataClasses/TranspilerPlatform.cs</div><div>
                     -> Windows/Lib/DataClasses/TranspilerVersion.designer.cs</div><div>
-                    -> Windows/Lib/DataClasses/TranspilerVersion.cs</div></div>
+                    -> Windows/Lib/DataClasses/TranspilerVersion.cs</div><div>
+                    -> Windows/Lib/DataClasses/CoreLibraryExtensions.cs</div></div>
         <hr id="e3da958b-2f62-4f6b-a72d-7ce36918b604 6/>
 
         <div style="clear: both;"><div class="project-transpiler-link-box"><div class="pull-left"><div class="pull-left" style="height: 3em; width: 3em;">
@@ -117,7 +159,7 @@ body {
                 </div><div style="padding-left: 2em;"><div>
                                 /SSoTmeCLIHandler.cs</div><div>
                                 /SSoTmeCLIHandler.designer.cs</div><div>
-                                /SSoTmeCLIHandler.html</div></div></div></div></div><div style="clear: both;"><div style="white-space: pre-wrap; font-size: 0.8em; margin-top: -1.2em; padding: 0.2em;">Converts a simple GSheet into a C# Plossom command line object</div></div><div style="white-space: pre-wrap; clear: both"><span class="command-line"></span></div><div style="margin-left: 1em; padding: 0.5em;"> ----->
+                                /SSoTmeCLIHandler.html</div></div></div></div></div><div style="clear: both;"><div style="white-space: pre-wrap; font-size: 0.8em; margin-top: -1.2em; padding: 0.2em;">Converts a simple GSheet into a C# Plossom command line object</div></div><div style="white-space: pre-wrap; clear: both"><span class="command-line">GSheetToPlossumCmdLineOptions https://docs.google.com/spreadsheets/d/1v3pAQu6h3FYAaNqAmcL6j38ohckACRUSOVC33okFwI0/export?gid=1074048491&format=csv -p handlerName=SSoTmeCLIHandler -p namespace=SSoTme.OST.Lib.CLIOptions</span></div><div style="margin-left: 1em; padding: 0.5em;">handlerName=SSoTmeCLIHandler ----->
                 </div><div style="margin-left: 2em; padding: 0.5em;"><div>
                     -> Windows/Lib/CLIOptions/SSoTmeCLIHandler.cs</div><div>
                     -> Windows/Lib/CLIOptions/SSoTmeCLIHandler.designer.cs</div><div>
@@ -125,7 +167,7 @@ body {
         <hr id="fa2adf67-bb5c-4360-a362-78bf401a81e9 6/>
 
         <div style="clear: both;"><div class="project-transpiler-link-box"><div class="pull-left"><div class="pull-left" style="height: 3em; width: 3em;"></div><div class="pull-left" style="height: 3em; width: 3em;"></div></div><h3></h3><div style="font-weight: bold; padding-after: 1em;"><div style="padding: 0.2em; white-space: pre-wrap; font-family: monospace"><span class="ssotme-root">[SSoTme-root]</span><span class="relative-path">/Windows/Lib/CLIOptions</span><br />/> <b>ssotme </b> <a href="#fa2adf67-bb5c-4360-a362-78bf401a81e9" ></a> -i " /Windows/Lib/CLIOptions, ..."
-                </div><div style="padding-left: 2em;"></div></div></div></div><div style="clear: both;"><div style="white-space: pre-wrap; font-size: 0.8em; margin-top: -1.2em; padding: 0.2em;"></div></div><div style="white-space: pre-wrap; clear: both"><span class="command-line"></span></div><div style="margin-left: 1em; padding: 0.5em;"> ----->
+                </div><div style="padding-left: 2em;"></div></div></div></div><div style="clear: both;"><div style="white-space: pre-wrap; font-size: 0.8em; margin-top: -1.2em; padding: 0.2em;"></div></div><div style="white-space: pre-wrap; clear: both"><span class="command-line">-checkresults</span></div><div style="margin-left: 1em; padding: 0.5em;">project-name=SSoTme-Open-Source-Tools ----->
                 </div><div style="margin-left: 2em; padding: 0.5em;"></div>
         <hr id="f493ceec-b029-4f2e-a27b-c0f6c56543ec 6/>
 
@@ -135,7 +177,7 @@ body {
                 <img  style="width: 2.5em; height: 2.5em;" src="FileTypeImages/xml.png"  />
             </div></div><h3>S P Xml To Detailed S P Xml</h3><div style="font-weight: bold; padding-after: 1em;"><div style="padding: 0.2em; white-space: pre-wrap; font-family: monospace"><span class="ssotme-root">[SSoTme-root]</span><span class="relative-path">/DSPXml</span><br />/> <b>ssotme </b> <a href="#f493ceec-b029-4f2e-a27b-c0f6c56543ec" >s-p-xml-to-detailed-s-p-xml</a> -i " /DSPXml/SSoTmeProject.spxml, ..."
                 </div><div style="padding-left: 2em;"><div>
-                                /SSoTmeProject.dspxml</div></div></div></div></div><div style="clear: both;"><div style="white-space: pre-wrap; font-size: 0.8em; margin-top: -1.2em; padding: 0.2em;">Converts a SSoTmeProject.xml file into a Detailed SPXml file.</div></div><div style="white-space: pre-wrap; clear: both"><span class="command-line"></span></div><div style="margin-left: 1em; padding: 0.5em;"><div>/DSPXml/SSoTmeProject.spxml ----->
+                                /SSoTmeProject.dspxml</div></div></div></div></div><div style="clear: both;"><div style="white-space: pre-wrap; font-size: 0.8em; margin-top: -1.2em; padding: 0.2em;">Converts a SSoTmeProject.xml file into a Detailed SPXml file.</div></div><div style="white-space: pre-wrap; clear: both"><span class="command-line">spxml-to-detailed-spxml -i .\SSoTmeProject.spxml</span></div><div style="margin-left: 1em; padding: 0.5em;"><div>/DSPXml/SSoTmeProject.spxml ----->
                         </div></div><div style="margin-left: 2em; padding: 0.5em;"><div>
                     -> DSPXml/SSoTmeProject.dspxml</div></div>
         <hr id="9edf5887-59f7-4c17-a7b5-cbcd2733244d 6/>
@@ -150,7 +192,7 @@ body {
                                 /FileTypeImages/black.png</div><div>
                                 /FileTypeImages/blue-gear.png</div>
                         .../ (+65 more)
-                    </div></div></div></div><div style="clear: both;"><div style="white-space: pre-wrap; font-size: 0.8em; margin-top: -1.2em; padding: 0.2em;">Detailed S P Xml To Html Docs</div></div><div style="white-space: pre-wrap; clear: both"><span class="command-line"></span></div><div style="margin-left: 1em; padding: 0.5em;"><div>/DSPXml/SSoTmeProject.dspxml ----->
+                    </div></div></div></div><div style="clear: both;"><div style="white-space: pre-wrap; font-size: 0.8em; margin-top: -1.2em; padding: 0.2em;">Detailed S P Xml To Html Docs</div></div><div style="white-space: pre-wrap; clear: both"><span class="command-line">detailed-spxml-to-html-docs -i .\SSoTmeProject.dspxml</span></div><div style="margin-left: 1em; padding: 0.5em;"><div>/DSPXml/SSoTmeProject.dspxml ----->
                         </div></div><div style="margin-left: 2em; padding: 0.5em;"><div>
                     -> DSPXml/FileTypeImages/-to-.png</div><div>
                     -> DSPXml/FileTypeImages/black.png</div><div>
@@ -219,4 +261,58 @@ body {
                     -> DSPXml/FileTypeImages/gdoc.png</div><div>
                     -> DSPXml/FileTypeImages/iosapp.png</div><div>
                     -> DSPXml/FileTypeImages/zip.png</div><div>
-                    -> DSPXml/SSoTmeProject.html</div></div></body></html>
+                    -> DSPXml/SSoTmeProject.html</div></div>
+        <hr id="90de4191-f578-4573-ae42-3fcc2cb4d4ae 6/>
+
+        <div style="clear: both;"><div class="project-transpiler-link-box"><div class="pull-left"><div class="pull-left" style="height: 3em; width: 3em;">
+                <img  style="width: 2.5em; height: 2.5em;" src="FileTypeImages/odxml.png"  />
+            </div><div class="pull-left" style="height: 3em; width: 3em;">
+                <img  style="width: 2.5em; height: 2.5em;" src="FileTypeImages/html.png"  />
+            </div></div><h3>Odxml To Node J S Docs</h3><div style="font-weight: bold; padding-after: 1em;"><div style="padding: 0.2em; white-space: pre-wrap; font-family: monospace"><span class="ssotme-root">[SSoTme-root]</span><span class="relative-path">/docs/schema</span><br />/> <b>ssotme </b> <a href="#90de4191-f578-4573-ae42-3fcc2cb4d4ae" >odxml-to-node-j-s-docs</a> -i " /ODXML/DataSchema.odxml, ..."
+                </div><div style="padding-left: 2em;"><div>
+                                /app.js</div><div>
+                                /Index.html</div><div>
+                                /SinglePageDocs.html</div>
+                        .../ (+2 more)
+                    </div></div></div></div><div style="clear: both;"><div style="white-space: pre-wrap; font-size: 0.8em; margin-top: -1.2em; padding: 0.2em;">Creates easy to read/navigate html documentation for an Odxml Schema.</div></div><div style="white-space: pre-wrap; clear: both"><span class="command-line">odxml42/odxml-to-nodejs-docs -i ..\..\ODXML\DataSchema.odxml</span></div><div style="margin-left: 1em; padding: 0.5em;"><div>/ODXML/DataSchema.odxml ----->
+                        </div></div><div style="margin-left: 2em; padding: 0.5em;"><div>
+                    -> docs/schema/app.js</div><div>
+                    -> docs/schema/Index.html</div><div>
+                    -> docs/schema/SinglePageDocs.html</div><div>
+                    -> docs/schema/StartServer.sh</div><div>
+                    -> docs/schema/DataSchema.json</div></div>
+        <hr id="8c3bfc5f-b195-4a5b-ba51-038ed0855520 6/>
+
+        <div style="clear: both;"><div class="project-transpiler-link-box"><div class="pull-left"><div class="pull-left" style="height: 3em; width: 3em;">
+                <img  style="width: 2.5em; height: 2.5em;" src="FileTypeImages/xml.png"  />
+            </div><div class="pull-left" style="height: 3em; width: 3em;">
+                <img  style="width: 2.5em; height: 2.5em;" src="FileTypeImages/fileset.png"  />
+            </div></div><h3>Xml Xslt Transform</h3><div style="font-weight: bold; padding-after: 1em;"><div style="padding: 0.2em; white-space: pre-wrap; font-family: monospace"><span class="ssotme-root">[SSoTme-root]</span><span class="relative-path">/docs</span><br />/> <b>ssotme </b> <a href="#8c3bfc5f-b195-4a5b-ba51-038ed0855520" >xml-xslt-transform</a> -i " /ODXML/DataSchema.odxml, ..."
+                </div><div style="padding-left: 2em;"><div>
+                                /index.md</div></div></div></div></div><div style="clear: both;"><div style="white-space: pre-wrap; font-size: 0.8em; margin-top: -1.2em; padding: 0.2em;">Given an Xml and Xslt file, will process and "split" a resulting fileset.</div></div><div style="white-space: pre-wrap; clear: both"><span class="command-line">xml-xslt-transform -i ..\ODXML\DataSchema.odxml -i CreateSSoTmeDocs.xslt</span></div><div style="margin-left: 1em; padding: 0.5em;"><div>/ODXML/DataSchema.odxml ----->
+                        </div><div>/docs/CreateSSoTmeDocs.xslt ----->
+                        </div></div><div style="margin-left: 2em; padding: 0.5em;"><div>
+                    -> docs/index.md</div></div>
+        <hr id="91e64c8e-4546-4566-a421-f50161d0649a 6/>
+
+        <div style="clear: both;"><div class="project-transpiler-link-box"><div class="pull-left"><div class="pull-left" style="height: 3em; width: 3em;">
+                <img  style="width: 2.5em; height: 2.5em;" src="FileTypeImages/gsheet.png"  />
+            </div><div class="pull-left" style="height: 3em; width: 3em;">
+                <img  style="width: 2.5em; height: 2.5em;" src="FileTypeImages/xml.png"  />
+            </div></div><h3>Public G Sheet To Xml</h3><div style="font-weight: bold; padding-after: 1em;"><div style="padding: 0.2em; white-space: pre-wrap; font-family: monospace"><span class="ssotme-root">[SSoTme-root]</span><span class="relative-path">/docs/seeds</span><br />/> <b>ssotme </b> <a href="#91e64c8e-4546-4566-a421-f50161d0649a" >public-g-sheet-to-xml</a> -i " /docs/seeds, ..."
+                </div><div style="padding-left: 2em;"><div>
+                                /Seeds.xml</div></div></div></div></div><div style="clear: both;"><div style="white-space: pre-wrap; font-size: 0.8em; margin-top: -1.2em; padding: 0.2em;">Downloads a public google spreadsheet as an XML file.  </div></div><div style="white-space: pre-wrap; clear: both"><span class="command-line">public-gsheet-to-xml https://docs.google.com/spreadsheets/d/1v3pAQu6h3FYAaNqAmcL6j38ohckACRUSOVC33okFwI0/edit#gid=2133303844 -o Seeds.xml</span></div><div style="margin-left: 1em; padding: 0.5em;">param1=https://docs.google.com/spreadsheets/d/1v3pAQu6h3FYAaNqAmcL6j38ohckACRUSOVC33okFwI0/edit#gid=2133303844 ----->
+                </div><div style="margin-left: 2em; padding: 0.5em;"><div>
+                    -> docs/seeds/Seeds.xml</div></div>
+        <hr id="c1a92ab2-7ce3-4825-b35f-d533bde9db88 6/>
+
+        <div style="clear: both;"><div class="project-transpiler-link-box"><div class="pull-left"><div class="pull-left" style="height: 3em; width: 3em;">
+                <img  style="width: 2.5em; height: 2.5em;" src="FileTypeImages/xml.png"  />
+            </div><div class="pull-left" style="height: 3em; width: 3em;">
+                <img  style="width: 2.5em; height: 2.5em;" src="FileTypeImages/fileset.png"  />
+            </div></div><h3>Xml Xslt Transform</h3><div style="font-weight: bold; padding-after: 1em;"><div style="padding: 0.2em; white-space: pre-wrap; font-family: monospace"><span class="ssotme-root">[SSoTme-root]</span><span class="relative-path">/docs/seeds</span><br />/> <b>ssotme </b> <a href="#c1a92ab2-7ce3-4825-b35f-d533bde9db88" >xml-xslt-transform</a> -i " /docs/seeds/Seeds.xml, ..."
+                </div><div style="padding-left: 2em;"><div>
+                                /../seeds.md</div></div></div></div></div><div style="clear: both;"><div style="white-space: pre-wrap; font-size: 0.8em; margin-top: -1.2em; padding: 0.2em;">Given an Xml and Xslt file, will process and "split" a resulting fileset.</div></div><div style="white-space: pre-wrap; clear: both"><span class="command-line">xml-xslt-transform -i .\Seeds.xml -i DescribeSeeds.xslt</span></div><div style="margin-left: 1em; padding: 0.5em;"><div>/docs/seeds/Seeds.xml ----->
+                        </div><div>/docs/seeds/DescribeSeeds.xslt ----->
+                        </div></div><div style="margin-left: 2em; padding: 0.5em;"><div>
+                    -> docs/seeds/../seeds.md</div></div></body></html>

@@ -466,6 +466,7 @@ namespace SSoTme.OST.Lib.CLIOptions
         public string[] args;
         public string commandLine;
         private SMQPublicUser PublicUser;
+        public string inputFileSetJson;
 
         public FileSet FileSet { get; private set; }
         public bool HasRemainingArguments { get; private set; }

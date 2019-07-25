@@ -35,7 +35,6 @@ namespace SassyMQ.Lib.RabbitMQ.Payload
         public string SenderId { get; set; }
         public string SenderName { get; set; }
         public string Content { get; set; }
-        public string DeliveryTag { get; set; }
         public string RoutingKey { get; set; }
         public String Exchange { get; set; }
         public String ReplyTo { get; set; }
@@ -50,7 +49,8 @@ namespace SassyMQ.Lib.RabbitMQ.Payload
         public bool TimedOutWaiting { get; private set; }
         public T ReplyPayload { get; private set; }
         public string DirectMessageQueue { get; set; }
-
+        public string CorrelationId { get; set; }
+        
         public void Reject(string msg)
         {
             this.IsRejected = true;

@@ -12,7 +12,7 @@ using System.Linq;
 
 namespace SassyMQ.SSOTME.Lib.RMQActors
 {
-    public class SSOTMEPayload : StandardPayload<SSOTMEPayload>
+    public class SSOTMEPayload : StandardPayload<SSOTMEPayload>, ISSOTMEPayload
     {
         static SSOTMEPayload()
         {
@@ -55,6 +55,7 @@ namespace SassyMQ.SSOTME.Lib.RMQActors
         public SSOTMEPayload()
         {
             this.Settings = new Dictionary<string, string>();
+            this.CLIParams = new List<string>();
         }
 
 
@@ -93,6 +94,7 @@ namespace SassyMQ.SSOTME.Lib.RMQActors
         public string CLIAccount { get; set; }
         public List<string> CLIInput { get; set; }
         public string CLIInputFileContents { get; set; }
+        public string CLIInputFileSetJson { get; set; }
         public string CLIInputFileSetXml { get; set; }
         public string CLIOutput { get; set; }
         public List<String> CLIParams { get; set; }
@@ -101,6 +103,7 @@ namespace SassyMQ.SSOTME.Lib.RMQActors
         public List<FileType> FileTypes { get; set; }
         public SSoTmeProject SSoTmeProject { get; set; }
         public SSOTMEKey SSoTmeKey { get; set; }
+        public bool ReturnJson { get; set; }
 
         public void CleanFileSet()
         {

@@ -57,6 +57,7 @@ namespace SassyMQ.Lib.RabbitMQ.Payload
         public bool TimedOutWaiting { get; private set; }
         public T ReplyPayload { get; private set; }
         public string DirectMessageQueue { get; set; }
+        public string CorrelationId { get; set; }
 
         public void Reject(string msg)
         {

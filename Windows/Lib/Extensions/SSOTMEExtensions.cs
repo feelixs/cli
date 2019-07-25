@@ -727,7 +727,7 @@ namespace SSoTme.OST.Lib.Extensions
 
             var result = default(DataSet);
             FileSet fs = new FileSet();
-            if (fileName.EndsWith(".xlsx"))
+            if (fileName.ToLower().EndsWith(".xlsx"))
             {
                 // Reading from a binary Excel file (format; *.xlsx)
                 var stream = new MemoryStream(xlsxFile);
@@ -736,7 +736,7 @@ namespace SSoTme.OST.Lib.Extensions
                 excelReader.Close();
             }
 
-            if (fileName.EndsWith(".xls"))
+            if (fileName.ToLower().EndsWith(".xls"))
             {
                 // Reading from a binary Excel file ('97-2003 format; *.xls)
                 var stream = new MemoryStream(xlsxFile);
@@ -744,6 +744,8 @@ namespace SSoTme.OST.Lib.Extensions
                 result = excelReader.AsDataSet();
                 excelReader.Close();
             }
+
+            if (ReferenceEquals(result, null)) throw new Exception("Can't read XLSX or XLS file for some reason..");
 
             var tableNames = result.Tables.OfType<DataTable>().Select(selectDT => selectDT.TableName);
             foreach (var tableName in tableNames)

@@ -36,6 +36,10 @@ namespace SSoTme.OST.Transpilers
             this.RootDirInfo = new DirectoryInfo(Path.Combine("C:\\temp\\", Guid.NewGuid().ToString()));
             this.RootDirInfo.Create();
 
+            if (String.IsNullOrEmpty(this.Payload.CLIInputFileSetXml) && !String.IsNullOrEmpty(this.Payload.CLIInputFileSetJson))
+            {
+                this.Payload.CLIInputFileSetXml = this.Payload.CLIInputFileSetJson.JsonToXml().OuterXml;
+            }
 
             if (String.IsNullOrEmpty(this.Payload.CLIInputFileSetXml)) this.InputFileSet = new FileSet();
             else this.InputFileSet = this.Payload.CLIInputFileSetXml.ToFileSet();
@@ -558,7 +562,25 @@ namespace SSoTme.OST.Transpilers
 
         public string InputFilePlus(string additionalExtension)
         {
+            if (ReferenceEquals(this.Payload.CLIInput, null))
+            {
+                this.Payload.CLIInput = new List<string>();
+                if (!ReferenceEquals(this.InputFileSet, null) && this.InputFileSet.FileSetFiles.Any())
+                {
+                    this.Payload.CLIInput.Add(this.InputFileSet.FileSetFiles.First().RelativePath);
+                }
+                else this.Payload.CLIInput.Add("input.txt");
+            }
+
             var fileName = this.Payload.CLIInput.FirstOrDefault();
+            if (String.IsNullOrEmpty(fileName))
+            {
+                var fsf = this.InputFileSet.FileSetFiles.FirstOrDefault();
+                if (!ReferenceEquals(fsf, null))
+                {
+                    fileName = Path.GetFileName(fsf.RelativePath);
+                }
+            }
             if (String.IsNullOrEmpty(fileName)) throw new Exception("Input file missing - can't calculate output filename");
             else return String.Format("{0}{1}", fileName, additionalExtension);
         }
@@ -588,7 +610,31 @@ namespace SSoTme.OST.Transpilers
             else return String.Empty;
         }
 
+        public Uri GetFirstUri()
+        {
+            string url = this.GetSingleTextFileContents();
+            if (String.IsNullOrEmpty(url))
+            {
+                url = this.Parameters
+                          .Values
+                          .FirstOrDefault(fod => fod.StartsWith("http"));
 
+            }
+            if (String.IsNullOrEmpty(url))
+            {
+                url = this.Parameters
+                          .Keys
+                          .FirstOrDefault(fod => fod.StartsWith("http"));
+                var value = this.Parameters[url];
+                if (!String.IsNullOrEmpty(value)) url = String.Format("{0}={1}", url, value);
+            }
+            var uri = default(Uri);
+            if (Uri.TryCreate(url, UriKind.RelativeOrAbsolute, out uri))
+            {
+            }
+            return uri;
+
+        }
     }
 }
 

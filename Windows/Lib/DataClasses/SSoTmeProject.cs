@@ -231,7 +231,31 @@ namespace SSoTme.OST.Lib.DataClasses
         {
             this.CheckUniqueIDs();
             this.AddSetting(string.Format("project-name={0}", this.Name));
+            this.ProjectTranspilers
+                .ToList()
+                .ForEach(feProjectTranspiler =>
+                {
+                    feProjectTranspiler.MatchedTranspiler = new Transpiler()
+                    {
+                        TranspilerId = feProjectTranspiler.MatchedTranspiler.TranspilerId,
+                        Name = feProjectTranspiler.MatchedTranspiler.Name,
+                        Description = feProjectTranspiler.MatchedTranspiler.Description,
+                        TranspileRequests = null,
+                        TranspilerInstances = null,
+                        TranspilerVersions = null
+                    };
+                });
             string projectJson = JsonConvert.SerializeObject(this, Newtonsoft.Json.Formatting.Indented);
+            var tempTranspiler = JsonConvert.DeserializeObject<SSoTmeProject>(projectJson);
+            tempTranspiler.RootPath = null;
+            if (!ReferenceEquals(tempTranspiler.ExpandedPaths, null) &&
+                    !tempTranspiler.ExpandedPaths.Any()) tempTranspiler.ExpandedPaths = null;
+            if (!ReferenceEquals(tempTranspiler.HiddenPaths, null) &&
+                    !tempTranspiler.HiddenPaths.Any()) tempTranspiler.HiddenPaths = null;
+            projectJson = JsonConvert.SerializeObject(tempTranspiler, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings()
+            {
+                NullValueHandling = NullValueHandling.Ignore
+            });
             var count = 0;
             while (count < 5)
             {
@@ -304,7 +328,8 @@ namespace SSoTme.OST.Lib.DataClasses
                     return ssotmeProject;
 
                 }
-                catch (IOException ioex) {
+                catch (IOException ioex)
+                {
                     Thread.Sleep(500);
                 }
             }

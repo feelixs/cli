@@ -159,37 +159,45 @@ namespace SassyMQ.Lib.RabbitMQ.Payload
                 var gotMessage = subscription.Next(100, out bdea);
                 if (gotMessage)
                 {
-                    var msgText = string.Format("{0}{1}. {2} => {3}{0}", Environment.NewLine, ++count, bdea.Exchange, bdea.RoutingKey);
-                    //var msgText = string.Format("{3}. {0}: {1} -> '{2}'", bdea.Exchange, bdea.RoutingKey, Encoding.UTF8.GetString(bdea.Body), ++count);
-
-                    var print = SMQActorBase<T>.IsDebugMode;
-
-                    print = print && (!bdea.IsPing() || SMQActorBase<T>.ShowPings);
-
-                    if (print) System.Console.WriteLine(msgText);
-
-                    var body = Encoding.UTF8.GetString(bdea.Body);
-                    T payload = StandardPayload<T>.FromJSonString(body) as T;
-
-                    payload.DeliveryTag = bdea.DeliveryTag.SafeToString();
-                    if (String.IsNullOrEmpty(payload.RoutingKey)) payload.RoutingKey = bdea.RoutingKey;
-                    payload.ReplyTo = bdea.BasicProperties.ReplyTo;
-                    payload.Exchange = bdea.Exchange;
-
-                    this.OnMessageReceived(payload);
-                    Task.Factory.StartNew(() =>
+                    try
                     {
-                        try
-                        {
-                            this.CheckRouting(payload);
-                        }
-                        catch (Exception ex)
-                        {
-                            payload.Exception = ex;
-                        }
-                        this.OnAfterMessageReceived(payload);
-                    });
+                        var msgText = string.Format("{0}{1}. {2} => {3}{0}", Environment.NewLine, ++count, bdea.Exchange, bdea.RoutingKey);
+                        //var msgText = string.Format("{3}. {0}: {1} -> '{2}'", bdea.Exchange, bdea.RoutingKey, Encoding.UTF8.GetString(bdea.Body), ++count);
 
+                        var print = SMQActorBase<T>.IsDebugMode;
+
+                        print = print && (!bdea.IsPing() || SMQActorBase<T>.ShowPings);
+
+                        if (print) System.Console.WriteLine(msgText);
+
+                        var body = Encoding.UTF8.GetString(bdea.Body);
+                        T payload = StandardPayload<T>.FromJSonString(body) as T;
+
+                        payload.DeliveryTag = bdea.DeliveryTag.SafeToString();
+                        if (String.IsNullOrEmpty(payload.RoutingKey)) payload.RoutingKey = bdea.RoutingKey;
+                        payload.ReplyTo = bdea.BasicProperties.ReplyTo;
+                        payload.CorrelationId = bdea.BasicProperties.CorrelationId;
+                        if (String.IsNullOrEmpty(payload.CorrelationId)) payload.CorrelationId = Guid.NewGuid().ToString();
+                        payload.Exchange = bdea.Exchange;
+
+                        this.OnMessageReceived(payload);
+                        Task.Factory.StartNew(() =>
+                        {
+                            try
+                            {
+                                this.CheckRouting(payload);
+                            }
+                            catch (Exception ex)
+                            {
+                                payload.Exception = ex;
+                            }
+                            this.OnAfterMessageReceived(payload);
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("ERROR: " + ex.Message);
+                    }
                 }
             }
 

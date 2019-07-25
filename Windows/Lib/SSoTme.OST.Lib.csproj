@@ -99,6 +99,7 @@
     <Compile Include="DataClasses\FileType.designer.cs">
       <DependentUpon>FileType.cs</DependentUpon>
     </Compile>
+    <Compile Include="DataClasses\ITranspileRequest.cs" />
     <Compile Include="DataClasses\PlatformCategory.cs" />
     <Compile Include="DataClasses\PlatformCategory.designer.cs">
       <DependentUpon>PlatformCategory.cs</DependentUpon>
@@ -203,6 +204,7 @@
     <Compile Include="SassySDK\Derived\PayloadEventArgs.cs" />
     <Compile Include="SassySDK\Derived\SMQActorBase.cs" />
     <Compile Include="SassySDK\Derived\StandardPayload.cs" />
+    <Compile Include="SassySDK\ISSOTMEPayload.cs" />
     <Compile Include="SassySDK\LexiconEnum.cs" />
     <Compile Include="SassySDK\LexiconTerms.cs" />
     <Compile Include="SassySDK\LexiconTerms.designer.cs">
