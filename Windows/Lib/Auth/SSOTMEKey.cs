@@ -4,8 +4,8 @@
              An Abstract Level, llc
  License:    Mozilla Public License 2.0
  *******************************************/
-using CoreLibrary.Extensions;
 using Newtonsoft.Json;
+using SassyMQ.Lib.RabbitMQ;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -35,11 +35,10 @@ namespace SSoTme.OST.Lib.SassySDK.Derived
                     _allKeys = new List<SSOTMEKey>();
                     foreach (var keyFile in SSoTmeDir.GetFiles("*.key"))
                     {
-                        var username = keyFile.Name
+                        var username = ExtensionMethods.SafeToString(keyFile.Name
                                               .Split('_')
                                               .Skip(1)
-                                              .FirstOrDefault()
-                                              .SafeToString()
+                                              .FirstOrDefault())
                                               .ToLower()
                                               .Replace(".key", "");
 

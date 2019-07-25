@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using SassyMQ.SSOTME.Lib.RMQActors;
 namespace SassyMQ.SSOTME.Lib
 {
-    public static class SSOTMEExtensions
+    public static class SSOTMEExtensions2
     {
         public static bool IsLexiconTerm<T>(this StandardPayload<T> payload, LexiconTermEnum termKey)
             where T : StandardPayload<T>, new()

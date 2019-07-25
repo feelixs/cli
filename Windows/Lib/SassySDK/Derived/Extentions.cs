@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Windows.Forms;
 using SassyMQ.Lib.RabbitMQ.Payload;
 using System.Security.Cryptography;
 using System.Text;
@@ -7,8 +6,8 @@ using System.IO;
 using System.Collections.Generic;
 using RabbitMQ.Client.Events;
 using SassyMQ.SSOTME.Lib.RabbitMQ;
-using System.Data.Entity.Design.PluralizationServices;
 using System.Globalization;
+using SSoTme.OST.Lib.Extensions;
 
 namespace SassyMQ.Lib.RabbitMQ
 {
@@ -36,15 +35,13 @@ namespace SassyMQ.Lib.RabbitMQ
         public static String Pluralize(this String singlularText)
         {
             if (String.IsNullOrEmpty(singlularText)) return String.Empty;
-            var pluralizer = PluralizationService.CreateService(CultureInfo.CurrentCulture);
-            return pluralizer.Pluralize(singlularText.SafeToString());
+            return SSOTMEExtensions.Pluralizer.Pluralize(singlularText.SafeToString());
         }
 
         public static bool IsSingular(this String singularCandidate)
         {
             if (String.IsNullOrEmpty(singularCandidate)) return false;
-            var pluralizer = PluralizationService.CreateService(CultureInfo.CurrentCulture);
-            return pluralizer.IsSingular(singularCandidate.SafeToString());
+            return SSOTMEExtensions.Pluralizer.IsSingular(singularCandidate.SafeToString());
         }
 
         public static bool IsPlural(this String pluralCandidate) {
@@ -54,16 +51,15 @@ namespace SassyMQ.Lib.RabbitMQ
         public static String Singuluralize(this String pluralText)
         {
             if (String.IsNullOrEmpty(pluralText)) return String.Empty;
-            var pluralizer = PluralizationService.CreateService(CultureInfo.CurrentCulture);
-            return pluralizer.Singularize(pluralText.SafeToString());
+            return SSOTMEExtensions.Pluralizer.Singularize(pluralText.SafeToString());
         }
 
-        public static void HandleInvoke<T>(this Form form, object sender, InvokeEventArgs<T> e)
-            where T : StandardPayload<T>, new()
-        {
-            if (ReferenceEquals(form, null)) e.MethodDelegate.Invoke(sender, e.PayloadEventArgs);
-            else form.Invoke(new EventHandler<PayloadEventArgs<T>>(e.MethodDelegate), sender, e.PayloadEventArgs);
-        }
+        //public static void HandleInvoke<T>(this Form form, object sender, InvokeEventArgs<T> e)
+        //    where T : StandardPayload<T>, new()
+        //{
+        //    if (ReferenceEquals(form, null)) e.MethodDelegate.Invoke(sender, e.PayloadEventArgs);
+        //    else form.Invoke(new EventHandler<PayloadEventArgs<T>>(e.MethodDelegate), sender, e.PayloadEventArgs);
+        //}
 
         public static String GuidToKey(this Guid guid)
         {

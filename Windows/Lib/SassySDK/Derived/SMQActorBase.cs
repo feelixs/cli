@@ -9,7 +9,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-using System.Windows.Forms;
 using System.IO;
 using Newtonsoft.Json;
 using System.Threading;
@@ -71,7 +70,8 @@ namespace SassyMQ.Lib.RabbitMQ.Payload
 
         private void SMQActorBase_HandleInvokeExternal(object sender, InvokeEventArgs<T> e)
         {
-            Application.OpenForms.OfType<Form>().FirstOrDefault().HandleInvoke(sender, e);
+            e.MethodDelegate.Invoke(sender, e.PayloadEventArgs);
+            //Application.OpenForms.OfType<Form>().FirstOrDefault().HandleInvoke(sender, e);
         }
 
         public void AutoConnect()

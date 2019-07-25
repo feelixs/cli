@@ -15,7 +15,6 @@ using SSoTme.OST.Lib.Extensions;
 using System.Xml;
 using System.Diagnostics;
 using System.Collections.Generic;
-using System.Windows.Forms;
 using System.Threading;
 
 namespace SSoTme.OST.Lib.DataClasses
@@ -79,19 +78,19 @@ namespace SSoTme.OST.Lib.DataClasses
         {
             if (String.Equals(Path.GetFileName(e.FullPath), "SSoTmeProject.json", StringComparison.OrdinalIgnoreCase))
             {
-                var form = Application.OpenForms.OfType<Form>().FirstOrDefault();
-                if (ReferenceEquals(form, null) || !form.InvokeRequired) this.OnProjectFileReloaded(this, e);
-                else
-                {
-                    try
-                    {
-                        form.Invoke(new EventHandler<FileSystemEventArgs>(this.OnProjectFileReloaded), this, e);
-                    }
-                    catch (ObjectDisposedException ode)
-                    {
-                        // ignore disposed errors...
-                    }
-                }
+                //var form = Application.OpenForms.OfType<Form>().FirstOrDefault();
+                //if (ReferenceEquals(form, null) || !form.InvokeRequired) this.OnProjectFileReloaded(this, e);
+                //else
+                //{
+                //    try
+                //    {
+                //        form.Invoke(new EventHandler<FileSystemEventArgs>(this.OnProjectFileReloaded), this, e);
+                //    }
+                //    catch (ObjectDisposedException ode)
+                //    {
+                //        // ignore disposed errors...
+                //    }
+                //}
             }
         }
 
@@ -235,7 +234,8 @@ namespace SSoTme.OST.Lib.DataClasses
                 .ToList()
                 .ForEach(feProjectTranspiler =>
                 {
-                    feProjectTranspiler.MatchedTranspiler = new Transpiler()
+                    if (ReferenceEquals(feProjectTranspiler.MatchedTranspiler, null)) feProjectTranspiler.MatchedTranspiler = new Transpiler();
+                        feProjectTranspiler.MatchedTranspiler = new Transpiler()
                     {
                         TranspilerId = feProjectTranspiler.MatchedTranspiler.TranspilerId,
                         Name = feProjectTranspiler.MatchedTranspiler.Name,

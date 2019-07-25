@@ -1,13 +1,9 @@
 {
-  "HiddenPaths": [],
-  "ExpandedPaths": [],
   "ShowHidden": false,
   "ShowAllFiles": false,
-  "CurrentPath": null,
   "SaveDisabled": false,
   "SSoTmeProjectId": "3c0c0e72-1963-4056-b302-5eff9444481c",
   "Name": "SSoTme-Open-Source-Tools",
-  "RootPath": "C:\\Development\\SSoTme-Open-Source-Tools",
   "ProjectSettings": [
     {
       "ProjectSettingId": "f6564497-eb77-448d-9600-24c35f023f48",
@@ -19,37 +15,9 @@
     {
       "MatchedTranspiler": {
         "TranspilerId": "595b7fe7-7f64-44c2-b48c-d096d997211f",
-        "AccountHolderId": "9aeb4f89-3c90-4972-927c-7deebfbb9de4",
         "Name": "OdxmlToCSharpPOCOs",
-        "DisplayName": "Odxml To C Sharp P O C Os",
-        "Description": "Odxml To CSharp POCOs",
-        "CreatedOn": "2017-09-07T17:35:30.24",
-        "IsActive": true,
-        "CurrentRoutingKey": "amq.gen-_TaqhLMvz71hvl2jPygybA",
-        "LowerName": "odxmltocsharppocos",
-        "UpperName": "ODXMLTOCSHARPPOCOS",
-        "LowerHyphenName": "odxml-to-c-sharp-p-o-c-os",
-        "ReadMeMD": "param name=\"include-list-prefix\" select=\"true\"\r\nWill include the fieldname of the referenced object before lists so that if a child object has multiple references to an object, the collections on the parent will be distinguished by the name of the child properties.\r\n\r\nparam name=include-sdm-expand=false\r\nparam name=include-load-methods=true\r\n\r\nparam name=\"include-inheritance\" select=\"true\"\r\nIf a relationship exists on the primary key fo the object, it will be infered to \"descend\" from the refrenced object.\r\n\r\nparam name=\"pluralize-json-references\" select=\"true\"\r\nDetermines if the \"original name\" should be pluraized in the Json serialization header.\r\n\r\nparam name=sdm--namespace = 'using KP.ODXML7.SqlDataManager.{project-name}.SqlDataManagement;'\r\n\r\n\r\nparam name=extensions-namespace = 'CoreLibrary.Extensions'\r\n\r\nparam name=serialize-to-original-names=\"'false\"  \r\nInidicates if the json formatting should use original names\r\n\r\nparam name=\"csproj-filename\" = ''\r\nparam name=\"output-csproj-filename\" = ''\r\nparam name=\"relative-path\" = ''\r\n",
-        "InputFileTypeId": "33de424c-cfe0-498e-ae70-44da375a8fb2",
-        "OutputFileTypeId": "47f5fc9f-0c22-4f73-8d18-0544a7f05d7b",
-        "Category": "dot-net",
-        "IsRecommended": true,
-        "TranspileRequests": [],
-        "TranspilerInstances": [],
-        "TranspilerVersions": [
-          {
-            "TranspilerVersionId": "a52a5130-bd3c-4974-8def-374cd52a4592",
-            "TranspilerId": "595b7fe7-7f64-44c2-b48c-d096d997211f",
-            "Name": "v1",
-            "CreatedOn": "2017-09-07T17:35:33.567",
-            "IsActive": true,
-            "TranspilerFileTypeId_TranspilerInputHints": [],
-            "TranspilerInstances": [],
-            "ReplacedByTranspilerVersionId_TranspilerVersions": []
-          }
-        ]
+        "Description": "Odxml To CSharp POCOs"
       },
-      "CLIHandler": null,
       "ProjectTranspilerId": "1eddb117-d84d-464d-ae0e-75617e875e84",
       "Name": "OdxmlToCSharpPOCOs",
       "RelativePath": "/Windows/Lib/DataClasses",
@@ -58,46 +26,18 @@
     {
       "MatchedTranspiler": {
         "TranspilerId": "a21c55fd-5c4e-44d7-bdec-d3c09ad0fb3d",
-        "AccountHolderId": "1e876e4f-d63b-4698-bd68-3bc27876e41e",
         "Name": "GSheetToPlossumCmdLineOptions",
-        "DisplayName": "G Sheet To Plossum Cmd Line Options",
-        "Description": "Converts a simple GSheet into a C# Plossom command line object",
-        "CreatedOn": "2017-06-05T01:35:08.163",
-        "IsActive": true,
-        "CurrentRoutingKey": "amq.gen-FCs-uOX8clAg4c3GnW7MBg",
-        "LowerName": "gsheettoplossumcmdlineoptions",
-        "UpperName": "GSHEETTOPLOSSUMCMDLINEOPTIONS",
-        "LowerHyphenName": "g-sheet-to-plossum-cmd-line-options",
-        "ReadMeMD": "The Plossum command line library is a helpful CSharp library which can parse a C# command line, into a native C# object.  The structure of that C# file is dictated by the contents of the Google sheet.  \r\n\r\nThe GSheet for SSoT.me can be found here:\r\nhttps://docs.google.com/spreadsheets/d/1v3pAQu6h3FYAaNqAmcL6j38ohckACRUSOVC33okFwI0/edit#gid=1074048491\r\n\r\nYou'll find the commands listed in there familiar if you've used the SSoTme command line before, as it is the same commands (defined once in that spreadsheet) which is used to generate the command line parser in every platform that SSoTme supports.",
-        "InputDescriptionMD": "A Command Line Syntax.  Each row defines one command line options.\r\n - Name\r\n - Description\r\n - Aliases\r\n - DataType\r\n - IsOptional\r\n - IsList\r\n - DefaultValue\r\n - ExampleValue",
-        "ExampleMD": "ssotme GSheetToPlossumCmdLineOption https://docs.google.com/spreadsheets/d/1v3pAQu6h3FYAaNqAmcL6j38ohckACRUSOVC33okFwI0/edit#gid=1074048491",
-        "InputFileTypeId": "3c31d7c2-5c85-434b-a5a0-a5bd1dbc0a96",
-        "OutputFileTypeId": "47f5fc9f-0c22-4f73-8d18-0544a7f05d7b",
-        "Category": "cli",
-        "TranspileRequests": [],
-        "TranspilerInstances": [],
-        "TranspilerVersions": [
-          {
-            "TranspilerVersionId": "99b15c51-041e-4b9a-970b-eb1088cbf092",
-            "TranspilerId": "a21c55fd-5c4e-44d7-bdec-d3c09ad0fb3d",
-            "Name": "v1",
-            "CreatedOn": "2017-06-05T01:35:10.013",
-            "IsActive": true,
-            "TranspilerFileTypeId_TranspilerInputHints": [],
-            "TranspilerInstances": [],
-            "ReplacedByTranspilerVersionId_TranspilerVersions": []
-          }
-        ]
+        "Description": "Converts a simple GSheet into a C# Plossom command line object"
       },
-      "CLIHandler": null,
       "ProjectTranspilerId": "e3da958b-2f62-4f6b-a72d-7ce36918b604",
       "Name": "GSheetToPlossumCmdLineOptions",
       "RelativePath": "/Windows/Lib/CLIOptions",
       "CommandLine": "GSheetToPlossumCmdLineOptions https://docs.google.com/spreadsheets/d/1v3pAQu6h3FYAaNqAmcL6j38ohckACRUSOVC33okFwI0/export?gid=1074048491&format=csv -p handlerName=SSoTmeCLIHandler -p namespace=SSoTme.OST.Lib.CLIOptions"
     },
     {
-      "MatchedTranspiler": null,
-      "CLIHandler": null,
+      "MatchedTranspiler": {
+        "TranspilerId": "ecb7bb6e-9c20-46e3-b191-5afcc1d3d6f6"
+      },
       "ProjectTranspilerId": "fa2adf67-bb5c-4360-a362-78bf401a81e9",
       "Name": "LocalCommand",
       "RelativePath": "/Windows/Lib/CLIOptions",
@@ -106,39 +46,9 @@
     {
       "MatchedTranspiler": {
         "TranspilerId": "bbeadea3-75c7-449a-9aaa-22e2b29c2ed7",
-        "AccountHolderId": "1e876e4f-d63b-4698-bd68-3bc27876e41e",
         "Name": "SPXmlToDetailedSPXml",
-        "DisplayName": "S P Xml To Detailed S P Xml",
-        "Description": "Converts a SSoTmeProject.xml file into a Detailed SPXml file.",
-        "CreatedOn": "2017-10-14T22:26:12.277",
-        "IsActive": true,
-        "CurrentRoutingKey": "amq.gen-jWBa32Jd3OAy32tcP7I0iA",
-        "LowerName": "spxmltodetailedspxml",
-        "UpperName": "SPXMLTODETAILEDSPXML",
-        "LowerHyphenName": "s-p-xml-to-detailed-s-p-xml",
-        "ReadMeMD": "Essentially - this gathers META DATA about the files involved in each of the transpile operations (input & output), and combines it all together into a single file.  Subsequent tools can then create (for example) documentation of this process.  This tool just gathers the information together.\r\n\r\nIt also includes the meta data about all of the files types (as a snapshot at the point in time that this tool is run) authoritatively from SSoT.me.\r\n\r\nThe command ssotme -createDocs automatically installs this tool, plus the tool which converts the DSPxml file into a more helpful Html document.",
-        "InputDescriptionMD": "A SSoTmeProject.json file - which is read locally by the Open Source SSoT.me CLI tools.  ",
-        "OutputDescriptionMD": "Based on this file, and by examining the .zfs files throughout the project, a picture of the build process is rebuilt (without any of the content of the input/output files) - and a single, unified picture of the project is developed - a Detailed SPXml file.",
-        "ExampleMD": "ssotme -createDocs",
-        "InputFileTypeId": "f1b92a2a-3f83-4000-9b37-57f920e14419",
-        "OutputFileTypeId": "f1b92a2a-3f83-4000-9b37-57f920e14419",
-        "Category": "ssotme",
-        "TranspileRequests": [],
-        "TranspilerInstances": [],
-        "TranspilerVersions": [
-          {
-            "TranspilerVersionId": "28cf2294-48c9-41df-838a-08519b75d3c3",
-            "TranspilerId": "bbeadea3-75c7-449a-9aaa-22e2b29c2ed7",
-            "Name": "v1",
-            "CreatedOn": "2017-10-14T22:26:22.67",
-            "IsActive": true,
-            "TranspilerFileTypeId_TranspilerInputHints": [],
-            "TranspilerInstances": [],
-            "ReplacedByTranspilerVersionId_TranspilerVersions": []
-          }
-        ]
+        "Description": "Converts a SSoTmeProject.xml file into a Detailed SPXml file."
       },
-      "CLIHandler": null,
       "ProjectTranspilerId": "f493ceec-b029-4f2e-a27b-c0f6c56543ec",
       "Name": "SPXmlToDetailedSPXml",
       "RelativePath": "/DSPXml",
@@ -147,36 +57,9 @@
     {
       "MatchedTranspiler": {
         "TranspilerId": "06876a87-a56c-4c75-a01f-377e97deed7a",
-        "AccountHolderId": "1e876e4f-d63b-4698-bd68-3bc27876e41e",
         "Name": "DetailedSPXmlToHtmlDocs",
-        "DisplayName": "Detailed S P Xml To Html Docs",
-        "Description": "Detailed S P Xml To Html Docs",
-        "CreatedOn": "2017-10-14T22:05:54.85",
-        "IsActive": true,
-        "CurrentRoutingKey": "amq.gen-oEpCrG1TUS34T1e-TSjftA",
-        "LowerName": "detailedspxmltohtmldocs",
-        "UpperName": "DETAILEDSPXMLTOHTMLDOCS",
-        "LowerHyphenName": "detailed-s-p-xml-to-html-docs",
-        "ReadMeMD": "This system tool turns a detailed SPXml file into detailed Html Documentation about how the SSoT.me project is organized. Specifically, how does the tech \"flow\" thorugh the project. ",
-        "InputFileTypeId": "f1b92a2a-3f83-4000-9b37-57f920e14419",
-        "OutputFileTypeId": "d8fc84b7-442d-4c7a-92a0-eefc11391934",
-        "Category": "ssotme",
-        "TranspileRequests": [],
-        "TranspilerInstances": [],
-        "TranspilerVersions": [
-          {
-            "TranspilerVersionId": "59b27e72-9f6d-4f13-b246-69afadb78106",
-            "TranspilerId": "06876a87-a56c-4c75-a01f-377e97deed7a",
-            "Name": "v1",
-            "CreatedOn": "2017-10-14T22:05:59.07",
-            "IsActive": true,
-            "TranspilerFileTypeId_TranspilerInputHints": [],
-            "TranspilerInstances": [],
-            "ReplacedByTranspilerVersionId_TranspilerVersions": []
-          }
-        ]
+        "Description": "Detailed S P Xml To Html Docs"
       },
-      "CLIHandler": null,
       "ProjectTranspilerId": "9edf5887-59f7-4c17-a7b5-cbcd2733244d",
       "Name": "DetailedSPXmlToHtmlDocs",
       "RelativePath": "/DSPXml",
@@ -185,37 +68,9 @@
     {
       "MatchedTranspiler": {
         "TranspilerId": "8defe7a3-89cf-4989-b679-d9226519f622",
-        "AccountHolderId": "9aeb4f89-3c90-4972-927c-7deebfbb9de4",
         "Name": "OdxmlToNodeJSDocs",
-        "DisplayName": "Odxml To Node J S Docs",
-        "Description": "Creates easy to read/navigate html documentation for an Odxml Schema.",
-        "CreatedOn": "2017-08-29T21:18:01.293",
-        "IsActive": true,
-        "CurrentRoutingKey": "amq.gen-038mgzT3ATTpDx-Ekoww0w",
-        "LowerName": "odxmltonodejsdocs",
-        "UpperName": "ODXMLTONODEJSDOCS",
-        "LowerHyphenName": "odxml-to-node-j-s-docs",
-        "ReadMeMD": "Examines the schema defined by an Odxml file and creates an interactive DataModel explorer for exploring the structure of the data model defined. \r\n\r\nCreates both a single page version of the docs, as well as a Node.JS website that can be started on demand to explore the data model more interactively.",
-        "InputFileTypeId": "33de424c-cfe0-498e-ae70-44da375a8fb2",
-        "OutputFileTypeId": "d8fc84b7-442d-4c7a-92a0-eefc11391934",
-        "Category": "documentation",
-        "IsRecommended": true,
-        "TranspileRequests": [],
-        "TranspilerInstances": [],
-        "TranspilerVersions": [
-          {
-            "TranspilerVersionId": "26af4ad8-fb5d-4027-8e4b-2260c62f3f24",
-            "TranspilerId": "8defe7a3-89cf-4989-b679-d9226519f622",
-            "Name": "v1",
-            "CreatedOn": "2017-08-29T21:18:03.463",
-            "IsActive": true,
-            "TranspilerFileTypeId_TranspilerInputHints": [],
-            "TranspilerInstances": [],
-            "ReplacedByTranspilerVersionId_TranspilerVersions": []
-          }
-        ]
+        "Description": "Creates easy to read/navigate html documentation for an Odxml Schema."
       },
-      "CLIHandler": null,
       "ProjectTranspilerId": "90de4191-f578-4573-ae42-3fcc2cb4d4ae",
       "Name": "OdxmlToNodeJSDocs",
       "RelativePath": "/docs/schema",
@@ -224,40 +79,9 @@
     {
       "MatchedTranspiler": {
         "TranspilerId": "4b713f03-1d9f-42f2-b02f-e3cdbd237bb3",
-        "AccountHolderId": "1e876e4f-d63b-4698-bd68-3bc27876e41e",
         "Name": "XmlXsltTransform",
-        "DisplayName": "Xml Xslt Transform",
-        "Description": "Given an Xml and Xslt file, will process and \"split\" a resulting fileset.",
-        "CreatedOn": "2017-08-30T15:45:09.907",
-        "IsActive": true,
-        "CurrentRoutingKey": "amq.gen-pwRUdyqwEq8fPN8gkK7ADg",
-        "LowerName": "xmlxslttransform",
-        "UpperName": "XMLXSLTTRANSFORM",
-        "LowerHyphenName": "xml-xslt-transform",
-        "ReadMeMD": "The tool processes the first text file it finds (which is presumed to be in xml format), with the first Xslt file provided, and includes any parameters that are passed to ssotme as well.\r\n\r\nThe output is expected to be a FileSet Xml blob with the results of the transform.",
-        "InputDescriptionMD": "At least 1 input Xml file, An Xslt file to use for the Transform operation and any additional parameters that the Xslt file uses for it's transpiling functionality.  These could be options, values, namespaces, etc.",
-        "OutputDescriptionMD": "A fileset with the result of the Xslt transform, usually including at least 1 or more files.  The example command might produce an HTML Document that describes (in english) the contents of the Xml file.  Essentially a \"report\" about the xml file. ",
-        "ExampleMD": "ssotme -install xml-xslt-transform -i MyData.xml -i CreateDocs.xslt",
-        "InputFileTypeId": "f1b92a2a-3f83-4000-9b37-57f920e14419",
-        "OutputFileTypeId": "952e47eb-3448-4627-8dc4-93dab494c957",
-        "Category": "type-conversion",
-        "IsRecommended": true,
-        "TranspileRequests": [],
-        "TranspilerInstances": [],
-        "TranspilerVersions": [
-          {
-            "TranspilerVersionId": "7e941388-752b-4b0f-9631-939b790be10f",
-            "TranspilerId": "4b713f03-1d9f-42f2-b02f-e3cdbd237bb3",
-            "Name": "v1",
-            "CreatedOn": "2017-08-30T15:45:10.653",
-            "IsActive": true,
-            "TranspilerFileTypeId_TranspilerInputHints": [],
-            "TranspilerInstances": [],
-            "ReplacedByTranspilerVersionId_TranspilerVersions": []
-          }
-        ]
+        "Description": "Given an Xml and Xslt file, will process and \"split\" a resulting fileset."
       },
-      "CLIHandler": null,
       "ProjectTranspilerId": "8c3bfc5f-b195-4a5b-ba51-038ed0855520",
       "Name": "XmlXsltTransform",
       "RelativePath": "/docs",
@@ -266,40 +90,9 @@
     {
       "MatchedTranspiler": {
         "TranspilerId": "057f66f1-86b0-43c3-ad19-b1b0bb2027d2",
-        "AccountHolderId": "1e876e4f-d63b-4698-bd68-3bc27876e41e",
         "Name": "PublicGSheetToXml",
-        "DisplayName": "Public G Sheet To Xml",
-        "Description": "Downloads a public google spreadsheet as an XML file.  ",
-        "CreatedOn": "2017-09-21T17:56:38.527",
-        "IsActive": true,
-        "CurrentRoutingKey": "amq.gen-jWBa32Jd3OAy32tcP7I0iA",
-        "LowerName": "publicgsheettoxml",
-        "UpperName": "PUBLICGSHEETTOXML",
-        "LowerHyphenName": "public-g-sheet-to-xml",
-        "ReadMeMD": "Since XML is easily converted into many other formats, this provides a simple hop from a GSheet (which is easily shared among even a distributed team), into a format that can easily drive a SSoT.me pipeline.",
-        "InputDescriptionMD": "The URL to a google spreadsheet.",
-        "OutputDescriptionMD": "An xml file with the contents of the GSheet.",
-        "ExampleMD": "ssotme public-gsheet-to-xml https://yourgsheeturl",
-        "InputFileTypeId": "3c31d7c2-5c85-434b-a5a0-a5bd1dbc0a96",
-        "OutputFileTypeId": "f1b92a2a-3f83-4000-9b37-57f920e14419",
-        "Category": "type-conversion",
-        "IsRecommended": true,
-        "TranspileRequests": [],
-        "TranspilerInstances": [],
-        "TranspilerVersions": [
-          {
-            "TranspilerVersionId": "66024602-c8b0-4b43-8410-2ffbf1fd24c4",
-            "TranspilerId": "057f66f1-86b0-43c3-ad19-b1b0bb2027d2",
-            "Name": "v1",
-            "CreatedOn": "2017-09-21T17:56:59.367",
-            "IsActive": true,
-            "TranspilerFileTypeId_TranspilerInputHints": [],
-            "TranspilerInstances": [],
-            "ReplacedByTranspilerVersionId_TranspilerVersions": []
-          }
-        ]
+        "Description": "Downloads a public google spreadsheet as an XML file.  "
       },
-      "CLIHandler": null,
       "ProjectTranspilerId": "91e64c8e-4546-4566-a421-f50161d0649a",
       "Name": "PublicGSheetToXml",
       "RelativePath": "/docs/seeds",
@@ -308,40 +101,9 @@
     {
       "MatchedTranspiler": {
         "TranspilerId": "4b713f03-1d9f-42f2-b02f-e3cdbd237bb3",
-        "AccountHolderId": "1e876e4f-d63b-4698-bd68-3bc27876e41e",
         "Name": "XmlXsltTransform",
-        "DisplayName": "Xml Xslt Transform",
-        "Description": "Given an Xml and Xslt file, will process and \"split\" a resulting fileset.",
-        "CreatedOn": "2017-08-30T15:45:09.907",
-        "IsActive": true,
-        "CurrentRoutingKey": "amq.gen-pwRUdyqwEq8fPN8gkK7ADg",
-        "LowerName": "xmlxslttransform",
-        "UpperName": "XMLXSLTTRANSFORM",
-        "LowerHyphenName": "xml-xslt-transform",
-        "ReadMeMD": "The tool processes the first text file it finds (which is presumed to be in xml format), with the first Xslt file provided, and includes any parameters that are passed to ssotme as well.\r\n\r\nThe output is expected to be a FileSet Xml blob with the results of the transform.",
-        "InputDescriptionMD": "At least 1 input Xml file, An Xslt file to use for the Transform operation and any additional parameters that the Xslt file uses for it's transpiling functionality.  These could be options, values, namespaces, etc.",
-        "OutputDescriptionMD": "A fileset with the result of the Xslt transform, usually including at least 1 or more files.  The example command might produce an HTML Document that describes (in english) the contents of the Xml file.  Essentially a \"report\" about the xml file. ",
-        "ExampleMD": "ssotme -install xml-xslt-transform -i MyData.xml -i CreateDocs.xslt",
-        "InputFileTypeId": "f1b92a2a-3f83-4000-9b37-57f920e14419",
-        "OutputFileTypeId": "952e47eb-3448-4627-8dc4-93dab494c957",
-        "Category": "type-conversion",
-        "IsRecommended": true,
-        "TranspileRequests": [],
-        "TranspilerInstances": [],
-        "TranspilerVersions": [
-          {
-            "TranspilerVersionId": "7e941388-752b-4b0f-9631-939b790be10f",
-            "TranspilerId": "4b713f03-1d9f-42f2-b02f-e3cdbd237bb3",
-            "Name": "v1",
-            "CreatedOn": "2017-08-30T15:45:10.653",
-            "IsActive": true,
-            "TranspilerFileTypeId_TranspilerInputHints": [],
-            "TranspilerInstances": [],
-            "ReplacedByTranspilerVersionId_TranspilerVersions": []
-          }
-        ]
+        "Description": "Given an Xml and Xslt file, will process and \"split\" a resulting fileset."
       },
-      "CLIHandler": null,
       "ProjectTranspilerId": "c1a92ab2-7ce3-4825-b35f-d533bde9db88",
       "Name": "XmlXsltTransform",
       "RelativePath": "/docs/seeds",

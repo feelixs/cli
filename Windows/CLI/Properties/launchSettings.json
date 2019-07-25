@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "DotNetStandardCLI": {
+      "commandName": "Project",
+      "commandLineArgs": "-build",
+      "workingDirectory": "C:\\Development\\SSoTme-Open-Source-Tools\\docs"
+    }
+  }
+}

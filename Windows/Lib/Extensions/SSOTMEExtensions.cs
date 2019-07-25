@@ -7,12 +7,13 @@ License:    Mozilla Public License 2.0
 using ExcelDataReader;
 using HtmlAgilityPack;
 using Newtonsoft.Json;
+using PluralizationService;
+using PluralizationService.English;
 using SassyMQ.Lib.RabbitMQ;
 using SSoTme.OST.Lib.DataClasses;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Entity.Design.PluralizationServices;
 using System.Data.OleDb;
 using System.Drawing;
 using System.Globalization;
@@ -35,10 +36,17 @@ namespace SSoTme.OST.Lib.Extensions
 {
     public static class SSOTMEExtensions
     {
+        public static readonly IPluralizationApi Pluralizer;
+        private static readonly CultureInfo CultureInfo;
 
         static SSOTMEExtensions()
         {
-            SSOTMEExtensions.Pluralizer = PluralizationService.CreateService(CultureInfo.CurrentCulture);
+
+            var builder = new PluralizationApiBuilder();
+            builder.AddEnglishProvider();
+
+            Pluralizer = builder.Build();
+            CultureInfo = new CultureInfo("en-US");
         }
 
 
@@ -691,16 +699,17 @@ namespace SSoTme.OST.Lib.Extensions
                 string conStr = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source="
                     + theFile.DirectoryName + ";" + "Extended Properties='text;HDR=YES;CharacterSet=65001;'";
 
-                using (OleDbConnection conn = new OleDbConnection(conStr))
-                {
-                    using (OleDbCommand comm = new OleDbCommand(sqlString, conn))
-                    {
-                        using (OleDbDataAdapter adapter = new OleDbDataAdapter(comm))
-                        {
-                            adapter.Fill(theCSV);
-                        }
-                    }
-                }
+                throw new Exception("Need to find .NET CORE Equivalent of OleDbDataAdapter.  Maybe: https://stackoverflow.com/questions/40438377/how-to-get-oledb-for-reading-excel-in-asp-net-core-project");
+                //using (OleDbConnection conn = new OleDbConnection(conStr))
+                //{
+                //    using (OleDbCommand comm = new OleDbCommand(sqlString, conn))
+                //    {
+                //        using (OleDbDataAdapter adapter = new OleDbDataAdapter(comm))
+                //        {
+                //            adapter.Fill(theCSV);
+                //        }
+                //    }
+                //}
             }
             return theCSV;
         }
@@ -792,10 +801,9 @@ namespace SSoTme.OST.Lib.Extensions
             try
             {
 
-                var pluralizer = PluralizationService.CreateService(CultureInfo.CurrentCulture);
                 fileName = Path.GetFileNameWithoutExtension(fileName);
-                var pluralFileName = pluralizer.Pluralize(fileName);
-                var singularFileName = pluralizer.Singularize(fileName);
+                var pluralFileName = SSOTMEExtensions.Pluralizer.Pluralize(fileName);
+                var singularFileName = SSOTMEExtensions.Pluralizer.Singularize(fileName);
 
                 var xml = GetXMLFromCSV(fi, pluralFileName, singularFileName);
                 return xml.ToString();
@@ -1455,8 +1463,6 @@ namespace SSoTme.OST.Lib.Extensions
             return type.GetProperties(BindingFlags.FlattenHierarchy
                 | BindingFlags.Public | BindingFlags.Instance);
         }
-
-        public static PluralizationService Pluralizer { get; private set; }
 
 
 

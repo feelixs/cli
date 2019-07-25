@@ -16,7 +16,7 @@ namespace SassyMQ.SSOTME.Lib.RMQActors
     {
         static SSOTMEPayload()
         {
-            SSOTMEExtensions.FileWritten += CDVExtensions_FileWritten;
+            SSoTme.OST.Lib.Extensions.SSOTMEExtensions.FileWritten += CDVExtensions_FileWritten;
         }
 
         private static void CDVExtensions_FileWritten(object sender, EventArgs e)
@@ -111,7 +111,7 @@ namespace SassyMQ.SSOTME.Lib.RMQActors
             if (zfsFI.Exists)
             {
                 var previousFileSet = File.ReadAllBytes(zfsFI.FullName);
-                previousFileSet.CleanZippedFileSet();
+                SSOTMEExtensions.CleanZippedFileSet(previousFileSet);
             }
         }
 
@@ -128,11 +128,11 @@ namespace SassyMQ.SSOTME.Lib.RMQActors
             if (!skipClean) this.CleanFileSet();
 
             // Save the file set to the disk
-            var fileSetXml = this.TranspileRequest.ZippedOutputFileSet.UnzipToString();
+            var fileSetXml = SSoTme.OST.Lib.Extensions.SSOTMEExtensions.UnzipToString(this.TranspileRequest.ZippedOutputFileSet);
             var tempFI = new FileInfo(String.Format("tempFileSet_{0}.xml", Guid.NewGuid()));
             File.WriteAllText(tempFI.FullName, fileSetXml);
 
-            SSOTMEExtensions.SplitFileSetFile(tempFI.FullName, tempFI.Directory.FullName);
+            SSoTme.OST.Lib.Extensions.SSOTMEExtensions.SplitFileSetFile(tempFI.FullName, tempFI.Directory.FullName);
             tempFI.Delete();
 
             this.SavePreviousFileSet(fileSetXml);
