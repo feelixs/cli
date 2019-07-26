@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DotNetStandardLib\DotNetStandardLib.csproj" />
+    <PackageReference Include="Plossum.CommandLine" Version="0.3.0.14" />
   </ItemGroup>
 
 </Project>
