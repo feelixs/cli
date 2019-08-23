@@ -155,7 +155,7 @@ namespace SassyMQ.SSOTME.Lib.RMQActors
             var ssotmeDI = new DirectoryInfo(String.Format("{0}/.ssotme", this.SSoTmeProject.RootPath));
             if (!ssotmeDI.Exists) {
                 ssotmeDI.Create();
-                ssotmeDI.Attributes = FileAttributes.Directory | FileAttributes.Hidden;
+                // ssotmeDI.Attributes = FileAttributes.Directory | FileAttributes.Hidden;
             }
 
             var zfsFileName = String.Format("{0}/{1}/{2}.zfs", ssotmeDI.FullName, relPath, this.Transpiler.LowerHyphenName, "", "");
