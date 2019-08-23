@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "Windows/Lib/SSoTme.OST.Lib.csproj",
+                "SSoTmeDotNetCore.sln",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -19,7 +19,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "Windows/Lib/SSoTme.OST.Lib.csproj",
+                "SSoTmeDotNetCore.sln",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -32,7 +32,7 @@
             "args": [
                 "watch",
                 "run",
-                "Windows/Lib/SSoTme.OST.Lib.csproj",
+                "SSoTmeDotNetCore.sln",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],

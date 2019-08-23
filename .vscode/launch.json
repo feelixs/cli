@@ -27,7 +27,7 @@
             "WARNING17": "*********************************************************************************",
             "preLaunchTask": "build",
             "program": "${workspaceFolder}/Windows/CLI/bin/Debug/netcoreapp2.0/SSoTme.OST.CLI.dll",
-            "args": [],
+            "args": ["-help"],
             "cwd": "${workspaceFolder}",
             "console": "internalConsole",
             "stopAtEntry": false
