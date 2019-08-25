@@ -1,0 +1,15 @@
+{
+  "name": "ssotme",
+  "version": "0.0.3-alpha.11",
+  "description": "",
+  "devDependencies": {
+  },
+  "bin": "cli.js",
+  "scripts": {
+    "build": "dotnet build ./SSoTmeDotNetCore.sln",
+    "start": "dotnet ./Windows/CLI/bin/Debug/netcoreapp2.0/SSoTme.OST.CLI.dll"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "GNU"
+}
