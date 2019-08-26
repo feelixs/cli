@@ -1,13 +1,14 @@
 {
   "name": "ssotme",
-  "version": "0.0.3-alpha.12",
+  "version": "0.0.3-alpha.13",
   "description": "",
   "devDependencies": {
   },
   "bin": "cli.js",
   "scripts": {
     "build": "dotnet build SSoTmeDotNetCore.sln",
-    "start": "dotnet Windows/CLI/bin/Debug/netcoreapp2.0/SSoTme.OST.CLI.dll"
+    "start": "dotnet Windows/CLI/bin/Debug/netcoreapp2.0/SSoTme.OST.CLI.dll",
+    "postinstall": "npm run build"
   },
   "keywords": [],
   "author": "",
