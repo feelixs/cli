@@ -568,7 +568,8 @@
       <xsl:when test="contains(translate($xsd-type-name, $ucletters, $lcletters), 'xs:unsignedint')">INT32</xsl:when>
       <xsl:when test="contains(translate($xsd-type-name, $ucletters, $lcletters), 'xs:guid')">GUID</xsl:when>
       <xsl:when test="contains(translate($xsd-type-name, $ucletters, $lcletters), 'xs:string')">TEXT</xsl:when>
-      <xsl:when test="contains(translate($xsd-type-name, $ucletters, $lcletters), 'xs:datetime')">DATETIME</xsl:when>
+        <xsl:when test="contains(translate($xsd-type-name, $ucletters, $lcletters), 'xs:datetime')">DATETIME</xsl:when>
+        <xsl:when test="contains(translate($xsd-type-name, $ucletters, $lcletters), 'xs:gYearMonth')">DATETIME</xsl:when>
         <xsl:when test="contains(translate($xsd-type-name, $ucletters, $lcletters), 'xs:byte')">INT16</xsl:when>
         <xsl:when test="contains(translate($xsd-type-name, $ucletters, $lcletters), 'xs:short')">INT16</xsl:when>
       <xsl:when test="contains(translate($xsd-type-name, $ucletters, $lcletters), 'xs:int32')">INT32</xsl:when>
@@ -615,34 +616,39 @@
   <xsl:template name="object-def-type-to-csharp">
     <xsl:param name="object-def-type-name" />
     <xsl:param name="is-nullable" select="'0'" />
-    <xsl:variable name="nullable-symbol-pre"><xsl:if test="$is-nullable = '1'">Nullable&lt;</xsl:if></xsl:variable>
-    <xsl:variable name="nullable-symbol"><xsl:if test="$is-nullable = '1'">></xsl:if></xsl:variable>
+      <xsl:param name="is-collection" select="'0'" />
+    <xsl:variable name="nullable-symbol-pre"><xsl:if test="normalize-space($is-nullable) = '1'">Nullable&lt;</xsl:if></xsl:variable>
+    <xsl:variable name="nullable-symbol"><xsl:if test="normalize-space($is-nullable) = '1'">></xsl:if></xsl:variable>
+      <xsl:variable name="collection-symbol">
+          <xsl:if test="normalize-space($is-collection) = 1">[]</xsl:if>
+      </xsl:variable>
     <xsl:choose>
-      <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'GUID')"><xsl:value-of select="$nullable-symbol-pre"/>Guid<xsl:value-of select="$nullable-symbol"/></xsl:when>
-      <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'TEXT')">String</xsl:when>
-      <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'CHAR')">String</xsl:when>
-      <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'XML')">String</xsl:when>
-      <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'NTEXT')">String</xsl:when>
-      <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'DATETIME')"><xsl:value-of select="$nullable-symbol-pre"/>DateTime<xsl:value-of select="$nullable-symbol"/></xsl:when>
-      <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'DATE')"><xsl:value-of select="$nullable-symbol-pre"/>DateTime<xsl:value-of select="$nullable-symbol"/></xsl:when>
-      <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'TIME')"><xsl:value-of select="$nullable-symbol-pre"/>DateTime<xsl:value-of select="$nullable-symbol"/></xsl:when>
+      <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'GUID')"><xsl:value-of select="$nullable-symbol-pre"/>Guid<xsl:value-of select="$collection-symbol"/><xsl:value-of select="$nullable-symbol"/></xsl:when>
+      <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'TEXT')">String<xsl:value-of select="$collection-symbol"/></xsl:when>
+      <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'CHAR')">String<xsl:value-of select="$collection-symbol"/></xsl:when>
+      <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'XML')">String<xsl:value-of select="$collection-symbol"/></xsl:when>
+      <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'NTEXT')">String<xsl:value-of select="$collection-symbol"/></xsl:when>
+      <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'DATETIME')"><xsl:value-of select="$nullable-symbol-pre"/>DateTime<xsl:value-of select="$collection-symbol"/><xsl:value-of select="$nullable-symbol"/></xsl:when>
+      <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'DATE')"><xsl:value-of select="$nullable-symbol-pre"/>DateTime<xsl:value-of select="$collection-symbol"/><xsl:value-of select="$nullable-symbol"/></xsl:when>
+      <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'TIME')"><xsl:value-of select="$nullable-symbol-pre"/>DateTime<xsl:value-of select="$collection-symbol"/><xsl:value-of select="$nullable-symbol"/></xsl:when>
       <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'BYTE[]')">Byte[]</xsl:when>
-      <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'BYTE')"><xsl:value-of select="$nullable-symbol-pre"/>Byte<xsl:value-of select="$nullable-symbol"/></xsl:when>
-      <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'INT16')"><xsl:value-of select="$nullable-symbol-pre"/>Int16<xsl:value-of select="$nullable-symbol"/></xsl:when>
-      <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'UBYTE')"><xsl:value-of select="$nullable-symbol-pre"/>UInt16<xsl:value-of select="$nullable-symbol"/></xsl:when>
-      <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'INT32')"><xsl:value-of select="$nullable-symbol-pre"/>Int32<xsl:value-of select="$nullable-symbol"/></xsl:when>
-      <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'SHORT')"><xsl:value-of select="$nullable-symbol-pre"/>Int32<xsl:value-of select="$nullable-symbol"/></xsl:when>
-      <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'BOOLEAN')"><xsl:value-of select="$nullable-symbol-pre"/>Boolean<xsl:value-of select="$nullable-symbol"/></xsl:when>
-      <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'INT64')"><xsl:value-of select="$nullable-symbol-pre"/>Int64<xsl:value-of select="$nullable-symbol"/></xsl:when>
-      <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'DECIMAL')"><xsl:value-of select="$nullable-symbol-pre"/>decimal<xsl:value-of select="$nullable-symbol"/></xsl:when>
-      <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'FLOAT')"><xsl:value-of select="$nullable-symbol-pre"/>float<xsl:value-of select="$nullable-symbol"/></xsl:when>
-      <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'REAL')"><xsl:value-of select="$nullable-symbol-pre"/>decimal<xsl:value-of select="$nullable-symbol"/></xsl:when>
-      <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'CHAR')"><xsl:value-of select="$nullable-symbol-pre"/>char<xsl:value-of select="$nullable-symbol"/></xsl:when>
-      <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'MONEY')"><xsl:value-of select="$nullable-symbol-pre"/>float<xsl:value-of select="$nullable-symbol"/></xsl:when>
+      <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'BYTE')"><xsl:value-of select="$nullable-symbol-pre"/>Byte<xsl:value-of select="$collection-symbol"/><xsl:value-of select="$nullable-symbol"/></xsl:when>
+      <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'INT16')"><xsl:value-of select="$nullable-symbol-pre"/>Int16<xsl:value-of select="$collection-symbol"/><xsl:value-of select="$nullable-symbol"/></xsl:when>
+      <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'UBYTE')"><xsl:value-of select="$nullable-symbol-pre"/>UInt16<xsl:value-of select="$collection-symbol"/><xsl:value-of select="$nullable-symbol"/></xsl:when>
+      <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'INT32')"><xsl:value-of select="$nullable-symbol-pre"/>Int32<xsl:value-of select="$collection-symbol"/><xsl:value-of select="$nullable-symbol"/></xsl:when>
+      <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'SHORT')"><xsl:value-of select="$nullable-symbol-pre"/>Int32<xsl:value-of select="$collection-symbol"/><xsl:value-of select="$nullable-symbol"/></xsl:when>
+      <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'BOOLEAN')"><xsl:value-of select="$nullable-symbol-pre"/>Boolean<xsl:value-of select="$collection-symbol"/><xsl:value-of select="$nullable-symbol"/></xsl:when>
+      <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'INT64')"><xsl:value-of select="$nullable-symbol-pre"/>Int64<xsl:value-of select="$collection-symbol"/><xsl:value-of select="$nullable-symbol"/></xsl:when>
+      <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'DECIMAL')"><xsl:value-of select="$nullable-symbol-pre"/>decimal<xsl:value-of select="$collection-symbol"/><xsl:value-of select="$nullable-symbol"/></xsl:when>
+      <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'FLOAT')"><xsl:value-of select="$nullable-symbol-pre"/>float<xsl:value-of select="$collection-symbol"/><xsl:value-of select="$nullable-symbol"/></xsl:when>
+      <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'REAL')"><xsl:value-of select="$nullable-symbol-pre"/>decimal<xsl:value-of select="$collection-symbol"/><xsl:value-of select="$nullable-symbol"/></xsl:when>
+      <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'CHAR')"><xsl:value-of select="$nullable-symbol-pre"/>char<xsl:value-of select="$collection-symbol"/><xsl:value-of select="$nullable-symbol"/></xsl:when>
+      <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'MONEY')"><xsl:value-of select="$nullable-symbol-pre"/>float<xsl:value-of select="$collection-symbol"/><xsl:value-of select="$nullable-symbol"/></xsl:when>
       <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'IMAGE')">byte[]</xsl:when>
-      <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'SQL_VARIANT')">object</xsl:when>
+      <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'SQL_VARIANT')">object<xsl:value-of select="$collection-symbol"/></xsl:when>
       <xsl:otherwise>
         <xsl:value-of select="object-def-type-name" />
+          <xsl:value-of select="$collection-symbol"/>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
