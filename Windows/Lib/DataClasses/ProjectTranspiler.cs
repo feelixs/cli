@@ -50,8 +50,16 @@ namespace SSoTme.OST.Lib.DataClasses
             this.RelativePath = relativePath.SafeToString().Replace("\\", "/");
             if (Environment.CommandLine.Contains(" "))
             {
-                var cmd1 = Environment.CommandLine.Substring(Environment.CommandLine.ToLower().IndexOf("ssotme.exe")) + " ";
-                this.CommandLine = cmd1.Substring(cmd1.IndexOf(" "));
+                var lowerCli = Environment.CommandLine.ToLower();
+                var indexOfSSoTme = lowerCli.IndexOf("ssotme.exe");
+                if (indexOfSSoTme == -1) indexOfSSoTme = lowerCli.IndexOf("cli.dll");
+
+                var cmd1 = Environment.CommandLine.Substring(indexOfSSoTme) + " ";
+                this.CommandLine = cmd1.Substring(cmd1.IndexOf(" ")).Trim();
+                if (this.CommandLine.StartsWith("\"") && this.CommandLine.EndsWith("\""))
+                {
+                    this.CommandLine = this.CommandLine.Substring(1, this.CommandLine.Length - 2);
+                }
                 this.CommandLine = this.CommandLine.Replace("-install", "").Trim();
             }
             else this.CommandLine = String.Empty;
@@ -92,7 +100,7 @@ namespace SSoTme.OST.Lib.DataClasses
         }
 
         public void Describe(SSoTmeProject project)
-        { 
+        {
             Console.WriteLine("\n-----------------------------------");
             Console.WriteLine("---- {0}{1}", this.Name, this.IsDisabled ? "    **** DISABLED ****" : "");
             Console.WriteLine("---- .{0}/", this.RelativePath.Replace("\\", "/"));
