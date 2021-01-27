@@ -2,7 +2,7 @@
   "profiles": {
     "DotNetStandardCLI": {
       "commandName": "Project",
-      "commandLineArgs": "-build",
+      "commandLineArgs": "-help",
       "workingDirectory": "C:\\Development\\SSoTme-Open-Source-Tools\\docs"
     }
   }
