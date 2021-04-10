@@ -98,7 +98,7 @@ namespace SassyMQ.Lib.RabbitMQ.Payload
         public bool WaitForResponse(int waitTimeout)
         {
             this.TimedOutWaiting = false;
-            var waitTask = Task.Factory.StartNew(() =>
+            var waitTask = System.Threading.Tasks.Task.Factory.StartNew(() =>
             {
                 while (!this.ReplyRecieved && !this.TimedOutWaiting)
                 {

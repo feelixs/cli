@@ -15,6 +15,7 @@ using SSoTme.OST.Lib.Extensions;
 using System.Xml;
 using System.Diagnostics;
 using System.Collections.Generic;
+//using System.Windows.Forms;
 using System.Threading;
 
 namespace SSoTme.OST.Lib.DataClasses
@@ -234,8 +235,8 @@ namespace SSoTme.OST.Lib.DataClasses
                 .ToList()
                 .ForEach(feProjectTranspiler =>
                 {
-                    if (ReferenceEquals(feProjectTranspiler.MatchedTranspiler, null)) feProjectTranspiler.MatchedTranspiler = new Transpiler();
-                        feProjectTranspiler.MatchedTranspiler = new Transpiler()
+                    if (feProjectTranspiler.MatchedTranspiler == null) feProjectTranspiler.MatchedTranspiler = new Transpiler();
+                    feProjectTranspiler.MatchedTranspiler = new Transpiler()
                     {
                         TranspilerId = feProjectTranspiler.MatchedTranspiler.TranspilerId,
                         Name = feProjectTranspiler.MatchedTranspiler.Name,
@@ -677,6 +678,7 @@ namespace SSoTme.OST.Lib.DataClasses
             }
             if (firstIndex >= 0) this.ProjectTranspilers.Insert(firstIndex, projectTranspiler);
             else if (addIfMissing) this.ProjectTranspilers.Add(projectTranspiler);
+            projectTranspiler.Name = projectTranspiler.MatchedTranspiler.Name;
         }
 
 

@@ -16,7 +16,7 @@ namespace SassyMQ.SSOTME.Lib.RMQActors
     {
         static SSOTMEPayload()
         {
-            SSoTme.OST.Lib.Extensions.SSOTMEExtensions.FileWritten += CDVExtensions_FileWritten;
+            SSOTMEExtensions.FileWritten += CDVExtensions_FileWritten;
         }
 
         private static void CDVExtensions_FileWritten(object sender, EventArgs e)
@@ -111,7 +111,7 @@ namespace SassyMQ.SSOTME.Lib.RMQActors
             if (zfsFI.Exists)
             {
                 var previousFileSet = File.ReadAllBytes(zfsFI.FullName);
-                SSOTMEExtensions.CleanZippedFileSet(previousFileSet);
+                previousFileSet.CleanZippedFileSet();
             }
         }
 
@@ -128,11 +128,11 @@ namespace SassyMQ.SSOTME.Lib.RMQActors
             if (!skipClean) this.CleanFileSet();
 
             // Save the file set to the disk
-            var fileSetXml = SSoTme.OST.Lib.Extensions.SSOTMEExtensions.UnzipToString(this.TranspileRequest.ZippedOutputFileSet);
+            var fileSetXml = this.TranspileRequest.ZippedOutputFileSet.UnzipToString();
             var tempFI = new FileInfo(String.Format("tempFileSet_{0}.xml", Guid.NewGuid()));
             File.WriteAllText(tempFI.FullName, fileSetXml);
 
-            SSoTme.OST.Lib.Extensions.SSOTMEExtensions.SplitFileSetFile(tempFI.FullName, tempFI.Directory.FullName);
+            SSOTMEExtensions.SplitFileSetFile(tempFI.FullName, tempFI.Directory.FullName);
             tempFI.Delete();
 
             this.SavePreviousFileSet(fileSetXml);
@@ -155,7 +155,7 @@ namespace SassyMQ.SSOTME.Lib.RMQActors
             var ssotmeDI = new DirectoryInfo(String.Format("{0}/.ssotme", this.SSoTmeProject.RootPath));
             if (!ssotmeDI.Exists) {
                 ssotmeDI.Create();
-                // ssotmeDI.Attributes = FileAttributes.Directory | FileAttributes.Hidden;
+                ssotmeDI.Attributes = FileAttributes.Directory | FileAttributes.Hidden;
             }
 
             var zfsFileName = String.Format("{0}/{1}/{2}.zfs", ssotmeDI.FullName, relPath, this.Transpiler.LowerHyphenName, "", "");

@@ -42,6 +42,7 @@ namespace SassyMQ.Lib.RabbitMQ.Payload
         public bool IsAutoConnect { get; set; }
         public static bool IsDebugMode { get; private set; }
         public static bool ShowPings { get; private set; }
+        public bool StayConnected { get; set; }
 
         public void WaitForComplete(int timeout = -1)
         {
@@ -62,6 +63,7 @@ namespace SassyMQ.Lib.RabbitMQ.Payload
             //
             // TODO: Add constructor logic here
             //
+            this.StayConnected = true;
             this.IsAutoConnect = isAutoConnect;
             this.AllExchange = allExchange;
             this.HandleInvokeExternal += SMQActorBase_HandleInvokeExternal;
@@ -71,7 +73,6 @@ namespace SassyMQ.Lib.RabbitMQ.Payload
         private void SMQActorBase_HandleInvokeExternal(object sender, InvokeEventArgs<T> e)
         {
             e.MethodDelegate.Invoke(sender, e.PayloadEventArgs);
-            //Application.OpenForms.OfType<Form>().FirstOrDefault().HandleInvoke(sender, e);
         }
 
         public void AutoConnect()
@@ -113,7 +114,10 @@ namespace SassyMQ.Lib.RabbitMQ.Payload
                         this.MonitorMessages(subscription);
                         if (this.IsConnected) Thread.Sleep(5000);
                     }
-                    catch { }// Ignore errors in this loop
+                    catch // Ignore errors in this loop
+                    {
+                        if (!this.StayConnected) this.IsConnected = false;
+                    }
                 }
 
                 this.RMQChannel.Close();

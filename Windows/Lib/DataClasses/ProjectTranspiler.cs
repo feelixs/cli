@@ -48,22 +48,16 @@ namespace SSoTme.OST.Lib.DataClasses
             this.Name = localCommand ? "LocalCommand" : result.Transpiler.Name;
 
             this.RelativePath = relativePath.SafeToString().Replace("\\", "/");
-            if (Environment.CommandLine.Contains(" "))
-            {
-                var lowerCli = Environment.CommandLine.ToLower();
-                var indexOfSSoTme = lowerCli.IndexOf("ssotme.exe");
-                if (indexOfSSoTme == -1) indexOfSSoTme = lowerCli.IndexOf("cli.dll");
+            var lowerCLI = Environment.CommandLine.ToLower().Replace("\\", "/");
+            var cmd0 = Environment.CommandLine;
+            Console.WriteLine($"COMMAND LINE: {cmd0}");
+            if (lowerCLI.Contains("/ssotme.exe")) cmd0 = cmd0.Substring(lowerCLI.IndexOf("/ssotme.exe") + "/ssotme.exe".Length);
+            else if (lowerCLI.Contains("/ssotme.ost.cli.dll")) cmd0 = cmd0.Substring(lowerCLI.IndexOf("/ssotme.ost.cli.dll") + "/ssotme.ost.cli.dll".Length);            
+            else if (lowerCLI.Contains("/ssotme")) cmd0 = cmd0.Substring(lowerCLI.IndexOf("/ssotme") + "/ssotme".Length);
 
-                var cmd1 = Environment.CommandLine.Substring(indexOfSSoTme) + " ";
-                this.CommandLine = cmd1.Substring(cmd1.IndexOf(" ")).Trim();
-                if (this.CommandLine.StartsWith("\"") && this.CommandLine.EndsWith("\""))
-                {
-                    this.CommandLine = this.CommandLine.Substring(1, this.CommandLine.Length - 2);
-                }
-                this.CommandLine = this.CommandLine.Replace("-install", "").Trim();
-            }
-            else this.CommandLine = String.Empty;
-
+            cmd0 = cmd0.Replace("-install", "").Trim(" '\"".ToCharArray());
+            this.CommandLine = cmd0;
+            
             this.MatchedTranspiler = localCommand ? default(Transpiler) : result.Transpiler;
         }
 
@@ -100,7 +94,7 @@ namespace SSoTme.OST.Lib.DataClasses
         }
 
         public void Describe(SSoTmeProject project)
-        {
+        { 
             Console.WriteLine("\n-----------------------------------");
             Console.WriteLine("---- {0}{1}", this.Name, this.IsDisabled ? "    **** DISABLED ****" : "");
             Console.WriteLine("---- .{0}/", this.RelativePath.Replace("\\", "/"));

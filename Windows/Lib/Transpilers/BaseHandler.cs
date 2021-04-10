@@ -199,9 +199,10 @@ namespace SSoTme.OST.Transpilers
 
         public string GetParameterByName(string parameterName)
         {
-            if (this.Parameters.Keys.Any(anyKey => anyKey.Equals(parameterName, StringComparison.OrdinalIgnoreCase)))
+            var matchingKey = this.Parameters.Keys.FirstOrDefault(fodKey => fodKey.Equals(parameterName, StringComparison.OrdinalIgnoreCase));
+            if (!String.IsNullOrEmpty(matchingKey))
             {
-                return this.Parameters[parameterName];
+                return this.Parameters[matchingKey];
             }
             else return String.Empty;
         }

@@ -35,10 +35,11 @@ namespace SSoTme.OST.Lib.SassySDK.Derived
                     _allKeys = new List<SSOTMEKey>();
                     foreach (var keyFile in SSoTmeDir.GetFiles("*.key"))
                     {
-                        var username = ExtensionMethods.SafeToString(keyFile.Name
+                        var username = keyFile.Name
                                               .Split('_')
                                               .Skip(1)
-                                              .FirstOrDefault())
+                                              .FirstOrDefault()
+                                              .SafeToString()
                                               .ToLower()
                                               .Replace(".key", "");
 
