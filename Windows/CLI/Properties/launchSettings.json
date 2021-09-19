@@ -3,7 +3,7 @@
     "DotNetStandardCLI": {
       "commandName": "Project",
       "commandLineArgs": "-help",
-      "workingDirectory": "C:\\Development\\SSoTme-Open-Source-Tools\\docs"
+      "workingDirectory": "C:\\Users\\auto1\\go\\src\\github.com\\eejai42\\SSoTme-Open-Source-Tools\\docs"
     }
   }
 }
