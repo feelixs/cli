@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 namespace SSoTme.OST.Lib.CLIOptions
 {
 
-    [CommandLineManager(ApplicationName = "-p application=Command Line Tool",
-                        Copyright = "-p copyright=Copyright (c) 2021, EJ Alexandra",
-                        Description = @"")]
+    [CommandLineManager(ApplicationName = "AI Capture",
+                        Copyright = "Copyright (c) 2022, EJ Alexandra",
+                        Description = @"Capturing what AI Knows as Reusable Fishing Poles, rather than just answering your questions (Fish).")]
     public partial class SSoTmeCLIHandler
     {
         
