@@ -5,7 +5,6 @@
  License:    Mozilla Public License 2.0
  *******************************************/
 using Newtonsoft.Json;
-using SassyMQ.Lib.RabbitMQ;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -35,15 +34,8 @@ namespace SSoTme.OST.Lib.SassySDK.Derived
                     _allKeys = new List<SSOTMEKey>();
                     foreach (var keyFile in SSoTmeDir.GetFiles("*.key"))
                     {
-                        var username = keyFile.Name
-                                              .Split('_')
-                                              .Skip(1)
-                                              .FirstOrDefault()
-                                              .SafeToString()
-                                              .ToLower()
-                                              .Replace(".key", "");
-
-
+                        var keyFileName = $"{keyFile.Name.Split('_').Skip(1).FirstOrDefault()}";
+                        var username = keyFileName.ToLower().Replace(".key", "");
                         var newKey = GetSSoTmeKey(username);
                         _allKeys.Add(newKey);
                     }

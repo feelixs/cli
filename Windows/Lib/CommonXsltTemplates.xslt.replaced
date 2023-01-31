@@ -655,12 +655,27 @@
 
   <xsl:template name="object-def-type-to-java">
     <xsl:param name="object-def-type-name" />
-    <xsl:choose>
+      <xsl:param name="is-nullable" select="'0'" />
+      <xsl:param name="is-collection" select="'0'" />
+      <xsl:variable name="nullable-symbol-pre">
+          <xsl:if test="normalize-space($is-nullable) = '1'">Nullable&lt;</xsl:if>
+      </xsl:variable>
+      <xsl:variable name="nullable-symbol">
+          <xsl:if test="normalize-space($is-nullable) = '1'">></xsl:if>
+      </xsl:variable>
+      <xsl:variable name="collection-symbol">
+          <xsl:if test="normalize-space($is-collection) = 1">[]</xsl:if>
+      </xsl:variable>
+      <xsl:choose>
       <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'GUID')">UUID</xsl:when>
-      <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'TEXT')">String</xsl:when>
+        <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'STRING')">String</xsl:when>
+        <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'TEXT')">String</xsl:when>
       <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'XML')">String</xsl:when>
       <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'NTEXT')">String</xsl:when>
-      <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'DATETIME')">Time</xsl:when>
+        <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'DATETIME')">Date</xsl:when>
+        <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'DATE')">Date</xsl:when>
+        <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'TIME')">Date</xsl:when>
+        <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'AIRTABLEATTACHMENT')">AirtableAttachment</xsl:when>
       <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'BYTE[]')">Byte[]</xsl:when>
       <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'INT16')">Short</xsl:when>
       <xsl:when test="contains(translate($object-def-type-name, $lcletters, $ucletters), 'UBYTE')">UInt16</xsl:when>
@@ -676,7 +691,9 @@
       <xsl:otherwise>
         <xsl:value-of select="object-def-type-name" />
       </xsl:otherwise>
-    </xsl:choose>
+
+      </xsl:choose>
+      <xsl:value-of select="$collection-symbol"/>
   </xsl:template>
 
   <xsl:template name="csharp-to-object-def-type">

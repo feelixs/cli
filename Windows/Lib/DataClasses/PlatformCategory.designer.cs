@@ -66,16 +66,6 @@ namespace SSoTme.OST.Lib.DataClasses
 
         
         
-        private static string CreatePlatformCategoryWhere(IEnumerable<PlatformCategory> platformCategories, String forignKeyFieldName = "PlatformCategoryId")
-        {
-            if (!platformCategories.Any()) return "1=1";
-            else 
-            {
-                var idList = platformCategories.Select(selectPlatformCategory => String.Format("'{0}'", selectPlatformCategory.PlatformCategoryId));
-                var csIdList = String.Join(",", idList);
-                return String.Format("{0} in ({1})", forignKeyFieldName, csIdList);
-            }
-        }
         
     }
 }

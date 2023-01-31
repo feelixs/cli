@@ -65,16 +65,6 @@ namespace SSoTme.OST.Lib.DataClasses
 
         
         
-        private static string CreateFileTypeWhere(IEnumerable<FileType> fileTypes, String forignKeyFieldName = "FileTypeId")
-        {
-            if (!fileTypes.Any()) return "1=1";
-            else 
-            {
-                var idList = fileTypes.Select(selectFileType => String.Format("'{0}'", selectFileType.FileTypeId));
-                var csIdList = String.Join(",", idList);
-                return String.Format("{0} in ({1})", forignKeyFieldName, csIdList);
-            }
-        }
         
     }
 }

@@ -61,16 +61,6 @@ namespace SSoTme.OST.Lib.DataClasses
 
         
         
-        private static string CreateFileSetFileWhere(IEnumerable<FileSetFile> fileSetFiles, String forignKeyFieldName = "FileSetFileId")
-        {
-            if (!fileSetFiles.Any()) return "1=1";
-            else 
-            {
-                var idList = fileSetFiles.Select(selectFileSetFile => String.Format("'{0}'", selectFileSetFile.FileSetFileId));
-                var csIdList = String.Join(",", idList);
-                return String.Format("{0} in ({1})", forignKeyFieldName, csIdList);
-            }
-        }
         
     }
 }

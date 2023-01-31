@@ -67,16 +67,6 @@ namespace SSoTme.OST.Lib.DataClasses
 
         
         
-        private static string CreateTranspilerVersionWhere(IEnumerable<TranspilerVersion> transpilerVersions, String forignKeyFieldName = "TranspilerVersionId")
-        {
-            if (!transpilerVersions.Any()) return "1=1";
-            else 
-            {
-                var idList = transpilerVersions.Select(selectTranspilerVersion => String.Format("'{0}'", selectTranspilerVersion.TranspilerVersionId));
-                var csIdList = String.Join(",", idList);
-                return String.Format("{0} in ({1})", forignKeyFieldName, csIdList);
-            }
-        }
         
     }
 }

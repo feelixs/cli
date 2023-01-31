@@ -343,7 +343,8 @@ namespace SSoTme.OST.Transpilers
         public void LoadXsltFromPartialResourceName(string xsltPartialName)
         {
             xsltPartialName = xsltPartialName.ToLower();
-            String resourceName = this.GetType().Assembly.GetManifestResourceNames().FirstOrDefault(fodResourceName => fodResourceName.ToLower().Contains(xsltPartialName));
+            var allNames = this.GetType().Assembly.GetManifestResourceNames().OrderBy(name => name);
+            String resourceName = allNames.FirstOrDefault(fodResourceName => fodResourceName.ToLower().Contains(xsltPartialName));
             if (String.IsNullOrEmpty(resourceName)) throw new Exception(String.Format("Can't match resource name: {0}", xsltPartialName));
             else this.Xslt = new StreamReader(this.GetType().Assembly.GetManifestResourceStream(resourceName)).ReadToEnd();
         }

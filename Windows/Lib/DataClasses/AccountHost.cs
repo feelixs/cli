@@ -9,11 +9,16 @@ using System.ComponentModel;
 namespace SSoTme.OST.Lib.DataClasses
 {                   
     
-    public partial class TranspilerInputHint 
+    public partial class AccountHost 
     {
-        public TranspilerInputHint()
+        public AccountHost()
         {
             this.InitPoco();
+        }
+
+        public override String ToString()
+        {
+            return String.Format("AccountHost: {0}", this.Name);
         }
                             
     }

@@ -70,16 +70,6 @@ namespace SSoTme.OST.Lib.DataClasses
 
         
         
-        private static string CreateTranspileRequestWhere(IEnumerable<TranspileRequest> transpileRequests, String forignKeyFieldName = "TranspileRequestId")
-        {
-            if (!transpileRequests.Any()) return "1=1";
-            else 
-            {
-                var idList = transpileRequests.Select(selectTranspileRequest => String.Format("'{0}'", selectTranspileRequest.TranspileRequestId));
-                var csIdList = String.Join(",", idList);
-                return String.Format("{0} in ({1})", forignKeyFieldName, csIdList);
-            }
-        }
         
     }
 }

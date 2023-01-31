@@ -112,16 +112,6 @@ namespace SSoTme.OST.Lib.DataClasses
 
         
         
-        private static string CreateTranspilerWhere(IEnumerable<Transpiler> transpilers, String forignKeyFieldName = "TranspilerId")
-        {
-            if (!transpilers.Any()) return "1=1";
-            else 
-            {
-                var idList = transpilers.Select(selectTranspiler => String.Format("'{0}'", selectTranspiler.TranspilerId));
-                var csIdList = String.Join(",", idList);
-                return String.Format("{0} in ({1})", forignKeyFieldName, csIdList);
-            }
-        }
         
     }
 }

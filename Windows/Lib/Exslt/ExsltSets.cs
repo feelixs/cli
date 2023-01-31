@@ -3,7 +3,7 @@
 	using System.Collections;
 	using System.Xml.XPath; 
 	using System.Xml;
-    
+	
 	namespace GotDotNet.Exslt {
 		/// <summary>
 		///   This class implements the EXSLT functions in the http://exslt.org/sets namespace.

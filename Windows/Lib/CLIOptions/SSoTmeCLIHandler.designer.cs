@@ -9,13 +9,9 @@ using System.Threading.Tasks;
 namespace SSoTme.OST.Lib.CLIOptions
 {
 
-    [CommandLineManager(ApplicationName = "SSOT.me Command Line Request",
-                        Copyright = "Copyright (c) EJ Alexandra, CODEiverse.com",
-                        Description = @"
-SYNTAX: ssotme {command} [...{additional_args}] [options]
-
-Options
-")]
+    [CommandLineManager(ApplicationName = "-p application=Command Line Tool",
+                        Copyright = "-p copyright=Copyright (c) 2021, EJ Alexandra",
+                        Description = @"")]
     public partial class SSoTmeCLIHandler
     {
         
@@ -31,10 +27,10 @@ Options
         [CommandLineOption(Description = "Removes the current command from the SSoTme project file", MinOccurs = 0, Aliases = "")]
         public bool uninstall { get; set; }
         
-        [CommandLineOption(Description = "Build any transpilers in the current folder (or children).", MinOccurs = 0, Aliases = "b")]
+        [CommandLineOption(Description = "Build any transpilers in the current folder (or children).", MinOccurs = 0, Aliases = "b,replay")]
         public bool build { get; set; }
         
-        [CommandLineOption(Description = "Builds all transpilers in the project", MinOccurs = 0, Aliases = "ba")]
+        [CommandLineOption(Description = "Builds all transpilers in the project", MinOccurs = 0, Aliases = "ba,replayall")]
         public bool buildAll { get; set; }
         
         [CommandLineOption(Description = "Describes the current SSoTme project (and all transpilers)", MinOccurs = 0, Aliases = "d")]

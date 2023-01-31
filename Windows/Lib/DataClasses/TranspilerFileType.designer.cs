@@ -51,16 +51,6 @@ namespace SSoTme.OST.Lib.DataClasses
 
         
         
-        private static string CreateTranspilerFileTypeWhere(IEnumerable<TranspilerFileType> transpilerFileTypes, String forignKeyFieldName = "TranspilerFileTypeId")
-        {
-            if (!transpilerFileTypes.Any()) return "1=1";
-            else 
-            {
-                var idList = transpilerFileTypes.Select(selectTranspilerFileType => String.Format("'{0}'", selectTranspilerFileType.TranspilerFileTypeId));
-                var csIdList = String.Join(",", idList);
-                return String.Format("{0} in ({1})", forignKeyFieldName, csIdList);
-            }
-        }
         
     }
 }

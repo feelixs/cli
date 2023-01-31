@@ -43,16 +43,6 @@ namespace SSoTme.OST.Lib.DataClasses
 
         
         
-        private static string CreateProjectSettingWhere(IEnumerable<ProjectSetting> projectSettings, String forignKeyFieldName = "ProjectSettingId")
-        {
-            if (!projectSettings.Any()) return "1=1";
-            else 
-            {
-                var idList = projectSettings.Select(selectProjectSetting => String.Format("'{0}'", selectProjectSetting.ProjectSettingId));
-                var csIdList = String.Join(",", idList);
-                return String.Format("{0} in ({1})", forignKeyFieldName, csIdList);
-            }
-        }
         
     }
 }

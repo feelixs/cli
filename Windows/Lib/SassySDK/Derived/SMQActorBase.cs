@@ -73,6 +73,7 @@ namespace SassyMQ.Lib.RabbitMQ.Payload
         private void SMQActorBase_HandleInvokeExternal(object sender, InvokeEventArgs<T> e)
         {
             e.MethodDelegate.Invoke(sender, e.PayloadEventArgs);
+            //Application.OpenForms.OfType<Form>().FirstOrDefault().HandleInvoke(sender, e);
         }
 
         public void AutoConnect()

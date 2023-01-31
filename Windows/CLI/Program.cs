@@ -1,5 +1,4 @@
 ﻿using SSoTme.OST.Lib.DataClasses;
-using Plossum.CommandLine;
 using SassyMQ.Lib.RabbitMQ;
 using SassyMQ.SSOTME.Lib.RabbitMQ;
 using SassyMQ.SSOTME.Lib.RMQActors;
