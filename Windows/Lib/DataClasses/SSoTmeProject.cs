@@ -77,7 +77,7 @@ namespace SSoTme.OST.Lib.DataClasses
 
         private void ProjectMonitor_Changed(object sender, FileSystemEventArgs e)
         {
-            if (String.Equals(Path.GetFileName(e.FullPath), "SSoTmeProject.json", StringComparison.OrdinalIgnoreCase))
+            if (String.Equals(Path.GetFileName(e.FullPath), "aicapture.json", StringComparison.OrdinalIgnoreCase))
             {
                 //var form = Application.OpenForms.OfType<Form>().FirstOrDefault();
                 //if (ReferenceEquals(form, null) || !form.InvokeRequired) this.OnProjectFileReloaded(this, e);
@@ -306,7 +306,14 @@ namespace SSoTme.OST.Lib.DataClasses
 
         protected static FileInfo GetProjectFIAt(DirectoryInfo rootDI)
         {
-            return new FileInfo(Path.Combine(rootDI.FullName, "SSoTmeProject.json"));
+            var aiCaptureProjectFI = new FileInfo(Path.Combine(rootDI.FullName, "aicapture.json"));
+            if (!aiCaptureProjectFI.Exists)
+            {
+                var ssotmeFI = new FileInfo(Path.Combine(rootDI.FullName, "SSoTmeProject.json"));
+                if (ssotmeFI.Exists) ssotmeFI.MoveTo("aicapture.json");
+            }
+
+            return aiCaptureProjectFI;
         }
 
         private static AICaptureProject Load(FileInfo projectFI, DirectoryInfo requestDirectory = null, bool updateCurrent = true)
