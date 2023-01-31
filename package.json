@@ -1,13 +1,13 @@
 {
   "name": "aicapture",
-  "version": "2023.01.31",
+  "version": "2023.02.01",
   "description": "",
   "devDependencies": {
   },
   "bin": "cli.js",
   "scripts": {
-    "build": "dotnet build SSoTmeDotNetCore.sln",
-    "start": "dotnet Windows/CLI/bin/Debug/netcoreapp3.1/SSoTme.OST.CLI.dll",
+    "build": "dotnet build AICapture-OST-CLI.sln",
+    "start": "dotnet Windows/CLI/bin/Debug/netcoreapp3.1/AICapture.OST.CLI.dll",
     "postinstall": "npm run build"
   },
   "keywords": [],

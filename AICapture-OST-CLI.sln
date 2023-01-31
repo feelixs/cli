@@ -6,16 +6,18 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{CB9A8482-5981-467D-9BAF-D9A5D758BECE}"
 	ProjectSection(SolutionItems) = preProject
 		Windows\CLI\AddCLIToExplorer.reg = Windows\CLI\AddCLIToExplorer.reg
+		aicapture.json = aicapture.json
+		cli.js = cli.js
 		docs\CreateSSoTmeDocs.xslt = docs\CreateSSoTmeDocs.xslt
+		package.json = package.json
 		README.md = README.md
-		SSoTmeProject.json = SSoTmeProject.json
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Windows", "Windows", "{D6B2B68C-9C4F-41E9-859F-10A5EAA3938F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SSoTme.OST.CLI", "Windows\CLI\SSoTme.OST.CLI.csproj", "{BFB88518-5A64-406B-AAC4-B64D01161549}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AICapture.OST.CLI", "Windows\CLI\AICapture.OST.CLI.csproj", "{BFB88518-5A64-406B-AAC4-B64D01161549}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SSoTme.OST.Lib", "Windows\Lib\SSoTme.OST.Lib.csproj", "{1CFC5A6B-EFA3-4439-88E7-3D9B664E190D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AICapture.OST.Lib", "Windows\Lib\AICapture.OST.Lib.csproj", "{1CFC5A6B-EFA3-4439-88E7-3D9B664E190D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

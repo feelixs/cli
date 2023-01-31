@@ -2,8 +2,8 @@
   "profiles": {
     "DotNetStandardCLI": {
       "commandName": "Project",
-      "commandLineArgs": "-replay",
-      "workingDirectory": "C:\\Users\\auto1\\go\\src\\github.com\\eejai42\\SSoTmeOST\\Windows\\Lib\\CLIOptions"
+      "commandLineArgs": "-describe",
+      "workingDirectory": "C:\\Users\\auto1\\go\\src\\github.com\\eejai42\\SSoTme-Open-Source-Tools"
     }
   }
 }

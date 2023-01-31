@@ -3,11 +3,11 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <Version>2023.01.31.2042</Version>
+    <Version>2023.02.01.1010</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Lib\SSoTme.OST.Lib.csproj" />
+    <ProjectReference Include="..\Lib\AICapture.OST.Lib.csproj" />
   </ItemGroup>
 
 </Project>

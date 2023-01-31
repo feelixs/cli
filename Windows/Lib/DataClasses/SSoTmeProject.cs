@@ -310,7 +310,7 @@ namespace SSoTme.OST.Lib.DataClasses
             if (!aiCaptureProjectFI.Exists)
             {
                 var ssotmeFI = new FileInfo(Path.Combine(rootDI.FullName, "SSoTmeProject.json"));
-                if (ssotmeFI.Exists) ssotmeFI.MoveTo("aicapture.json");
+                if (ssotmeFI.Exists) ssotmeFI.MoveTo(Path.Combine(rootDI.FullName, "aicapture.json"));
             }
 
             return aiCaptureProjectFI;
