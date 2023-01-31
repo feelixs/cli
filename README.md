@@ -74,7 +74,7 @@ ssotme [account/]transpiler [parameters,...] [options]
 
 options:
    -account, -a          The account which the transpiler belongs to
-   -addSetting, -as      Adds a setting to the SSoTmeProject
+   -addSetting, -as      Adds a setting to the aicapture.json
    -build, -b            Build any transpilers in the
                          current folder (or children).
    -buildAll, -ba        Builds all transpilers in the project
@@ -96,7 +96,7 @@ options:
    -init                 Initialize the current folder as
                          the root of an SSOT.me project
    -input, -i            Input filename or comma separated list of file names
-   -install              Saves the current command into the SSoTmeProject file
+   -install              Saves the current command into the aicapture.json file
    -keyFile, -f          The keyfile to use.  By default
                          it looks for ~/SSOT.me/ssotme.key.
    -listSettings, -ls    List of project settings

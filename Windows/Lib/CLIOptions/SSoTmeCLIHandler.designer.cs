@@ -15,16 +15,16 @@ namespace SSoTme.OST.Lib.CLIOptions
     public partial class SSoTmeCLIHandler
     {
         
-        [CommandLineOption(Description = "Show help about how to use the ssotme cli", MinOccurs = 0, Aliases = "h")]
+        [CommandLineOption(Description = "Show help about how to use the aicapture cli", MinOccurs = 0, Aliases = "h")]
         public bool help { get; set; }
         
         [CommandLineOption(Description = "Initialize the current folder as the root of an SSOT.me project. An Optional parameter of force will create a sub-project.", MinOccurs = 0, Aliases = "")]
         public bool init { get; set; }
         
-        [CommandLineOption(Description = "Saves the current command into the SSoTmeProject file", MinOccurs = 0, Aliases = "")]
+        [CommandLineOption(Description = "Saves the current command into the AICapture Project file", MinOccurs = 0, Aliases = "")]
         public bool install { get; set; }
         
-        [CommandLineOption(Description = "Removes the current command from the SSoTme project file", MinOccurs = 0, Aliases = "")]
+        [CommandLineOption(Description = "Removes the current command from the AICapture project file", MinOccurs = 0, Aliases = "")]
         public bool uninstall { get; set; }
         
         [CommandLineOption(Description = "Build any transpilers in the current folder (or children).", MinOccurs = 0, Aliases = "b,replay")]
@@ -33,7 +33,7 @@ namespace SSoTme.OST.Lib.CLIOptions
         [CommandLineOption(Description = "Builds all transpilers in the project", MinOccurs = 0, Aliases = "ba,replayall")]
         public bool buildAll { get; set; }
         
-        [CommandLineOption(Description = "Describes the current SSoTme project (and all transpilers)", MinOccurs = 0, Aliases = "d")]
+        [CommandLineOption(Description = "Describes the current AICapture project (and all transpilers)", MinOccurs = 0, Aliases = "d")]
         public bool describe { get; set; }
         
         [CommandLineOption(Description = "Descibe all of the transpiler in the project", MinOccurs = 0, Aliases = "da")]
@@ -63,13 +63,13 @@ namespace SSoTme.OST.Lib.CLIOptions
         [CommandLineOption(Description = "List of project settings", MinOccurs = 0, Aliases = "ls")]
         public bool listSettings { get; set; }
         
-        [CommandLineOption(Description = "Adds a setting to the SSoTmeProject", MinOccurs = 0, Aliases = "as")]
+        [CommandLineOption(Description = "Adds a setting to the AICaptureProject", MinOccurs = 0, Aliases = "as")]
         public List<string> addSetting { get; set; }
         
-        [CommandLineOption(Description = "REmoves a setting from the ssotme project", MinOccurs = 0, Aliases = "rs")]
+        [CommandLineOption(Description = "REmoves a setting from the aicapture project", MinOccurs = 0, Aliases = "rs")]
         public List<string> removeSetting { get; set; }
         
-        [CommandLineOption(Description = "The keyfile to use.  By default it looks for ~/.ssotme/ssotme.key. (or ~/.ssotme/ssotme.{username}.key)", MinOccurs = 0, Aliases = "f")]
+        [CommandLineOption(Description = "The keyfile to use.  By default it looks for ~/.aicapture/ssotme.key. (or ~/.aicapture/ssotme.{username}.key)", MinOccurs = 0, Aliases = "f")]
         public string keyFile { get; set; }
         
         [CommandLineOption(Description = "The email address for the account authenticating", MinOccurs = 0, Aliases = "e")]

@@ -93,7 +93,7 @@ namespace SSoTme.OST.Lib.CLIOptions
 
                     Console.WriteLine(parser.UsageInfo.GetHeaderAsString(78));
 
-                    Console.WriteLine("\n\nSyntax: ssotme [account/]transpiler [Options]\n\n");
+                    Console.WriteLine("\n\nSyntax: aicapture [account/]transpiler [Options]\n\n");
 
                     Console.WriteLine(parser.UsageInfo.GetOptionsAsString(78));
                     this.SuppressTranspile = true;
@@ -108,7 +108,7 @@ namespace SSoTme.OST.Lib.CLIOptions
                     var force = this.args.Count() == 2 &&
                                 this.args[1] == "force";
 
-                    SSoTmeProject.Init(force, this.projectName);
+                    DataClasses.AICaptureProject.Init(force, this.projectName);
 
                     continueToLoad = true;
                     this.build = true;
@@ -134,9 +134,9 @@ namespace SSoTme.OST.Lib.CLIOptions
                 {
                     if (String.IsNullOrEmpty(this.setAccountAPIKey) && !this.help && !this.register && !this.authenticate)
                     {
-                        this.SSoTmeProject = SSoTmeProject.LoadOrFail(new DirectoryInfo(Environment.CurrentDirectory), false);
+                        this.AICaptureProject = SSoTmeProject.LoadOrFail(new DirectoryInfo(Environment.CurrentDirectory), false);
 
-                        foreach (var projectSetting in this.SSoTmeProject.ProjectSettings)
+                        foreach (var projectSetting in this.AICaptureProject.ProjectSettings)
                         {
                             if (!this.parameters.Any(anyParam => anyParam.StartsWith(String.Format("{0}=", projectSetting.Name))))
                             {
@@ -186,7 +186,7 @@ namespace SSoTme.OST.Lib.CLIOptions
                 {
                     if (String.IsNullOrEmpty(this.emailAddress) || String.IsNullOrEmpty(this.account))
                     {
-                        ShowError("Syntax: ssotme -register -emailAddress=you@domain.com -account=pickAccount");
+                        ShowError("Syntax: aicapture -register -emailAddress=you@domain.com -account=pickAccount");
                         return -1;
                     }
                     else
@@ -199,7 +199,7 @@ namespace SSoTme.OST.Lib.CLIOptions
                 {
                     if (String.IsNullOrEmpty(this.emailAddress))
                     {
-                        ShowError("Syntax: ssotme -auth -emailAddress=\"you@domain.com\"");
+                        ShowError("Syntax: aicapture -auth -emailAddress=\"you@domain.com\"");
                         return -1;
                     }
                     else
@@ -211,32 +211,32 @@ namespace SSoTme.OST.Lib.CLIOptions
                 }
                 else if (this.describe)
                 {
-                    this.SSoTmeProject.Describe(Environment.CurrentDirectory);
+                    this.AICaptureProject.Describe(Environment.CurrentDirectory);
                 }
                 else if (this.descibeAll)
                 {
-                    this.SSoTmeProject.Describe();
+                    this.AICaptureProject.Describe();
                 }
                 else if (this.listSettings)
                 {
-                    this.SSoTmeProject.ListSettings();
+                    this.AICaptureProject.ListSettings();
                 }
                 else if (this.addSetting.Any())
                 {
                     foreach (var setting in this.addSetting)
                     {
-                        this.SSoTmeProject.AddSetting(setting);
+                        this.AICaptureProject.AddSetting(setting);
                     }
 
-                    this.SSoTmeProject.Save();
+                    this.AICaptureProject.Save();
                 }
                 else if (this.removeSetting.Any())
                 {
                     foreach (var setting in this.removeSetting)
                     {
-                        this.SSoTmeProject.RemoveSetting(setting);
+                        this.AICaptureProject.RemoveSetting(setting);
                     }
-                    this.SSoTmeProject.Save();
+                    this.AICaptureProject.Save();
                 }
                 else if (!String.IsNullOrEmpty(this.setAccountAPIKey))
                 {
@@ -258,19 +258,19 @@ namespace SSoTme.OST.Lib.CLIOptions
                 }
                 else if (this.build)
                 {
-                    this.SSoTmeProject.Rebuild(Environment.CurrentDirectory, this.includeDisabled);
-                    if (this.checkResults) this.SSoTmeProject.CreateDocs();
+                    this.AICaptureProject.Rebuild(Environment.CurrentDirectory, this.includeDisabled);
+                    if (this.checkResults) this.AICaptureProject.CreateDocs();
                 }
                 else if (this.buildAll)
                 {
-                    this.SSoTmeProject.Rebuild(this.includeDisabled);
-                    this.SSoTmeProject.CreateDocs();
+                    this.AICaptureProject.Rebuild(this.includeDisabled);
+                    this.AICaptureProject.CreateDocs();
 
                 }
                 else if (this.checkResults || this.createDocs && !hasRemainingArguments)
                 {
-                    if (this.checkResults) this.SSoTmeProject.CheckResults();
-                    else this.SSoTmeProject.CreateDocs();
+                    if (this.checkResults) this.AICaptureProject.CheckResults();
+                    else this.AICaptureProject.CreateDocs();
                     updateProject = true;
                 }
                 else if (this.clean && !ReferenceEquals(zfsFileSetFile, null))
@@ -285,11 +285,11 @@ namespace SSoTme.OST.Lib.CLIOptions
                 }
                 else if (this.clean && !hasRemainingArguments)
                 {
-                    this.SSoTmeProject.Clean(Environment.CurrentDirectory, this.preserveZFS);
+                    this.AICaptureProject.Clean(Environment.CurrentDirectory, this.preserveZFS);
                 }
                 else if (this.cleanAll && !hasRemainingArguments)
                 {
-                    this.SSoTmeProject.Clean(this.preserveZFS);
+                    this.AICaptureProject.Clean(this.preserveZFS);
                 }
                 else if (!hasRemainingArguments && !this.clean)
                 {
@@ -333,10 +333,10 @@ namespace SSoTme.OST.Lib.CLIOptions
                 if (!ReferenceEquals(AccountHolder, null)) AccountHolder.Disconnect();
                 if (updateProject)
                 {
-                    if (this.install) this.SSoTmeProject.Install(result, this.transpilerGroup);
+                    if (this.install) this.AICaptureProject.Install(result, this.transpilerGroup);
                     else if (!ReferenceEquals(projectTranspiler, null))
                     {
-                        this.SSoTmeProject.Update(projectTranspiler, result);
+                        this.AICaptureProject.Update(projectTranspiler, result);
                     }
                 }
             }
@@ -415,7 +415,7 @@ namespace SSoTme.OST.Lib.CLIOptions
 
         internal void LoadOutputFiles(String lowerHyphoneName, String basePath, bool includeContents)
         {
-            var rootPath = ReferenceEquals(this.SSoTmeProject, null) ? Environment.CurrentDirectory : this.SSoTmeProject.RootPath;
+            var rootPath = ReferenceEquals(this.AICaptureProject, null) ? Environment.CurrentDirectory : this.AICaptureProject.RootPath;
             var zfsRelativePath = String.Format("{0}.zfs", lowerHyphoneName);
             basePath = basePath.Trim("\\/".ToCharArray());
             var zfsFileName = Path.Combine(rootPath, ".ssotme", basePath, zfsRelativePath);
@@ -457,7 +457,7 @@ namespace SSoTme.OST.Lib.CLIOptions
                 result = AccountHolder.CreatePayload();
                 result.Exception = new TimeoutException("Timed out waiting for cook");
             }
-            result.SSoTmeProject = this.SSoTmeProject;
+            result.SSoTmeProject = this.AICaptureProject;
         }
 
         public string inputFileContents = "";
@@ -471,7 +471,7 @@ namespace SSoTme.OST.Lib.CLIOptions
         public FileSet FileSet { get; private set; }
         public bool HasRemainingArguments { get; private set; }
         public FileSetFile ZFSFileSetFile { get; private set; }
-        public SSoTmeProject SSoTmeProject { get; set; }
+        public SSoTmeProject AICaptureProject { get; set; }
         public int ParseResult { get; private set; }
         public FileSet OutputFileSet { get; private set; }
         public bool SuppressTranspile { get; private set; }
@@ -533,7 +533,7 @@ namespace SSoTme.OST.Lib.CLIOptions
             {
                 var fsf = new FileSetFile();
                 fsf.RelativePath = String.IsNullOrEmpty(fileNameReplacement) ? fi.Name : fileNameReplacement;
-                fsf.OriginalRelativePath = fi.FullName.Substring(this.SSoTmeProject.RootPath.Length).Replace("\\", "/");
+                fsf.OriginalRelativePath = fi.FullName.Substring(this.AICaptureProject.RootPath.Length).Replace("\\", "/");
                 fs.FileSetFiles.Add(fsf);
 
                 if (fi.Exists)

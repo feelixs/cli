@@ -309,7 +309,7 @@ namespace SSoTme.OST.Lib.DataClasses
             return new FileInfo(Path.Combine(rootDI.FullName, "SSoTmeProject.json"));
         }
 
-        private static SSoTmeProject Load(FileInfo projectFI, DirectoryInfo requestDirectory = null, bool updateCurrent = true)
+        private static AICaptureProject Load(FileInfo projectFI, DirectoryInfo requestDirectory = null, bool updateCurrent = true)
         {
             var count = 0;
             while (count++ < 10)
@@ -317,7 +317,7 @@ namespace SSoTme.OST.Lib.DataClasses
                 try
                 {
                     var projectJson = File.ReadAllText(projectFI.FullName);
-                    var ssotmeProject = JsonConvert.DeserializeObject<SSoTmeProject>(projectJson);
+                    var ssotmeProject = JsonConvert.DeserializeObject<AICaptureProject>(projectJson);
                     ssotmeProject.RootPath = projectFI.Directory.FullName;
                     if (String.IsNullOrEmpty(ssotmeProject.Name))
                     {
@@ -368,7 +368,7 @@ namespace SSoTme.OST.Lib.DataClasses
 
             if (ReferenceEquals(proj, null))
             {
-                throw new Exception(String.Format("\nSSoTmeProject could not be found in {0}.  \n\nPlease run `>ssotme -init` from the root of your project to initialize the SSoTme Project.", dirToCheck.FullName));
+                throw new Exception(String.Format("AICapture Project file could not be found in {0}.  \n\nPlease run `>aicapture -init` from the root of your project to initialize the SSoTme Project.", dirToCheck.FullName));
             }
             else return proj;
         }
@@ -393,7 +393,7 @@ namespace SSoTme.OST.Lib.DataClasses
 
         }
 
-        public static SSoTmeProject TryToLoad(DirectoryInfo dirToCheck, DirectoryInfo requestDirectory = null, bool updateCurrent = true)
+        public static AICaptureProject TryToLoad(DirectoryInfo dirToCheck, DirectoryInfo requestDirectory = null, bool updateCurrent = true)
         {
             FileInfo projectFI = GetProjectFIAt(dirToCheck);
 
@@ -403,7 +403,7 @@ namespace SSoTme.OST.Lib.DataClasses
             else
             {
                 // Try parent
-                if (ReferenceEquals(dirToCheck.Parent, null)) return default(SSoTmeProject);
+                if (ReferenceEquals(dirToCheck.Parent, null)) return default(AICaptureProject);
                 else return TryToLoad(dirToCheck.Parent, requestDirectory, updateCurrent);
             }
         }
