@@ -130,6 +130,10 @@ namespace SSoTme.OST.Lib.DataClasses
             if (!ReferenceEquals(this.MatchedTranspiler, null))
             {
                 cliHandler.AICaptureProject = project;
+                if (String.IsNullOrEmpty(this.MatchedTranspiler.LowerHyphenName))
+                {
+                    this.MatchedTranspiler.LowerHyphenName = $"{this.MatchedTranspiler.Name}".ToTitleCase().Replace(" ", "-").ToLower();
+                }
                 cliHandler.LoadOutputFiles(this.MatchedTranspiler.LowerHyphenName, this.GetProjectRelativePath(project), includeContents);
                 cliHandler.AICaptureProject = null;
             }

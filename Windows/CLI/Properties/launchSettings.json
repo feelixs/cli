@@ -2,8 +2,8 @@
   "profiles": {
     "DotNetStandardCLI": {
       "commandName": "Project",
-      "commandLineArgs": "-describe",
-      "workingDirectory": "C:\\Users\\auto1\\go\\src\\github.com\\eejai42\\SSoTme-Open-Source-Tools"
+      "commandLineArgs": "-replayall",
+      "workingDirectory": "C:\\Users\\auto1\\go\\src\\github.com\\eejai42\\gpt-minesweeper"
     }
   }
 }

@@ -521,16 +521,16 @@ namespace SSoTme.OST.Lib.DataClasses
 
             Environment.CurrentDirectory = di.FullName;
 
-            ProcessStartInfo psi = new ProcessStartInfo("ssotme");
+            ProcessStartInfo psi = new ProcessStartInfo("cmd");
             psi.WorkingDirectory = di.FullName;
 
-            psi.Arguments = "spxml-to-detailed-spxml -i \"./SSoTmeProject.spxml\"";
+            psi.Arguments = "/C aicapture spxml-to-detailed-spxml -i \"./SSoTmeProject.spxml\"";
             var p = Process.Start(psi);
             p.WaitForExit(100000);
             if (!p.HasExited) throw new Exception("Failed waiting for Detailed SP Xml to be created.");
             else
             {
-                psi.Arguments = "detailed-spxml-to-html-docs -i \"./SSoTmeProject.dspxml\"";
+                psi.Arguments = "/C aicapture detailed-spxml-to-html-docs -i \"./SSoTmeProject.dspxml\"";
                 p = Process.Start(psi);
 
                 p.WaitForExit(100000);

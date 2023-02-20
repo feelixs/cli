@@ -1,8 +1,9 @@
-# SSoTme-Open-Source-Tools
-[SSoT.me Platform](http://SSoT.me) - The Single Source of Truth Toolbox!
+# AICapture Open-Source-Tools
+[AICapture Platform](http://aicapture.io)
+The Single Source of Truth Toolbox!
 
 ## Additional Docs
-In addition to the summary below - there is [additional documentation](https://ssotme.github.io/SSoTme-Open-Source-Tools/) on
+In addition to the summary below - there is [additional documentation](https://aicapture.github.io/AICapture-Open-Source-Tools/) on
 the github.io site.
 
 ## About A Single Source of Truth
@@ -11,7 +12,7 @@ Authority.  "Source Code" is frequently a terrible place for decisions about how
 should work.  SSoT development is based on the notion that there should always be one,
 Authoritative place for these decisions.  
 
-*SSoTme* is a command line package manager like NPM, Bower, Nuget, etc - however, the packages
+*AICapture* is a command line package manager like NPM, Bower, Nuget, etc - however, the packages
 delivered are dynamic in nature.  If 100 projects install a bower package, they all get the
 same bytes.
 
@@ -21,7 +22,7 @@ which describes their project.  Since each project will start with a different S
 they will each get a package which works with their project.  It will be the same KIND of 
 content that the other projects all needed, but will differ in ways specific to each project.
 
-Similarly - if you one project installs 10 SSoTme packages, they will all match each other,
+Similarly - if you one project installs 10 AICapture packages, they will all match each other,
 because they are all derived from the same SSoT.  And any time that SSoT changes, all 10
 packages will also update themselves to match the new "truth".
 
@@ -49,13 +50,13 @@ turns A into B.  The transaction always follows this basic script though:
 
 
 ## Installation
-Installing the Windows *SSoTme.exe* command line tool will automatically update the path
+Installing the Windows *AICapture executable* command line tool will automatically update the path
 to include the CLI.  
 
-When you register for an account with [SSoT.me](http://ssot.me) - you will be emailed a secret key
+When you register for an account with [SSoT.me](https://aicapture.io) - you will be emailed a secret key
 That file should be put in this location:
 
-*Key File:* `%USERPROFILE%/.ssotme/ssotme.key`
+*Key File:* `%USERPROFILE%/.aicapture/aicapture.key`
 ```
 {
    "emailAddress": "you@domain.com",
@@ -63,14 +64,14 @@ That file should be put in this location:
 }
 ```
 
-If you have multiple accounts, the format key file should have ethis format: `ssotme.{account-name}.key`
-For example: `ssotme.codee42.key`
+If you have multiple accounts, the format key file should have ethis format: `aicapture.{account-name}.key`
+For example: `aicapture.codee42.key`
 
-## Syntax: `ssotme -help`
+## Syntax: `aicapture -help`
 This command will show the following help.
 
 ```
-ssotme [account/]transpiler [parameters,...] [options]
+aicapture [account/]transpiler [parameters,...] [options]
 
 options:
    -account, -a          The account which the transpiler belongs to
@@ -86,11 +87,11 @@ options:
    -createDocs, -cd      Creates documentation based on a DSPXml
                          file created with the -checkResults flag.
    -descibeAll, -da      Descibe all of the transpiler in the project
-   -describe, -d         Describes the current SSoTme
+   -describe, -d         Describes the current AICapture
                          project (and all transpilers)
    -emailAddress, -e     The email address for the account authenticating
    -execute, -exec       Executes the given command as a ProcessInfo.Start
-   -help, -h             Show help about how to use the ssotme cli
+   -help, -h             Show help about how to use the aicapture cli
    -includeDisabled,
    -id                   Include disabled tools in th ebuild
    -init                 Initialize the current folder as
@@ -98,17 +99,17 @@ options:
    -input, -i            Input filename or comma separated list of file names
    -install              Saves the current command into the aicapture.json file
    -keyFile, -f          The keyfile to use.  By default
-                         it looks for ~/SSOT.me/ssotme.key.
+                         it looks for ~/.aicapture/aicapture.key.
    -listSettings, -ls    List of project settings
    -output, -o           Output filename
    -parameters, -p       A list of parameters
    -preserveZFS, -rz     Determines if the input should be preserved.
-   -removeSetting, -rs   REmoves a setting from the ssotme project
+   -removeSetting, -rs   REmoves a setting from the aicapture project
    -runAs, -ra           Run as this user (look for this user's key file)
    -secret, -k           The secret associated with that email address
    -skipClean, -sc       Don't clean the output before cooking
    -uninstall            Removes the current command
-                         from the SSoTme project file
+                         from the AICapture project file
    -waitTimeout, -w      The amount of time to wait
                          for the command to continue
 ```
