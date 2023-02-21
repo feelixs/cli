@@ -4,6 +4,7 @@
              An Abstract Level, llc
  License:    Mozilla Public License 2.0
  *******************************************/
+using CLI;
 using Plossum.CommandLine;
 using SassyMQ.Lib.RabbitMQ;
 using SassyMQ.SSOTME.Lib.RabbitMQ;
@@ -16,6 +17,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -197,16 +200,9 @@ namespace SSoTme.OST.Lib.CLIOptions
                 }
                 else if (this.authenticate)
                 {
-                    if (String.IsNullOrEmpty(this.emailAddress))
+                    if (!this.CheckAuthenticationNow())
                     {
-                        ShowError("Syntax: aicapture -auth -emailAddress=\"you@domain.com\"");
                         return -1;
-                    }
-                    else
-                    {
-                        this.PublicUser = new SMQPublicUser();
-                        this.PublicUser.ReplyTo += PublicUser_ReplyTo;
-                        this.PublicUser.PublicUserPing();
                     }
                 }
                 else if (this.describe)
@@ -342,6 +338,54 @@ namespace SSoTme.OST.Lib.CLIOptions
             }
         }
 
+        private bool CheckAuthenticationNow()
+        {
+            Console.WriteLine("Authenticating with auth0.");
+            if (!String.IsNullOrEmpty(this.Auth0SID))
+            {
+                this.PrintAuth();
+                Console.WriteLine("Already authenticated.  Reauthenticate now? y/N");
+                if (Console.ReadKey().Key != ConsoleKey.Y) return true;
+            }
+            var startInfo = new ProcessStartInfo
+            {
+                FileName = "cmd",
+                RedirectStandardInput = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+
+            var process = new Process { StartInfo = startInfo };
+            process.Start();
+            process.StandardInput.WriteLine($"start chrome {this.AICaptureHost}/cli-login");
+            process.StandardInput.Flush();
+            process.StandardInput.Close();
+
+            var result = LocalServer.StartServerAsync("http://localhost:8080/complete-cli/");
+            result.Wait(300000);
+            if (result.IsCompleted)
+            {
+                object jwtFromRedirect = $"result: {result.Result}";
+                this.Auth0SID = result.Result;
+                this.PrintAuth();
+                return true;
+            }
+            else
+            {
+                ShowError("Syntax: aicapture unable to authenticate within the specified timeout period.");
+                return false;
+            }
+        }
+
+        private void PrintAuth()
+        {
+            var webClient = new WebClient();
+            var payload = $"{{ \"Auth0SID\":\"{this.Auth0SID}\" }}";
+            var resultBytes = webClient.UploadData($"{this.AICaptureHost}/whoami", Encoding.UTF8.GetBytes(payload));
+            var jwt = Encoding.UTF8.GetString(resultBytes);
+            Console.WriteLine(jwt);
+        }
+
         private void PublicUser_ReplyTo(object sender, PayloadEventArgs<SSOTMEPayload> e)
         {
             if (e.Payload.IsLexiconTerm(LexiconTermEnum.publicuser_ping_ssotmecoordinator))
@@ -475,6 +519,38 @@ namespace SSoTme.OST.Lib.CLIOptions
         public int ParseResult { get; private set; }
         public FileSet OutputFileSet { get; private set; }
         public bool SuppressTranspile { get; private set; }
+        public string AICaptureHost {  get
+            {
+#if DEBUG
+                return "https://localhost:7033";
+#else
+                return "https://aicapture.io";
+#endif
+            }
+        }
+        public string Auth0SID
+        {
+            get
+            {
+                if (Auth0TokenFI.Exists) return File.ReadAllText(Auth0TokenFI.FullName);
+                else return String.Empty;
+            }
+            set
+            {
+                File.WriteAllText(Auth0TokenFI.FullName, value);
+            }
+        }
+
+        private static FileInfo Auth0TokenFI
+        {
+            get
+            {
+                var auth0TokenPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".aicapture", "auth0.key");
+                var auth0TokenFI = new FileInfo(auth0TokenPath);
+                if (!auth0TokenFI.Directory.Exists) auth0TokenFI.Directory.Create();
+                return auth0TokenFI;
+            }
+        }
 
         public void LoadInputFiles()
         {
