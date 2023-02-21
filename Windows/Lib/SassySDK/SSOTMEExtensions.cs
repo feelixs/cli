@@ -267,7 +267,7 @@ namespace SassyMQ.SSOTME.Lib
             fileSetXml.SplitFileSetXml(false, basePath);
         }
 
-        
+
 
 
         public static bool IsLexiconTerm<T>(this StandardPayload<T> payload, LexiconTermEnum termKey)

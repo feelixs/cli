@@ -125,7 +125,7 @@ namespace SSoTme.OST.Lib.CLIOptions
                     Console.ForegroundColor = curColor;
                     this.SuppressTranspile = true;
                 }
-                else if (this.authenticate || this.register)
+                else if (this.authenticate)
                 {
                     continueToLoad = false;
                 }
@@ -135,7 +135,7 @@ namespace SSoTme.OST.Lib.CLIOptions
 
                 if (continueToLoad)
                 {
-                    if (String.IsNullOrEmpty(this.setAccountAPIKey) && !this.help && !this.register && !this.authenticate)
+                    if (String.IsNullOrEmpty(this.setAccountAPIKey) && !this.help && !this.authenticate)
                     {
                         this.AICaptureProject = SSoTmeProject.LoadOrFail(new DirectoryInfo(Environment.CurrentDirectory), false);
 
@@ -185,20 +185,7 @@ namespace SSoTme.OST.Lib.CLIOptions
             {
                 var hasRemainingArguments = this.HasRemainingArguments;
                 var zfsFileSetFile = this.ZFSFileSetFile;
-                if (this.register)
-                {
-                    if (String.IsNullOrEmpty(this.emailAddress) || String.IsNullOrEmpty(this.account))
-                    {
-                        ShowError("Syntax: aicapture -register -emailAddress=you@domain.com -account=pickAccount");
-                        return -1;
-                    }
-                    else
-                    {
-                        this.AccountHolder = new SMQAccountHolder();
-                        throw new NotImplementedException();
-                    }
-                }
-                else if (this.authenticate)
+                if (this.authenticate)
                 {
                     if (!this.CheckAuthenticationNow())
                     {
@@ -262,6 +249,11 @@ namespace SSoTme.OST.Lib.CLIOptions
                     this.AICaptureProject.Rebuild(this.includeDisabled);
                     this.AICaptureProject.CreateDocs();
 
+                }
+                else if (this.discuss)
+                {
+                    Console.WriteLine("Listening.  Press Ctrl+C to end.");
+                    Console.ReadKey();
                 }
                 else if (this.checkResults || this.createDocs && !hasRemainingArguments)
                 {
@@ -392,7 +384,7 @@ namespace SSoTme.OST.Lib.CLIOptions
             {
                 this.CoordinatorProxy = new DMProxy(e.Payload.DirectMessageQueue);
                 var payload = this.PublicUser.CreatePayload();
-                payload.EmailAddress = this.emailAddress;
+                throw new Exception("This: payload.EmailAddress = this.emailAddress; isn't really a thing anymore.");
                 this.PublicUser.PublicUserAuthenticate(payload, this.CoordinatorProxy);
             }
             else if (e.Payload.IsLexiconTerm(LexiconTermEnum.publicuser_authenticate_ssotmecoordinator))

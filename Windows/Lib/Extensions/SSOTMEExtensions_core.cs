@@ -7,14 +7,13 @@ License:    Mozilla Public License 2.0
 using ExcelDataReader;
 using HtmlAgilityPack;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
+using PluralizationService;
+using PluralizationService.English;
 using SassyMQ.Lib.RabbitMQ;
 using SSoTme.OST.Lib.DataClasses;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Entity.Design.PluralizationServices;
 using System.Data.OleDb;
 using System.Drawing;
 using System.Globalization;
@@ -32,16 +31,22 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Schema;
 using System.Xml.Serialization;
-using System.Xml.XPath;
 
 namespace SSoTme.OST.Lib.Extensions
 {
     public static class SSOTMEExtensions
     {
+        public static readonly IPluralizationApi Pluralizer;
+        private static readonly CultureInfo CultureInfo;
 
         static SSOTMEExtensions()
         {
-            SSOTMEExtensions.Pluralizer = PluralizationService.CreateService(CultureInfo.CurrentCulture);
+
+            var builder = new PluralizationApiBuilder();
+            builder.AddEnglishProvider();
+
+            Pluralizer = builder.Build();
+            CultureInfo = new CultureInfo("en-US");
         }
 
 
@@ -476,7 +481,7 @@ namespace SSoTme.OST.Lib.Extensions
                     else if (!ReferenceEquals(zippedFileContents, null)) value = Convert.FromBase64String(zippedFileContents.InnerXml).UnzipToString();
                     if (!neverOverwrite || File.ReadAllText(fiToClean.FullName) == value || binaryEquals)
                     {
-                        Console.WriteLine("aicapture... cleaning {0}", fiToClean.FullName);
+                        Console.WriteLine("SSoTme Cleaning {0}", fiToClean.FullName);
                         fiToClean.Delete();
                     }
                 }
@@ -694,16 +699,17 @@ namespace SSoTme.OST.Lib.Extensions
                 string conStr = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source="
                     + theFile.DirectoryName + ";" + "Extended Properties='text;HDR=YES;CharacterSet=65001;'";
 
-                using (OleDbConnection conn = new OleDbConnection(conStr))
-                {
-                    using (OleDbCommand comm = new OleDbCommand(sqlString, conn))
-                    {
-                        using (OleDbDataAdapter adapter = new OleDbDataAdapter(comm))
-                        {
-                            adapter.Fill(theCSV);
-                        }
-                    }
-                }
+                throw new Exception("Need to find .NET CORE Equivalent of OleDbDataAdapter.  Maybe: https://stackoverflow.com/questions/40438377/how-to-get-oledb-for-reading-excel-in-asp-net-core-project");
+                //using (OleDbConnection conn = new OleDbConnection(conStr))
+                //{
+                //    using (OleDbCommand comm = new OleDbCommand(sqlString, conn))
+                //    {
+                //        using (OleDbDataAdapter adapter = new OleDbDataAdapter(comm))
+                //        {
+                //            adapter.Fill(theCSV);
+                //        }
+                //    }
+                //}
             }
             return theCSV;
         }
@@ -788,24 +794,23 @@ namespace SSoTme.OST.Lib.Extensions
 
         public static string CsvToXml(this String csvText, String fileName)
         {
-            String tempFile = $"temp\\{Guid.NewGuid()}\\{fileName}";
+            String tempFile = String.Format("temp\\{0}", fileName);
             FileInfo fi = new FileInfo(tempFile);
             if (!fi.Directory.Exists) fi.Directory.Create();
             File.WriteAllText(fi.FullName, csvText, new UTF8Encoding(false));
             try
             {
 
-                var pluralizer = PluralizationService.CreateService(CultureInfo.CurrentCulture);
                 fileName = Path.GetFileNameWithoutExtension(fileName);
-                var pluralFileName = pluralizer.Pluralize(fileName);
-                var singularFileName = pluralizer.Singularize(fileName);
+                var pluralFileName = SSOTMEExtensions.Pluralizer.Pluralize(fileName);
+                var singularFileName = SSOTMEExtensions.Pluralizer.Singularize(fileName);
 
                 var xml = GetXMLFromCSV(fi, pluralFileName, singularFileName);
                 return xml.ToString();
             }
             finally
             {
-                File.Delete(fi.FullName);
+                File.Delete(tempFile);
             }
 
         }
@@ -1252,73 +1257,11 @@ namespace SSoTme.OST.Lib.Extensions
             }
         }
 
-        //public class CustomContractResolver : DefaultContractResolver
-        //{
-        //    protected override JsonArrayContract CreateArrayContract(Type objectType)
-        //    {
-        //        JsonArrayContract contract = base.CreateArrayContract(objectType);
-
-        //        contract.ItemName = Inflector.Inflector.Singularize(contract.UnderlyingType.Name);
-        //        contract.CollectionItemName = contract.UnderlyingType.Name;
-
-        //        return contract;
-        //    }
-        //}
-
         public static String XmlToJson(this String xml)
         {
-            var doc = XElement.Parse(xml);
-
-            var cdata = doc.DescendantNodes().OfType<XCData>().ToList();
-            foreach (var cd in cdata)
-            {
-                cd.Parent.Add(cd.Value);
-                cd.Remove();
-            }
-
-            string jsonText = JsonConvert.SerializeXNode(doc, Newtonsoft.Json.Formatting.Indented);
-            var jo = JObject.Parse(jsonText);
-
-            ConvertNumbersAndDates(jo);
-            var jsonTextClean = jo.ToString();
-            return jsonTextClean;
-        }
-
-        private static void ConvertNumbersAndDates(JObject jo)
-        {
-            foreach (var prop in jo.Properties())
-            {
-                if (prop.Value.Type == JTokenType.String)
-                {
-                    if (int.TryParse(prop.Value.ToString(), out int intValue))
-                    {
-                        prop.Value = intValue;
-                    }
-                    else if (decimal.TryParse(prop.Value.ToString(), out decimal decValue))
-                    {
-                        prop.Value = decValue;
-                    }
-                    else if (DateTime.TryParse(prop.Value.ToString(), out DateTime dateValue))
-                    {
-                        prop.Value = dateValue;
-                    }
-                }
-                else if (prop.Value.Type == JTokenType.Object)
-                {
-                    ConvertNumbersAndDates((JObject)prop.Value);
-                }
-                else if (prop.Value.Type == JTokenType.Array)
-                {
-                    JArray array = (JArray)prop.Value;
-                    for (int i = 0; i < array.Count; i++)
-                    {
-                        if (array[i].Type == JTokenType.Object)
-                        {
-                            ConvertNumbersAndDates((JObject)array[i]);
-                        }
-                    }
-                }
-            }
+            var doc = new XmlDocument();
+            doc.LoadXml(xml);
+            return JsonConvert.SerializeXmlNode(doc.DocumentElement);
         }
 
         private static void CleanSPECDOCLink(this HtmlNode node)
@@ -1521,8 +1464,6 @@ namespace SSoTme.OST.Lib.Extensions
                 | BindingFlags.Public | BindingFlags.Instance);
         }
 
-        public static PluralizationService Pluralizer { get; private set; }
-
 
 
         public static String Singularize(this String text)
@@ -1630,22 +1571,6 @@ namespace SSoTme.OST.Lib.Extensions
         public static object GetTranspilersAsJson(object screenName)
         {
             throw new NotImplementedException();
-        }
-
-        public static String GetValue(this XElement xelement)
-        {
-            if (xelement is null) return String.Empty;
-            else return xelement.Value;
-        }
-
-        public static String GetValue(this XElement xelement, string xPath)
-        {
-            if (xelement is null) return String.Empty;
-            else return xelement.XPathSelectElement(xPath).GetValue();
-        }
-
-        public static dynamic ToNewtonsoft(this object obj) {
-            return JsonConvert.DeserializeObject(JsonConvert.SerializeObject(obj));
         }
     }
 }

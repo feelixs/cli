@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Extensions\SSOTMEExtensions.cs" />
     <Compile Remove="Properties\AssemblyInfo.cs" />
     <Compile Remove="SassySDK\StandardPayload.cs" />
   </ItemGroup>
