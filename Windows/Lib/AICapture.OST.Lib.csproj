@@ -12,6 +12,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="AICapture\DataClasses\CoreLibraryExtensions.cs" />
+    <Compile Remove="DataClasses\CoreLibraryExtensions.cs" />
     <Compile Remove="Extensions\SSOTMEExtensions.cs" />
     <Compile Remove="Properties\AssemblyInfo.cs" />
     <Compile Remove="SassySDK\StandardPayload.cs" />
@@ -33,6 +35,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="AICapture\DataClasses\" />
     <Folder Include="Properties\" />
   </ItemGroup>
 

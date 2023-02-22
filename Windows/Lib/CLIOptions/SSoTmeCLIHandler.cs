@@ -252,8 +252,24 @@ namespace SSoTme.OST.Lib.CLIOptions
                 }
                 else if (this.discuss)
                 {
-                    Console.WriteLine("Listening.  Press Ctrl+C to end.");
+                    var aica = new AIC.SassyMQ.Lib.SMQAICAgent("amqps://smqPublic:smqPublic@effortlessapi-rmq.ssot.me/ej-aicapture-io");
+                    aica.UserAICInstallReceived += Aica_UserAICInstallReceived;
+                    aica.UserAICReplayReceived += Aica_UserAICReplayReceived;
+                    aica.UserSetDataReceived += Aica_UserSetDataReceived;
+                    aica.UserGetDataReceived += Aica_UserGetDataReceived;
+                    var payload = aica.CreatePayload();
+                    payload.AccessToken = this.Auth0SID;
+                    payload.DMQueue = aica.QueueName;
+                    var reply = aica.MonitoringFor(payload);
+
+
+                    Console.WriteLine($"Listening on DMQueue: {aica.QueueName}. Press Ctrl+C to end.");
+                    while (!Console.KeyAvailable)
+                    {
+                        aica.WaitForComplete(1000, false);
+                    }
                     Console.ReadKey();
+                    aica.Disconnect();
                 }
                 else if (this.checkResults || this.createDocs && !hasRemainingArguments)
                 {
@@ -328,6 +344,26 @@ namespace SSoTme.OST.Lib.CLIOptions
                     }
                 }
             }
+        }
+
+        private void Aica_UserAICInstallReceived(object sender, AIC.SassyMQ.Lib.PayloadEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void Aica_UserGetDataReceived(object sender, AIC.SassyMQ.Lib.PayloadEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void Aica_UserSetDataReceived(object sender, AIC.SassyMQ.Lib.PayloadEventArgs e)
+        {
+            e.Payload.Content = $"{DateTime.Now.ToLongTimeString()}: {Environment.CurrentDirectory}";
+        }
+
+        private void Aica_UserAICReplayReceived(object sender, AIC.SassyMQ.Lib.PayloadEventArgs e)
+        {
+            throw new Exception("Not setup to replay yet...");
         }
 
         private bool CheckAuthenticationNow()
@@ -511,7 +547,9 @@ namespace SSoTme.OST.Lib.CLIOptions
         public int ParseResult { get; private set; }
         public FileSet OutputFileSet { get; private set; }
         public bool SuppressTranspile { get; private set; }
-        public string AICaptureHost {  get
+        public string AICaptureHost
+        {
+            get
             {
 #if DEBUG
                 return "https://localhost:7033";
