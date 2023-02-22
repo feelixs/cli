@@ -358,7 +358,7 @@ namespace SSoTme.OST.Lib.CLIOptions
 
         private void Aica_UserSetDataReceived(object sender, AIC.SassyMQ.Lib.PayloadEventArgs e)
         {
-            e.Payload.Content = $"{DateTime.Now.ToLongTimeString()}: {Environment.CurrentDirectory}";
+            e.Payload.Content = $"{DateTime.Now.ToLongTimeString()}: {Path.GetFileName(Environment.CurrentDirectory)}";
         }
 
         private void Aica_UserAICReplayReceived(object sender, AIC.SassyMQ.Lib.PayloadEventArgs e)
