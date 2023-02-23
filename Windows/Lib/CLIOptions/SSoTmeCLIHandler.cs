@@ -353,12 +353,31 @@ namespace SSoTme.OST.Lib.CLIOptions
 
         private void Aica_UserGetDataReceived(object sender, AIC.SassyMQ.Lib.PayloadEventArgs e)
         {
-            throw new NotImplementedException();
+            e.Payload.AICaptureProjectFolder = $"/{Path.GetFileName(Environment.CurrentDirectory)}";
+            var found = this.LookFor("single-source-of-truth.json", e.Payload);
+            if (!found) found = this.LookFor("ssot.json", e.Payload);
+            if (!found) found = this.LookFor("aicapture.json", e.Payload);
+        }
+
+        private bool LookFor(string fileName, AIC.SassyMQ.Lib.StandardPayload payload)
+        {
+            var fi = new FileInfo(fileName);
+            if (fi.Exists) return FoundFile(payload, fi);
+            fi = new FileInfo(Path.Combine("ssot", fileName));
+            if (fi.Exists) return FoundFile(payload, fi);
+            return false;
+        }
+
+        private bool FoundFile(AIC.SassyMQ.Lib.StandardPayload payload, FileInfo fi)
+        {
+            payload.FileName = fi.FullName.Substring(Environment.CurrentDirectory.Length);
+            payload.Content = File.ReadAllText(fi.FullName);
+            return true;
         }
 
         private void Aica_UserSetDataReceived(object sender, AIC.SassyMQ.Lib.PayloadEventArgs e)
         {
-            e.Payload.Content = $"{DateTime.Now.ToLongTimeString()}: {Path.GetFileName(Environment.CurrentDirectory)}";
+            e.Payload.Content = $"/{Path.GetFileName(Environment.CurrentDirectory)}";
         }
 
         private void Aica_UserAICReplayReceived(object sender, AIC.SassyMQ.Lib.PayloadEventArgs e)

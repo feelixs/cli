@@ -47,6 +47,8 @@ namespace AIC.SassyMQ.Lib
         
         public DateTime OnlineSince { get; set; }
         public string DMQueue { get; set; }
+        public string FileName { get; set; }
+        public string AICaptureProjectFolder { get; set; }
 
         public void SetActor(SMQActorBase actor) 
         {
