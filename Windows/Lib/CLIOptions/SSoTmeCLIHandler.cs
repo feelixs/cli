@@ -125,7 +125,7 @@ namespace SSoTme.OST.Lib.CLIOptions
                     Console.ForegroundColor = curColor;
                     this.SuppressTranspile = true;
                 }
-                else if (this.authenticate)
+                else if (this.authenticate || this.discuss)
                 {
                     continueToLoad = false;
                 }

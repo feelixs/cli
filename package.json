@@ -1,15 +1,15 @@
 {
   "name": "aicapture",
-  "version": "2023.02.01",
+  "version": "2023.02.23",
   "description": "",
   "devDependencies": {
   },
   "bin": "cli.js",
-  "scripts": {
-    "build": "dotnet build AICapture-OST-CLI.sln",
-    "start": "dotnet Windows/CLI/bin/Debug/netcoreapp3.1/AICapture.OST.CLI.dll",
-    "postinstall": "npm run build"
-  },
+    "scripts": {
+        "build": "dotnet build AICapture-OST-CLI.sln --configuration Release",
+        "start": "dotnet Windows/CLI/bin/Release/netcoreapp3.1/AICapture.OST.CLI.dll",
+        "postinstall": "npm run build"
+    },
   "keywords": [],
   "author": "",
   "license": "GNU"
