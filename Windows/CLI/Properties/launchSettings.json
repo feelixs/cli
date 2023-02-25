@@ -3,7 +3,7 @@
     "DotNetStandardCLI": {
       "commandName": "Project",
       "commandLineArgs": "-discuss",
-      "workingDirectory": "C:\\Users\\auto1\\go\\src\\github.com\\eejai42\\gpt-minesweeper"
+      "workingDirectory": "C:\\Users\\auto1\\go\\src\\github.com\\eejai42\\SSoTme-Open-Source-Tools"
     }
   }
 }
