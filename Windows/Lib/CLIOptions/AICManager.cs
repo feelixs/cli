@@ -4,9 +4,12 @@
              An Abstract Level, llc
  License:    Mozilla Public License 2.0
  *******************************************/
+using SassyMQ.SSOTME.Lib;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 namespace SSoTme.OST.Lib.CLIOptions
 {
@@ -76,7 +79,56 @@ namespace SSoTme.OST.Lib.CLIOptions
 
         private void Aica_UserSetDataReceived(object sender, AIC.SassyMQ.Lib.PayloadEventArgs e)
         {
-            e.Payload.Content = $"/{Path.GetFileName(Environment.CurrentDirectory)}";
+            if (String.IsNullOrEmpty(e.Payload.FileName)) return;
+            var fileName = Path.Combine(Environment.CurrentDirectory, e.Payload.FileName.Trim("\\/".ToCharArray()));
+            var fileFI = new FileInfo(fileName);
+            var patch = $"{e.Payload.Content}";
+            var patchFI = new FileInfo(Path.Combine(fileFI.Directory.FullName, "__patch.json"));
+            if (fileFI.Exists && patch.Contains("op"))
+            {
+                File.WriteAllText(patchFI.FullName, patch);
+                this.PatchAndReplayAll(fileFI, patchFI);
+            }
+        }
+
+        private void PatchAndReplayAll(FileInfo fileFI, FileInfo patchFI)
+        {
+            // 1) issue the command > json-patch --json fileinfo.filename --patch patchfi.fullname
+            var patchCommand = $"json-patch --json {fileFI.Name} --patch {patchFI.FullName}";
+            ExecuteCommand(fileFI.DirectoryName, patchCommand);
+            Task.Factory.StartNew(() =>
+            {
+                System.Threading.Thread.Sleep(5000);
+                patchFI.Delete();
+            });
+
+            // 2) issue the command > aicapture -replayall
+            var replayCommand = "aicapture -replayall";
+            ExecuteCommand(fileFI.DirectoryName, replayCommand);
+        }
+
+        private void ExecuteCommand(string workingDirectory, string command)
+        {
+            var process = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = "cmd.exe",
+                    RedirectStandardInput = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    WorkingDirectory = workingDirectory
+                }
+            };
+            process.Start();
+
+            using (var sw = process.StandardInput)
+            {
+                if (sw.BaseStream.CanWrite)
+                {
+                    sw.WriteLine(command);
+                }
+            }
         }
 
         private void Aica_UserAICReplayReceived(object sender, AIC.SassyMQ.Lib.PayloadEventArgs e)

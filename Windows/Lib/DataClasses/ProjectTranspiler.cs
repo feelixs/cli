@@ -12,6 +12,7 @@ using System.Diagnostics;
 using SSoTme.OST.Lib.CLIOptions;
 using SSoTme.OST.Lib.Extensions;
 using SassyMQ.Lib.RabbitMQ;
+using System.Text.RegularExpressions;
 
 namespace SSoTme.OST.Lib.DataClasses
 {
@@ -52,8 +53,10 @@ namespace SSoTme.OST.Lib.DataClasses
             var cmd0 = Environment.CommandLine;
             Console.WriteLine($"COMMAND LINE: {cmd0}");
             if (lowerCLI.Contains("/ssotme.exe")) cmd0 = cmd0.Substring(lowerCLI.IndexOf("/ssotme.exe") + "/ssotme.exe".Length);
-            else if (lowerCLI.Contains("/ssotme.ost.cli.dll")) cmd0 = cmd0.Substring(lowerCLI.IndexOf("/ssotme.ost.cli.dll") + "/ssotme.ost.cli.dll".Length);            
+            else if (lowerCLI.Contains("/ssotme.ost.cli.dll")) cmd0 = cmd0.Substring(lowerCLI.IndexOf("/ssotme.ost.cli.dll") + "/ssotme.ost.cli.dll".Length);
+            else if (lowerCLI.Contains("/aicapture.ost.cli.dll")) cmd0 = cmd0.Substring(lowerCLI.IndexOf("/aicapture.ost.cli.dll") + "/aicapture.ost.cli.dll".Length);            
             else if (lowerCLI.Contains("/ssotme")) cmd0 = cmd0.Substring(lowerCLI.IndexOf("/ssotme") + "/ssotme".Length);
+            else if (lowerCLI.Contains("/aicapture")) cmd0 = cmd0.Substring(lowerCLI.IndexOf("/aicapture") + "/aicapture".Length);
 
             cmd0 = cmd0.Replace("-install", "").Trim(" '\"".ToCharArray());
             this.CommandLine = cmd0;
