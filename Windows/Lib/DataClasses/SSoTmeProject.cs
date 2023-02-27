@@ -146,12 +146,27 @@ namespace SSoTme.OST.Lib.DataClasses
                 var newProject = new SSoTmeProject();
                 newProject.RootPath = Environment.CurrentDirectory;
                 newProject.Name = String.IsNullOrEmpty(projectName) ? Path.GetFileName(Environment.CurrentDirectory) : projectName;
+                newProject.AddGitIgnore();
                 newProject.Save();
             }
 
             var ssotFI = new FileInfo(Path.Combine(Environment.CurrentDirectory, "SSoT", "single-source-of-truth.json"));
             if (!ssotFI.Directory.Exists) ssotFI.Directory.Create();
             if (!ssotFI.Exists) File.WriteAllText(ssotFI.FullName, $"{{\"project-name\":\"{projectName}\"}}");
+        }
+
+        private void AddGitIgnore()
+        {
+            var fi = new FileInfo(Path.Combine(this.RootPath, ".gitignore"));
+            if (!fi.Exists)
+            {
+                var gitIgnore = @"/**/obj/**/*
+/**/bin/**/*
+/.ssotme/**/*
+/DSPXml/**/*
+/SSoT/__patch.json";
+                File.WriteAllText(fi.FullName, gitIgnore);
+            }
         }
 
         public bool IsExpanded(DirectoryInfo directoryToCheck)
