@@ -152,7 +152,7 @@ namespace SSoTme.OST.Lib.DataClasses
 
             var ssotFI = new FileInfo(Path.Combine(Environment.CurrentDirectory, "SSoT", "single-source-of-truth.json"));
             if (!ssotFI.Directory.Exists) ssotFI.Directory.Create();
-            if (!ssotFI.Exists) File.WriteAllText(ssotFI.FullName, $"{{\"project-name\":\"{projectName}\"}}");
+            if (!ssotFI.Exists) File.WriteAllText(ssotFI.FullName, $"{{\"project\":\n  {{\n    \"name\":\"{projectName}\"\n  }}\n}}");
         }
 
         private void AddGitIgnore()
