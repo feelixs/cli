@@ -21,6 +21,7 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 
 namespace SSoTme.OST.Lib.CLIOptions
 {
@@ -340,18 +341,34 @@ namespace SSoTme.OST.Lib.CLIOptions
                 Console.WriteLine("Already authenticated.  Reauthenticate now? y/N");
                 if (Console.ReadKey().Key != ConsoleKey.Y) return true;
             }
-            var startInfo = new ProcessStartInfo
+            
+            var startInfo = new ProcessStartInfo();
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                FileName = "cmd",
-                RedirectStandardInput = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            };
+                startInfo.FileName = "cmd";
+                startInfo.Arguments = $"/c start chrome {this.AICaptureHost}/cli-login";
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                startInfo.FileName = "xdg-open";
+                startInfo.Arguments = $"{this.AICaptureHost}/cli-login";
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                startInfo.FileName = "open";
+                startInfo.Arguments = $"{this.AICaptureHost}/cli-login";
+            }
+            else
+            {
+                throw new InvalidOperationException("Unsupported operating system");
+            }
+
+            startInfo.UseShellExecute = false;
+            startInfo.RedirectStandardInput = true;
+            startInfo.CreateNoWindow = true;
 
             var process = new Process { StartInfo = startInfo };
             process.Start();
-            process.StandardInput.WriteLine($"start chrome {this.AICaptureHost}/cli-login");
-            process.StandardInput.Flush();
             process.StandardInput.Close();
 
             var result = LocalServer.StartServerAsync("http://localhost:8080/complete-cli/");

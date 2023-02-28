@@ -82,7 +82,8 @@ namespace SassyMQ.SSOTME.Lib
                             String contents = contentsNode.InnerXml;
                             foreach (XmlElement fileName in elem.SelectNodes("RelativePath"))
                             {
-                                ProcessFileSetFile(String.Format("{0}\\test.xml", basePath), overwriteAll, elem, contents, fileName, basePath);
+                                string xmlFilePath = Path.Combine(basePath, "test.xml");
+                                ProcessFileSetFile(xmlFilePath, overwriteAll, elem, contents, fileName, basePath);
                             }
                         }
                         else if (!ReferenceEquals(binaryContentsNode, null) ||
