@@ -8,6 +8,7 @@ using SassyMQ.SSOTME.Lib;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
@@ -66,7 +67,8 @@ namespace SSoTme.OST.Lib.CLIOptions
                 if (e.Payload.AICSkill == "GetProjectList")
                 {
                     string parentDir = Environment.CurrentDirectory + "\\..";
-                    e.Payload.Projects = Directory.GetDirectories(parentDir, "*", SearchOption.TopDirectoryOnly);
+                    DirectoryInfo info = new DirectoryInfo(parentDir);
+                    e.Payload.Projects = info.EnumerateDirectories().OrderByDescending(d => (d.LastWriteTime)).ThenBy(d => (d.Name)).Select(d => (d.FullName)).ToArray();
                 }
             }
         }
@@ -91,6 +93,12 @@ namespace SSoTme.OST.Lib.CLIOptions
                 {
                     Environment.CurrentDirectory = e.Payload.Content;
                     Console.WriteLine("Current directory changed to " + Environment.CurrentDirectory);
+                } else if (e.Payload.AICSkill == "CreateProject")
+                {
+                    string dir = e.Payload.Content;
+                    // create dir
+                    // init proj
+                    // change CurrentDirectory
                 }
             }
         }
