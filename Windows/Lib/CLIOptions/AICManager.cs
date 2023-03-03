@@ -55,10 +55,44 @@ namespace SSoTme.OST.Lib.CLIOptions
 
         private void Aica_UserGetDataReceived(object sender, AIC.SassyMQ.Lib.PayloadEventArgs e)
         {
-            e.Payload.AICaptureProjectFolder = $"/{Path.GetFileName(Environment.CurrentDirectory)}";
-            var found = this.LookFor("single-source-of-truth.json", e.Payload);
-            if (!found) found = this.LookFor("ssot.json", e.Payload);
-            if (!found) found = this.LookFor("aicapture.json", e.Payload);
+            if (e.Payload.AICSkill is null)
+            {
+                e.Payload.AICaptureProjectFolder = $"/{Path.GetFileName(Environment.CurrentDirectory)}";
+                var found = this.LookFor("single-source-of-truth.json", e.Payload);
+                if (!found) found = this.LookFor("ssot.json", e.Payload);
+                if (!found) found = this.LookFor("aicapture.json", e.Payload);
+            } else
+            {
+                if (e.Payload.AICSkill == "GetProjectList")
+                {
+                    string parentDir = Environment.CurrentDirectory + "\\..";
+                    e.Payload.Projects = Directory.GetDirectories(parentDir, "*", SearchOption.TopDirectoryOnly);
+                }
+            }
+        }
+
+        private void Aica_UserSetDataReceived(object sender, AIC.SassyMQ.Lib.PayloadEventArgs e)
+        {
+            if (e.Payload.AICSkill is null)
+            {
+                if (String.IsNullOrEmpty(e.Payload.FileName)) return;
+                var fileName = Path.Combine(Environment.CurrentDirectory, e.Payload.FileName.Trim("\\/".ToCharArray()));
+                var fileFI = new FileInfo(fileName);
+                var patch = $"{e.Payload.Content}";
+                var patchFI = new FileInfo(Path.Combine(fileFI.Directory.FullName, "__patch.json"));
+                if (fileFI.Exists && patch.Contains("op"))
+                {
+                    File.WriteAllText(patchFI.FullName, patch);
+                    this.PatchAndReplayAll(fileFI, patchFI);
+                }
+            } else
+            {
+                if (e.Payload.AICSkill == "ChangeProject")
+                {
+                    Environment.CurrentDirectory = e.Payload.Content;
+                    Console.WriteLine("Current directory changed to " + Environment.CurrentDirectory);
+                }
+            }
         }
 
         private bool LookFor(string fileName, AIC.SassyMQ.Lib.StandardPayload payload)
@@ -75,20 +109,6 @@ namespace SSoTme.OST.Lib.CLIOptions
             payload.FileName = fi.FullName.Substring(Environment.CurrentDirectory.Length);
             payload.Content = File.ReadAllText(fi.FullName);
             return true;
-        }
-
-        private void Aica_UserSetDataReceived(object sender, AIC.SassyMQ.Lib.PayloadEventArgs e)
-        {
-            if (String.IsNullOrEmpty(e.Payload.FileName)) return;
-            var fileName = Path.Combine(Environment.CurrentDirectory, e.Payload.FileName.Trim("\\/".ToCharArray()));
-            var fileFI = new FileInfo(fileName);
-            var patch = $"{e.Payload.Content}";
-            var patchFI = new FileInfo(Path.Combine(fileFI.Directory.FullName, "__patch.json"));
-            if (fileFI.Exists && patch.Contains("op"))
-            {
-                File.WriteAllText(patchFI.FullName, patch);
-                this.PatchAndReplayAll(fileFI, patchFI);
-            }
         }
 
         private void PatchAndReplayAll(FileInfo fileFI, FileInfo patchFI)
