@@ -4,6 +4,8 @@
              An Abstract Level, llc
  License:    Mozilla Public License 2.0
  *******************************************/
+using AIC.Lib.DataClasses;
+using Newtonsoft.Json;
 using SassyMQ.SSOTME.Lib;
 using System;
 using System.Diagnostics;
@@ -106,6 +108,20 @@ namespace SSoTme.OST.Lib.CLIOptions
                     DataClasses.AICaptureProject.Init();
                     Console.WriteLine("New project created at " + Environment.CurrentDirectory);
 
+                } else if (e.Payload.AICSkill == "SaveTranscript")
+                {
+                    string metaDir = Path.Combine(Environment.CurrentDirectory, "AICapture");
+                    string transcriptFile = Path.Combine(metaDir, "ChatTranscript.txt"); 
+                    if (!Directory.Exists(metaDir))
+                    {
+                        DirectoryInfo di = Directory.CreateDirectory(metaDir);
+                    }
+                    TranscriptEntry entry = new TranscriptEntry();
+                    entry.Time = e.Payload.Contents[0];
+                    entry.Type = e.Payload.Contents[1];
+                    entry.Text = e.Payload.Contents[2];
+                    string entryText = JsonConvert.SerializeObject(entry);
+                    File.AppendAllText(transcriptFile, entryText + Environment.NewLine);
                 }
             }
         }

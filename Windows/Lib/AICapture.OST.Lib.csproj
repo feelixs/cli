@@ -35,7 +35,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="AICapture\DataClasses\" />
     <Folder Include="Properties\" />
   </ItemGroup>
 
