@@ -95,10 +95,17 @@ namespace SSoTme.OST.Lib.CLIOptions
                     Console.WriteLine("Current directory changed to " + Environment.CurrentDirectory);
                 } else if (e.Payload.AICSkill == "CreateProject")
                 {
-                    string dir = e.Payload.Content;
-                    // create dir
-                    // init proj
-                    // change CurrentDirectory
+                    string dir = Environment.CurrentDirectory + "\\..\\" + e.Payload.Content;
+                    if (Directory.Exists(dir))
+                    {
+                        e.Payload.ErrorMessage = string.Format("Directory \"{0}\" already exists.", dir);
+                        return;
+                    }
+                    DirectoryInfo di = Directory.CreateDirectory(dir);
+                    Environment.CurrentDirectory = dir;
+                    DataClasses.AICaptureProject.Init();
+                    Console.WriteLine("New project created at " + Environment.CurrentDirectory);
+
                 }
             }
         }
