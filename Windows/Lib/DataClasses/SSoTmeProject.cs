@@ -143,9 +143,10 @@ namespace SSoTme.OST.Lib.DataClasses
             }
             else
             {
+                projectName = String.IsNullOrEmpty(projectName) ? Path.GetFileName(Environment.CurrentDirectory) : projectName;
                 var newProject = new SSoTmeProject();
                 newProject.RootPath = Environment.CurrentDirectory;
-                newProject.Name = String.IsNullOrEmpty(projectName) ? Path.GetFileName(Environment.CurrentDirectory) : projectName;
+                newProject.Name = projectName;
                 newProject.AddGitIgnore();
                 newProject.Save();
             }

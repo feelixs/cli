@@ -35,6 +35,7 @@ namespace AIC.SassyMQ.Lib
         public string SenderName { get; set; }
         public string AccessToken { get; set; }
         public string Content { get; set; }
+        public string[] Contents { get; set; }
         public string ErrorMessage { get; set; }
         public bool IsHandled { get; set; }
         
@@ -49,6 +50,8 @@ namespace AIC.SassyMQ.Lib
         public string DMQueue { get; set; }
         public string FileName { get; set; }
         public string AICaptureProjectFolder { get; set; }
+        public string AICSkill { get; set; }
+        public string[] Projects { get; set; }
 
         public void SetActor(SMQActorBase actor) 
         {

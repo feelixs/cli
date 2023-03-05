@@ -4,10 +4,13 @@
              An Abstract Level, llc
  License:    Mozilla Public License 2.0
  *******************************************/
+using AIC.Lib.DataClasses;
+using Newtonsoft.Json;
 using SassyMQ.SSOTME.Lib;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
@@ -55,10 +58,72 @@ namespace SSoTme.OST.Lib.CLIOptions
 
         private void Aica_UserGetDataReceived(object sender, AIC.SassyMQ.Lib.PayloadEventArgs e)
         {
-            e.Payload.AICaptureProjectFolder = $"/{Path.GetFileName(Environment.CurrentDirectory)}";
-            var found = this.LookFor("single-source-of-truth.json", e.Payload);
-            if (!found) found = this.LookFor("ssot.json", e.Payload);
-            if (!found) found = this.LookFor("aicapture.json", e.Payload);
+            if (e.Payload.AICSkill is null)
+            {
+                e.Payload.AICaptureProjectFolder = $"/{Path.GetFileName(Environment.CurrentDirectory)}";
+                var found = this.LookFor("single-source-of-truth.json", e.Payload);
+                if (!found) found = this.LookFor("ssot.json", e.Payload);
+                if (!found) found = this.LookFor("aicapture.json", e.Payload);
+            } else
+            {
+                if (e.Payload.AICSkill == "GetProjectList")
+                {
+                    string parentDir = Environment.CurrentDirectory + "\\..";
+                    DirectoryInfo info = new DirectoryInfo(parentDir);
+                    e.Payload.Projects = info.EnumerateDirectories().OrderByDescending(d => (d.LastWriteTime)).ThenBy(d => (d.Name)).Select(d => (d.FullName)).ToArray();
+                }
+            }
+        }
+
+        private void Aica_UserSetDataReceived(object sender, AIC.SassyMQ.Lib.PayloadEventArgs e)
+        {
+            if (e.Payload.AICSkill is null)
+            {
+                if (String.IsNullOrEmpty(e.Payload.FileName)) return;
+                var fileName = Path.Combine(Environment.CurrentDirectory, e.Payload.FileName.Trim("\\/".ToCharArray()));
+                var fileFI = new FileInfo(fileName);
+                var patch = $"{e.Payload.Content}";
+                var patchFI = new FileInfo(Path.Combine(fileFI.Directory.FullName, "__patch.json"));
+                if (fileFI.Exists && patch.Contains("op"))
+                {
+                    File.WriteAllText(patchFI.FullName, patch);
+                    this.PatchAndReplayAll(fileFI, patchFI);
+                }
+            } else
+            {
+                if (e.Payload.AICSkill == "ChangeProject")
+                {
+                    Environment.CurrentDirectory = e.Payload.Content;
+                    Console.WriteLine("Current directory changed to " + Environment.CurrentDirectory);
+                } else if (e.Payload.AICSkill == "CreateProject")
+                {
+                    string dir = Environment.CurrentDirectory + "\\..\\" + e.Payload.Content;
+                    if (Directory.Exists(dir))
+                    {
+                        e.Payload.ErrorMessage = string.Format("Directory \"{0}\" already exists.", dir);
+                        return;
+                    }
+                    DirectoryInfo di = Directory.CreateDirectory(dir);
+                    Environment.CurrentDirectory = dir;
+                    DataClasses.AICaptureProject.Init();
+                    Console.WriteLine("New project created at " + Environment.CurrentDirectory);
+
+                } else if (e.Payload.AICSkill == "SaveTranscript")
+                {
+                    string metaDir = Path.Combine(Environment.CurrentDirectory, "AICapture");
+                    string transcriptFile = Path.Combine(metaDir, "ChatTranscript.txt"); 
+                    if (!Directory.Exists(metaDir))
+                    {
+                        DirectoryInfo di = Directory.CreateDirectory(metaDir);
+                    }
+                    TranscriptEntry entry = new TranscriptEntry();
+                    entry.Time = e.Payload.Contents[0];
+                    entry.Type = e.Payload.Contents[1];
+                    entry.Text = e.Payload.Contents[2];
+                    string entryText = JsonConvert.SerializeObject(entry);
+                    File.AppendAllText(transcriptFile, entryText + Environment.NewLine);
+                }
+            }
         }
 
         private bool LookFor(string fileName, AIC.SassyMQ.Lib.StandardPayload payload)
@@ -75,20 +140,6 @@ namespace SSoTme.OST.Lib.CLIOptions
             payload.FileName = fi.FullName.Substring(Environment.CurrentDirectory.Length);
             payload.Content = File.ReadAllText(fi.FullName);
             return true;
-        }
-
-        private void Aica_UserSetDataReceived(object sender, AIC.SassyMQ.Lib.PayloadEventArgs e)
-        {
-            if (String.IsNullOrEmpty(e.Payload.FileName)) return;
-            var fileName = Path.Combine(Environment.CurrentDirectory, e.Payload.FileName.Trim("\\/".ToCharArray()));
-            var fileFI = new FileInfo(fileName);
-            var patch = $"{e.Payload.Content}";
-            var patchFI = new FileInfo(Path.Combine(fileFI.Directory.FullName, "__patch.json"));
-            if (fileFI.Exists && patch.Contains("op"))
-            {
-                File.WriteAllText(patchFI.FullName, patch);
-                this.PatchAndReplayAll(fileFI, patchFI);
-            }
         }
 
         private void PatchAndReplayAll(FileInfo fileFI, FileInfo patchFI)
