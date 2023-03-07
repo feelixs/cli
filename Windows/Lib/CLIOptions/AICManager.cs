@@ -4,12 +4,17 @@
              An Abstract Level, llc
  License:    Mozilla Public License 2.0
  *******************************************/
+using AIC.Lib.DataClasses;
+using AICapture.OST.Lib.AICapture.DataClasses;
+using Newtonsoft.Json;
 using SassyMQ.SSOTME.Lib;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SSoTme.OST.Lib.CLIOptions
@@ -69,6 +74,11 @@ namespace SSoTme.OST.Lib.CLIOptions
                     string parentDir = Environment.CurrentDirectory + "\\..";
                     DirectoryInfo info = new DirectoryInfo(parentDir);
                     e.Payload.Projects = info.EnumerateDirectories().OrderByDescending(d => (d.LastWriteTime)).ThenBy(d => (d.Name)).Select(d => (d.FullName)).ToArray();
+                } else if (e.Payload.AICSkill == "GetBackupList")
+                {
+                    string metaDir = Path.Combine(Environment.CurrentDirectory, "AICapture");
+                    string zipDir = Path.Combine(metaDir, "Backup");
+                    e.Payload.Contents = Directory.GetFiles(zipDir).OrderByDescending(f => f).ToArray();
                 }
             }
         }
@@ -106,8 +116,52 @@ namespace SSoTme.OST.Lib.CLIOptions
                     DataClasses.AICaptureProject.Init();
                     Console.WriteLine("New project created at " + Environment.CurrentDirectory);
 
+                } else if (e.Payload.AICSkill == "SaveTranscript")
+                {
+                    string metaDir = Path.Combine(Environment.CurrentDirectory, "AICapture");
+                    string transcriptFile = Path.Combine(metaDir, "ChatTranscript.txt"); 
+                    if (!Directory.Exists(metaDir))
+                    {
+                        DirectoryInfo di = Directory.CreateDirectory(metaDir);
+                    }
+                    TranscriptEntry entry = new TranscriptEntry();
+                    entry.Time = e.Payload.Contents[0];
+                    entry.Type = e.Payload.Contents[1];
+                    entry.Text = e.Payload.Contents[2];
+                    string entryText = JsonConvert.SerializeObject(entry);
+                    File.AppendAllText(transcriptFile, entryText + Environment.NewLine);
+                } else if (e.Payload.AICSkill == "SaveBackup")
+                {
+                    SaveBackup();
+                } else if (e.Payload.AICSkill == "RestoreBackup")
+                {
+                    SaveBackup();
+
                 }
             }
+        }
+
+        private bool SaveBackup()
+        {
+            string metaDir = Path.Combine(Environment.CurrentDirectory, "AICapture");
+            string zipDir = Path.Combine(metaDir, "Backup");
+            if (!Directory.Exists(metaDir))
+            {
+                DirectoryInfo di = Directory.CreateDirectory(metaDir);
+            }
+            if (!Directory.Exists(zipDir))
+            {
+                DirectoryInfo di = Directory.CreateDirectory(zipDir);
+            }
+            string now = DateTime.Now.ToString("s");
+            now = now.Replace(":", "-");
+            string destFile = Path.Combine(zipDir, now + ".zip");
+
+            ZipHelper.CreateFromDirectory(
+                Environment.CurrentDirectory, destFile, CompressionLevel.Fastest, true, Encoding.UTF8,
+                fileName => !fileName.Contains(@"\Backup\")
+            );
+            return true;
         }
 
         private bool LookFor(string fileName, AIC.SassyMQ.Lib.StandardPayload payload)
