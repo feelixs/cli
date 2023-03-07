@@ -2,8 +2,8 @@
   "profiles": {
     "DotNetStandardCLI": {
       "commandName": "Project",
-      "commandLineArgs": "-install json-to-mustache -i ..\\SSoT\\single-source-of-truth.json -i .\\Code.mustache",
-      "workingDirectory": "/Users/auto1/go/src/github.com/eejai42/3-ways-of-looking-at-rps/DotNet"
+      "commandLineArgs": "-discuss",
+      "workingDirectory": "/Users/auto1/go/src/github.com/eejai42/aitest1"
     }
   }
 }

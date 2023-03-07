@@ -35,6 +35,7 @@ namespace AIC.SassyMQ.Lib
         public string SenderName { get; set; }
         public string AccessToken { get; set; }
         public string Content { get; set; }
+        public string[] Contents { get; set; }
         public string ErrorMessage { get; set; }
         public bool IsHandled { get; set; }
         

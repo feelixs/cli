@@ -10,8 +10,8 @@ namespace SSoTme.OST.Lib.CLIOptions
 {
 
     [CommandLineManager(ApplicationName = "aicapture.io",
-                        Copyright = "Copyright 2023, EJ",
-                        Description = @"")]
+                        Copyright = "Copyright 2023, EJ Alexandra, EffortlessAPI.com",
+                        Description = @"Helping connect developers and AI with Natural Language Conversation")]
     public partial class SSoTmeCLIHandler
     {
         
