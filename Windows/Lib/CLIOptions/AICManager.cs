@@ -5,13 +5,16 @@
  License:    Mozilla Public License 2.0
  *******************************************/
 using AIC.Lib.DataClasses;
+using AICapture.OST.Lib.AICapture.DataClasses;
 using Newtonsoft.Json;
 using SassyMQ.SSOTME.Lib;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SSoTme.OST.Lib.CLIOptions
@@ -122,6 +125,26 @@ namespace SSoTme.OST.Lib.CLIOptions
                     entry.Text = e.Payload.Contents[2];
                     string entryText = JsonConvert.SerializeObject(entry);
                     File.AppendAllText(transcriptFile, entryText + Environment.NewLine);
+                } else if (e.Payload.AICSkill == "SaveBackup")
+                {
+                    string metaDir = Path.Combine(Environment.CurrentDirectory, "AICapture");
+                    string zipDir = Path.Combine(metaDir, "Backup");
+                    if (!Directory.Exists(metaDir))
+                    {
+                        DirectoryInfo di = Directory.CreateDirectory(metaDir);
+                    }
+                    if (!Directory.Exists(zipDir))
+                    {
+                        DirectoryInfo di = Directory.CreateDirectory(zipDir);
+                    }
+                    string now = DateTime.Now.ToString("s");
+                    now = now.Replace(":", "-");
+                    string destFile = Path.Combine(zipDir, now + ".zip");
+
+                    ZipHelper.CreateFromDirectory(
+                        Environment.CurrentDirectory, destFile, CompressionLevel.Fastest, true, Encoding.UTF8,
+                        fileName => !fileName.Contains(@"\Backup\")
+                    );
                 }
             }
         }
