@@ -135,8 +135,46 @@ namespace SSoTme.OST.Lib.CLIOptions
                     SaveBackup();
                 } else if (e.Payload.AICSkill == "RestoreBackup")
                 {
+                    if (e.Payload.Content is null)
+                    {
+                        e.Payload.ErrorMessage = "No backup file specified to restore from.";
+                        return;
+                    }
+                    FileInfo fi = new FileInfo(e.Payload.Content);
+                    if (!fi.Exists)
+                    {
+                        e.Payload.ErrorMessage = String.Format("Backup file \"{0}\" does not exist.", e.Payload.Content);
+                        return;
+                    }
                     SaveBackup();
 
+                    string baseDir = Environment.CurrentDirectory;
+                    DirectoryInfo di = new DirectoryInfo(baseDir);
+                    foreach (FileInfo file in di.GetFiles())
+                    {
+                        file.Delete();
+                    }
+                    foreach (DirectoryInfo dir in di.GetDirectories())
+                    {
+                        if (dir.Name.EndsWith("AICapture"))
+                        {
+                            continue;
+                        }
+                        dir.Delete(true);
+                    }
+                    DirectoryInfo di2 = new DirectoryInfo(Path.Combine(baseDir, "AICapture"));
+                    foreach (FileInfo file in di2.GetFiles())
+                    {
+                        file.Delete();
+                    }
+                    try
+                    {
+                        ZipFile.ExtractToDirectory(e.Payload.Content, Path.Combine(baseDir, ".."));
+                    }
+                    catch (Exception ex)
+                    {
+                        e.Payload.ErrorMessage = ex.Message;
+                    }
                 }
             }
         }
