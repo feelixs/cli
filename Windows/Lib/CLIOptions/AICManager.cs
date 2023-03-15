@@ -9,6 +9,7 @@ using AICapture.OST.Lib.AICapture.DataClasses;
 using Newtonsoft.Json;
 using SassyMQ.SSOTME.Lib;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
@@ -79,6 +80,28 @@ namespace SSoTme.OST.Lib.CLIOptions
                     string metaDir = Path.Combine(Environment.CurrentDirectory, "AICapture");
                     string zipDir = Path.Combine(metaDir, "Backup");
                     e.Payload.Contents = Directory.GetFiles(zipDir).OrderByDescending(f => f).ToArray();
+                } else if (e.Payload.AICSkill == "GetConversationList")
+                {
+                    string metaDir = Path.Combine(Environment.CurrentDirectory, "AICapture");
+                    string logDir = Path.Combine(metaDir, "Transcripts");
+                    e.Payload.Contents = Directory.GetFiles(logDir).OrderByDescending(f => f).ToArray();
+                } else if (e.Payload.AICSkill == "GetConversationDetails")
+                {
+                    string metaDir = Path.Combine(Environment.CurrentDirectory, "AICapture");
+                    string logDir = Path.Combine(metaDir, "Transcripts");
+                    string logFile = Path.Combine(logDir, e.Payload.Content);
+                    if (!File.Exists(logFile))
+                    {
+                        e.Payload.ErrorMessage = String.Format("Log file \"{0}\" not found.", logFile);
+                        return;
+                    }
+                    var lines = File.ReadLines(logFile);
+                    e.Payload.Transcripts = new List<TranscriptEntry>();
+                    foreach (var line in lines)
+                    {
+                        TranscriptEntry transcriptEntry = JsonConvert.DeserializeObject<TranscriptEntry>(line);
+                        e.Payload.Transcripts.Add(transcriptEntry);
+                    }
                 }
             }
         }
@@ -119,16 +142,26 @@ namespace SSoTme.OST.Lib.CLIOptions
                 } else if (e.Payload.AICSkill == "SaveTranscript")
                 {
                     string metaDir = Path.Combine(Environment.CurrentDirectory, "AICapture");
-                    string transcriptFile = Path.Combine(metaDir, "ChatTranscript.txt"); 
+                    string logDir = Path.Combine(metaDir, "Transcripts");
                     if (!Directory.Exists(metaDir))
                     {
                         DirectoryInfo di = Directory.CreateDirectory(metaDir);
+                    }
+                    if (!Directory.Exists(logDir))
+                    {
+                        DirectoryInfo di = Directory.CreateDirectory(logDir);
                     }
                     TranscriptEntry entry = new TranscriptEntry();
                     entry.Time = e.Payload.Contents[0];
                     entry.Type = e.Payload.Contents[1];
                     entry.Text = e.Payload.Contents[2];
+                    string isNew = e.Payload.Contents[3];
+                    string fileName = e.Payload.Contents[4];
+                    entry.ParentMessageId = e.Payload.Contents[5];
+                    entry.ConversationId = e.Payload.Contents[6];
+                    entry.IsHidden = e.Payload.Contents[7];
                     string entryText = JsonConvert.SerializeObject(entry);
+                    string transcriptFile = Path.Combine(logDir, fileName);
                     File.AppendAllText(transcriptFile, entryText + Environment.NewLine);
                 } else if (e.Payload.AICSkill == "SaveBackup")
                 {
