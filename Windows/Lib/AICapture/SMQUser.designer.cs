@@ -24,6 +24,10 @@ namespace AIC.SassyMQ.Lib
                 switch (bdea.RoutingKey)
                 {
                     
+                    case "user.custom.aicagent.projectchanged":
+                        this.OnAICAgentProjectChangedReceived(payload, bdea);
+                        break;
+                    
                 }
 
             }
@@ -38,6 +42,20 @@ namespace AIC.SassyMQ.Lib
         }
 
         
+        /// <summary>
+        /// Responds to: ProjectChanged from AICAgent
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AICAgentProjectChangedReceived;
+        protected virtual void OnAICAgentProjectChangedReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AICAgentProjectChangedReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AICAgentProjectChangedReceived(this, plea);
+            }
+        }
+
         /// <summary>
         /// AICInstall - 
         /// </summary>

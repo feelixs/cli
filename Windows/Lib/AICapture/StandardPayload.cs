@@ -52,7 +52,6 @@ namespace AIC.SassyMQ.Lib
         public string DMQueue { get; set; }
         public string FileName { get; set; }
         public string AICaptureProjectFolder { get; set; }
-        public string AICSkill { get; set; }
         public string[] Projects { get; set; }
         public List<TranscriptEntry> Transcripts { get; set; }
 

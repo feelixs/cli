@@ -21,7 +21,7 @@ namespace AIC.SassyMQ.Lib
             var originalAccessToken = payload.AccessToken;
             try
             {
-                switch (payload.RoutingKey)
+                switch (bdea.RoutingKey)
                 {
                     
                     case "aicagent.custom.user.aicinstall":
@@ -134,6 +134,32 @@ namespace AIC.SassyMQ.Lib
         public Task MonitoringFor(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
             return this.SendMessage("crudcoordinator.custom.aicagent.monitoringfor", payload, replyHandler, timeoutHandler, waitTimeout);
+        }
+        
+        
+        /// <summary>
+        /// ProjectChanged - 
+        /// </summary>
+        public Task ProjectChanged(DMProxy dmp, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
+        {
+            return this.ProjectChanged(dmp, this.CreatePayload(), replyHandler, timeoutHandler, waitTimeout);
+        }
+
+        /// <summary>
+        /// ProjectChanged - 
+        /// </summary>
+        public Task ProjectChanged(DMProxy dmp, String content, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
+        {
+            var payload = this.CreatePayload(content);
+            return this.ProjectChanged(dmp, payload, replyHandler, timeoutHandler, waitTimeout);
+        }
+        
+        /// <summary>
+        /// ProjectChanged - 
+        /// </summary>
+        public Task ProjectChanged(DMProxy dmp, StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
+        {
+            return this.SendMessage("user.custom.aicagent.projectchanged", payload, replyHandler, timeoutHandler, waitTimeout, dmp.RoutingKey);
         }
         
         

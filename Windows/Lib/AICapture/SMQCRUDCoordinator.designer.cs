@@ -56,6 +56,22 @@ namespace AIC.SassyMQ.Lib
                         this.OnAICAgentMonitoringForReceived(payload, bdea);
                         break;
                     
+                    case "crudcoordinator.crud.admin.addaimodel":
+                        this.OnAdminAddAIModelReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.admin.getaimodels":
+                        this.OnAdminGetAIModelsReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.admin.updateaimodel":
+                        this.OnAdminUpdateAIModelReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.admin.deleteaimodel":
+                        this.OnAdminDeleteAIModelReceived(payload, bdea);
+                        break;
+                    
                     case "crudcoordinator.crud.admin.addappuser":
                         this.OnAdminAddAppUserReceived(payload, bdea);
                         break;
@@ -70,6 +86,54 @@ namespace AIC.SassyMQ.Lib
                     
                     case "crudcoordinator.crud.admin.deleteappuser":
                         this.OnAdminDeleteAppUserReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.admin.addaicplan":
+                        this.OnAdminAddAICPlanReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.admin.getaicplans":
+                        this.OnAdminGetAICPlansReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.admin.updateaicplan":
+                        this.OnAdminUpdateAICPlanReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.admin.deleteaicplan":
+                        this.OnAdminDeleteAICPlanReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.admin.addaiprovider":
+                        this.OnAdminAddAIProviderReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.admin.getaiproviders":
+                        this.OnAdminGetAIProvidersReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.admin.updateaiprovider":
+                        this.OnAdminUpdateAIProviderReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.admin.deleteaiprovider":
+                        this.OnAdminDeleteAIProviderReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.admin.addaicskill":
+                        this.OnAdminAddAICSkillReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.admin.getaicskills":
+                        this.OnAdminGetAICSkillsReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.admin.updateaicskill":
+                        this.OnAdminUpdateAICSkillReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.admin.deleteaicskill":
+                        this.OnAdminDeleteAICSkillReceived(payload, bdea);
                         break;
                     
                     case "crudcoordinator.crud.user.addaicconversation":
@@ -255,6 +319,62 @@ namespace AIC.SassyMQ.Lib
         }
 
         /// <summary>
+        /// Responds to: AddAIModel from Admin
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AdminAddAIModelReceived;
+        protected virtual void OnAdminAddAIModelReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AdminAddAIModelReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AdminAddAIModelReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: GetAIModels from Admin
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AdminGetAIModelsReceived;
+        protected virtual void OnAdminGetAIModelsReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AdminGetAIModelsReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AdminGetAIModelsReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: UpdateAIModel from Admin
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AdminUpdateAIModelReceived;
+        protected virtual void OnAdminUpdateAIModelReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AdminUpdateAIModelReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AdminUpdateAIModelReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: DeleteAIModel from Admin
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AdminDeleteAIModelReceived;
+        protected virtual void OnAdminDeleteAIModelReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AdminDeleteAIModelReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AdminDeleteAIModelReceived(this, plea);
+            }
+        }
+
+        /// <summary>
         /// Responds to: AddAppUser from Admin
         /// </summary>
         public event EventHandler<PayloadEventArgs> AdminAddAppUserReceived;
@@ -307,6 +427,174 @@ namespace AIC.SassyMQ.Lib
             {
                 plea.Payload.IsHandled = true;
                 this.AdminDeleteAppUserReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: AddAICPlan from Admin
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AdminAddAICPlanReceived;
+        protected virtual void OnAdminAddAICPlanReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AdminAddAICPlanReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AdminAddAICPlanReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: GetAICPlans from Admin
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AdminGetAICPlansReceived;
+        protected virtual void OnAdminGetAICPlansReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AdminGetAICPlansReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AdminGetAICPlansReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: UpdateAICPlan from Admin
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AdminUpdateAICPlanReceived;
+        protected virtual void OnAdminUpdateAICPlanReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AdminUpdateAICPlanReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AdminUpdateAICPlanReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: DeleteAICPlan from Admin
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AdminDeleteAICPlanReceived;
+        protected virtual void OnAdminDeleteAICPlanReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AdminDeleteAICPlanReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AdminDeleteAICPlanReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: AddAIProvider from Admin
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AdminAddAIProviderReceived;
+        protected virtual void OnAdminAddAIProviderReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AdminAddAIProviderReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AdminAddAIProviderReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: GetAIProviders from Admin
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AdminGetAIProvidersReceived;
+        protected virtual void OnAdminGetAIProvidersReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AdminGetAIProvidersReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AdminGetAIProvidersReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: UpdateAIProvider from Admin
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AdminUpdateAIProviderReceived;
+        protected virtual void OnAdminUpdateAIProviderReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AdminUpdateAIProviderReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AdminUpdateAIProviderReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: DeleteAIProvider from Admin
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AdminDeleteAIProviderReceived;
+        protected virtual void OnAdminDeleteAIProviderReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AdminDeleteAIProviderReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AdminDeleteAIProviderReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: AddAICSkill from Admin
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AdminAddAICSkillReceived;
+        protected virtual void OnAdminAddAICSkillReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AdminAddAICSkillReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AdminAddAICSkillReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: GetAICSkills from Admin
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AdminGetAICSkillsReceived;
+        protected virtual void OnAdminGetAICSkillsReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AdminGetAICSkillsReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AdminGetAICSkillsReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: UpdateAICSkill from Admin
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AdminUpdateAICSkillReceived;
+        protected virtual void OnAdminUpdateAICSkillReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AdminUpdateAICSkillReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AdminUpdateAICSkillReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: DeleteAICSkill from Admin
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AdminDeleteAICSkillReceived;
+        protected virtual void OnAdminDeleteAICSkillReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AdminDeleteAICSkillReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AdminDeleteAICSkillReceived(this, plea);
             }
         }
 

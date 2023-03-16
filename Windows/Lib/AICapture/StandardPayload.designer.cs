@@ -37,13 +37,37 @@ namespace AIC.SassyMQ.Lib
             this.Content = content;
         }
 
-        // 3 odxml properties
+        // 7 odxml properties
+        
+        public String AIModelId { get; set; }
+        
+        public dc.AIModel AIModel { get; set; }
+        
+        public List<dc.AIModel> AIModels { get; set; }
         
         public String AppUserId { get; set; }
         
         public dc.AppUser AppUser { get; set; }
         
         public List<dc.AppUser> AppUsers { get; set; }
+        
+        public String AICPlanId { get; set; }
+        
+        public dc.AICPlan AICPlan { get; set; }
+        
+        public List<dc.AICPlan> AICPlans { get; set; }
+        
+        public String AIProviderId { get; set; }
+        
+        public dc.AIProvider AIProvider { get; set; }
+        
+        public List<dc.AIProvider> AIProviders { get; set; }
+        
+        public String AICSkillId { get; set; }
+        
+        public string AICSkill { get; set; }
+        
+        public List<dc.AICSkill> AICSkills { get; set; }
         
         public String AICConversationId { get; set; }
         

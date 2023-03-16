@@ -13,6 +13,8 @@ namespace AIC.Lib.DataClasses
         {
             
             
+                this.AppUsers_AICPlans = new BindingList<AICPlan>();
+            
                 this.Owner_AICConversations = new BindingList<AICConversation>();
             
                 this.OwnerEmailAddress_AICConversations = new BindingList<AICConversation>();
@@ -64,8 +66,32 @@ namespace AIC.Lib.DataClasses
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICConversations")]
         public String[] AICConversations { get; set; }
     
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "DMQueue")]
+        public String DMQueue { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "DMQueueExpires")]
+        public Nullable<DateTime> DMQueueExpires { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "UIDMQueue")]
+        public String UIDMQueue { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "Plan")]
+        public String Plan { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICaptureUserId")]
+        public String AICaptureUserId { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "LastModified")]
+        public Nullable<DateTime> LastModified { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "LastWorkingDirectory")]
+        public String LastWorkingDirectory { get; set; }
+    
 
         
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AppUsers_AICPlans")]
+        public BindingList<AICPlan> AppUsers_AICPlans { get; set; }
+            
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "Owner_AICConversations")]
         public BindingList<AICConversation> Owner_AICConversations { get; set; }
             
