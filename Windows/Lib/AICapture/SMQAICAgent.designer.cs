@@ -21,7 +21,7 @@ namespace AIC.SassyMQ.Lib
             var originalAccessToken = payload.AccessToken;
             try
             {
-                switch (bdea.RoutingKey)
+                switch (payload.RoutingKey)
                 {
                     
                     case "aicagent.custom.user.aicinstall":
