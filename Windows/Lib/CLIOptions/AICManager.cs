@@ -28,30 +28,50 @@ namespace SSoTme.OST.Lib.CLIOptions
         {
             var aicm = new AICManager();
             aicm.Auth0SID = auth0SID;
-            return aicm; 
+            return aicm;
         }
 
         public void Start()
         {
-            var aica = new AIC.SassyMQ.Lib.SMQAICAgent("amqps://smqPublic:smqPublic@effortlessapi-rmq.ssot.me/ej-aicapture-io");
-            aica.UserAICInstallReceived += Aica_UserAICInstallReceived;
-            aica.UserAICReplayReceived += Aica_UserAICReplayReceived;
-            aica.UserSetDataReceived += Aica_UserSetDataReceived;
-            aica.UserGetDataReceived += Aica_UserGetDataReceived;
-
-            var payload = aica.CreatePayload();
-            payload.AccessToken = this.Auth0SID;
-            payload.DMQueue = aica.QueueName;
-            var reply = aica.MonitoringFor(payload);
-
-
-            Console.WriteLine($"Listening on DMQueue: {aica.QueueName}. Press Ctrl+C to end.");
             while (!Console.KeyAvailable)
             {
-                aica.WaitForComplete(1000, false);
+                try
+                {
+                    Console.WriteLine("Starting DM QUEUE...");
+                    var aica = new AIC.SassyMQ.Lib.SMQAICAgent("amqps://smqPublic:smqPublic@effortlessapi-rmq.ssot.me/ej-aicapture-io");
+                    aica.UserAICInstallReceived += Aica_UserAICInstallReceived;
+                    aica.UserAICReplayReceived += Aica_UserAICReplayReceived;
+                    aica.UserSetDataReceived += Aica_UserSetDataReceived;
+                    aica.UserGetDataReceived += Aica_UserGetDataReceived;
+
+                    var payload = aica.CreatePayload();
+                    payload.AccessToken = this.Auth0SID;
+                    payload.DMQueue = aica.QueueName;
+                    var reply = aica.MonitoringFor(payload);
+
+
+                    Console.WriteLine($"Listening on DMQueue: {aica.QueueName}. Press Ctrl+C to end.");
+                    while (aica.RMQConnection.IsOpen)
+                    {
+                        aica.WaitForComplete(1000, false);
+                    }
+
+                    if (!aica.RMQConnection.IsOpen)
+                    {
+                        Console.WriteLine($"{DateTime.Now}-closed.");
+                        object o = 1;
+                    }
+
+                    aica.Disconnect();
+                }
+                catch (Exception ex)
+                {
+                    // ignore errors
+                    Console.WriteLine($"Error: {ex.Message} Waiting 5 seconds to try again.");
+                    System.Threading.Thread.Sleep(5000);
+                }
             }
             Console.ReadKey();
-            aica.Disconnect();
         }
 
 
@@ -68,24 +88,28 @@ namespace SSoTme.OST.Lib.CLIOptions
                 var found = this.LookFor("single-source-of-truth.json", e.Payload);
                 if (!found) found = this.LookFor("ssot.json", e.Payload);
                 if (!found) found = this.LookFor("aicapture.json", e.Payload);
-            } else
+            }
+            else
             {
                 if (e.Payload.AICSkill == "GetProjectList")
                 {
                     string parentDir = Environment.CurrentDirectory + "\\..";
                     DirectoryInfo info = new DirectoryInfo(parentDir);
                     e.Payload.Projects = info.EnumerateDirectories().OrderByDescending(d => (d.LastWriteTime)).ThenBy(d => (d.Name)).Select(d => (d.FullName)).ToArray();
-                } else if (e.Payload.AICSkill == "GetBackupList")
+                }
+                else if (e.Payload.AICSkill == "GetBackupList")
                 {
                     string metaDir = Path.Combine(Environment.CurrentDirectory, "AICapture");
                     string zipDir = Path.Combine(metaDir, "Backup");
                     e.Payload.Contents = Directory.GetFiles(zipDir).OrderByDescending(f => f).ToArray();
-                } else if (e.Payload.AICSkill == "GetConversationList")
+                }
+                else if (e.Payload.AICSkill == "GetConversationList")
                 {
                     string metaDir = Path.Combine(Environment.CurrentDirectory, "AICapture");
                     string logDir = Path.Combine(metaDir, "Transcripts");
                     e.Payload.Contents = Directory.GetFiles(logDir).OrderByDescending(f => f).ToArray();
-                } else if (e.Payload.AICSkill == "GetConversationDetails")
+                }
+                else if (e.Payload.AICSkill == "GetConversationDetails")
                 {
                     string metaDir = Path.Combine(Environment.CurrentDirectory, "AICapture");
                     string logDir = Path.Combine(metaDir, "Transcripts");
@@ -120,13 +144,15 @@ namespace SSoTme.OST.Lib.CLIOptions
                     File.WriteAllText(patchFI.FullName, patch);
                     this.PatchAndReplayAll(fileFI, patchFI);
                 }
-            } else
+            }
+            else
             {
                 if (e.Payload.AICSkill == "ChangeProject")
                 {
                     Environment.CurrentDirectory = e.Payload.Content;
                     Console.WriteLine("Current directory changed to " + Environment.CurrentDirectory);
-                } else if (e.Payload.AICSkill == "CreateProject")
+                }
+                else if (e.Payload.AICSkill == "CreateProject")
                 {
                     string dir = Environment.CurrentDirectory + "\\..\\" + e.Payload.Content;
                     if (Directory.Exists(dir))
@@ -139,7 +165,8 @@ namespace SSoTme.OST.Lib.CLIOptions
                     DataClasses.AICaptureProject.Init();
                     Console.WriteLine("New project created at " + Environment.CurrentDirectory);
 
-                } else if (e.Payload.AICSkill == "SaveTranscript")
+                }
+                else if (e.Payload.AICSkill == "SaveTranscript")
                 {
                     string metaDir = Path.Combine(Environment.CurrentDirectory, "AICapture");
                     string logDir = Path.Combine(metaDir, "Transcripts");
@@ -163,10 +190,12 @@ namespace SSoTme.OST.Lib.CLIOptions
                     string entryText = JsonConvert.SerializeObject(entry);
                     string transcriptFile = Path.Combine(logDir, fileName);
                     File.AppendAllText(transcriptFile, entryText + Environment.NewLine);
-                } else if (e.Payload.AICSkill == "SaveBackup")
+                }
+                else if (e.Payload.AICSkill == "SaveBackup")
                 {
                     SaveBackup();
-                } else if (e.Payload.AICSkill == "RestoreBackup")
+                }
+                else if (e.Payload.AICSkill == "RestoreBackup")
                 {
                     if (e.Payload.Content is null)
                     {
