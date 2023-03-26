@@ -4,7 +4,10 @@
   "description": "",
   "devDependencies": {
   },
-  "bin": "cli.js",
+  "bin": {
+    "aicapture" :"cli.js",
+    "aic": "cli.js"
+  },
     "scripts": {
         "build": "dotnet build AICapture-OST-CLI.sln --configuration Release",
         "start": "dotnet Windows/CLI/bin/Release/netcoreapp3.1/AICapture.OST.CLI.dll",

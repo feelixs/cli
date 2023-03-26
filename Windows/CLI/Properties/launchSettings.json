@@ -3,7 +3,7 @@
     "DotNetStandardCLI": {
       "commandName": "Project",
       "commandLineArgs": "-discuss",
-      "workingDirectory": "/Users/auto1/go/src/github.com/eejai42/aitest1"
+      "workingDirectory": "/Users/auto1/go/src/github.com/eejai42"
     }
   }
 }

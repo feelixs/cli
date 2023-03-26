@@ -33,6 +33,7 @@ namespace SSoTme.OST.Lib.CLIOptions
 
         public void Start()
         {
+            this.FindMostRecentProject();
             while (!Console.KeyAvailable)
             {
                 try
@@ -74,6 +75,19 @@ namespace SSoTme.OST.Lib.CLIOptions
             Console.ReadKey();
         }
 
+
+        private void FindMostRecentProject()
+        {
+            var projects = Directory.GetDirectories(Environment.CurrentDirectory)
+                                    .Where(d => !d.StartsWith(".") && !d.StartsWith("_"))
+                                    .Select(d => new DirectoryInfo(d))
+                                    .OrderByDescending(d => d.LastWriteTimeUtc);
+
+            if (projects.Any())
+            {
+                Environment.CurrentDirectory = projects.First().FullName;
+            }
+        }
 
         private void Aica_UserAICInstallReceived(object sender, AIC.SassyMQ.Lib.PayloadEventArgs e)
         {
