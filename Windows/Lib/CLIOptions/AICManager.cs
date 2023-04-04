@@ -5,6 +5,7 @@
  License:    Mozilla Public License 2.0
  *******************************************/
 using AIC.Lib.DataClasses;
+using AIC.SassyMQ.Lib;
 using AICapture.OST.Lib.AICapture.DataClasses;
 using Newtonsoft.Json;
 using SassyMQ.SSOTME.Lib;
@@ -96,34 +97,36 @@ namespace SSoTme.OST.Lib.CLIOptions
 
         private void Aica_UserGetDataReceived(object sender, AIC.SassyMQ.Lib.PayloadEventArgs e)
         {
-            if (e.Payload.AICSkill is null)
+            if (e.Payload.AICSkillName is null)
             {
                 e.Payload.AICaptureProjectFolder = $"/{Path.GetFileName(Environment.CurrentDirectory)}";
-                var found = this.LookFor("single-source-of-truth.json", e.Payload);
-                if (!found) found = this.LookFor("ssot.json", e.Payload);
-                if (!found) found = this.LookFor("aicapture.json", e.Payload);
+                var defaultSSOT = $"{{ {Environment.NewLine}   \"project\":{{    \"name\":\"{Path.GetFileName(Environment.CurrentDirectory)}\"{Environment.NewLine}}}{Environment.NewLine}}}";
+                var found = this.LookFor("single-source-of-truth.json", e.Payload, true, defaultSSOT);
+                this.LookFor("README.md", e.Payload, false);
+                //if (!found) found = this.LookFor("ssot.json", e.Payload);
+                //if (!found) found = this.LookFor("aicapture.json", e.Payload);
             }
             else
             {
-                if (e.Payload.AICSkill == "GetProjectList")
+                if (e.Payload.AICSkillName == "GetProjectList")
                 {
                     string parentDir = Environment.CurrentDirectory + "\\..";
                     DirectoryInfo info = new DirectoryInfo(parentDir);
                     e.Payload.Projects = info.EnumerateDirectories().OrderByDescending(d => (d.LastWriteTime)).ThenBy(d => (d.Name)).Select(d => (d.FullName)).ToArray();
                 }
-                else if (e.Payload.AICSkill == "GetBackupList")
+                else if (e.Payload.AICSkillName == "GetBackupList")
                 {
                     string metaDir = Path.Combine(Environment.CurrentDirectory, "AICapture");
                     string zipDir = Path.Combine(metaDir, "Backup");
                     e.Payload.Contents = Directory.GetFiles(zipDir).OrderByDescending(f => f).ToArray();
                 }
-                else if (e.Payload.AICSkill == "GetConversationList")
+                else if (e.Payload.AICSkillName == "GetConversationList")
                 {
                     string metaDir = Path.Combine(Environment.CurrentDirectory, "AICapture");
                     string logDir = Path.Combine(metaDir, "Transcripts");
                     e.Payload.Contents = Directory.GetFiles(logDir).OrderByDescending(f => f).ToArray();
                 }
-                else if (e.Payload.AICSkill == "GetConversationDetails")
+                else if (e.Payload.AICSkillName == "GetConversationDetails")
                 {
                     string metaDir = Path.Combine(Environment.CurrentDirectory, "AICapture");
                     string logDir = Path.Combine(metaDir, "Transcripts");
@@ -146,7 +149,7 @@ namespace SSoTme.OST.Lib.CLIOptions
 
         private void Aica_UserSetDataReceived(object sender, AIC.SassyMQ.Lib.PayloadEventArgs e)
         {
-            if (e.Payload.AICSkill is null)
+            if (e.Payload.AICSkillName is null)
             {
                 if (String.IsNullOrEmpty(e.Payload.FileName)) return;
                 var fileName = Path.Combine(Environment.CurrentDirectory, e.Payload.FileName.Trim("\\/".ToCharArray()));
@@ -161,12 +164,12 @@ namespace SSoTme.OST.Lib.CLIOptions
             }
             else
             {
-                if (e.Payload.AICSkill == "ChangeProject")
+                if (e.Payload.AICSkillName == "ChangeProject")
                 {
                     Environment.CurrentDirectory = e.Payload.Content;
                     Console.WriteLine("Current directory changed to " + Environment.CurrentDirectory);
                 }
-                else if (e.Payload.AICSkill == "CreateProject")
+                else if (e.Payload.AICSkillName == "CreateProject")
                 {
                     string dir = Environment.CurrentDirectory + "\\..\\" + e.Payload.Content;
                     if (Directory.Exists(dir))
@@ -180,7 +183,7 @@ namespace SSoTme.OST.Lib.CLIOptions
                     Console.WriteLine("New project created at " + Environment.CurrentDirectory);
 
                 }
-                else if (e.Payload.AICSkill == "SaveTranscript")
+                else if (e.Payload.AICSkillName == "SaveTranscript")
                 {
                     string metaDir = Path.Combine(Environment.CurrentDirectory, "AICapture");
                     string logDir = Path.Combine(metaDir, "Transcripts");
@@ -205,11 +208,11 @@ namespace SSoTme.OST.Lib.CLIOptions
                     string transcriptFile = Path.Combine(logDir, fileName);
                     File.AppendAllText(transcriptFile, entryText + Environment.NewLine);
                 }
-                else if (e.Payload.AICSkill == "SaveBackup")
+                else if (e.Payload.AICSkillName == "SaveBackup")
                 {
                     SaveBackup();
                 }
-                else if (e.Payload.AICSkill == "RestoreBackup")
+                else if (e.Payload.AICSkillName == "RestoreBackup")
                 {
                     if (e.Payload.Content is null)
                     {
@@ -278,19 +281,34 @@ namespace SSoTme.OST.Lib.CLIOptions
             return true;
         }
 
-        private bool LookFor(string fileName, AIC.SassyMQ.Lib.StandardPayload payload)
+        private bool LookFor(string fileName, StandardPayload payload, bool checkSSoT, string defaultFileContents = null)
         {
             var fi = new FileInfo(fileName);
             if (fi.Exists) return FoundFile(payload, fi);
-            fi = new FileInfo(Path.Combine("ssot", fileName));
-            if (fi.Exists) return FoundFile(payload, fi);
+            if (checkSSoT)
+            {
+                fi = new FileInfo(Path.Combine("ssot", fileName));
+                if (fi.Exists) return FoundFile(payload, fi);
+                if (!String.IsNullOrEmpty(defaultFileContents))
+                {
+                    File.WriteAllText(fi.FullName, defaultFileContents);
+                    return true;
+                }
+            }
             return false;
         }
 
-        private bool FoundFile(AIC.SassyMQ.Lib.StandardPayload payload, FileInfo fi)
+        private bool FoundFile(StandardPayload payload, FileInfo fi)
         {
-            payload.FileName = fi.FullName.Substring(Environment.CurrentDirectory.Length);
-            payload.Content = File.ReadAllText(fi.FullName);
+            if (fi.Name == "README.md")
+            { 
+                payload.README = File.ReadAllText(fi.FullName);
+            }
+            else
+            {
+                payload.FileName = fi.FullName.Substring(Environment.CurrentDirectory.Length);
+                payload.Content = File.ReadAllText(fi.FullName);
+            }
             return true;
         }
 

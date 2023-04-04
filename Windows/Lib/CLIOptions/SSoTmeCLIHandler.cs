@@ -86,7 +86,17 @@ namespace SSoTme.OST.Lib.CLIOptions
                     }
                 }
 
-                var additionalArgs = parser.RemainingArguments.Skip(1).ToList();
+                var additionalArgs = parser.RemainingArguments.Skip(1).ToList() ;
+                var pathParam = this.parameters.Find(param =>            
+                    param.StartsWith("path=")
+                );
+                
+                if (pathParam != null)
+                {
+                    pathParam = pathParam.Replace("path=", "");
+                    Environment.CurrentDirectory = pathParam;
+                }
+
                 for (var i = 0; i < additionalArgs.Count; i++)
                 {
                     this.parameters.Add(String.Format("param{0}={1}", i + 1, additionalArgs[i]));
