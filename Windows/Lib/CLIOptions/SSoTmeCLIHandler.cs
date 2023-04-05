@@ -86,11 +86,11 @@ namespace SSoTme.OST.Lib.CLIOptions
                     }
                 }
 
-                var additionalArgs = parser.RemainingArguments.Skip(1).ToList() ;
-                var pathParam = this.parameters.Find(param =>            
+                var additionalArgs = parser.RemainingArguments.Skip(1).ToList();
+                var pathParam = this.parameters.Find(param =>
                     param.StartsWith("path=")
                 );
-                
+
                 if (pathParam != null)
                 {
                     pathParam = pathParam.Replace("path=", "");
@@ -148,7 +148,15 @@ namespace SSoTme.OST.Lib.CLIOptions
                 {
                     if (String.IsNullOrEmpty(this.setAccountAPIKey) && !this.help && !this.authenticate)
                     {
-                        this.AICaptureProject = SSoTmeProject.LoadOrFail(new DirectoryInfo(Environment.CurrentDirectory), false);
+                        var dir = new DirectoryInfo(Environment.CurrentDirectory);
+                        if (this.install)
+                        {
+                            this.AICaptureProject = SSoTmeProject.LoadOrFail(dir, false);
+                        }
+                        else
+                        {
+                            this.AICaptureProject = SSoTmeProject.TryToLoad(dir, null, false);
+                        }
 
                         foreach (var projectSetting in this.AICaptureProject.ProjectSettings)
                         {
@@ -351,7 +359,7 @@ namespace SSoTme.OST.Lib.CLIOptions
                 Console.WriteLine("Already authenticated.  Reauthenticate now? y/N");
                 if (Console.ReadKey().Key != ConsoleKey.Y) return true;
             }
-            
+
             var startInfo = new ProcessStartInfo();
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
