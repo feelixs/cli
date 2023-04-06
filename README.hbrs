@@ -1,4 +1,4 @@
-# AI Capture CLI
+# {{project.name}}
 [AICapture Platform](http://aicapture.io)
 The Single Source of Truth Toolbox!
 
@@ -113,4 +113,3 @@ options:
    -waitTimeout, -w      The amount of time to wait
                          for the command to continue
 ```
-
