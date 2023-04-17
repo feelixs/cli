@@ -1,4 +1,4 @@
-# AI Capture CLI
+# AI Capture CLI OST
 [AICapture Platform](http://aicapture.io)
 The Single Source of Truth Toolbox!
 
