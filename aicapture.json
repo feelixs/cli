@@ -33,7 +33,7 @@
       "ProjectTranspilerId": "1eddb117-d84d-464d-ae0e-75617e875e84",
       "Name": "OdxmlToCSharpPOCOs",
       "RelativePath": "/Windows/Lib/DataClasses",
-      "CommandLine": "ODXMLToCSharpPOCOs -i ../../../ODXML/DataSchema.odxml -p namespace=SSoTme.OST.Lib.DataClasses"
+      "CommandLine": "ODXMLToCSharpPOCOs -i ../../../ODXML/DataSchema.odxml -p namespace=SSoTme.OST.Lib.DataClasses -p include-load-methods=false"
     },
     {
       "MatchedTranspiler": {

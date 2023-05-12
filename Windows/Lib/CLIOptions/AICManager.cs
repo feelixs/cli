@@ -41,30 +41,45 @@ namespace SSoTme.OST.Lib.CLIOptions
                 {
                     Console.WriteLine("Starting DM QUEUE...");
                     var aica = new AIC.SassyMQ.Lib.SMQAICAgent("amqps://smqPublic:smqPublic@effortlessapi-rmq.ssot.me/ej-aicapture-io");
-                    aica.UserAICInstallReceived += Aica_UserAICInstallReceived;
-                    aica.UserAICReplayReceived += Aica_UserAICReplayReceived;
-                    aica.UserSetDataReceived += Aica_UserSetDataReceived;
-                    aica.UserGetDataReceived += Aica_UserGetDataReceived;
-
-                    var payload = aica.CreatePayload();
-                    payload.AccessToken = this.Auth0SID;
-                    payload.DMQueue = aica.QueueName;
-                    var reply = aica.MonitoringFor(payload);
-
-
-                    Console.WriteLine($"Listening on DMQueue: {aica.QueueName}. Press Ctrl+C to end.");
-                    while (aica.RMQConnection.IsOpen)
+                    try
                     {
-                        aica.WaitForComplete(1000, false);
-                    }
+                        aica.UserAICInstallReceived += Aica_UserAICInstallReceived;
+                        aica.UserAICReplayReceived += Aica_UserAICReplayReceived;
+                        aica.UserSetDataReceived += Aica_UserSetDataReceived;
+                        aica.UserGetDataReceived += Aica_UserGetDataReceived;
 
-                    if (!aica.RMQConnection.IsOpen)
+                        var payload = aica.CreatePayload();
+                        payload.AccessToken = this.Auth0SID;
+                        payload.DMQueue = aica.QueueName;
+                        Console.WriteLine($"Register DB Queue: {payload.DMQueue}");
+                        var task = aica.MonitoringFor(payload, (reply, bdea) =>
+                        {
+                            if (!String.IsNullOrEmpty(reply.ErrorMessage))
+                            {
+                                throw new Exception(reply.ErrorMessage);
+                            }
+                        });
+                        task.Wait(10000);
+
+                        if (!task.IsCompleted) throw new Exception("Timed out waiting to register dm queue with server.");
+
+                        Console.WriteLine($"Listening on DMQueue: {aica.QueueName}. Press Ctrl+C to end.");
+                        while (aica.RMQConnection.IsOpen)
+                        {
+                            aica.WaitForComplete(1000, false);
+                        }
+
+                    }
+                    finally
                     {
-                        Console.WriteLine($"{DateTime.Now}-closed.");
-                        object o = 1;
-                    }
+                        if (!aica.RMQConnection.IsOpen)
+                        {
+                            Console.WriteLine($"{DateTime.Now}-closed.");
+                            object o = 1;
+                        }
 
-                    aica.Disconnect();
+                        aica.Disconnect();
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -99,7 +114,12 @@ namespace SSoTme.OST.Lib.CLIOptions
         {
             if (e.Payload.AICSkillName is null)
             {
+                if (!String.IsNullOrEmpty(e.Payload.Content))
+                {
+                    Environment.CurrentDirectory = Path.Combine(Environment.CurrentDirectory, "..", e.Payload.Content);
+                }
                 e.Payload.AICaptureProjectFolder = $"/{Path.GetFileName(Environment.CurrentDirectory)}";
+                Directory.SetLastWriteTime(Environment.CurrentDirectory, DateTime.Now);
                 var defaultSSOT = $"{{ {Environment.NewLine}   \"project\":{{    \"name\":\"{Path.GetFileName(Environment.CurrentDirectory)}\"{Environment.NewLine}}}{Environment.NewLine}}}";
                 var found = this.LookFor("single-source-of-truth.json", e.Payload, true, defaultSSOT);
                 this.LookFor("README.md", e.Payload, false);
@@ -301,7 +321,7 @@ namespace SSoTme.OST.Lib.CLIOptions
         private bool FoundFile(StandardPayload payload, FileInfo fi)
         {
             if (fi.Name == "README.md")
-            { 
+            {
                 payload.README = File.ReadAllText(fi.FullName);
             }
             else

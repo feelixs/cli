@@ -61,9 +61,10 @@ namespace AIC.SassyMQ.Lib
 
         public void WaitForComplete(int timeout = -1, bool disconnectAfter = true)
         {
+            var done = false;
             var actorWaitTask = Task.Factory.StartNew(() =>
             {
-                while (this.RMQChannel.IsOpen)
+                while (this.RMQChannel.IsOpen && !done)
                 {
                     Thread.Sleep(500);
                 }
@@ -71,6 +72,8 @@ namespace AIC.SassyMQ.Lib
 
             if (timeout == -1) actorWaitTask.Wait();
             else actorWaitTask.Wait(timeout);
+
+            done = true;
 
             if (disconnectAfter) this.Disconnect();
         }

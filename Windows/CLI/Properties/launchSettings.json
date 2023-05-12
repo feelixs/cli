@@ -2,8 +2,8 @@
   "profiles": {
     "DotNetStandardCLI": {
       "commandName": "Project",
-      "commandLineArgs": "airtable-to-json -p baseId=appKb2fIcZamMeqX2",
-      "workingDirectory": "C:\\Users\\auto1\\go\\src\\github.com\\eejai42\\flat-json-to-nested"
+      "commandLineArgs": "-discuss",
+      "workingDirectory": "C:\\Users\\auto1\\go\\src\\github.com\\eejai42\\"
     }
   }
 }
