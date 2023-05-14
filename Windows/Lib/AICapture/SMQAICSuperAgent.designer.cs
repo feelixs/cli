@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace AIC.SassyMQ.Lib
 {
-    public partial class SMQAdmin : SMQActorBase
+    public partial class SMQAICSuperAgent : SMQActorBase
     {
 
-        public SMQAdmin(String amqpConnectionString)
-            : base(amqpConnectionString, "admin")
+        public SMQAICSuperAgent(String amqpConnectionString)
+            : base(amqpConnectionString, "aicsuperagent")
         {
         }
 
@@ -61,7 +61,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task AddHelpfulPrompt(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.addhelpfulprompt", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.addhelpfulprompt", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -88,7 +88,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task GetHelpfulPrompts(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.gethelpfulprompts", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.gethelpfulprompts", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -115,7 +115,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task UpdateHelpfulPrompt(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.updatehelpfulprompt", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.updatehelpfulprompt", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -142,7 +142,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task DeleteHelpfulPrompt(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.deletehelpfulprompt", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.deletehelpfulprompt", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -169,7 +169,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task AddAIModel(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.addaimodel", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.addaimodel", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -196,7 +196,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task GetAIModels(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.getaimodels", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.getaimodels", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -223,7 +223,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task UpdateAIModel(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.updateaimodel", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.updateaimodel", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -250,7 +250,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task DeleteAIModel(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.deleteaimodel", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.deleteaimodel", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -277,7 +277,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task AddSharedDirectory(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.addshareddirectory", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.addshareddirectory", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -304,7 +304,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task GetSharedDirectories(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.getshareddirectories", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.getshareddirectories", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -331,7 +331,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task UpdateSharedDirectory(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.updateshareddirectory", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.updateshareddirectory", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -358,7 +358,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task DeleteSharedDirectory(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.deleteshareddirectory", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.deleteshareddirectory", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -385,7 +385,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task AddAICDirectory(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.addaicdirectory", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.addaicdirectory", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -412,7 +412,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task GetAICDirectories(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.getaicdirectories", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.getaicdirectories", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -439,7 +439,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task UpdateAICDirectory(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.updateaicdirectory", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.updateaicdirectory", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -466,7 +466,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task DeleteAICDirectory(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.deleteaicdirectory", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.deleteaicdirectory", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -493,7 +493,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task AddRateLimit(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.addratelimit", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.addratelimit", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -520,7 +520,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task GetRateLimits(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.getratelimits", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.getratelimits", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -547,7 +547,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task UpdateRateLimit(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.updateratelimit", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.updateratelimit", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -574,7 +574,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task DeleteRateLimit(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.deleteratelimit", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.deleteratelimit", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -601,7 +601,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task AddAppUser(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.addappuser", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.addappuser", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -628,7 +628,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task GetAppUsers(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.getappusers", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.getappusers", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -655,7 +655,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task UpdateAppUser(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.updateappuser", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.updateappuser", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -682,7 +682,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task DeleteAppUser(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.deleteappuser", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.deleteappuser", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -709,7 +709,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task AddAICWorkspace(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.addaicworkspace", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.addaicworkspace", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -736,7 +736,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task GetAICWorkspaces(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.getaicworkspaces", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.getaicworkspaces", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -763,7 +763,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task UpdateAICWorkspace(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.updateaicworkspace", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.updateaicworkspace", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -790,7 +790,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task DeleteAICWorkspace(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.deleteaicworkspace", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.deleteaicworkspace", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -817,7 +817,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task AddAICContextCategory(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.addaiccontextcategory", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.addaiccontextcategory", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -844,7 +844,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task GetAICContextCategories(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.getaiccontextcategories", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.getaiccontextcategories", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -871,7 +871,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task UpdateAICContextCategory(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.updateaiccontextcategory", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.updateaiccontextcategory", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -898,7 +898,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task DeleteAICContextCategory(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.deleteaiccontextcategory", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.deleteaiccontextcategory", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -925,7 +925,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task AddAICPlan(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.addaicplan", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.addaicplan", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -952,7 +952,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task GetAICPlans(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.getaicplans", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.getaicplans", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -979,7 +979,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task UpdateAICPlan(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.updateaicplan", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.updateaicplan", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -1006,7 +1006,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task DeleteAICPlan(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.deleteaicplan", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.deleteaicplan", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -1033,7 +1033,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task AddAICModelPricing(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.addaicmodelpricing", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.addaicmodelpricing", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -1060,7 +1060,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task GetAICModelPricings(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.getaicmodelpricings", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.getaicmodelpricings", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -1087,7 +1087,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task UpdateAICModelPricing(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.updateaicmodelpricing", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.updateaicmodelpricing", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -1114,7 +1114,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task DeleteAICModelPricing(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.deleteaicmodelpricing", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.deleteaicmodelpricing", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -1141,7 +1141,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task AddLanguage(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.addlanguage", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.addlanguage", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -1168,7 +1168,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task GetLanguages(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.getlanguages", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.getlanguages", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -1195,7 +1195,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task UpdateLanguage(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.updatelanguage", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.updatelanguage", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -1222,7 +1222,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task DeleteLanguage(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.deletelanguage", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.deletelanguage", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -1249,7 +1249,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task AddAppUserUsage(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.addappuserusage", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.addappuserusage", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -1276,7 +1276,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task GetAppUserUsages(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.getappuserusages", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.getappuserusages", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -1303,7 +1303,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task UpdateAppUserUsage(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.updateappuserusage", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.updateappuserusage", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -1330,7 +1330,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task DeleteAppUserUsage(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.deleteappuserusage", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.deleteappuserusage", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -1357,7 +1357,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task AddAIProvider(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.addaiprovider", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.addaiprovider", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -1384,7 +1384,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task GetAIProviders(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.getaiproviders", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.getaiproviders", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -1411,7 +1411,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task UpdateAIProvider(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.updateaiprovider", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.updateaiprovider", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -1438,7 +1438,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task DeleteAIProvider(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.deleteaiprovider", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.deleteaiprovider", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -1465,7 +1465,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task AddAICSkill(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.addaicskill", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.addaicskill", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -1492,7 +1492,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task GetAICSkills(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.getaicskills", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.getaicskills", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -1519,7 +1519,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task UpdateAICSkill(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.updateaicskill", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.updateaicskill", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -1546,7 +1546,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task DeleteAICSkill(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.deleteaicskill", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.deleteaicskill", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -1573,7 +1573,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task AddAICContext(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.addaiccontext", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.addaiccontext", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -1600,7 +1600,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task GetAICContexts(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.getaiccontexts", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.getaiccontexts", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -1627,7 +1627,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task UpdateAICContext(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.updateaiccontext", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.updateaiccontext", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -1654,7 +1654,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task DeleteAICContext(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.deleteaiccontext", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.deleteaiccontext", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -1681,7 +1681,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task AddFriendRequest(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.addfriendrequest", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.addfriendrequest", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -1708,7 +1708,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task GetFriendRequests(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.getfriendrequests", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.getfriendrequests", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -1735,7 +1735,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task UpdateFriendRequest(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.updatefriendrequest", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.updatefriendrequest", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -1762,7 +1762,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task DeleteFriendRequest(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.deletefriendrequest", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.deletefriendrequest", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -1789,7 +1789,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task AddAICConversation(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.addaicconversation", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.addaicconversation", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -1816,7 +1816,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task GetAICConversations(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.getaicconversations", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.getaicconversations", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -1843,7 +1843,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task UpdateAICConversation(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.updateaicconversation", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.updateaicconversation", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -1870,7 +1870,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task DeleteAICConversation(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.deleteaicconversation", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.deleteaicconversation", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -1897,7 +1897,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task AddEntity(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.addentity", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.addentity", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -1924,7 +1924,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task GetEntities(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.getentities", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.getentities", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -1951,7 +1951,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task UpdateEntity(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.updateentity", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.updateentity", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -1978,7 +1978,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task DeleteEntity(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.deleteentity", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.deleteentity", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -2005,7 +2005,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task AddAICSkillVersion(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.addaicskillversion", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.addaicskillversion", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -2032,7 +2032,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task GetAICSkillVersions(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.getaicskillversions", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.getaicskillversions", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -2059,7 +2059,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task UpdateAICSkillVersion(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.updateaicskillversion", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.updateaicskillversion", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -2086,7 +2086,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task DeleteAICSkillVersion(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.deleteaicskillversion", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.deleteaicskillversion", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -2113,7 +2113,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task AddAICMessage(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.addaicmessage", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.addaicmessage", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -2140,7 +2140,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task GetAICMessages(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.getaicmessages", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.getaicmessages", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -2167,7 +2167,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task UpdateAICMessage(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.updateaicmessage", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.updateaicmessage", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -2194,7 +2194,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task DeleteAICMessage(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.deleteaicmessage", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.deleteaicmessage", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -2221,7 +2221,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task AddAICProject(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.addaicproject", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.addaicproject", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -2248,7 +2248,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task GetAICProjects(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.getaicprojects", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.getaicprojects", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -2275,7 +2275,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task UpdateAICProject(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.updateaicproject", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.updateaicproject", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -2302,7 +2302,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task DeleteAICProject(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.deleteaicproject", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.deleteaicproject", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -2329,7 +2329,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task AddAICFile(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.addaicfile", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.addaicfile", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -2356,7 +2356,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task GetAICFiles(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.getaicfiles", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.getaicfiles", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -2383,7 +2383,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task UpdateAICFile(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.updateaicfile", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.updateaicfile", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -2410,7 +2410,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task DeleteAICFile(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.deleteaicfile", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.deleteaicfile", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -2437,7 +2437,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task AddAICSkillStep(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.addaicskillstep", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.addaicskillstep", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -2464,7 +2464,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task GetAICSkillSteps(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.getaicskillsteps", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.getaicskillsteps", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -2491,7 +2491,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task UpdateAICSkillStep(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.updateaicskillstep", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.updateaicskillstep", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         
@@ -2518,7 +2518,7 @@ namespace AIC.SassyMQ.Lib
         /// </summary>
         public Task DeleteAICSkillStep(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
-            return this.SendMessage("crudcoordinator.crud.admin.deleteaicskillstep", payload, replyHandler, timeoutHandler, waitTimeout);
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.deleteaicskillstep", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         

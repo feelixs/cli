@@ -11,11 +11,6 @@ namespace AIC.Lib.DataClasses
     {
         private void InitPoco()
         {
-            
-            
-                this.Skills_AICPlans = new BindingList<AICPlan>();
-            
-
         }
         
         partial void AfterGet();
@@ -54,11 +49,23 @@ namespace AIC.Lib.DataClasses
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICPlans")]
         public String[] AICPlans { get; set; }
     
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICSkillName")]
+        public String AICSkillName { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICSkillSteps")]
+        public String AICSkillSteps { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICSkillVersion")]
+        public String[] AICSkillVersion { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICSkillSteps2")]
+        public String[] AICSkillSteps2 { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "IsPublic")]
+        public Nullable<Boolean> IsPublic { get; set; }
+    
 
         
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "Skills_AICPlans")]
-        public BindingList<AICPlan> Skills_AICPlans { get; set; }
-            
 
         
         

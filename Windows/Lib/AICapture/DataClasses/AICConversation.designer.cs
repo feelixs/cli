@@ -11,11 +11,6 @@ namespace AIC.Lib.DataClasses
     {
         private void InitPoco()
         {
-            
-            
-                this.AICConversations_AppUsers = new BindingList<AppUser>();
-            
-
         }
         
         partial void AfterGet();
@@ -48,11 +43,26 @@ namespace AIC.Lib.DataClasses
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "Auth0SID")]
         public String Auth0SID { get; set; }
     
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICProject")]
+        public String AICProject { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TotalPromptTokenCount")]
+        public Nullable<Int32> TotalPromptTokenCount { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TotalPromptCost")]
+        public Nullable<decimal> TotalPromptCost { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TotalResponseTokenCount")]
+        public Nullable<decimal> TotalResponseTokenCount { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "NamefromAICProject")]
+        public String NamefromAICProject { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICMessages")]
+        public String[] AICMessages { get; set; }
+    
 
         
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICConversations_AppUsers")]
-        public BindingList<AppUser> AICConversations_AppUsers { get; set; }
-            
 
         
         

@@ -11,23 +11,6 @@ namespace AIC.Lib.DataClasses
     {
         private void InitPoco()
         {
-            
-            
-                this.AppUsers_AICPlans = new BindingList<AICPlan>();
-            
-                this.Owner_AICConversations = new BindingList<AICConversation>();
-            
-                this.OwnerEmailAddress_AICConversations = new BindingList<AICConversation>();
-            
-                this.Auth0SID_AICConversations = new BindingList<AICConversation>();
-            
-                this.Owner_AICProjects = new BindingList<AICProject>();
-            
-                this.OwnerEmailAddress_AICProjects = new BindingList<AICProject>();
-            
-                this.Auth0SID_AICProjects = new BindingList<AICProject>();
-            
-
         }
         
         partial void AfterGet();
@@ -87,29 +70,47 @@ namespace AIC.Lib.DataClasses
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "LastWorkingDirectory")]
         public String LastWorkingDirectory { get; set; }
     
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICWorkspaces")]
+        public String[] AICWorkspaces { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "FriendRequests")]
+        public String[] FriendRequests { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "FriendRequestsReceived")]
+        public String[] FriendRequestsReceived { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "RelativePath")]
+        public String RelativePath { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ProjectsPath")]
+        public String ProjectsPath { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "WorkspacesPath")]
+        public String WorkspacesPath { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "GlobalSettingsPath")]
+        public String GlobalSettingsPath { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AppUserUsage")]
+        public String[] AppUserUsage { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "DefaultLanguage")]
+        public String DefaultLanguage { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "DefaultAICaptureUserId")]
+        public String DefaultAICaptureUserId { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICUserName")]
+        public String AICUserName { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "DefaultLanguageCode")]
+        public String DefaultLanguageCode { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "CreatedTime")]
+        public Nullable<DateTime> CreatedTime { get; set; }
+    
 
         
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AppUsers_AICPlans")]
-        public BindingList<AICPlan> AppUsers_AICPlans { get; set; }
-            
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "Owner_AICConversations")]
-        public BindingList<AICConversation> Owner_AICConversations { get; set; }
-            
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "OwnerEmailAddress_AICConversations")]
-        public BindingList<AICConversation> OwnerEmailAddress_AICConversations { get; set; }
-            
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "Auth0SID_AICConversations")]
-        public BindingList<AICConversation> Auth0SID_AICConversations { get; set; }
-            
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "Owner_AICProjects")]
-        public BindingList<AICProject> Owner_AICProjects { get; set; }
-            
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "OwnerEmailAddress_AICProjects")]
-        public BindingList<AICProject> OwnerEmailAddress_AICProjects { get; set; }
-            
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "Auth0SID_AICProjects")]
-        public BindingList<AICProject> Auth0SID_AICProjects { get; set; }
-            
 
         
         

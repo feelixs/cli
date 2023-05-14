@@ -165,8 +165,7 @@ namespace SSoTme.OST.Lib.DataClasses
 /**/bin/**/*
 /.ssotme/**/*
 /DSPXml/**/*
-/SSoT/__patch.json
-/AICapture/Backup/*.zip";
+/SSoT/__patch.json";
                 File.WriteAllText(fi.FullName, gitIgnore);
             }
         }

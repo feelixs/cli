@@ -57,6 +57,33 @@ namespace AIC.SassyMQ.Lib
         }
 
         /// <summary>
+        /// NotifyMeHere - 
+        /// </summary>
+        public Task NotifyMeHere(PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
+        {
+            return this.NotifyMeHere(this.CreatePayload(), replyHandler, timeoutHandler, waitTimeout);
+        }
+
+        /// <summary>
+        /// NotifyMeHere - 
+        /// </summary>
+        public Task NotifyMeHere(String content, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
+        {
+            var payload = this.CreatePayload(content);
+            return this.NotifyMeHere(payload, replyHandler, timeoutHandler, waitTimeout);
+        }
+    
+        
+        /// <summary>
+        /// NotifyMeHere - 
+        /// </summary>
+        public Task NotifyMeHere(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
+        {
+            return this.SendMessage("crudcoordinator.custom.user.notifymehere", payload, replyHandler, timeoutHandler, waitTimeout);
+        }
+        
+        
+        /// <summary>
         /// AICInstall - 
         /// </summary>
         public Task AICInstall(DMProxy dmp, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
@@ -157,6 +184,87 @@ namespace AIC.SassyMQ.Lib
         public Task GetData(DMProxy dmp, StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
             return this.SendMessage("aicagent.custom.user.getdata", payload, replyHandler, timeoutHandler, waitTimeout, dmp.RoutingKey);
+        }
+        
+        
+        /// <summary>
+        /// GetSharedDirectories - 
+        /// </summary>
+        public Task GetSharedDirectories(PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
+        {
+            return this.GetSharedDirectories(this.CreatePayload(), replyHandler, timeoutHandler, waitTimeout);
+        }
+
+        /// <summary>
+        /// GetSharedDirectories - 
+        /// </summary>
+        public Task GetSharedDirectories(String content, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
+        {
+            var payload = this.CreatePayload(content);
+            return this.GetSharedDirectories(payload, replyHandler, timeoutHandler, waitTimeout);
+        }
+    
+        
+        /// <summary>
+        /// GetSharedDirectories - 
+        /// </summary>
+        public Task GetSharedDirectories(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
+        {
+            return this.SendMessage("crudcoordinator.crud.user.getshareddirectories", payload, replyHandler, timeoutHandler, waitTimeout);
+        }
+        
+        
+        /// <summary>
+        /// GetAICWorkspaces - 
+        /// </summary>
+        public Task GetAICWorkspaces(PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
+        {
+            return this.GetAICWorkspaces(this.CreatePayload(), replyHandler, timeoutHandler, waitTimeout);
+        }
+
+        /// <summary>
+        /// GetAICWorkspaces - 
+        /// </summary>
+        public Task GetAICWorkspaces(String content, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
+        {
+            var payload = this.CreatePayload(content);
+            return this.GetAICWorkspaces(payload, replyHandler, timeoutHandler, waitTimeout);
+        }
+    
+        
+        /// <summary>
+        /// GetAICWorkspaces - 
+        /// </summary>
+        public Task GetAICWorkspaces(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
+        {
+            return this.SendMessage("crudcoordinator.crud.user.getaicworkspaces", payload, replyHandler, timeoutHandler, waitTimeout);
+        }
+        
+        
+        /// <summary>
+        /// UpdateAICWorkspace - 
+        /// </summary>
+        public Task UpdateAICWorkspace(PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
+        {
+            return this.UpdateAICWorkspace(this.CreatePayload(), replyHandler, timeoutHandler, waitTimeout);
+        }
+
+        /// <summary>
+        /// UpdateAICWorkspace - 
+        /// </summary>
+        public Task UpdateAICWorkspace(String content, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
+        {
+            var payload = this.CreatePayload(content);
+            return this.UpdateAICWorkspace(payload, replyHandler, timeoutHandler, waitTimeout);
+        }
+    
+        
+        /// <summary>
+        /// UpdateAICWorkspace - 
+        /// </summary>
+        public Task UpdateAICWorkspace(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
+        {
+            return this.SendMessage("crudcoordinator.crud.user.updateaicworkspace", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         

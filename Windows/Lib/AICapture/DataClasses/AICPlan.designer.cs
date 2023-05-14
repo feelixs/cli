@@ -11,13 +11,6 @@ namespace AIC.Lib.DataClasses
     {
         private void InitPoco()
         {
-            
-            
-                this.Plan_AppUsers = new BindingList<AppUser>();
-            
-                this.AICPlans_AICSkills = new BindingList<AICSkill>();
-            
-
         }
         
         partial void AfterGet();
@@ -59,14 +52,14 @@ namespace AIC.Lib.DataClasses
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "RecordId")]
         public String RecordId { get; set; }
     
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "DefaultModel")]
+        public String DefaultModel { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AllowedModel")]
+        public String[] AllowedModel { get; set; }
+    
 
         
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "Plan_AppUsers")]
-        public BindingList<AppUser> Plan_AppUsers { get; set; }
-            
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICPlans_AICSkills")]
-        public BindingList<AICSkill> AICPlans_AICSkills { get; set; }
-            
 
         
         

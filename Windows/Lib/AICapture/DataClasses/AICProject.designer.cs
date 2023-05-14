@@ -11,11 +11,6 @@ namespace AIC.Lib.DataClasses
     {
         private void InitPoco()
         {
-            
-            
-                this.AICProjects_AppUsers = new BindingList<AppUser>();
-            
-
         }
         
         partial void AfterGet();
@@ -54,11 +49,35 @@ namespace AIC.Lib.DataClasses
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "DMQueueAddress")]
         public String DMQueueAddress { get; set; }
     
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ParentWorkspace")]
+        public String ParentWorkspace { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "OwnerAICaptureUserId")]
+        public String OwnerAICaptureUserId { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "OwnerProjectsPath")]
+        public String OwnerProjectsPath { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICConversations")]
+        public String[] AICConversations { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICContext")]
+        public String[] AICContext { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICDirectories")]
+        public String[] AICDirectories { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "DefaultProjectPath")]
+        public String DefaultProjectPath { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "SharedWith")]
+        public String[] SharedWith { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "SharedWithUserIds")]
+        public String[] SharedWithUserIds { get; set; }
+    
 
         
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICProjects_AppUsers")]
-        public BindingList<AppUser> AICProjects_AppUsers { get; set; }
-            
 
         
         

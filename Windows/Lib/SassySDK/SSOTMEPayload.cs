@@ -16,7 +16,7 @@ namespace SassyMQ.SSOTME.Lib.RMQActors
     {
         static SSOTMEPayload()
         {
-            SSOTMEExtensions.FileWritten += CDVExtensions_FileWritten;
+            Default_SSOTMEExtensions.FileWritten += CDVExtensions_FileWritten;
         }
 
         private static void CDVExtensions_FileWritten(object sender, EventArgs e)
@@ -132,7 +132,7 @@ namespace SassyMQ.SSOTME.Lib.RMQActors
             var tempFI = new FileInfo(String.Format("tempFileSet_{0}.xml", Guid.NewGuid()));
             File.WriteAllText(tempFI.FullName, fileSetXml);
 
-            SSOTMEExtensions.SplitFileSetFile(tempFI.FullName, tempFI.Directory.FullName);
+            Default_SSOTMEExtensions.SplitFileSetFile(tempFI.FullName, tempFI.Directory.FullName);
             tempFI.Delete();
 
             this.SavePreviousFileSet(fileSetXml);

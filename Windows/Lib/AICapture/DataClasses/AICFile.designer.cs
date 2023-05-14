@@ -7,7 +7,7 @@ using CoreLibrary.Extensions;
 
 namespace AIC.Lib.DataClasses
 {                            
-    public partial class AIProvider
+    public partial class AICFile
     {
         private void InitPoco()
         {
@@ -22,8 +22,8 @@ namespace AIC.Lib.DataClasses
         
 
         
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AIProviderId")]
-        public String AIProviderId { get; set; }
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICFileId")]
+        public String AICFileId { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "Name")]
         public String Name { get; set; }
@@ -31,14 +31,8 @@ namespace AIC.Lib.DataClasses
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "Notes")]
         public String Notes { get; set; }
     
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "Assignee")]
-        public String Assignee { get; set; }
-    
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "Status")]
-        public String Status { get; set; }
-    
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AIModels")]
-        public String[] AIModels { get; set; }
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ParentDirectory")]
+        public String[] ParentDirectory { get; set; }
     
 
         

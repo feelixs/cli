@@ -35,13 +35,13 @@ namespace SassyMQ.Lib.RabbitMQ
         public static String Pluralize(this String singlularText)
         {
             if (String.IsNullOrEmpty(singlularText)) return String.Empty;
-            return SSOTMEExtensions.Pluralizer.Pluralize(singlularText.SafeToString());
+            return Default_SSOTMEExtensions.Pluralizer.Pluralize(singlularText.SafeToString());
         }
 
         public static bool IsSingular(this String singularCandidate)
         {
             if (String.IsNullOrEmpty(singularCandidate)) return false;
-            return SSOTMEExtensions.Pluralizer.IsSingular(singularCandidate.SafeToString());
+            return Default_SSOTMEExtensions.Pluralizer.IsSingular(singularCandidate.SafeToString());
         }
 
         public static bool IsPlural(this String pluralCandidate) {
@@ -51,7 +51,7 @@ namespace SassyMQ.Lib.RabbitMQ
         public static String Singuluralize(this String pluralText)
         {
             if (String.IsNullOrEmpty(pluralText)) return String.Empty;
-            return SSOTMEExtensions.Pluralizer.Singularize(pluralText.SafeToString());
+            return Default_SSOTMEExtensions.Pluralizer.Singularize(pluralText.SafeToString());
         }
 
         //public static void HandleInvoke<T>(this Form form, object sender, InvokeEventArgs<T> e)

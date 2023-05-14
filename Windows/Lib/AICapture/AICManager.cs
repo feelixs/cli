@@ -51,13 +51,16 @@ namespace SSoTme.OST.Lib.CLIOptions
                         var payload = aica.CreatePayload();
                         payload.AccessToken = this.Auth0SID;
                         payload.DMQueue = aica.QueueName;
-                        Console.WriteLine($"Register DB Queue: {payload.DMQueue}");
+                        Console.WriteLine($"Register DM Queue: {payload.DMQueue}");
                         var task = aica.MonitoringFor(payload, (reply, bdea) =>
                         {
                             if (!String.IsNullOrEmpty(reply.ErrorMessage))
                             {
                                 throw new Exception(reply.ErrorMessage);
                             }
+                        }, (eReply, eBdea) =>
+                        {
+                            throw new Exception("ERROR: timed out");
                         });
                         task.Wait(10000);
 
@@ -128,25 +131,25 @@ namespace SSoTme.OST.Lib.CLIOptions
             }
             else
             {
-                if (e.Payload.AICSkillName == "GetProjectList")
+                if (e.Payload.AICSkillName == $"{AICSkills.Enum.GetProjectList}")
                 {
                     string parentDir = Environment.CurrentDirectory + "\\..";
                     DirectoryInfo info = new DirectoryInfo(parentDir);
                     e.Payload.Projects = info.EnumerateDirectories().OrderByDescending(d => (d.LastWriteTime)).ThenBy(d => (d.Name)).Select(d => (d.FullName)).ToArray();
                 }
-                else if (e.Payload.AICSkillName == "GetBackupList")
+                else if (e.Payload.AICSkillName == $"{AICSkills.Enum.GetBackupList}")
                 {
                     string metaDir = Path.Combine(Environment.CurrentDirectory, "AICapture");
                     string zipDir = Path.Combine(metaDir, "Backup");
                     e.Payload.Contents = Directory.GetFiles(zipDir).OrderByDescending(f => f).ToArray();
                 }
-                else if (e.Payload.AICSkillName == "GetConversationList")
+                else if (e.Payload.AICSkillName == $"{AICSkills.Enum.GetConversationList}")
                 {
                     string metaDir = Path.Combine(Environment.CurrentDirectory, "AICapture");
                     string logDir = Path.Combine(metaDir, "Transcripts");
                     e.Payload.Contents = Directory.GetFiles(logDir).OrderByDescending(f => f).ToArray();
                 }
-                else if (e.Payload.AICSkillName == "GetConversationDetails")
+                else if (e.Payload.AICSkillName == $"{AICSkills.Enum.GetConversationDetails}")
                 {
                     string metaDir = Path.Combine(Environment.CurrentDirectory, "AICapture");
                     string logDir = Path.Combine(metaDir, "Transcripts");
@@ -184,7 +187,7 @@ namespace SSoTme.OST.Lib.CLIOptions
             }
             else
             {
-                if (e.Payload.AICSkillName == "ChangeProject")
+                if (e.Payload.AICSkillName == $"{AICSkills.Enum.ChangeProject}")
                 {
                     Environment.CurrentDirectory = e.Payload.Content;
                     Console.WriteLine("Current directory changed to " + Environment.CurrentDirectory);
@@ -203,7 +206,7 @@ namespace SSoTme.OST.Lib.CLIOptions
                     Console.WriteLine("New project created at " + Environment.CurrentDirectory);
 
                 }
-                else if (e.Payload.AICSkillName == "SaveTranscript")
+                else if (e.Payload.AICSkillName == $"{AICSkills.Enum.SaveTranscript}")
                 {
                     string metaDir = Path.Combine(Environment.CurrentDirectory, "AICapture");
                     string logDir = Path.Combine(metaDir, "Transcripts");
@@ -228,11 +231,11 @@ namespace SSoTme.OST.Lib.CLIOptions
                     string transcriptFile = Path.Combine(logDir, fileName);
                     File.AppendAllText(transcriptFile, entryText + Environment.NewLine);
                 }
-                else if (e.Payload.AICSkillName == "SaveBackup")
+                else if (e.Payload.AICSkillName == $"{AICSkills.Enum.SaveBackup}")
                 {
                     SaveBackup();
                 }
-                else if (e.Payload.AICSkillName == "RestoreBackup")
+                else if (e.Payload.AICSkillName == $"{AICSkills.Enum.RestoreBackup}")
                 {
                     if (e.Payload.Content is null)
                     {

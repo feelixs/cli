@@ -37,7 +37,13 @@ namespace AIC.SassyMQ.Lib
             this.Content = content;
         }
 
-        // 7 odxml properties
+        // 23 odxml properties
+        
+        public String HelpfulPromptId { get; set; }
+        
+        public dc.HelpfulPrompt HelpfulPrompt { get; set; }
+        
+        public List<dc.HelpfulPrompt> HelpfulPrompts { get; set; }
         
         public String AIModelId { get; set; }
         
@@ -45,17 +51,65 @@ namespace AIC.SassyMQ.Lib
         
         public List<dc.AIModel> AIModels { get; set; }
         
+        public String SharedDirectoryId { get; set; }
+        
+        public dc.SharedDirectory SharedDirectory { get; set; }
+        
+        public List<dc.SharedDirectory> SharedDirectories { get; set; }
+        
+        public String AICDirectoryId { get; set; }
+        
+        public dc.AICDirectory AICDirectory { get; set; }
+        
+        public List<dc.AICDirectory> AICDirectories { get; set; }
+        
+        public String RateLimitId { get; set; }
+        
+        public dc.RateLimit RateLimit { get; set; }
+        
+        public List<dc.RateLimit> RateLimits { get; set; }
+        
         public String AppUserId { get; set; }
         
         public dc.AppUser AppUser { get; set; }
         
         public List<dc.AppUser> AppUsers { get; set; }
         
+        public String AICWorkspaceId { get; set; }
+        
+        public dc.AICWorkspace AICWorkspace { get; set; }
+        
+        public List<dc.AICWorkspace> AICWorkspaces { get; set; }
+        
+        public String AICContextCategoryId { get; set; }
+        
+        public dc.AICContextCategory AICContextCategory { get; set; }
+        
+        public List<dc.AICContextCategory> AICContextCategories { get; set; }
+        
         public String AICPlanId { get; set; }
         
         public dc.AICPlan AICPlan { get; set; }
         
         public List<dc.AICPlan> AICPlans { get; set; }
+        
+        public String AICModelPricingId { get; set; }
+        
+        public dc.AICModelPricing AICModelPricing { get; set; }
+        
+        public List<dc.AICModelPricing> AICModelPricings { get; set; }
+        
+        public String LanguageId { get; set; }
+        
+        public dc.Language Language { get; set; }
+        
+        public List<dc.Language> Languages { get; set; }
+        
+        public String AppUserUsageId { get; set; }
+        
+        public dc.AppUserUsage AppUserUsage { get; set; }
+        
+        public List<dc.AppUserUsage> AppUserUsages { get; set; }
         
         public String AIProviderId { get; set; }
         
@@ -65,9 +119,21 @@ namespace AIC.SassyMQ.Lib
         
         public String AICSkillId { get; set; }
         
-        public string AICSkillName { get; set; }
+        public dc.AICSkill AICSkill { get; set; }
         
         public List<dc.AICSkill> AICSkills { get; set; }
+        
+        public String AICContextId { get; set; }
+        
+        public dc.AICContext AICContext { get; set; }
+        
+        public List<dc.AICContext> AICContexts { get; set; }
+        
+        public String FriendRequestId { get; set; }
+        
+        public dc.FriendRequest FriendRequest { get; set; }
+        
+        public List<dc.FriendRequest> FriendRequests { get; set; }
         
         public String AICConversationId { get; set; }
         
@@ -75,11 +141,41 @@ namespace AIC.SassyMQ.Lib
         
         public List<dc.AICConversation> AICConversations { get; set; }
         
+        public String EntityId { get; set; }
+        
+        public dc.Entity Entity { get; set; }
+        
+        public List<dc.Entity> Entities { get; set; }
+        
+        public String AICSkillVersionId { get; set; }
+        
+        public dc.AICSkillVersion AICSkillVersion { get; set; }
+        
+        public List<dc.AICSkillVersion> AICSkillVersions { get; set; }
+        
+        public String AICMessageId { get; set; }
+        
+        public dc.AICMessage AICMessage { get; set; }
+        
+        public List<dc.AICMessage> AICMessages { get; set; }
+        
         public String AICProjectId { get; set; }
         
         public dc.AICProject AICProject { get; set; }
         
         public List<dc.AICProject> AICProjects { get; set; }
+        
+        public String AICFileId { get; set; }
+        
+        public dc.AICFile AICFile { get; set; }
+        
+        public List<dc.AICFile> AICFiles { get; set; }
+        
+        public String AICSkillStepId { get; set; }
+        
+        public dc.AICSkillStep AICSkillStep { get; set; }
+        
+        public List<dc.AICSkillStep> AICSkillSteps { get; set; }
         
         
         public String ToJSON() 

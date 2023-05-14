@@ -36,12 +36,12 @@ using System.Xml.XPath;
 
 namespace SSoTme.OST.Lib.Extensions
 {
-    public static class SSOTMEExtensions
+    public static class Default_SSOTMEExtensions
     {
 
-        static SSOTMEExtensions()
+        static Default_SSOTMEExtensions()
         {
-            SSOTMEExtensions.Pluralizer = PluralizationService.CreateService(CultureInfo.CurrentCulture);
+            Default_SSOTMEExtensions.Pluralizer = PluralizationService.CreateService(CultureInfo.CurrentCulture);
         }
 
 
@@ -498,7 +498,7 @@ namespace SSoTme.OST.Lib.Extensions
         {
             if (!ReferenceEquals(fileSetFile.ZippedBinaryFileContents, null))
             {
-                return SSoTme.OST.Lib.Extensions.SSOTMEExtensions.Unzip(fileSetFile.ZippedBinaryFileContents);
+                return SSoTme.OST.Lib.Extensions.Default_SSOTMEExtensions.Unzip(fileSetFile.ZippedBinaryFileContents);
             }
             else return new Byte[] { };
         }
