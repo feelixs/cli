@@ -21,7 +21,11 @@ namespace AICapture.OST.Lib.AICapture.DataClasses
             GetConversationDetails,
             ChangeProject,
             SaveBackup,
-            RestoreBackup
+            RestoreBackup,
+            GetFileList,
+            UpdateFile,
+            RequestReplay,
+            RequestReplayAll
         }
     // Create an Enum here
     }

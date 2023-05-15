@@ -25,7 +25,7 @@ namespace AIC.SassyMQ.Lib
             this.BasicDeliverEventArgs  = bdea;
         }
 
-        public StandardPayload Payload { get; private set; }
+        public StandardPayload Payload { get; set; }
         public BasicDeliverEventArgs BasicDeliverEventArgs  { get; }
     }
 }

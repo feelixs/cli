@@ -121,13 +121,7 @@ namespace SSoTme.OST.Lib.CLIOptions
                 {
                     Environment.CurrentDirectory = Path.Combine(Environment.CurrentDirectory, "..", e.Payload.Content);
                 }
-                e.Payload.AICaptureProjectFolder = $"/{Path.GetFileName(Environment.CurrentDirectory)}";
-                Directory.SetLastWriteTime(Environment.CurrentDirectory, DateTime.Now);
-                var defaultSSOT = $"{{ {Environment.NewLine}   \"project\":{{    \"name\":\"{Path.GetFileName(Environment.CurrentDirectory)}\"{Environment.NewLine}}}{Environment.NewLine}}}";
-                var found = this.LookFor("single-source-of-truth.json", e.Payload, true, defaultSSOT);
-                this.LookFor("README.md", e.Payload, false);
-                //if (!found) found = this.LookFor("ssot.json", e.Payload);
-                //if (!found) found = this.LookFor("aicapture.json", e.Payload);
+                PopulateProjectSSoTAndReadme(e.Payload);
             }
             else
             {
@@ -136,6 +130,16 @@ namespace SSoTme.OST.Lib.CLIOptions
                     string parentDir = Environment.CurrentDirectory + "\\..";
                     DirectoryInfo info = new DirectoryInfo(parentDir);
                     e.Payload.Projects = info.EnumerateDirectories().OrderByDescending(d => (d.LastWriteTime)).ThenBy(d => (d.Name)).Select(d => (d.FullName)).ToArray();
+                }
+                else if (e.Payload.AICSkillName == $"{AICSkills.Enum.RequestReplay}")
+                {
+                    ExecuteCommand(Environment.CurrentDirectory, "aic -replay");
+                    PopulateProjectSSoTAndReadme(e.Payload);
+                }
+                else if (e.Payload.AICSkillName == $"{AICSkills.Enum.RequestReplayAll}")
+                {
+                    ExecuteCommand(Environment.CurrentDirectory, "aic -replayall");
+                    PopulateProjectSSoTAndReadme(e.Payload);
                 }
                 else if (e.Payload.AICSkillName == $"{AICSkills.Enum.GetBackupList}")
                 {
@@ -168,6 +172,15 @@ namespace SSoTme.OST.Lib.CLIOptions
                     }
                 }
             }
+        }
+
+        private void PopulateProjectSSoTAndReadme(StandardPayload payload)
+        {
+            payload.AICaptureProjectFolder = $"/{Path.GetFileName(Environment.CurrentDirectory)}";
+            Directory.SetLastWriteTime(Environment.CurrentDirectory, DateTime.Now);
+            var defaultSSOT = $"{{ {Environment.NewLine}   \"project\":{{    \"name\":\"{Path.GetFileName(Environment.CurrentDirectory)}\"{Environment.NewLine}}}{Environment.NewLine}}}";
+            var found = this.LookFor("single-source-of-truth.json", payload, true, defaultSSOT);
+            this.LookFor("README.md", payload, false);
         }
 
         private void Aica_UserSetDataReceived(object sender, AIC.SassyMQ.Lib.PayloadEventArgs e)
@@ -353,19 +366,20 @@ namespace SSoTme.OST.Lib.CLIOptions
 
         private void ExecuteCommand(string workingDirectory, string command)
         {
+
             var process = new Process
             {
                 StartInfo = new ProcessStartInfo
                 {
                     FileName = "cmd.exe",
                     RedirectStandardInput = true,
+                    RedirectStandardOutput = true, // Added to redirect output
                     UseShellExecute = false,
                     CreateNoWindow = true,
                     WorkingDirectory = workingDirectory
                 }
             };
-            process.Start();
-
+            var result = process.Start();
             using (var sw = process.StandardInput)
             {
                 if (sw.BaseStream.CanWrite)
@@ -373,6 +387,17 @@ namespace SSoTme.OST.Lib.CLIOptions
                     sw.WriteLine(command);
                 }
             }
+            // Added to block until the process completes or times out
+            if (process.WaitForExit(30000))
+            {
+                Console.WriteLine(process.StandardOutput.ReadToEnd()); // Logs the output
+            }
+            else
+            {
+                Console.WriteLine("Process timed out");
+            }
+
+
         }
 
         private void Aica_UserAICReplayReceived(object sender, AIC.SassyMQ.Lib.PayloadEventArgs e)
