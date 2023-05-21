@@ -64,6 +64,9 @@ namespace AIC.Lib.DataClasses
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "IsPublic")]
         public Nullable<Boolean> IsPublic { get; set; }
     
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "CleanName")]
+        public String CleanName { get; set; }
+    
 
         
 

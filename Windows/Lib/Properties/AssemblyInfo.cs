@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("SSoTme.OST.Lib")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Helping connect Developers and AI using Natural Language Conversation.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("aicapture.io")]
 [assembly: AssemblyProduct("SSoT.me Open Source Tools Library")]
-[assembly: AssemblyCopyright("Copyright ©  2017")]
+[assembly: AssemblyCopyright("Copyright © EJ Alexandra, aicapture.io, 2023")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("2023.02.06.0")]
-[assembly: AssemblyFileVersion("2023.02.06.0")]
+[assembly: AssemblyVersion("2023.05.21.0")]
+[assembly: AssemblyFileVersion("2023.05.21.0")]

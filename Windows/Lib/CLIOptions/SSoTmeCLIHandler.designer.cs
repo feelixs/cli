@@ -9,8 +9,8 @@ using System.Threading.Tasks;
 namespace SSoTme.OST.Lib.CLIOptions
 {
 
-    [CommandLineManager(ApplicationName = "aicapture.io",
-                        Copyright = "Copyright 2023, EJ Alexandra, EffortlessAPI.com",
+    [CommandLineManager(ApplicationName = "aicapture.io cli",
+                        Copyright = "Copyright 2023, EJ Alexandra, aicapture.io, All Rights Reserved.",
                         Description = @"Helping connect developers and AI with Natural Language Conversation")]
     public partial class SSoTmeCLIHandler
     {
