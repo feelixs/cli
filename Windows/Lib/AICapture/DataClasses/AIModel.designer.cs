@@ -29,7 +29,7 @@ namespace AIC.Lib.DataClasses
         public String Name { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "PricePerMillionWords")]
-        public Nullable<decimal> PricePerMillionWords { get; set; }
+        public decimal[] PricePerMillionWords { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "Notes")]
         public String Notes { get; set; }
@@ -44,16 +44,16 @@ namespace AIC.Lib.DataClasses
         public String AIProvider { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "PricePer1KPromptTokens")]
-        public Nullable<decimal> PricePer1KPromptTokens { get; set; }
+        public decimal[] PricePer1KPromptTokens { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "PricePer1KResponseTokens")]
-        public Nullable<decimal> PricePer1KResponseTokens { get; set; }
+        public decimal[] PricePer1KResponseTokens { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "CurrentPrice")]
-        public String CurrentPrice { get; set; }
+        public String[] CurrentPrice { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICModelPricings")]
-        public String[] AICModelPricings { get; set; }
+        public String AICModelPricings { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICPlans")]
         public String[] AICPlans { get; set; }

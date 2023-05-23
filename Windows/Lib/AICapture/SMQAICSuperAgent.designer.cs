@@ -795,6 +795,114 @@ namespace AIC.SassyMQ.Lib
         
         
         /// <summary>
+        /// AddRepo - 
+        /// </summary>
+        public Task AddRepo(PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
+        {
+            return this.AddRepo(this.CreatePayload(), replyHandler, timeoutHandler, waitTimeout);
+        }
+
+        /// <summary>
+        /// AddRepo - 
+        /// </summary>
+        public Task AddRepo(String content, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
+        {
+            var payload = this.CreatePayload(content);
+            return this.AddRepo(payload, replyHandler, timeoutHandler, waitTimeout);
+        }
+    
+        
+        /// <summary>
+        /// AddRepo - 
+        /// </summary>
+        public Task AddRepo(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
+        {
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.addrepo", payload, replyHandler, timeoutHandler, waitTimeout);
+        }
+        
+        
+        /// <summary>
+        /// GetRepos - 
+        /// </summary>
+        public Task GetRepos(PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
+        {
+            return this.GetRepos(this.CreatePayload(), replyHandler, timeoutHandler, waitTimeout);
+        }
+
+        /// <summary>
+        /// GetRepos - 
+        /// </summary>
+        public Task GetRepos(String content, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
+        {
+            var payload = this.CreatePayload(content);
+            return this.GetRepos(payload, replyHandler, timeoutHandler, waitTimeout);
+        }
+    
+        
+        /// <summary>
+        /// GetRepos - 
+        /// </summary>
+        public Task GetRepos(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
+        {
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.getrepos", payload, replyHandler, timeoutHandler, waitTimeout);
+        }
+        
+        
+        /// <summary>
+        /// UpdateRepo - 
+        /// </summary>
+        public Task UpdateRepo(PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
+        {
+            return this.UpdateRepo(this.CreatePayload(), replyHandler, timeoutHandler, waitTimeout);
+        }
+
+        /// <summary>
+        /// UpdateRepo - 
+        /// </summary>
+        public Task UpdateRepo(String content, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
+        {
+            var payload = this.CreatePayload(content);
+            return this.UpdateRepo(payload, replyHandler, timeoutHandler, waitTimeout);
+        }
+    
+        
+        /// <summary>
+        /// UpdateRepo - 
+        /// </summary>
+        public Task UpdateRepo(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
+        {
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.updaterepo", payload, replyHandler, timeoutHandler, waitTimeout);
+        }
+        
+        
+        /// <summary>
+        /// DeleteRepo - 
+        /// </summary>
+        public Task DeleteRepo(PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
+        {
+            return this.DeleteRepo(this.CreatePayload(), replyHandler, timeoutHandler, waitTimeout);
+        }
+
+        /// <summary>
+        /// DeleteRepo - 
+        /// </summary>
+        public Task DeleteRepo(String content, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
+        {
+            var payload = this.CreatePayload(content);
+            return this.DeleteRepo(payload, replyHandler, timeoutHandler, waitTimeout);
+        }
+    
+        
+        /// <summary>
+        /// DeleteRepo - 
+        /// </summary>
+        public Task DeleteRepo(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
+        {
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.deleterepo", payload, replyHandler, timeoutHandler, waitTimeout);
+        }
+        
+        
+        /// <summary>
         /// AddAICContextCategory - 
         /// </summary>
         public Task AddAICContextCategory(PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
@@ -2195,6 +2303,114 @@ namespace AIC.SassyMQ.Lib
         public Task DeleteAICMessage(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
         {
             return this.SendMessage("crudcoordinator.crud.aicsuperagent.deleteaicmessage", payload, replyHandler, timeoutHandler, waitTimeout);
+        }
+        
+        
+        /// <summary>
+        /// AddRepoBranch - 
+        /// </summary>
+        public Task AddRepoBranch(PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
+        {
+            return this.AddRepoBranch(this.CreatePayload(), replyHandler, timeoutHandler, waitTimeout);
+        }
+
+        /// <summary>
+        /// AddRepoBranch - 
+        /// </summary>
+        public Task AddRepoBranch(String content, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
+        {
+            var payload = this.CreatePayload(content);
+            return this.AddRepoBranch(payload, replyHandler, timeoutHandler, waitTimeout);
+        }
+    
+        
+        /// <summary>
+        /// AddRepoBranch - 
+        /// </summary>
+        public Task AddRepoBranch(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
+        {
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.addrepobranch", payload, replyHandler, timeoutHandler, waitTimeout);
+        }
+        
+        
+        /// <summary>
+        /// GetRepoBranches - 
+        /// </summary>
+        public Task GetRepoBranches(PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
+        {
+            return this.GetRepoBranches(this.CreatePayload(), replyHandler, timeoutHandler, waitTimeout);
+        }
+
+        /// <summary>
+        /// GetRepoBranches - 
+        /// </summary>
+        public Task GetRepoBranches(String content, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
+        {
+            var payload = this.CreatePayload(content);
+            return this.GetRepoBranches(payload, replyHandler, timeoutHandler, waitTimeout);
+        }
+    
+        
+        /// <summary>
+        /// GetRepoBranches - 
+        /// </summary>
+        public Task GetRepoBranches(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
+        {
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.getrepobranches", payload, replyHandler, timeoutHandler, waitTimeout);
+        }
+        
+        
+        /// <summary>
+        /// UpdateRepoBranch - 
+        /// </summary>
+        public Task UpdateRepoBranch(PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
+        {
+            return this.UpdateRepoBranch(this.CreatePayload(), replyHandler, timeoutHandler, waitTimeout);
+        }
+
+        /// <summary>
+        /// UpdateRepoBranch - 
+        /// </summary>
+        public Task UpdateRepoBranch(String content, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
+        {
+            var payload = this.CreatePayload(content);
+            return this.UpdateRepoBranch(payload, replyHandler, timeoutHandler, waitTimeout);
+        }
+    
+        
+        /// <summary>
+        /// UpdateRepoBranch - 
+        /// </summary>
+        public Task UpdateRepoBranch(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
+        {
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.updaterepobranch", payload, replyHandler, timeoutHandler, waitTimeout);
+        }
+        
+        
+        /// <summary>
+        /// DeleteRepoBranch - 
+        /// </summary>
+        public Task DeleteRepoBranch(PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
+        {
+            return this.DeleteRepoBranch(this.CreatePayload(), replyHandler, timeoutHandler, waitTimeout);
+        }
+
+        /// <summary>
+        /// DeleteRepoBranch - 
+        /// </summary>
+        public Task DeleteRepoBranch(String content, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
+        {
+            var payload = this.CreatePayload(content);
+            return this.DeleteRepoBranch(payload, replyHandler, timeoutHandler, waitTimeout);
+        }
+    
+        
+        /// <summary>
+        /// DeleteRepoBranch - 
+        /// </summary>
+        public Task DeleteRepoBranch(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
+        {
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.deleterepobranch", payload, replyHandler, timeoutHandler, waitTimeout);
         }
         
         

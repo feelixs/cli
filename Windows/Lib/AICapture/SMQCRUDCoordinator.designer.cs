@@ -296,6 +296,38 @@ namespace AIC.SassyMQ.Lib
                         this.OnAdminDeleteAICWorkspaceReceived(payload, bdea);
                         break;
                     
+                    case "crudcoordinator.crud.aicsuperagent.addrepo":
+                        this.OnAICSuperAgentAddRepoReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.aicsuperagent.getrepos":
+                        this.OnAICSuperAgentGetReposReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.aicsuperagent.updaterepo":
+                        this.OnAICSuperAgentUpdateRepoReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.aicsuperagent.deleterepo":
+                        this.OnAICSuperAgentDeleteRepoReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.admin.addrepo":
+                        this.OnAdminAddRepoReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.admin.getrepos":
+                        this.OnAdminGetReposReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.admin.updaterepo":
+                        this.OnAdminUpdateRepoReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.admin.deleterepo":
+                        this.OnAdminDeleteRepoReceived(payload, bdea);
+                        break;
+                    
                     case "crudcoordinator.crud.aicsuperagent.addaiccontextcategory":
                         this.OnAICSuperAgentAddAICContextCategoryReceived(payload, bdea);
                         break;
@@ -722,6 +754,38 @@ namespace AIC.SassyMQ.Lib
                     
                     case "crudcoordinator.crud.admin.deleteaicmessage":
                         this.OnAdminDeleteAICMessageReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.aicsuperagent.addrepobranch":
+                        this.OnAICSuperAgentAddRepoBranchReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.aicsuperagent.getrepobranches":
+                        this.OnAICSuperAgentGetRepoBranchesReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.aicsuperagent.updaterepobranch":
+                        this.OnAICSuperAgentUpdateRepoBranchReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.aicsuperagent.deleterepobranch":
+                        this.OnAICSuperAgentDeleteRepoBranchReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.admin.addrepobranch":
+                        this.OnAdminAddRepoBranchReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.admin.getrepobranches":
+                        this.OnAdminGetRepoBranchesReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.admin.updaterepobranch":
+                        this.OnAdminUpdateRepoBranchReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.admin.deleterepobranch":
+                        this.OnAdminDeleteRepoBranchReceived(payload, bdea);
                         break;
                     
                     case "crudcoordinator.crud.user.addaicproject":
@@ -1795,6 +1859,118 @@ namespace AIC.SassyMQ.Lib
             {
                 plea.Payload.IsHandled = true;
                 this.AdminDeleteAICWorkspaceReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: AddRepo from AICSuperAgent
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AICSuperAgentAddRepoReceived;
+        protected virtual void OnAICSuperAgentAddRepoReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AICSuperAgentAddRepoReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AICSuperAgentAddRepoReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: GetRepos from AICSuperAgent
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AICSuperAgentGetReposReceived;
+        protected virtual void OnAICSuperAgentGetReposReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AICSuperAgentGetReposReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AICSuperAgentGetReposReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: UpdateRepo from AICSuperAgent
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AICSuperAgentUpdateRepoReceived;
+        protected virtual void OnAICSuperAgentUpdateRepoReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AICSuperAgentUpdateRepoReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AICSuperAgentUpdateRepoReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: DeleteRepo from AICSuperAgent
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AICSuperAgentDeleteRepoReceived;
+        protected virtual void OnAICSuperAgentDeleteRepoReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AICSuperAgentDeleteRepoReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AICSuperAgentDeleteRepoReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: AddRepo from Admin
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AdminAddRepoReceived;
+        protected virtual void OnAdminAddRepoReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AdminAddRepoReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AdminAddRepoReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: GetRepos from Admin
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AdminGetReposReceived;
+        protected virtual void OnAdminGetReposReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AdminGetReposReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AdminGetReposReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: UpdateRepo from Admin
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AdminUpdateRepoReceived;
+        protected virtual void OnAdminUpdateRepoReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AdminUpdateRepoReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AdminUpdateRepoReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: DeleteRepo from Admin
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AdminDeleteRepoReceived;
+        protected virtual void OnAdminDeleteRepoReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AdminDeleteRepoReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AdminDeleteRepoReceived(this, plea);
             }
         }
 
@@ -3293,6 +3469,118 @@ namespace AIC.SassyMQ.Lib
             {
                 plea.Payload.IsHandled = true;
                 this.AdminDeleteAICMessageReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: AddRepoBranch from AICSuperAgent
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AICSuperAgentAddRepoBranchReceived;
+        protected virtual void OnAICSuperAgentAddRepoBranchReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AICSuperAgentAddRepoBranchReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AICSuperAgentAddRepoBranchReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: GetRepoBranches from AICSuperAgent
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AICSuperAgentGetRepoBranchesReceived;
+        protected virtual void OnAICSuperAgentGetRepoBranchesReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AICSuperAgentGetRepoBranchesReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AICSuperAgentGetRepoBranchesReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: UpdateRepoBranch from AICSuperAgent
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AICSuperAgentUpdateRepoBranchReceived;
+        protected virtual void OnAICSuperAgentUpdateRepoBranchReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AICSuperAgentUpdateRepoBranchReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AICSuperAgentUpdateRepoBranchReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: DeleteRepoBranch from AICSuperAgent
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AICSuperAgentDeleteRepoBranchReceived;
+        protected virtual void OnAICSuperAgentDeleteRepoBranchReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AICSuperAgentDeleteRepoBranchReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AICSuperAgentDeleteRepoBranchReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: AddRepoBranch from Admin
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AdminAddRepoBranchReceived;
+        protected virtual void OnAdminAddRepoBranchReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AdminAddRepoBranchReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AdminAddRepoBranchReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: GetRepoBranches from Admin
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AdminGetRepoBranchesReceived;
+        protected virtual void OnAdminGetRepoBranchesReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AdminGetRepoBranchesReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AdminGetRepoBranchesReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: UpdateRepoBranch from Admin
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AdminUpdateRepoBranchReceived;
+        protected virtual void OnAdminUpdateRepoBranchReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AdminUpdateRepoBranchReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AdminUpdateRepoBranchReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: DeleteRepoBranch from Admin
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AdminDeleteRepoBranchReceived;
+        protected virtual void OnAdminDeleteRepoBranchReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AdminDeleteRepoBranchReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AdminDeleteRepoBranchReceived(this, plea);
             }
         }
 

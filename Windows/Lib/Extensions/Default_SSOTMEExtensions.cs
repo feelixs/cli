@@ -490,6 +490,11 @@ namespace SSoTme.OST.Lib.Extensions
             {
                 if (!String.IsNullOrEmpty(fileSetFile.FileContents)) return fileSetFile.FileContents;
                 else if (!ReferenceEquals(fileSetFile.ZippedFileContents, null)) return fileSetFile.ZippedFileContents.UnzipToString();
+                else if (!ReferenceEquals(fileSetFile.ZippedBinaryFileContents, null))
+                {
+                    var bytes = Unzip(fileSetFile.ZippedBinaryFileContents);
+                    return Encoding.UTF8.GetString(bytes);
+                }
                 else return String.Empty;
             }
         }

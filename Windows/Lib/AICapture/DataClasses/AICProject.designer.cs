@@ -76,6 +76,21 @@ namespace AIC.Lib.DataClasses
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "SharedWithUserIds")]
         public String[] SharedWithUserIds { get; set; }
     
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "GotResponse")]
+        public Nullable<Boolean> GotResponse { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "NotListening")]
+        public Nullable<Boolean> NotListening { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "IsDeleted")]
+        public Nullable<Boolean> IsDeleted { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ModifiedTime")]
+        public Nullable<DateTime> ModifiedTime { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "README")]
+        public String README { get; set; }
+    
 
         
 

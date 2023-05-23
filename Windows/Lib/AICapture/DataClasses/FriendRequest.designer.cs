@@ -67,6 +67,15 @@ namespace AIC.Lib.DataClasses
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ParentRequestAccepted")]
         public Nullable<Boolean> ParentRequestAccepted { get; set; }
     
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICaptureUserName")]
+        public String AICaptureUserName { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "RequestedFriendAICaptureUserName")]
+        public String RequestedFriendAICaptureUserName { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "RequestSentToEmailAddress")]
+        public String RequestSentToEmailAddress { get; set; }
+    
 
         
 

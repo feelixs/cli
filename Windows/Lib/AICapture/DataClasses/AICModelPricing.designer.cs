@@ -46,12 +46,6 @@ namespace AIC.Lib.DataClasses
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "PricePerMessage")]
         public Nullable<decimal> PricePerMessage { get; set; }
     
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "NamefromAIModel")]
-        public String NamefromAIModel { get; set; }
-    
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AIModels")]
-        public String[] AIModels { get; set; }
-    
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICMessages")]
         public String[] AICMessages { get; set; }
     
@@ -66,6 +60,42 @@ namespace AIC.Lib.DataClasses
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "IsPublic")]
         public Nullable<Int32> IsPublic { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AIModelAIProvider")]
+        public String AIModelAIProvider { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ResaleOf")]
+        public String ResaleOf { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ResaleOfAIModelPricePer1KPromptTokens")]
+        public Nullable<decimal> ResaleOfAIModelPricePer1KPromptTokens { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ResaleOfPriceFor1MillionTokens")]
+        public Nullable<decimal> ResaleOfPriceFor1MillionTokens { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ResaleOfPricePer1kPromptToken")]
+        public Nullable<decimal> ResaleOfPricePer1kPromptToken { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ResaleOfAIModelName")]
+        public String ResaleOfAIModelName { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ResaleOfPricePer1kResponseToken")]
+        public Nullable<decimal> ResaleOfPricePer1kResponseToken { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "SuggestedPricePer1kResponseToken")]
+        public Nullable<decimal> SuggestedPricePer1kResponseToken { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ResaleOffPricePerMessage")]
+        public Nullable<decimal> ResaleOffPricePerMessage { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ResaleMarkUp")]
+        public Nullable<decimal> ResaleMarkUp { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AIModelName")]
+        public String AIModelName { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "SuggestedPricePer1kPromptToken")]
+        public Nullable<decimal> SuggestedPricePer1kPromptToken { get; set; }
     
 
         
