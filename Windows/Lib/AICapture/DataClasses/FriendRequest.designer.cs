@@ -76,6 +76,24 @@ namespace AIC.Lib.DataClasses
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "RequestSentToEmailAddress")]
         public String RequestSentToEmailAddress { get; set; }
     
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "RequestStatus")]
+        public String RequestStatus { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "FriendRequestRejected")]
+        public Nullable<Boolean> FriendRequestRejected { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "RequestTarget")]
+        public String RequestTarget { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ReciprocalRequestRejected")]
+        public Nullable<Boolean> ReciprocalRequestRejected { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ParentRequestRejected")]
+        public Nullable<Boolean> ParentRequestRejected { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "RelativeRequestUrl")]
+        public String RelativeRequestUrl { get; set; }
+    
 
         
 

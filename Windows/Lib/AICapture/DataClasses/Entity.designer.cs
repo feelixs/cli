@@ -52,6 +52,9 @@ namespace AIC.Lib.DataClasses
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "SortOrder")]
         public Nullable<Int32> SortOrder { get; set; }
     
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "DBName")]
+        public String DBName { get; set; }
+    
 
         
 

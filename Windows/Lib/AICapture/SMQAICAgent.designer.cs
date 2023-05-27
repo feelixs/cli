@@ -18,10 +18,14 @@ namespace AIC.SassyMQ.Lib
 
         protected override void CheckRouting(StandardPayload payload, BasicDeliverEventArgs  bdea)
         {
+            var routingKey = bdea.RoutingKey;
+            
+            if (!String.IsNullOrEmpty(payload.RoutingKey)) routingKey = payload.RoutingKey;            
+             
             var originalAccessToken = payload.AccessToken;
             try
             {
-                switch (payload.RoutingKey)
+                switch (routingKey)
                 {
                     
                     case "aicagent.custom.user.aicinstall":
