@@ -29,9 +29,11 @@ namespace AIC.Lib.DataClasses
         public String Id { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AppUser")]
+        [RemoteIsCollection]
         public String[] AppUser { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICaptureUserIdfromAppUser")]
+        [RemoteIsCollection]
         public String[] AICaptureUserIdfromAppUser { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "PerHourUsage")]

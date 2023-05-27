@@ -32,6 +32,7 @@ namespace AIC.Lib.DataClasses
         public String Notes { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "RepoBranches")]
+        [RemoteIsCollection]
         public String[] RepoBranches { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "RepoUrl")]

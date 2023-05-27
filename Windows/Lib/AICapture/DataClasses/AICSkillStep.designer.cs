@@ -29,15 +29,19 @@ namespace AIC.Lib.DataClasses
         public String Name { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICSkillVersion")]
+        [RemoteIsCollection]
         public String AICSkillVersion { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICSkillVersionName")]
+        [RemoteIsCollection]
         public String AICSkillVersionName { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "RootSkill")]
+        [RemoteIsCollection]
         public String RootSkill { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "RootAICSkillName")]
+        [RemoteIsCollection]
         public String RootAICSkillName { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "StepNumber")]
@@ -47,24 +51,31 @@ namespace AIC.Lib.DataClasses
         public String Notes { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "StepSubSkillVersion")]
+        [RemoteIsCollection]
         public String StepSubSkillVersion { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "StepSubSkillAssociatedMethod")]
+        [RemoteIsCollection]
         public String StepSubSkillAssociatedMethod { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICSSubkillName")]
+        [RemoteIsCollection]
         public String AICSSubkillName { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICSkillNotes")]
+        [RemoteIsCollection]
         public String AICSkillNotes { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "DefaultAIModel")]
+        [RemoteIsCollection]
         public String DefaultAIModel { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICPrompt")]
+        [RemoteIsCollection]
         public String AICPrompt { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "PromptText")]
+        [RemoteIsCollection]
         public String PromptText { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "IsPublic")]

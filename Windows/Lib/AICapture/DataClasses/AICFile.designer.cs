@@ -32,6 +32,7 @@ namespace AIC.Lib.DataClasses
         public String Notes { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ParentDirectory")]
+        [RemoteIsCollection]
         public String[] ParentDirectory { get; set; }
     
 

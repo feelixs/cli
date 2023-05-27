@@ -35,15 +35,18 @@ namespace AIC.Lib.DataClasses
         public String Notes { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "FollowUpForPrompt")]
+        [RemoteIsCollection]
         public String FollowUpForPrompt { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "DepenentOnPrompt")]
+        [RemoteIsCollection]
         public String DepenentOnPrompt { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "Version")]
         public Nullable<Int32> Version { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICSkillSteps")]
+        [RemoteIsCollection]
         public String[] AICSkillSteps { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "IsPublic")]

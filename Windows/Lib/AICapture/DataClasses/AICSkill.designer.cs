@@ -47,6 +47,7 @@ namespace AIC.Lib.DataClasses
         public String PriorityLevel { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICPlans")]
+        [RemoteIsCollection]
         public String[] AICPlans { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICSkillName")]
@@ -56,9 +57,11 @@ namespace AIC.Lib.DataClasses
         public String AICSkillSteps { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICSkillVersion")]
+        [RemoteIsCollection]
         public String[] AICSkillVersion { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICSkillSteps2")]
+        [RemoteIsCollection]
         public String[] AICSkillSteps2 { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "IsPublic")]

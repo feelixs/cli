@@ -29,6 +29,7 @@ namespace AIC.Lib.DataClasses
         public String Name { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ParentMessage")]
+        [RemoteIsCollection]
         public String ParentMessage { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICMessageIdentifier")]
@@ -38,9 +39,11 @@ namespace AIC.Lib.DataClasses
         public String ExternalMessageIdentifier { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ParentAICMessageIdentifier")]
+        [RemoteIsCollection]
         public String ParentAICMessageIdentifier { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ParentExternalMessageIdentifier")]
+        [RemoteIsCollection]
         public String ParentExternalMessageIdentifier { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "PromptText")]
@@ -56,6 +59,7 @@ namespace AIC.Lib.DataClasses
         public String ResponseConclusion { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICConversation")]
+        [RemoteIsCollection]
         public String AICConversation { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "MessageType")]
@@ -77,12 +81,15 @@ namespace AIC.Lib.DataClasses
         public Nullable<DateTime> DateCreated { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICPricingModel")]
+        [RemoteIsCollection]
         public String AICPricingModel { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "PricePer1KPromptTokens")]
+        [RemoteIsCollection]
         public Nullable<decimal> PricePer1KPromptTokens { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "PRicePer1KResponseTokens")]
+        [RemoteIsCollection]
         public Nullable<decimal> PRicePer1KResponseTokens { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "PromptCost")]
@@ -92,6 +99,7 @@ namespace AIC.Lib.DataClasses
         public Nullable<decimal> ResponseCost { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "NamefromAICConversations")]
+        [RemoteIsCollection]
         public String NamefromAICConversations { get; set; }
     
 

@@ -44,9 +44,11 @@ namespace AIC.Lib.DataClasses
         public String[] Roles { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICProjects")]
+        [RemoteIsCollection]
         public String[] AICProjects { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICConversations")]
+        [RemoteIsCollection]
         public String[] AICConversations { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "DMQueue")]
@@ -59,6 +61,7 @@ namespace AIC.Lib.DataClasses
         public String UIDMQueue { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "Plan")]
+        [RemoteIsCollection]
         public String Plan { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICaptureUserId")]
@@ -71,12 +74,15 @@ namespace AIC.Lib.DataClasses
         public String LastWorkingDirectory { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICWorkspaces")]
+        [RemoteIsCollection]
         public String[] AICWorkspaces { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "FriendRequests")]
+        [RemoteIsCollection]
         public String[] FriendRequests { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "FriendRequestsReceived")]
+        [RemoteIsCollection]
         public String[] FriendRequestsReceived { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "RelativePath")]
@@ -92,9 +98,11 @@ namespace AIC.Lib.DataClasses
         public String GlobalSettingsPath { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AppUserUsage")]
+        [RemoteIsCollection]
         public String[] AppUserUsage { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "DefaultLanguage")]
+        [RemoteIsCollection]
         public String DefaultLanguage { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "DefaultAICaptureUserId")]
@@ -104,6 +112,7 @@ namespace AIC.Lib.DataClasses
         public String AICUserName { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "DefaultLanguageCode")]
+        [RemoteIsCollection]
         public String DefaultLanguageCode { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "CreatedTime")]

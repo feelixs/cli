@@ -32,12 +32,15 @@ namespace AIC.Lib.DataClasses
         public String Notes { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "Owner")]
+        [RemoteIsCollection]
         public String Owner { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "OwnerEmailAddress")]
+        [RemoteIsCollection]
         public String OwnerEmailAddress { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "Auth0SID")]
+        [RemoteIsCollection]
         public String Auth0SID { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "GitAccountHolder")]
@@ -50,31 +53,35 @@ namespace AIC.Lib.DataClasses
         public String DMQueueAddress { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ParentWorkspace")]
+        [RemoteIsCollection]
         public String ParentWorkspace { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "OwnerAICaptureUserId")]
+        [RemoteIsCollection]
         public String OwnerAICaptureUserId { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "OwnerProjectsPath")]
+        [RemoteIsCollection]
         public String OwnerProjectsPath { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICConversations")]
+        [RemoteIsCollection]
         public String[] AICConversations { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICContext")]
+        [RemoteIsCollection]
         public String[] AICContext { get; set; }
-    
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICDirectories")]
-        public String[] AICDirectories { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "DefaultProjectPath")]
         public String DefaultProjectPath { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "SharedWith")]
-        public String[] SharedWith { get; set; }
+        [RemoteIsCollection]
+        public String SharedWith { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "SharedWithUserIds")]
-        public String[] SharedWithUserIds { get; set; }
+        [RemoteIsCollection]
+        public String SharedWithUserIds { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "GotResponse")]
         public Nullable<Boolean> GotResponse { get; set; }
@@ -90,6 +97,14 @@ namespace AIC.Lib.DataClasses
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "README")]
         public String README { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICDirectory")]
+        [RemoteIsCollection]
+        public String AICDirectory { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "RelativePathfromAICDirectory")]
+        [RemoteIsCollection]
+        public String RelativePathfromAICDirectory { get; set; }
     
 
         

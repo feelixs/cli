@@ -38,6 +38,7 @@ namespace AIC.Lib.DataClasses
         public String Status { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AIModels")]
+        [RemoteIsCollection]
         public String[] AIModels { get; set; }
     
 

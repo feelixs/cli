@@ -29,15 +29,19 @@ namespace AIC.Lib.DataClasses
         public String Name { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICSkill")]
+        [RemoteIsCollection]
         public String AICSkill { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICSkillAssociatedMethod")]
+        [RemoteIsCollection]
         public String AICSkillAssociatedMethod { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICSkillName")]
+        [RemoteIsCollection]
         public String AICSkillName { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICSkillNotes")]
+        [RemoteIsCollection]
         public String AICSkillNotes { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "Version")]
@@ -47,12 +51,15 @@ namespace AIC.Lib.DataClasses
         public String Notes { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ImplementationAICSkillSteps")]
+        [RemoteIsCollection]
         public String[] ImplementationAICSkillSteps { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ReferencedByAICSkillSteps")]
+        [RemoteIsCollection]
         public String[] ReferencedByAICSkillSteps { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "SkillIsPublic")]
+        [RemoteIsCollection]
         public Nullable<Boolean> SkillIsPublic { get; set; }
     
 

@@ -29,12 +29,15 @@ namespace AIC.Lib.DataClasses
         public String Name { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICDirectory")]
+        [RemoteIsCollection]
         public String AICDirectory { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "Frendiship")]
+        [RemoteIsCollection]
         public String Frendiship { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "FrendishipRequestedFriend")]
+        [RemoteIsCollection]
         public String FrendishipRequestedFriend { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICDirectoryParentOwner")]
@@ -44,21 +47,27 @@ namespace AIC.Lib.DataClasses
         public String AICDirectoryParentAICaptureUserId { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AllowedUser")]
+        [RemoteIsCollection]
         public String AllowedUser { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AllowedAICaptureUserId")]
+        [RemoteIsCollection]
         public String AllowedAICaptureUserId { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICDirectoryParentProjectOwner")]
+        [RemoteIsCollection]
         public String AICDirectoryParentProjectOwner { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICDirectoryParentProjectOwnerAICaptureUserId")]
+        [RemoteIsCollection]
         public String AICDirectoryParentProjectOwnerAICaptureUserId { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICDirectoryParentWorkspaceOwner")]
+        [RemoteIsCollection]
         public String AICDirectoryParentWorkspaceOwner { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICDirectoryParentWorkspaceOwnerAICaptureUserId")]
+        [RemoteIsCollection]
         public String AICDirectoryParentWorkspaceOwnerAICaptureUserId { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "IsOrphaned")]

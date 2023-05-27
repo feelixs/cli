@@ -35,30 +35,39 @@ namespace AIC.Lib.DataClasses
         public String Status { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "Owner")]
+        [RemoteIsCollection]
         public String Owner { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "OwnerEmailAddress")]
+        [RemoteIsCollection]
         public String OwnerEmailAddress { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "Auth0SID")]
+        [RemoteIsCollection]
         public String Auth0SID { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICProject")]
+        [RemoteIsCollection]
         public String AICProject { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TotalPromptTokenCount")]
+        [RemoteIsCollection]
         public Nullable<Int32> TotalPromptTokenCount { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TotalPromptCost")]
+        [RemoteIsCollection]
         public Nullable<decimal> TotalPromptCost { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TotalResponseTokenCount")]
+        [RemoteIsCollection]
         public Nullable<decimal> TotalResponseTokenCount { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "NamefromAICProject")]
+        [RemoteIsCollection]
         public String NamefromAICProject { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICMessages")]
+        [RemoteIsCollection]
         public String[] AICMessages { get; set; }
     
 

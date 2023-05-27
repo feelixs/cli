@@ -35,9 +35,11 @@ namespace AIC.Lib.DataClasses
         public String PlanRoleName { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "Skills")]
+        [RemoteIsCollection]
         public String[] Skills { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AppUsers")]
+        [RemoteIsCollection]
         public String[] AppUsers { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "RateLimit")]
@@ -53,9 +55,11 @@ namespace AIC.Lib.DataClasses
         public String RecordId { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "DefaultModel")]
+        [RemoteIsCollection]
         public String DefaultModel { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AllowedModel")]
+        [RemoteIsCollection]
         public String[] AllowedModel { get; set; }
     
 

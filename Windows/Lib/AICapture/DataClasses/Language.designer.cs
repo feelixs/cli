@@ -35,6 +35,7 @@ namespace AIC.Lib.DataClasses
         public String LanguageCode { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AppUsers")]
+        [RemoteIsCollection]
         public String[] AppUsers { get; set; }
     
 

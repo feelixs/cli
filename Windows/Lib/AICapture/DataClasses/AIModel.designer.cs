@@ -29,6 +29,7 @@ namespace AIC.Lib.DataClasses
         public String Name { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "PricePerMillionWords")]
+        [RemoteIsCollection]
         public decimal[] PricePerMillionWords { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "Notes")]
@@ -41,24 +42,31 @@ namespace AIC.Lib.DataClasses
         public String Status { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AIProvider")]
+        [RemoteIsCollection]
         public String AIProvider { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "PricePer1KPromptTokens")]
+        [RemoteIsCollection]
         public decimal[] PricePer1KPromptTokens { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "PricePer1KResponseTokens")]
+        [RemoteIsCollection]
         public decimal[] PricePer1KResponseTokens { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "CurrentPrice")]
+        [RemoteIsCollection]
         public String[] CurrentPrice { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICModelPricings")]
+        [RemoteIsCollection]
         public String AICModelPricings { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICPlans")]
+        [RemoteIsCollection]
         public String[] AICPlans { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICPlans2")]
+        [RemoteIsCollection]
         public String[] AICPlans2 { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICSkillSteps")]
