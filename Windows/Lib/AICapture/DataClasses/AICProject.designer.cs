@@ -102,9 +102,9 @@ namespace AIC.Lib.DataClasses
         [RemoteIsCollection]
         public String AICDirectory { get; set; }
     
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "RelativePathfromAICDirectory")]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICDirectoryRelativePath")]
         [RemoteIsCollection]
-        public String RelativePathfromAICDirectory { get; set; }
+        public String AICDirectoryRelativePath { get; set; }
     
 
         

@@ -119,7 +119,16 @@ namespace SSoTme.OST.Lib.CLIOptions
             {
                 if (!String.IsNullOrEmpty(e.Payload.Content))
                 {
-                    Environment.CurrentDirectory = Path.Combine(Environment.CurrentDirectory, "..", e.Payload.Content);
+                    Console.WriteLine("test");
+                    var di = new DirectoryInfo(Path.Combine(Environment.CurrentDirectory, "..", e.Payload.Content));
+                    if (!di.Exists)
+                    {
+                        di.Create();
+                        Environment.CurrentDirectory = di.FullName;
+                        ExecuteCommand(Environment.CurrentDirectory, "aic -replay");
+
+                    }
+                    else Environment.CurrentDirectory = di.FullName;
                 }
                 PopulateProjectSSoTAndReadme(e.Payload);
             }
@@ -195,7 +204,7 @@ namespace SSoTme.OST.Lib.CLIOptions
                 if (fileFI.Exists && patch.Contains("op"))
                 {
                     File.WriteAllText(patchFI.FullName, patch);
-                    this.PatchAndReplayAll(fileFI, patchFI);
+                    this.PatchAndReplayAll(new DirectoryInfo(Environment.CurrentDirectory), fileFI, patchFI);
                 }
             }
             else
@@ -327,6 +336,7 @@ namespace SSoTme.OST.Lib.CLIOptions
                 if (fi.Exists) return FoundFile(payload, fi);
                 if (!String.IsNullOrEmpty(defaultFileContents))
                 {
+                    if (!fi.Directory.Exists) fi.Directory.Create();
                     File.WriteAllText(fi.FullName, defaultFileContents);
                     return true;
                 }
@@ -348,7 +358,7 @@ namespace SSoTme.OST.Lib.CLIOptions
             return true;
         }
 
-        private void PatchAndReplayAll(FileInfo fileFI, FileInfo patchFI)
+        private void PatchAndReplayAll(DirectoryInfo projectRootPath, FileInfo fileFI, FileInfo patchFI)
         {
             // 1) issue the command > json-patch --json fileinfo.filename --patch patchfi.fullname
             var patchCommand = $"json-patch --json {fileFI.Name} --patch {patchFI.FullName}";
@@ -360,8 +370,8 @@ namespace SSoTme.OST.Lib.CLIOptions
             });
 
             // 2) issue the command > aicapture -replayall
-            var replayCommand = "aicapture -replayall";
-            ExecuteCommand(fileFI.DirectoryName, replayCommand);
+            var replayCommand = "aicapture -replay";
+            ExecuteCommand(projectRootPath.FullName, replayCommand);
         }
 
         private void ExecuteCommand(string workingDirectory, string command)
@@ -384,7 +394,11 @@ namespace SSoTme.OST.Lib.CLIOptions
             {
                 if (sw.BaseStream.CanWrite)
                 {
+                    Console.WriteLine($"INVOKING: {command}");
                     sw.WriteLine(command);
+                    sw.WriteLine();
+                    sw.WriteLine();
+                    sw.WriteLine();
                 }
             }
             // Added to block until the process completes or times out
@@ -394,6 +408,7 @@ namespace SSoTme.OST.Lib.CLIOptions
             }
             else
             {
+                Console.WriteLine(process.StandardOutput.ReadToEnd()); // Logs the output
                 Console.WriteLine("Process timed out");
             }
 
