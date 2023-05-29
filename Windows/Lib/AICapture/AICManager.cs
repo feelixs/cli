@@ -150,6 +150,14 @@ namespace SSoTme.OST.Lib.CLIOptions
                     ExecuteCommand(Environment.CurrentDirectory, "aic -replayall");
                     PopulateProjectSSoTAndReadme(e.Payload);
                 }
+                else if (e.Payload.AICSkillName == $"{AICSkills.Enum.GetFileList}")
+                {
+                    var fileName = Path.Combine(Environment.CurrentDirectory, e.Payload.FileName.Trim("/\\".ToCharArray()));
+                    if (File.Exists(fileName))
+                    {
+                        e.Payload.Content = File.ReadAllText(fileName);
+                    }
+                }
                 else if (e.Payload.AICSkillName == $"{AICSkills.Enum.GetBackupList}")
                 {
                     string metaDir = Path.Combine(Environment.CurrentDirectory, "AICapture");

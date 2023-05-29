@@ -760,6 +760,38 @@ namespace AIC.SassyMQ.Lib
                         this.OnAdminDeleteAICMessageReceived(payload, bdea);
                         break;
                     
+                    case "crudcoordinator.crud.aicsuperagent.addaiccontexttype":
+                        this.OnAICSuperAgentAddAICContextTypeReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.aicsuperagent.getaiccontexttypes":
+                        this.OnAICSuperAgentGetAICContextTypesReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.aicsuperagent.updateaiccontexttype":
+                        this.OnAICSuperAgentUpdateAICContextTypeReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.aicsuperagent.deleteaiccontexttype":
+                        this.OnAICSuperAgentDeleteAICContextTypeReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.admin.addaiccontexttype":
+                        this.OnAdminAddAICContextTypeReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.admin.getaiccontexttypes":
+                        this.OnAdminGetAICContextTypesReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.admin.updateaiccontexttype":
+                        this.OnAdminUpdateAICContextTypeReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.admin.deleteaiccontexttype":
+                        this.OnAdminDeleteAICContextTypeReceived(payload, bdea);
+                        break;
+                    
                     case "crudcoordinator.crud.aicsuperagent.addrepobranch":
                         this.OnAICSuperAgentAddRepoBranchReceived(payload, bdea);
                         break;
@@ -3473,6 +3505,118 @@ namespace AIC.SassyMQ.Lib
             {
                 plea.Payload.IsHandled = true;
                 this.AdminDeleteAICMessageReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: AddAICContextType from AICSuperAgent
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AICSuperAgentAddAICContextTypeReceived;
+        protected virtual void OnAICSuperAgentAddAICContextTypeReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AICSuperAgentAddAICContextTypeReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AICSuperAgentAddAICContextTypeReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: GetAICContextTypes from AICSuperAgent
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AICSuperAgentGetAICContextTypesReceived;
+        protected virtual void OnAICSuperAgentGetAICContextTypesReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AICSuperAgentGetAICContextTypesReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AICSuperAgentGetAICContextTypesReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: UpdateAICContextType from AICSuperAgent
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AICSuperAgentUpdateAICContextTypeReceived;
+        protected virtual void OnAICSuperAgentUpdateAICContextTypeReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AICSuperAgentUpdateAICContextTypeReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AICSuperAgentUpdateAICContextTypeReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: DeleteAICContextType from AICSuperAgent
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AICSuperAgentDeleteAICContextTypeReceived;
+        protected virtual void OnAICSuperAgentDeleteAICContextTypeReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AICSuperAgentDeleteAICContextTypeReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AICSuperAgentDeleteAICContextTypeReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: AddAICContextType from Admin
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AdminAddAICContextTypeReceived;
+        protected virtual void OnAdminAddAICContextTypeReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AdminAddAICContextTypeReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AdminAddAICContextTypeReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: GetAICContextTypes from Admin
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AdminGetAICContextTypesReceived;
+        protected virtual void OnAdminGetAICContextTypesReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AdminGetAICContextTypesReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AdminGetAICContextTypesReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: UpdateAICContextType from Admin
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AdminUpdateAICContextTypeReceived;
+        protected virtual void OnAdminUpdateAICContextTypeReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AdminUpdateAICContextTypeReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AdminUpdateAICContextTypeReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: DeleteAICContextType from Admin
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AdminDeleteAICContextTypeReceived;
+        protected virtual void OnAdminDeleteAICContextTypeReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AdminDeleteAICContextTypeReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AdminDeleteAICContextTypeReceived(this, plea);
             }
         }
 

@@ -97,6 +97,12 @@ namespace AIC.Lib.DataClasses
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "Test")]
         public Nullable<Int32> Test { get; set; }
     
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "DefaultRelativePath")]
+        public String DefaultRelativePath { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "RelativePathMismatch")]
+        public Nullable<Int32> RelativePathMismatch { get; set; }
+    
 
         
 

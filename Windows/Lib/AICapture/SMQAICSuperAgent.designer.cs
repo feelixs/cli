@@ -2311,6 +2311,114 @@ namespace AIC.SassyMQ.Lib
         
         
         /// <summary>
+        /// AddAICContextType - 
+        /// </summary>
+        public Task AddAICContextType(PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
+        {
+            return this.AddAICContextType(this.CreatePayload(), replyHandler, timeoutHandler, waitTimeout);
+        }
+
+        /// <summary>
+        /// AddAICContextType - 
+        /// </summary>
+        public Task AddAICContextType(String content, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
+        {
+            var payload = this.CreatePayload(content);
+            return this.AddAICContextType(payload, replyHandler, timeoutHandler, waitTimeout);
+        }
+    
+        
+        /// <summary>
+        /// AddAICContextType - 
+        /// </summary>
+        public Task AddAICContextType(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
+        {
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.addaiccontexttype", payload, replyHandler, timeoutHandler, waitTimeout);
+        }
+        
+        
+        /// <summary>
+        /// GetAICContextTypes - 
+        /// </summary>
+        public Task GetAICContextTypes(PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
+        {
+            return this.GetAICContextTypes(this.CreatePayload(), replyHandler, timeoutHandler, waitTimeout);
+        }
+
+        /// <summary>
+        /// GetAICContextTypes - 
+        /// </summary>
+        public Task GetAICContextTypes(String content, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
+        {
+            var payload = this.CreatePayload(content);
+            return this.GetAICContextTypes(payload, replyHandler, timeoutHandler, waitTimeout);
+        }
+    
+        
+        /// <summary>
+        /// GetAICContextTypes - 
+        /// </summary>
+        public Task GetAICContextTypes(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
+        {
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.getaiccontexttypes", payload, replyHandler, timeoutHandler, waitTimeout);
+        }
+        
+        
+        /// <summary>
+        /// UpdateAICContextType - 
+        /// </summary>
+        public Task UpdateAICContextType(PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
+        {
+            return this.UpdateAICContextType(this.CreatePayload(), replyHandler, timeoutHandler, waitTimeout);
+        }
+
+        /// <summary>
+        /// UpdateAICContextType - 
+        /// </summary>
+        public Task UpdateAICContextType(String content, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
+        {
+            var payload = this.CreatePayload(content);
+            return this.UpdateAICContextType(payload, replyHandler, timeoutHandler, waitTimeout);
+        }
+    
+        
+        /// <summary>
+        /// UpdateAICContextType - 
+        /// </summary>
+        public Task UpdateAICContextType(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
+        {
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.updateaiccontexttype", payload, replyHandler, timeoutHandler, waitTimeout);
+        }
+        
+        
+        /// <summary>
+        /// DeleteAICContextType - 
+        /// </summary>
+        public Task DeleteAICContextType(PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
+        {
+            return this.DeleteAICContextType(this.CreatePayload(), replyHandler, timeoutHandler, waitTimeout);
+        }
+
+        /// <summary>
+        /// DeleteAICContextType - 
+        /// </summary>
+        public Task DeleteAICContextType(String content, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
+        {
+            var payload = this.CreatePayload(content);
+            return this.DeleteAICContextType(payload, replyHandler, timeoutHandler, waitTimeout);
+        }
+    
+        
+        /// <summary>
+        /// DeleteAICContextType - 
+        /// </summary>
+        public Task DeleteAICContextType(StandardPayload payload, PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
+        {
+            return this.SendMessage("crudcoordinator.crud.aicsuperagent.deleteaiccontexttype", payload, replyHandler, timeoutHandler, waitTimeout);
+        }
+        
+        
+        /// <summary>
         /// AddRepoBranch - 
         /// </summary>
         public Task AddRepoBranch(PayloadHandler replyHandler = null, PayloadHandler timeoutHandler = null, int waitTimeout = StandardPayload.DEFAULT_TIMEOUT)
