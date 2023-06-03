@@ -118,6 +118,16 @@ namespace AIC.Lib.DataClasses
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "CreatedTime")]
         public Nullable<DateTime> CreatedTime { get; set; }
     
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "DefaultLanguageName")]
+        [RemoteIsCollection]
+        public String DefaultLanguageName { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "DMQueueLastModified")]
+        public Nullable<DateTime> DMQueueLastModified { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ActiveDMQueue")]
+        public String ActiveDMQueue { get; set; }
+    
 
         
 
