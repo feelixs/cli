@@ -40,35 +40,23 @@ namespace SSoTme.OST.Lib.CLIOptions
                 try
                 {
                     Console.WriteLine("Starting DM QUEUE...");
-                    var aica = new AIC.SassyMQ.Lib.SMQAICAgent("amqps://smqPublic:smqPublic@effortlessapi-rmq.ssot.me/ej-aicapture-io");
+                    var aica = new SMQAICAgent("amqps://smqPublic:smqPublic@effortlessapi-rmq.ssot.me/ej-aicapture-io");
                     try
                     {
                         aica.UserAICInstallReceived += Aica_UserAICInstallReceived;
                         aica.UserAICReplayReceived += Aica_UserAICReplayReceived;
                         aica.UserSetDataReceived += Aica_UserSetDataReceived;
                         aica.UserGetDataReceived += Aica_UserGetDataReceived;
-
-                        var payload = aica.CreatePayload();
-                        payload.AccessToken = this.Auth0SID;
-                        payload.DMQueue = aica.QueueName;
-                        Console.WriteLine($"Register DM Queue: {payload.DMQueue}");
-                        var task = aica.MonitoringFor(payload, (reply, bdea) =>
-                        {
-                            if (!String.IsNullOrEmpty(reply.ErrorMessage))
-                            {
-                                throw new Exception(reply.ErrorMessage);
-                            }
-                        }, (eReply, eBdea) =>
-                        {
-                            throw new Exception("ERROR: timed out");
-                        });
-                        task.Wait(10000);
-
-                        if (!task.IsCompleted) throw new Exception("Timed out waiting to register dm queue with server.");
+                        UpdateDMQueue(aica);
 
                         Console.WriteLine($"Listening on DMQueue: {aica.QueueName}. Press Ctrl+C to end.");
+                        var count = 0;
                         while (aica.RMQConnection.IsOpen)
                         {
+                            if (count++ % 300 == 0)
+                            {
+                                UpdateDMQueue(aica);
+                            }
                             aica.WaitForComplete(1000, false);
                         }
 
@@ -94,6 +82,26 @@ namespace SSoTme.OST.Lib.CLIOptions
             Console.ReadKey();
         }
 
+        private void UpdateDMQueue(SMQAICAgent aica)
+        {
+            var payload = aica.CreatePayload();
+            payload.AccessToken = this.Auth0SID;
+            payload.DMQueue = aica.QueueName;
+            Console.WriteLine($"Register DM Queue: {payload.DMQueue}");
+            var task = aica.MonitoringFor(payload, (reply, bdea) =>
+            {
+                if (!String.IsNullOrEmpty(reply.ErrorMessage))
+                {
+                    throw new Exception(reply.ErrorMessage);
+                }
+            }, (eReply, eBdea) =>
+            {
+                throw new Exception("ERROR: timed out");
+            });
+            task.Wait(10000);
+
+            if (!task.IsCompleted) throw new Exception("Timed out waiting to register dm queue with server.");
+        }
 
         private void FindMostRecentProject()
         {
@@ -419,8 +427,6 @@ namespace SSoTme.OST.Lib.CLIOptions
                 Console.WriteLine(process.StandardOutput.ReadToEnd()); // Logs the output
                 Console.WriteLine("Process timed out");
             }
-
-
         }
 
         private void Aica_UserAICReplayReceived(object sender, AIC.SassyMQ.Lib.PayloadEventArgs e)
