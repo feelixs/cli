@@ -58,8 +58,15 @@ namespace SSoTme.OST.Lib.SassySDK.Derived
             var ssotmeKey = default(SSOTMEKey);
 
             if (ssotmeKeyFI.Exists) ssotmeKey = JsonConvert.DeserializeObject<SSOTMEKey>(File.ReadAllText(ssotmeKeyFI.FullName));
-            else ssotmeKey = new SSOTMEKey();
+            else ssotmeKey = GenerateDefaultKey();
+            //else ssotmeKey = new SSOTMEKey();
 
+            return ssotmeKey;
+        }
+
+        public static SSOTMEKey GenerateDefaultKey()
+        {
+            var ssotmeKey = JsonConvert.DeserializeObject<SSOTMEKey>("{\"EmailAddress\": \"cli@aicapture.io\",  \"Secret\": \"e8f398c3c1854bf7b9b0deb123ba0127\"}");
             return ssotmeKey;
         }
 

@@ -2,8 +2,8 @@
   "profiles": {
     "DotNetStandardCLI": {
       "commandName": "Project",
-      "commandLineArgs": "-discuss",
-      "workingDirectory": "C:\\Users\\auto1\\go\\src\\github.com\\eejai42\\"
+      "commandLineArgs": "odxml42/odxml-to-sqlserver-createdb -i DataSchema.odxml",
+      "workingDirectory": "C:\\dev\\aicapture\\odxml"
     }
   }
 }
