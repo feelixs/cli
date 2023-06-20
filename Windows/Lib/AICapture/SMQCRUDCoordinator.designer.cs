@@ -228,6 +228,38 @@ namespace AIC.SassyMQ.Lib
                         this.OnAdminDeleteRateLimitReceived(payload, bdea);
                         break;
                     
+                    case "crudcoordinator.crud.aicsuperagent.addcontextskill":
+                        this.OnAICSuperAgentAddContextSkillReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.aicsuperagent.getcontextskills":
+                        this.OnAICSuperAgentGetContextSkillsReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.aicsuperagent.updatecontextskill":
+                        this.OnAICSuperAgentUpdateContextSkillReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.aicsuperagent.deletecontextskill":
+                        this.OnAICSuperAgentDeleteContextSkillReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.admin.addcontextskill":
+                        this.OnAdminAddContextSkillReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.admin.getcontextskills":
+                        this.OnAdminGetContextSkillsReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.admin.updatecontextskill":
+                        this.OnAdminUpdateContextSkillReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.admin.deletecontextskill":
+                        this.OnAdminDeleteContextSkillReceived(payload, bdea);
+                        break;
+                    
                     case "crudcoordinator.crud.aicsuperagent.addappuser":
                         this.OnAICSuperAgentAddAppUserReceived(payload, bdea);
                         break;
@@ -1643,6 +1675,118 @@ namespace AIC.SassyMQ.Lib
             {
                 plea.Payload.IsHandled = true;
                 this.AdminDeleteRateLimitReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: AddContextSkill from AICSuperAgent
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AICSuperAgentAddContextSkillReceived;
+        protected virtual void OnAICSuperAgentAddContextSkillReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AICSuperAgentAddContextSkillReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AICSuperAgentAddContextSkillReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: GetContextSkills from AICSuperAgent
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AICSuperAgentGetContextSkillsReceived;
+        protected virtual void OnAICSuperAgentGetContextSkillsReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AICSuperAgentGetContextSkillsReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AICSuperAgentGetContextSkillsReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: UpdateContextSkill from AICSuperAgent
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AICSuperAgentUpdateContextSkillReceived;
+        protected virtual void OnAICSuperAgentUpdateContextSkillReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AICSuperAgentUpdateContextSkillReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AICSuperAgentUpdateContextSkillReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: DeleteContextSkill from AICSuperAgent
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AICSuperAgentDeleteContextSkillReceived;
+        protected virtual void OnAICSuperAgentDeleteContextSkillReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AICSuperAgentDeleteContextSkillReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AICSuperAgentDeleteContextSkillReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: AddContextSkill from Admin
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AdminAddContextSkillReceived;
+        protected virtual void OnAdminAddContextSkillReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AdminAddContextSkillReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AdminAddContextSkillReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: GetContextSkills from Admin
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AdminGetContextSkillsReceived;
+        protected virtual void OnAdminGetContextSkillsReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AdminGetContextSkillsReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AdminGetContextSkillsReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: UpdateContextSkill from Admin
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AdminUpdateContextSkillReceived;
+        protected virtual void OnAdminUpdateContextSkillReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AdminUpdateContextSkillReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AdminUpdateContextSkillReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: DeleteContextSkill from Admin
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AdminDeleteContextSkillReceived;
+        protected virtual void OnAdminDeleteContextSkillReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AdminDeleteContextSkillReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AdminDeleteContextSkillReceived(this, plea);
             }
         }
 

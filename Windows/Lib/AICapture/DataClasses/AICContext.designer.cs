@@ -112,6 +112,39 @@ namespace AIC.Lib.DataClasses
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "SourceFileLastRefreshedTime")]
         public Nullable<DateTime> SourceFileLastRefreshedTime { get; set; }
     
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "NowGMT")]
+        public Nullable<DateTime> NowGMT { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ContextSkills")]
+        [RemoteIsCollection]
+        public String[] ContextSkills { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ContextSkillsCleanName")]
+        [RemoteIsCollection]
+        public String[] ContextSkillsCleanName { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ContextSkillsAICSkillVersion")]
+        [RemoteIsCollection]
+        public String[] ContextSkillsAICSkillVersion { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ContextSkillsAICSkillName")]
+        [RemoteIsCollection]
+        public String[] ContextSkillsAICSkillName { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ContextSkillAssociatedMethod")]
+        [RemoteIsCollection]
+        public String[] ContextSkillAssociatedMethod { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ContextSkillAICSlashCommand")]
+        [RemoteIsCollection]
+        public String[] ContextSkillAICSlashCommand { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ConnectionString")]
+        public String ConnectionString { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ConnectionCredentials")]
+        public String ConnectionCredentials { get; set; }
+    
 
         
 

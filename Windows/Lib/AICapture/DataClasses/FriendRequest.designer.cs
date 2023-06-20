@@ -107,6 +107,12 @@ namespace AIC.Lib.DataClasses
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "RelativeRequestUrl")]
         public String RelativeRequestUrl { get; set; }
     
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "CreatedTime")]
+        public Nullable<DateTime> CreatedTime { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ModifiedTime")]
+        public Nullable<DateTime> ModifiedTime { get; set; }
+    
 
         
 

@@ -37,7 +37,7 @@ namespace AIC.SassyMQ.Lib
             this.Content = content;
         }
 
-        // 26 odxml properties
+        // 27 odxml properties
         
         public String HelpfulPromptId { get; set; }
         
@@ -68,6 +68,12 @@ namespace AIC.SassyMQ.Lib
         public dc.RateLimit RateLimit { get; set; }
         
         public List<dc.RateLimit> RateLimits { get; set; }
+        
+        public String ContextSkillId { get; set; }
+        
+        public dc.ContextSkill ContextSkill { get; set; }
+        
+        public List<dc.ContextSkill> ContextSkills { get; set; }
         
         public String AppUserId { get; set; }
         

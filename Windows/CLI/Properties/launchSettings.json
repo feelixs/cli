@@ -2,8 +2,7 @@
   "profiles": {
     "DotNetStandardCLI": {
       "commandName": "Project",
-      "commandLineArgs": "odxml42/odxml-to-sqlserver-createdb -i DataSchema.odxml",
-      "workingDirectory": "C:\\dev\\aicapture\\odxml"
+      "commandLineArgs": "-help"
     }
   }
 }

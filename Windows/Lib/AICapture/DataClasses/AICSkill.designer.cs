@@ -70,6 +70,13 @@ namespace AIC.Lib.DataClasses
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "CleanName")]
         public String CleanName { get; set; }
     
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICSlashCommand")]
+        public String AICSlashCommand { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ContextSkills")]
+        [RemoteIsCollection]
+        public String[] ContextSkills { get; set; }
+    
 
         
 

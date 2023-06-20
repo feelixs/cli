@@ -25,7 +25,12 @@ namespace AICapture.OST.Lib.AICapture.DataClasses
             GetFileList,
             UpdateFile,
             RequestReplay,
-            RequestReplayAll
+            RequestReplayAll,
+            Steren,
+            PromptChatGPT35,
+            PromptChatGPT40,
+            PromptBard,
+            MathQuestion
         }
     // Create an Enum here
     }

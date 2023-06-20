@@ -128,6 +128,9 @@ namespace AIC.Lib.DataClasses
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ActiveDMQueue")]
         public String ActiveDMQueue { get; set; }
     
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "NowGMT")]
+        public Nullable<DateTime> NowGMT { get; set; }
+    
 
         
 
