@@ -131,6 +131,10 @@ namespace AIC.Lib.DataClasses
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "NowGMT")]
         public Nullable<DateTime> NowGMT { get; set; }
     
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICMessages")]
+        [RemoteIsCollection]
+        public String[] AICMessages { get; set; }
+    
 
         
 

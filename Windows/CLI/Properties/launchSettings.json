@@ -2,7 +2,8 @@
   "profiles": {
     "DotNetStandardCLI": {
       "commandName": "Project",
-      "commandLineArgs": "-help"
+      "commandLineArgs": "-ai",
+      "workingDirectory": "c:\\users\\auto1\\go\\src\\github.com\\eejai42"
     }
   }
 }

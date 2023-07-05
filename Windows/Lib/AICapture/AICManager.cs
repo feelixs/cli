@@ -168,9 +168,10 @@ namespace SSoTme.OST.Lib.CLIOptions
                 }
                 else if (e.Payload.AICSkillName == $"{AICSkills.Enum.GetBackupList}")
                 {
-                    string metaDir = Path.Combine(Environment.CurrentDirectory, "AICapture");
-                    string zipDir = Path.Combine(metaDir, "Backup");
-                    e.Payload.Contents = Directory.GetFiles(zipDir).OrderByDescending(f => f).ToArray();
+                    // Temporarily disabled for performance reasons
+                    //string metaDir = Path.Combine(Environment.CurrentDirectory, "AICapture");
+                    //string zipDir = Path.Combine(metaDir, "Backup");
+                    //e.Payload.Contents = Directory.GetFiles(zipDir).OrderByDescending(f => f).ToArray();
                 }
                 else if (e.Payload.AICSkillName == $"{AICSkills.Enum.GetConversationList}")
                 {

@@ -102,6 +102,14 @@ namespace AIC.Lib.DataClasses
         [RemoteIsCollection]
         public String NamefromAICConversations { get; set; }
     
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICUserName")]
+        [RemoteIsCollection]
+        public String AICUserName { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "Sender")]
+        [RemoteIsCollection]
+        public String Sender { get; set; }
+    
 
         
 

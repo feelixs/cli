@@ -70,6 +70,13 @@ namespace AIC.Lib.DataClasses
         [RemoteIsCollection]
         public String[] AICMessages { get; set; }
     
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICContext")]
+        [RemoteIsCollection]
+        public String AICContext { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "Created")]
+        public Nullable<DateTime> Created { get; set; }
+    
 
         
 

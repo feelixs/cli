@@ -145,6 +145,14 @@ namespace AIC.Lib.DataClasses
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ConnectionCredentials")]
         public String ConnectionCredentials { get; set; }
     
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICConversations")]
+        [RemoteIsCollection]
+        public String[] AICConversations { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ContextOutput")]
+        [RemoteIsCollection]
+        public String[] ContextOutput { get; set; }
+    
 
         
 

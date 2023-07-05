@@ -428,6 +428,38 @@ namespace AIC.SassyMQ.Lib
                         this.OnAdminDeleteAICPlanReceived(payload, bdea);
                         break;
                     
+                    case "crudcoordinator.crud.aicsuperagent.addaiccontextoutput":
+                        this.OnAICSuperAgentAddAICContextOutputReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.aicsuperagent.getaiccontextoutputs":
+                        this.OnAICSuperAgentGetAICContextOutputsReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.aicsuperagent.updateaiccontextoutput":
+                        this.OnAICSuperAgentUpdateAICContextOutputReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.aicsuperagent.deleteaiccontextoutput":
+                        this.OnAICSuperAgentDeleteAICContextOutputReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.admin.addaiccontextoutput":
+                        this.OnAdminAddAICContextOutputReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.admin.getaiccontextoutputs":
+                        this.OnAdminGetAICContextOutputsReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.admin.updateaiccontextoutput":
+                        this.OnAdminUpdateAICContextOutputReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.admin.deleteaiccontextoutput":
+                        this.OnAdminDeleteAICContextOutputReceived(payload, bdea);
+                        break;
+                    
                     case "crudcoordinator.crud.aicsuperagent.addaicmodelpricing":
                         this.OnAICSuperAgentAddAICModelPricingReceived(payload, bdea);
                         break;
@@ -790,6 +822,38 @@ namespace AIC.SassyMQ.Lib
                     
                     case "crudcoordinator.crud.admin.deleteaicmessage":
                         this.OnAdminDeleteAICMessageReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.aicsuperagent.addaiccontextoutputtype":
+                        this.OnAICSuperAgentAddAICContextOutputTypeReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.aicsuperagent.getaiccontextoutputtypes":
+                        this.OnAICSuperAgentGetAICContextOutputTypesReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.aicsuperagent.updateaiccontextoutputtype":
+                        this.OnAICSuperAgentUpdateAICContextOutputTypeReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.aicsuperagent.deleteaiccontextoutputtype":
+                        this.OnAICSuperAgentDeleteAICContextOutputTypeReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.admin.addaiccontextoutputtype":
+                        this.OnAdminAddAICContextOutputTypeReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.admin.getaiccontextoutputtypes":
+                        this.OnAdminGetAICContextOutputTypesReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.admin.updateaiccontextoutputtype":
+                        this.OnAdminUpdateAICContextOutputTypeReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.admin.deleteaiccontextoutputtype":
+                        this.OnAdminDeleteAICContextOutputTypeReceived(payload, bdea);
                         break;
                     
                     case "crudcoordinator.crud.aicsuperagent.addaiccontexttype":
@@ -2379,6 +2443,118 @@ namespace AIC.SassyMQ.Lib
         }
 
         /// <summary>
+        /// Responds to: AddAICContextOutput from AICSuperAgent
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AICSuperAgentAddAICContextOutputReceived;
+        protected virtual void OnAICSuperAgentAddAICContextOutputReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AICSuperAgentAddAICContextOutputReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AICSuperAgentAddAICContextOutputReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: GetAICContextOutputs from AICSuperAgent
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AICSuperAgentGetAICContextOutputsReceived;
+        protected virtual void OnAICSuperAgentGetAICContextOutputsReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AICSuperAgentGetAICContextOutputsReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AICSuperAgentGetAICContextOutputsReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: UpdateAICContextOutput from AICSuperAgent
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AICSuperAgentUpdateAICContextOutputReceived;
+        protected virtual void OnAICSuperAgentUpdateAICContextOutputReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AICSuperAgentUpdateAICContextOutputReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AICSuperAgentUpdateAICContextOutputReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: DeleteAICContextOutput from AICSuperAgent
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AICSuperAgentDeleteAICContextOutputReceived;
+        protected virtual void OnAICSuperAgentDeleteAICContextOutputReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AICSuperAgentDeleteAICContextOutputReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AICSuperAgentDeleteAICContextOutputReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: AddAICContextOutput from Admin
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AdminAddAICContextOutputReceived;
+        protected virtual void OnAdminAddAICContextOutputReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AdminAddAICContextOutputReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AdminAddAICContextOutputReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: GetAICContextOutputs from Admin
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AdminGetAICContextOutputsReceived;
+        protected virtual void OnAdminGetAICContextOutputsReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AdminGetAICContextOutputsReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AdminGetAICContextOutputsReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: UpdateAICContextOutput from Admin
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AdminUpdateAICContextOutputReceived;
+        protected virtual void OnAdminUpdateAICContextOutputReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AdminUpdateAICContextOutputReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AdminUpdateAICContextOutputReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: DeleteAICContextOutput from Admin
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AdminDeleteAICContextOutputReceived;
+        protected virtual void OnAdminDeleteAICContextOutputReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AdminDeleteAICContextOutputReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AdminDeleteAICContextOutputReceived(this, plea);
+            }
+        }
+
+        /// <summary>
         /// Responds to: AddAICModelPricing from AICSuperAgent
         /// </summary>
         public event EventHandler<PayloadEventArgs> AICSuperAgentAddAICModelPricingReceived;
@@ -3649,6 +3825,118 @@ namespace AIC.SassyMQ.Lib
             {
                 plea.Payload.IsHandled = true;
                 this.AdminDeleteAICMessageReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: AddAICContextOutputType from AICSuperAgent
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AICSuperAgentAddAICContextOutputTypeReceived;
+        protected virtual void OnAICSuperAgentAddAICContextOutputTypeReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AICSuperAgentAddAICContextOutputTypeReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AICSuperAgentAddAICContextOutputTypeReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: GetAICContextOutputTypes from AICSuperAgent
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AICSuperAgentGetAICContextOutputTypesReceived;
+        protected virtual void OnAICSuperAgentGetAICContextOutputTypesReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AICSuperAgentGetAICContextOutputTypesReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AICSuperAgentGetAICContextOutputTypesReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: UpdateAICContextOutputType from AICSuperAgent
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AICSuperAgentUpdateAICContextOutputTypeReceived;
+        protected virtual void OnAICSuperAgentUpdateAICContextOutputTypeReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AICSuperAgentUpdateAICContextOutputTypeReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AICSuperAgentUpdateAICContextOutputTypeReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: DeleteAICContextOutputType from AICSuperAgent
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AICSuperAgentDeleteAICContextOutputTypeReceived;
+        protected virtual void OnAICSuperAgentDeleteAICContextOutputTypeReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AICSuperAgentDeleteAICContextOutputTypeReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AICSuperAgentDeleteAICContextOutputTypeReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: AddAICContextOutputType from Admin
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AdminAddAICContextOutputTypeReceived;
+        protected virtual void OnAdminAddAICContextOutputTypeReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AdminAddAICContextOutputTypeReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AdminAddAICContextOutputTypeReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: GetAICContextOutputTypes from Admin
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AdminGetAICContextOutputTypesReceived;
+        protected virtual void OnAdminGetAICContextOutputTypesReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AdminGetAICContextOutputTypesReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AdminGetAICContextOutputTypesReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: UpdateAICContextOutputType from Admin
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AdminUpdateAICContextOutputTypeReceived;
+        protected virtual void OnAdminUpdateAICContextOutputTypeReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AdminUpdateAICContextOutputTypeReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AdminUpdateAICContextOutputTypeReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: DeleteAICContextOutputType from Admin
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AdminDeleteAICContextOutputTypeReceived;
+        protected virtual void OnAdminDeleteAICContextOutputTypeReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AdminDeleteAICContextOutputTypeReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AdminDeleteAICContextOutputTypeReceived(this, plea);
             }
         }
 
