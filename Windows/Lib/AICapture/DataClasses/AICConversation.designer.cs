@@ -62,10 +62,6 @@ namespace AIC.Lib.DataClasses
         [RemoteIsCollection]
         public Nullable<decimal> TotalResponseTokenCount { get; set; }
     
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "NamefromAICProject")]
-        [RemoteIsCollection]
-        public String NamefromAICProject { get; set; }
-    
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICMessages")]
         [RemoteIsCollection]
         public String[] AICMessages { get; set; }
@@ -76,6 +72,33 @@ namespace AIC.Lib.DataClasses
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "Created")]
         public Nullable<DateTime> Created { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICProjectName")]
+        [RemoteIsCollection]
+        public String AICProjectName { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "Subject")]
+        public String Subject { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICContextCategoryName")]
+        [RemoteIsCollection]
+        public String AICContextCategoryName { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICContextRelativePath")]
+        [RemoteIsCollection]
+        public String AICContextRelativePath { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICContextFullContextName")]
+        [RemoteIsCollection]
+        public String AICContextFullContextName { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICContextContextName")]
+        [RemoteIsCollection]
+        public String AICContextContextName { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICContextName")]
+        [RemoteIsCollection]
+        public String AICContextName { get; set; }
     
 
         

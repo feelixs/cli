@@ -35,6 +35,9 @@ namespace AIC.Lib.DataClasses
         [RemoteIsCollection]
         public String[] AICContextOutputs { get; set; }
     
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "MimeType")]
+        public String MimeType { get; set; }
+    
 
         
 

@@ -110,6 +110,41 @@ namespace AIC.Lib.DataClasses
         [RemoteIsCollection]
         public String Sender { get; set; }
     
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICConversationName")]
+        [RemoteIsCollection]
+        public String AICConversationName { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICConversationOwner")]
+        [RemoteIsCollection]
+        public String AICConversationOwner { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICConversationAICProject")]
+        [RemoteIsCollection]
+        public String AICConversationAICProject { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICConversationAICContext")]
+        [RemoteIsCollection]
+        public String AICConversationAICContext { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICConversationAICProjectName")]
+        [RemoteIsCollection]
+        public String AICConversationAICProjectName { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICConversationSubject")]
+        [RemoteIsCollection]
+        public String AICConversationSubject { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICConversationAICContextName")]
+        [RemoteIsCollection]
+        public String AICConversationAICContextName { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "CustomSenderUserName")]
+        public String CustomSenderUserName { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "SenderAICUserName")]
+        [RemoteIsCollection]
+        public String SenderAICUserName { get; set; }
+    
 
         
 
