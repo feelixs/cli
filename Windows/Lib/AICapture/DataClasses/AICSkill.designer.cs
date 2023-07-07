@@ -77,6 +77,13 @@ namespace AIC.Lib.DataClasses
         [RemoteIsCollection]
         public String[] ContextSkills { get; set; }
     
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "LastModified")]
+        public Nullable<DateTime> LastModified { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICMessages")]
+        [RemoteIsCollection]
+        public String[] AICMessages { get; set; }
+    
 
         
 

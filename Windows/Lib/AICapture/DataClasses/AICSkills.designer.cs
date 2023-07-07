@@ -15,7 +15,7 @@ namespace AICapture.OST.Lib.AICapture.DataClasses
             SwitchProject,
             CreateProject,
             GetCurrentPath,
-            PromptLLM,
+            AICapture,
             GetBackupList,
             GetConversationList,
             GetConversationDetails,

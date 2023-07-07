@@ -145,6 +145,23 @@ namespace AIC.Lib.DataClasses
         [RemoteIsCollection]
         public String SenderAICUserName { get; set; }
     
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "CreatedRecent")]
+        public Nullable<Int32> CreatedRecent { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICSkill")]
+        [RemoteIsCollection]
+        public String AICSkill { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICSkillSlashCommand")]
+        [RemoteIsCollection]
+        public String AICSkillSlashCommand { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "CustomSlashCommand")]
+        public String CustomSlashCommand { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "SlashCommand")]
+        public String SlashCommand { get; set; }
+    
 
         
 

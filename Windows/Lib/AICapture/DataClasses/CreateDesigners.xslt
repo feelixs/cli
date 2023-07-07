@@ -36,7 +36,7 @@ namespace AICapture.OST.Lib.AICapture.DataClasses
     {
         public enum Enum {
             <xsl:for-each select="//AICSkills/AICSkill"><xsl:if test="position() > 1">,
-            </xsl:if><xsl:value-of select="Name"/></xsl:for-each>
+            </xsl:if><xsl:value-of select="CleanName"/></xsl:for-each>
         }
     // Create an Enum here
     }
