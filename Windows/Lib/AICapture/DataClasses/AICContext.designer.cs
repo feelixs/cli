@@ -115,29 +115,25 @@ namespace AIC.Lib.DataClasses
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "NowGMT")]
         public Nullable<DateTime> NowGMT { get; set; }
     
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ContextSkills")]
-        [RemoteIsCollection]
-        public String[] ContextSkills { get; set; }
-    
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ContextSkillsCleanName")]
         [RemoteIsCollection]
-        public String[] ContextSkillsCleanName { get; set; }
+        public String ContextSkillsCleanName { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ContextSkillsAICSkillVersion")]
         [RemoteIsCollection]
-        public String[] ContextSkillsAICSkillVersion { get; set; }
+        public String ContextSkillsAICSkillVersion { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ContextSkillsAICSkillName")]
         [RemoteIsCollection]
-        public String[] ContextSkillsAICSkillName { get; set; }
+        public String ContextSkillsAICSkillName { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ContextSkillAssociatedMethod")]
         [RemoteIsCollection]
-        public String[] ContextSkillAssociatedMethod { get; set; }
+        public String ContextSkillAssociatedMethod { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ContextSkillAICSlashCommand")]
         [RemoteIsCollection]
-        public String[] ContextSkillAICSlashCommand { get; set; }
+        public String ContextSkillAICSlashCommand { get; set; }
     
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ConnectionString")]
         public String ConnectionString { get; set; }
@@ -152,6 +148,14 @@ namespace AIC.Lib.DataClasses
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ContextOutput")]
         [RemoteIsCollection]
         public String[] ContextOutput { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ContextSkill")]
+        [RemoteIsCollection]
+        public String ContextSkill { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "AICMessages")]
+        [RemoteIsCollection]
+        public String[] AICMessages { get; set; }
     
 
         
