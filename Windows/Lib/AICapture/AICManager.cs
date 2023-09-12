@@ -96,7 +96,7 @@ namespace SSoTme.OST.Lib.CLIOptions
                 }
             }, (eReply, eBdea) =>
             {
-                throw new Exception("ERROR: timed out");
+                throw new Exception($"ERROR: timed out - {eReply?.ErrorMessage}");
             });
             task.Wait(10000);
 
