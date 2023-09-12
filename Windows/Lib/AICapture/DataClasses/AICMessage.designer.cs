@@ -170,6 +170,18 @@ namespace AIC.Lib.DataClasses
         [RemoteIsCollection]
         public String AICMessageContext { get; set; }
     
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ResponseTextTokenEstimate")]
+        public Nullable<Int32> ResponseTextTokenEstimate { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "PromptTextTokenEstimate")]
+        public Nullable<Int32> PromptTextTokenEstimate { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "TotalTokens")]
+        public Nullable<Int32> TotalTokens { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "ConversationDate")]
+        public String ConversationDate { get; set; }
+    
 
         
 

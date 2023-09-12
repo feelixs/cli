@@ -492,6 +492,38 @@ namespace AIC.SassyMQ.Lib
                         this.OnAdminDeleteAICModelPricingReceived(payload, bdea);
                         break;
                     
+                    case "crudcoordinator.crud.aicsuperagent.addaicagent":
+                        this.OnAICSuperAgentAddAICAgentReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.aicsuperagent.getaicagents":
+                        this.OnAICSuperAgentGetAICAgentsReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.aicsuperagent.updateaicagent":
+                        this.OnAICSuperAgentUpdateAICAgentReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.aicsuperagent.deleteaicagent":
+                        this.OnAICSuperAgentDeleteAICAgentReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.admin.addaicagent":
+                        this.OnAdminAddAICAgentReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.admin.getaicagents":
+                        this.OnAdminGetAICAgentsReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.admin.updateaicagent":
+                        this.OnAdminUpdateAICAgentReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.admin.deleteaicagent":
+                        this.OnAdminDeleteAICAgentReceived(payload, bdea);
+                        break;
+                    
                     case "crudcoordinator.crud.aicsuperagent.addlanguage":
                         this.OnAICSuperAgentAddLanguageReceived(payload, bdea);
                         break;
@@ -554,6 +586,38 @@ namespace AIC.SassyMQ.Lib
                     
                     case "crudcoordinator.crud.admin.deleteappuserusage":
                         this.OnAdminDeleteAppUserUsageReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.aicsuperagent.addcripintegration":
+                        this.OnAICSuperAgentAddCripIntegrationReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.aicsuperagent.getcripintegrations":
+                        this.OnAICSuperAgentGetCripIntegrationsReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.aicsuperagent.updatecripintegration":
+                        this.OnAICSuperAgentUpdateCripIntegrationReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.aicsuperagent.deletecripintegration":
+                        this.OnAICSuperAgentDeleteCripIntegrationReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.admin.addcripintegration":
+                        this.OnAdminAddCripIntegrationReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.admin.getcripintegrations":
+                        this.OnAdminGetCripIntegrationsReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.admin.updatecripintegration":
+                        this.OnAdminUpdateCripIntegrationReceived(payload, bdea);
+                        break;
+                    
+                    case "crudcoordinator.crud.admin.deletecripintegration":
+                        this.OnAdminDeleteCripIntegrationReceived(payload, bdea);
                         break;
                     
                     case "crudcoordinator.crud.aicsuperagent.addaiprovider":
@@ -2667,6 +2731,118 @@ namespace AIC.SassyMQ.Lib
         }
 
         /// <summary>
+        /// Responds to: AddAICAgent from AICSuperAgent
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AICSuperAgentAddAICAgentReceived;
+        protected virtual void OnAICSuperAgentAddAICAgentReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AICSuperAgentAddAICAgentReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AICSuperAgentAddAICAgentReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: GetAICAgents from AICSuperAgent
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AICSuperAgentGetAICAgentsReceived;
+        protected virtual void OnAICSuperAgentGetAICAgentsReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AICSuperAgentGetAICAgentsReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AICSuperAgentGetAICAgentsReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: UpdateAICAgent from AICSuperAgent
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AICSuperAgentUpdateAICAgentReceived;
+        protected virtual void OnAICSuperAgentUpdateAICAgentReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AICSuperAgentUpdateAICAgentReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AICSuperAgentUpdateAICAgentReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: DeleteAICAgent from AICSuperAgent
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AICSuperAgentDeleteAICAgentReceived;
+        protected virtual void OnAICSuperAgentDeleteAICAgentReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AICSuperAgentDeleteAICAgentReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AICSuperAgentDeleteAICAgentReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: AddAICAgent from Admin
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AdminAddAICAgentReceived;
+        protected virtual void OnAdminAddAICAgentReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AdminAddAICAgentReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AdminAddAICAgentReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: GetAICAgents from Admin
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AdminGetAICAgentsReceived;
+        protected virtual void OnAdminGetAICAgentsReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AdminGetAICAgentsReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AdminGetAICAgentsReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: UpdateAICAgent from Admin
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AdminUpdateAICAgentReceived;
+        protected virtual void OnAdminUpdateAICAgentReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AdminUpdateAICAgentReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AdminUpdateAICAgentReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: DeleteAICAgent from Admin
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AdminDeleteAICAgentReceived;
+        protected virtual void OnAdminDeleteAICAgentReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AdminDeleteAICAgentReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AdminDeleteAICAgentReceived(this, plea);
+            }
+        }
+
+        /// <summary>
         /// Responds to: AddLanguage from AICSuperAgent
         /// </summary>
         public event EventHandler<PayloadEventArgs> AICSuperAgentAddLanguageReceived;
@@ -2887,6 +3063,118 @@ namespace AIC.SassyMQ.Lib
             {
                 plea.Payload.IsHandled = true;
                 this.AdminDeleteAppUserUsageReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: AddCripIntegration from AICSuperAgent
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AICSuperAgentAddCripIntegrationReceived;
+        protected virtual void OnAICSuperAgentAddCripIntegrationReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AICSuperAgentAddCripIntegrationReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AICSuperAgentAddCripIntegrationReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: GetCripIntegrations from AICSuperAgent
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AICSuperAgentGetCripIntegrationsReceived;
+        protected virtual void OnAICSuperAgentGetCripIntegrationsReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AICSuperAgentGetCripIntegrationsReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AICSuperAgentGetCripIntegrationsReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: UpdateCripIntegration from AICSuperAgent
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AICSuperAgentUpdateCripIntegrationReceived;
+        protected virtual void OnAICSuperAgentUpdateCripIntegrationReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AICSuperAgentUpdateCripIntegrationReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AICSuperAgentUpdateCripIntegrationReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: DeleteCripIntegration from AICSuperAgent
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AICSuperAgentDeleteCripIntegrationReceived;
+        protected virtual void OnAICSuperAgentDeleteCripIntegrationReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AICSuperAgentDeleteCripIntegrationReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AICSuperAgentDeleteCripIntegrationReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: AddCripIntegration from Admin
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AdminAddCripIntegrationReceived;
+        protected virtual void OnAdminAddCripIntegrationReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AdminAddCripIntegrationReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AdminAddCripIntegrationReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: GetCripIntegrations from Admin
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AdminGetCripIntegrationsReceived;
+        protected virtual void OnAdminGetCripIntegrationsReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AdminGetCripIntegrationsReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AdminGetCripIntegrationsReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: UpdateCripIntegration from Admin
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AdminUpdateCripIntegrationReceived;
+        protected virtual void OnAdminUpdateCripIntegrationReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AdminUpdateCripIntegrationReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AdminUpdateCripIntegrationReceived(this, plea);
+            }
+        }
+
+        /// <summary>
+        /// Responds to: DeleteCripIntegration from Admin
+        /// </summary>
+        public event EventHandler<PayloadEventArgs> AdminDeleteCripIntegrationReceived;
+        protected virtual void OnAdminDeleteCripIntegrationReceived(StandardPayload payload, BasicDeliverEventArgs bdea)
+        {
+            var plea = new PayloadEventArgs(payload, bdea);
+            if (!ReferenceEquals(this.AdminDeleteCripIntegrationReceived, null))
+            {
+                plea.Payload.IsHandled = true;
+                this.AdminDeleteCripIntegrationReceived(this, plea);
             }
         }
 

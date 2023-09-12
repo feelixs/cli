@@ -157,6 +157,20 @@ namespace AIC.Lib.DataClasses
         [RemoteIsCollection]
         public String[] AICMessages { get; set; }
     
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "CurrentAICAgent")]
+        [RemoteIsCollection]
+        public String CurrentAICAgent { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "CurrentAICAgentAgentId")]
+        [RemoteIsCollection]
+        public String CurrentAICAgentAgentId { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "RECORD_ID")]
+        public String RECORD_ID { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "PublicContextUrl")]
+        public String PublicContextUrl { get; set; }
+    
 
         
 

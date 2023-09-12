@@ -100,6 +100,15 @@ namespace AIC.Lib.DataClasses
         [RemoteIsCollection]
         public String AICContextName { get; set; }
     
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "MessageCount")]
+        public Nullable<Int32> MessageCount { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "Promps")]
+        public Nullable<Int32> Promps { get; set; }
+    
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, PropertyName = "Responses")]
+        public Nullable<Int32> Responses { get; set; }
+    
 
         
 

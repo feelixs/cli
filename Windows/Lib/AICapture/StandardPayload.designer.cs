@@ -37,7 +37,7 @@ namespace AIC.SassyMQ.Lib
             this.Content = content;
         }
 
-        // 29 odxml properties
+        // 31 odxml properties
         
         public String HelpfulPromptId { get; set; }
         
@@ -117,6 +117,12 @@ namespace AIC.SassyMQ.Lib
         
         public List<dc.AICModelPricing> AICModelPricings { get; set; }
         
+        public String AICAgentId { get; set; }
+        
+        public dc.AICAgent AICAgent { get; set; }
+        
+        public List<dc.AICAgent> AICAgents { get; set; }
+        
         public String LanguageId { get; set; }
         
         public dc.Language Language { get; set; }
@@ -128,6 +134,12 @@ namespace AIC.SassyMQ.Lib
         public dc.AppUserUsage AppUserUsage { get; set; }
         
         public List<dc.AppUserUsage> AppUserUsages { get; set; }
+        
+        public String CripIntegrationId { get; set; }
+        
+        public dc.CripIntegration CripIntegration { get; set; }
+        
+        public List<dc.CripIntegration> CripIntegrations { get; set; }
         
         public String AIProviderId { get; set; }
         
