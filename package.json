@@ -1,6 +1,6 @@
 {
   "name": "aicapture",
-  "version": "2023.09.12",
+  "version": "2023.11.05",
   "description": "",
   "devDependencies": {
   },
@@ -10,9 +10,9 @@
         "ssotme": "cli.js"
     },
     "scripts": {
-        "build": "dotnet build AICapture-OST-CLI.sln --configuration Release",
+        "build": "",
         "start": "dotnet Windows/CLI/bin/Release/netcoreapp3.1/AICapture.OST.CLI.dll",
-        "postinstall": "npm run build"
+        "postinstall": "dotnet build AICapture-OST-CLI.sln --configuration Release"
     },
   "keywords": [],
   "author": "",
