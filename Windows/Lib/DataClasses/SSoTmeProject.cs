@@ -277,6 +277,7 @@ namespace SSoTme.OST.Lib.DataClasses
             {
                 NullValueHandling = NullValueHandling.Ignore
             });
+            projectJson = $"{projectJson}{Environment.NewLine}";
             var count = 0;
             while (count < 5)
             {
