@@ -457,7 +457,16 @@ namespace SSoTme.OST.Lib.CLIOptions
 
         private void ProcessCommandLine(string commandLine)
         {
-            var process = Process.Start(commandLine);
+            var executable = commandLine;
+            var args = "";
+            var indexOfFirstSpace = executable.IndexOf(" ");
+            if (indexOfFirstSpace > 0)
+            {
+                args = executable.Substring(indexOfFirstSpace + 1);
+                executable = executable.Substring(0, indexOfFirstSpace);
+            }
+
+            var process = Process.Start(executable, args);
             process.WaitForExit(this.waitTimeout);
             if (!process.HasExited)
             {
