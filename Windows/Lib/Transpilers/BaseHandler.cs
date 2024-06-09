@@ -342,11 +342,20 @@ namespace SSoTme.OST.Transpilers
 
         public void LoadXsltFromPartialResourceName(string xsltPartialName)
         {
+            string str = this.GetResourceFileString(xsltPartialName);
+            this.Xslt = str;
+        }
+
+        public string GetResourceFileString(string xsltPartialName)
+        {
+            var type = this.GetType();
+            var str = String.Empty;
             xsltPartialName = xsltPartialName.ToLower();
-            var allNames = this.GetType().Assembly.GetManifestResourceNames().OrderBy(name => name);
+            var allNames = type.Assembly.GetManifestResourceNames().OrderBy(name => name);
             String resourceName = allNames.FirstOrDefault(fodResourceName => fodResourceName.ToLower().Contains(xsltPartialName));
             if (String.IsNullOrEmpty(resourceName)) throw new Exception(String.Format("Can't match resource name: {0}", xsltPartialName));
-            else this.Xslt = new StreamReader(this.GetType().Assembly.GetManifestResourceStream(resourceName)).ReadToEnd();
+            else str = new StreamReader(type.Assembly.GetManifestResourceStream(resourceName)).ReadToEnd();
+            return str;
         }
 
         public void LoadXsltFromResourceFile(string resourceName)
@@ -552,7 +561,7 @@ namespace SSoTme.OST.Transpilers
 
         public FileSetFile GetFileSetFileByExtension(string fileExtension, bool isOptionalFile = true)
         {
-
+            if (!$"{fileExtension}".StartsWith(".")) fileExtension = $".{fileExtension}";
             var firstMatch = this.InputFileSet.FileSetFiles.FirstOrDefault(fodFile => String.Equals(Path.GetExtension(fodFile.RelativePath), fileExtension, StringComparison.OrdinalIgnoreCase));
             if (ReferenceEquals(firstMatch, null))
             {

@@ -1,3 +1,4 @@
+using AIC.SassyMQ.Lib;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using RabbitMQ.Client.Framing;

@@ -9,6 +9,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using EnumList;
+using AIC.SassyMQ.Lib;
+using RabbitMQ.Client.Events;
 
 namespace SassyMQ.SSOTME.Lib.RMQActors
 {

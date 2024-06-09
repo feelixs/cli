@@ -394,16 +394,16 @@ namespace SSoTme.OST.Lib.CLIOptions
 
         private void PatchAndReplayAllNuget(DirectoryInfo projectRootPath, FileInfo fileFI, string patch)
         {
-            var json = File.ReadAllText(fileFI.FullName);
-            var jsonObj = JsonConvert.DeserializeObject(json);
-            var ops = JsonConvert.DeserializeObject<List<Microsoft.AspNetCore.JsonPatch.Operations.Operation>>(patch);
-            var patchDocument = new Microsoft.AspNetCore.JsonPatch.JsonPatchDocument(ops, new Newtonsoft.Json.Serialization.DefaultContractResolver());
-            patchDocument.ApplyTo(jsonObj);
-            File.WriteAllText(fileFI.FullName, JsonConvert.SerializeObject(jsonObj));
+            //var json = File.ReadAllText(fileFI.FullName);
+            //var jsonObj = JsonConvert.DeserializeObject(json);
+            //var ops = JsonConvert.DeserializeObject<List<Microsoft.AspNetCore.JsonPatch.Operations.Operation>>(patch);
+            //var patchDocument = new Microsoft.AspNetCore.JsonPatch.JsonPatchDocument(ops, new Newtonsoft.Json.Serialization.DefaultContractResolver());
+            //patchDocument.ApplyTo(jsonObj);
+            //File.WriteAllText(fileFI.FullName, JsonConvert.SerializeObject(jsonObj));
 
-            // 2) issue the command > aicapture -replayall
-            var replayCommand = "aicapture -replay";
-            ExecuteCommand(projectRootPath.FullName, replayCommand);
+            //// 2) issue the command > aicapture -replayall
+            //var replayCommand = "aicapture -replay";
+            //ExecuteCommand(projectRootPath.FullName, replayCommand);
 
         }
 

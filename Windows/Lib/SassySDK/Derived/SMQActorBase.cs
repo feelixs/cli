@@ -14,11 +14,12 @@ using Newtonsoft.Json;
 using System.Threading;
 using SassyMQ.SSOTME.Lib.RMQActors;
 using SSoTme.OST.Lib.Extensions;
+using AIC.SassyMQ.Lib;
 
 namespace SassyMQ.Lib.RabbitMQ.Payload
 {
     /// <summary>
-    /// Summary description for SMQActorBase
+    /// Summary description for SMQActorBase - does this get overwritten?
     /// </summary>
     public abstract class SMQActorBase<T>
         where T : StandardPayload<T>, new()
@@ -66,7 +67,10 @@ namespace SassyMQ.Lib.RabbitMQ.Payload
             this.StayConnected = true;
             this.IsAutoConnect = isAutoConnect;
             this.AllExchange = allExchange;
-            this.HandleInvokeExternal += SMQActorBase_HandleInvokeExternal;
+            if (!SMQActorBase<T>.CustomInvokeScheme)
+            {
+                SMQActorBase<T>.HandleInvokeExternal += SMQActorBase_HandleInvokeExternal;
+            }
             if (this.IsAutoConnect) this.AutoConnect();
         }
 
@@ -252,22 +256,23 @@ namespace SassyMQ.Lib.RabbitMQ.Payload
             this.IsConnected = false;
         }
 
-        public event System.EventHandler<InvokeEventArgs<T>> HandleInvokeExternal;
+        public static bool CustomInvokeScheme { get; set; }
+        public static event System.EventHandler<InvokeEventArgs<T>> HandleInvokeExternal;
 
         protected void Invoke(System.EventHandler<PayloadEventArgs<T>> methodDelegate, PayloadEventArgs<T> plea)
         {
             if (!ReferenceEquals(methodDelegate, null))
             {
-                if (!ReferenceEquals(HandleInvokeExternal, null))
+                if (!ReferenceEquals(SMQActorBase<T>.HandleInvokeExternal, null) && SMQActorBase<T>.CustomInvokeScheme)
                 {
                     InvokeEventArgs<T> iea = new InvokeEventArgs<T>()
                     {
                         MethodDelegate = methodDelegate,
                         PayloadEventArgs = plea
                     };
-                    this.HandleInvokeExternal(this, iea);
+                    SMQActorBase<T>.HandleInvokeExternal(this, iea);
                 }
-                else methodDelegate.Invoke(methodDelegate.Target, plea);
+                else methodDelegate.Invoke(this, plea);
                 plea.Payload.IsHandled = true;
             }
         }

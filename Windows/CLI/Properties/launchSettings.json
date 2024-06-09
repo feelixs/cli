@@ -2,8 +2,8 @@
   "profiles": {
     "DotNetStandardCLI": {
       "commandName": "Project",
-      "commandLineArgs": "-ai",
-      "workingDirectory": "c:\\users\\auto1\\go\\src\\github.com\\eejai42"
+      "commandLineArgs": "-build",
+      "workingDirectory": "C:\\Users\\auto1\\go\\src\\github.com\\eejai42\\advent-of-code-2023\\day22\\OriginalPrompts\\raw-simm"
     }
   }
 }

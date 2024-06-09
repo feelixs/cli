@@ -1,5 +1,5 @@
 <html><head><title>Command Line Arguments - summary</title></head><body><h1>Command Line Arguments</h1><p>
-    There are 33 command line arguments defined at this time.  They are:
+    There are 38 command line arguments defined at this time.  They are:
       
       <div style=""><h3>
         -help  or -h    [bool]
@@ -57,6 +57,14 @@
         -skipClean  or -sc    [bool]
       </h3><div style="font-size: 0.8em; margin-top: -1em;">
       Don't clean the output before cooking
+      </div></div><div style=""><h3>
+        -listSeeds  or -lsd    [bool]
+      </h3><div style="font-size: 0.8em; margin-top: -1em;">
+      Lists seeds available to be clones
+      </div></div><div style=""><h3>
+        -cloneEAPISeed  or -cs    [string]
+      </h3><div style="font-size: 0.8em; margin-top: -1em;">
+      Clones a specified seed
       </div></div><div style=""><h3>
         -account  or -a    [string]
       </h3><div style="font-size: 0.8em; margin-top: -1em;">
@@ -133,6 +141,18 @@
         -authenticate  or -auth    [bool]
       </h3><div style="font-size: 0.8em; margin-top: -1em;">
       Launch the aicapture.io website in order to authenticate (and/or register), and then to link that  user to your aicapture CLI.
+      </div></div><div style=""><h3>
+        -repoUrl  [string]
+      </h3><div style="font-size: 0.8em; margin-top: -1em;">
+      Override the default URL specified by the seed repository
+      </div></div><div style=""><h3>
+        -betaRepo  [bool]
+      </h3><div style="font-size: 0.8em; margin-top: -1em;">
+      Use the beta repository for this seed?
+      </div></div><div style=""><h3>
+        -skipBuild  [bool]
+      </h3><div style="font-size: 0.8em; margin-top: -1em;">
+      Skips the build part of cloning a Seed repository
       </div></div><div></div></p><div>
             Extracted from: //CommandLineArg
         </div></body></html>

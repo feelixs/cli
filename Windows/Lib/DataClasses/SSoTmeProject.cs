@@ -77,7 +77,7 @@ namespace SSoTme.OST.Lib.DataClasses
 
         private void ProjectMonitor_Changed(object sender, FileSystemEventArgs e)
         {
-            if (String.Equals(Path.GetFileName(e.FullPath), "aicapture.json", StringComparison.OrdinalIgnoreCase))
+            if (String.Equals(Path.GetFileName(e.FullPath), "ssotme.json", StringComparison.OrdinalIgnoreCase))
             {
                 //var form = Application.OpenForms.OfType<Form>().FirstOrDefault();
                 //if (ReferenceEquals(form, null) || !form.InvokeRequired) this.OnProjectFileReloaded(this, e);
@@ -221,6 +221,7 @@ namespace SSoTme.OST.Lib.DataClasses
 
             public string Message { get; }
         }
+
         public event EventHandler<LogEventArgs> MessageLogged;
         public void LogMessage(string formatString, params object[] args)
         {
@@ -327,14 +328,19 @@ namespace SSoTme.OST.Lib.DataClasses
 
         protected static FileInfo GetProjectFIAt(DirectoryInfo rootDI)
         {
-            var aiCaptureProjectFI = new FileInfo(Path.Combine(rootDI.FullName, "aicapture.json"));
+            var aiCaptureProjectFI = new FileInfo(Path.Combine(rootDI.FullName, "ssotme.json"));
+            var defaultFI = aiCaptureProjectFI;
+
             if (!aiCaptureProjectFI.Exists)
             {
-                var ssotmeFI = new FileInfo(Path.Combine(rootDI.FullName, "SSoTmeProject.json"));
-                if (ssotmeFI.Exists) ssotmeFI.MoveTo(Path.Combine(rootDI.FullName, "aicapture.json"));
+                aiCaptureProjectFI = new FileInfo(Path.Combine(rootDI.FullName, "aicapture.json"));
+                if (!aiCaptureProjectFI.Exists)
+                {
+                    aiCaptureProjectFI = new FileInfo(Path.Combine(rootDI.FullName, "SSoTmeProject.json"));
+                }
             }
 
-            return aiCaptureProjectFI;
+            return (aiCaptureProjectFI.Exists ? aiCaptureProjectFI : defaultFI);
         }
 
         private static AICaptureProject Load(FileInfo projectFI, DirectoryInfo requestDirectory = null, bool updateCurrent = true)
@@ -387,18 +393,18 @@ namespace SSoTme.OST.Lib.DataClasses
         private void SetCurrentFromRequestDirectory(DirectoryInfo requestDirectory)
         {
             this.CurrentPath = this.GetProjectRelativePath(requestDirectory);
-
         }
 
         public static SSoTmeProject LoadOrFail(DirectoryInfo dirToCheck, bool updateCurrent = true)
         {
             var proj = TryToLoad(dirToCheck, dirToCheck, updateCurrent);
 
-            if (ReferenceEquals(proj, null))
-            {
-                throw new Exception(String.Format("AICapture Project file could not be found in {0}.  \n\nPlease run `>aicapture -init` from the root of your project to initialize the SSoTme Project.", dirToCheck.FullName));
-            }
-            else return proj;
+            //if (ReferenceEquals(proj, null))
+            //{
+            //    throw new Exception(String.Format("SSoT.me Project file could not be found in {0}.  \n\nPlease run `>ssotme -init` from the root of your project to initialize the SSoTme Project.", dirToCheck.FullName));
+            //}
+            //else 
+            return proj;
         }
 
         internal DirectoryInfo GetZFSDI(string relativePath)
@@ -656,6 +662,7 @@ namespace SSoTme.OST.Lib.DataClasses
         public void Clean(bool preserveZFS)
         {
             this.Clean(this.RootPath, preserveZFS);
+            this.RemoveEmptyFolders(this.RootPath);
         }
 
         public void Clean(string cleanPath, bool preserveZFS)
@@ -674,6 +681,38 @@ namespace SSoTme.OST.Lib.DataClasses
             {
                 Environment.CurrentDirectory = currentDirectory;
             }
+            this.RemoveEmptyFolders(currentDirectory);
+        }
+
+        private void RemoveEmptyFolders(string pathToClean)
+        {
+            var cleanDI = new DirectoryInfo(pathToClean);
+
+            if (!cleanDI.Exists) return;
+
+            var cleanChildDirs = cleanDI.GetDirectories().ToList();
+
+            foreach (var childDir in cleanChildDirs)
+            {
+                RemoveEmptyFolders(childDir.FullName);
+
+                childDir.Refresh();
+                if (!childDir.Exists) continue;
+
+                var dirs = childDir.GetDirectories();
+                if (dirs.Any()) continue;
+
+                var files = childDir.GetFiles();
+                if (files.Any()) continue;
+                
+                childDir.Delete();
+            }
+
+            cleanDI.Refresh();
+            if (cleanDI.GetDirectories().Any()) return;
+            if (cleanDI.GetFiles().Any()) return;
+
+            cleanDI.Delete();
         }
 
         public void Rebuild(bool includeDisabled)
@@ -706,7 +745,7 @@ namespace SSoTme.OST.Lib.DataClasses
             }
             if (firstIndex >= 0) this.ProjectTranspilers.Insert(firstIndex, projectTranspiler);
             else if (addIfMissing) this.ProjectTranspilers.Add(projectTranspiler);
-            projectTranspiler.Name = projectTranspiler.MatchedTranspiler.Name;
+            projectTranspiler.Name = projectTranspiler.MatchedTranspiler?.Name ?? "no-transpiler-found";
         }
 
 

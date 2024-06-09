@@ -48,37 +48,6 @@
     },
     {
       "MatchedTranspiler": {
-        "TranspilerId": "ecb7bb6e-9c20-46e3-b191-5afcc1d3d6f6"
-      },
-      "ProjectTranspilerId": "fa2adf67-bb5c-4360-a362-78bf401a81e9",
-      "Name": "LocalCommand",
-      "RelativePath": "/Windows/Lib/CLIOptions",
-      "CommandLine": "-checkresults"
-    },
-    {
-      "MatchedTranspiler": {
-        "TranspilerId": "bbeadea3-75c7-449a-9aaa-22e2b29c2ed7",
-        "Name": "SPXmlToDetailedSPXml",
-        "Description": "Converts a SSoTmeProject.xml file into a Detailed SPXml file."
-      },
-      "ProjectTranspilerId": "f493ceec-b029-4f2e-a27b-c0f6c56543ec",
-      "Name": "SPXmlToDetailedSPXml",
-      "RelativePath": "/DSPXml",
-      "CommandLine": "spxml-to-detailed-spxml -i .\\SSoTmeProject.spxml"
-    },
-    {
-      "MatchedTranspiler": {
-        "TranspilerId": "06876a87-a56c-4c75-a01f-377e97deed7a",
-        "Name": "DetailedSPXmlToHtmlDocs",
-        "Description": "Detailed S P Xml To Html Docs"
-      },
-      "ProjectTranspilerId": "9edf5887-59f7-4c17-a7b5-cbcd2733244d",
-      "Name": "DetailedSPXmlToHtmlDocs",
-      "RelativePath": "/DSPXml",
-      "CommandLine": "detailed-spxml-to-html-docs -i .\\SSoTmeProject.dspxml"
-    },
-    {
-      "MatchedTranspiler": {
         "TranspilerId": "8defe7a3-89cf-4989-b679-d9226519f622",
         "Name": "OdxmlToNodeJSDocs",
         "Description": "Creates easy to read/navigate html documentation for an Odxml Schema."

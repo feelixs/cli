@@ -18,6 +18,10 @@ namespace SassyMQ.SSOTME.Lib.RMQActors
 {
     public partial class SMQTranspilerHost
     {
+        public void Close()
+        {
+            /// do nothing on close
+        }
     }
 }
 

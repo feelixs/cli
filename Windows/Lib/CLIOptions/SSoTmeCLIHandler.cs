@@ -72,13 +72,16 @@ namespace SSoTme.OST.Lib.CLIOptions
                 if (!String.IsNullOrEmpty(this.commandLine)) parser.Parse(this.commandLine, false);
                 else parser.Parse(this.args, false);
 
-                this.HasRemainingArguments = parser.RemainingArguments.Any();
+                var remainingArguments = parser.RemainingArguments.ToList();
+                this.FixParameters(ref remainingArguments);
+
+                this.HasRemainingArguments = remainingArguments.Any();
 
                 bool continueToLoad = false;
 
                 if (String.IsNullOrEmpty(this.transpiler))
                 {
-                    this.transpiler = parser.RemainingArguments.FirstOrDefault().SafeToString();
+                    this.transpiler = remainingArguments.FirstOrDefault().SafeToString();
                     if (this.transpiler.Contains("/"))
                     {
                         this.account = this.transpiler.Substring(0, this.transpiler.IndexOf("/"));
@@ -86,18 +89,19 @@ namespace SSoTme.OST.Lib.CLIOptions
                     }
                 }
 
-                var additionalArgs = parser.RemainingArguments.Skip(1).ToList();
+                var additionalArgs = remainingArguments.Skip(1).ToList();
                 for (var i = 0; i < additionalArgs.Count; i++)
                 {
                     this.parameters.Add(String.Format("param{0}={1}", i + 1, additionalArgs[i]));
                 }
+
 
                 if (this.help)
                 {
 
                     Console.WriteLine(parser.UsageInfo.GetHeaderAsString(78));
 
-                    Console.WriteLine("\n\nSyntax: aicapture [account/]transpiler [Options]\n\n");
+                    Console.WriteLine("\n\nSyntax: ssotme [account/]transpiler [Options]\n\n");
 
                     Console.WriteLine(parser.UsageInfo.GetOptionsAsString(78));
                     this.SuppressTranspile = true;
@@ -139,12 +143,14 @@ namespace SSoTme.OST.Lib.CLIOptions
                     if (String.IsNullOrEmpty(this.setAccountAPIKey) && !this.help && !this.authenticate)
                     {
                         this.AICaptureProject = SSoTmeProject.LoadOrFail(new DirectoryInfo(Environment.CurrentDirectory), false);
-
-                        foreach (var projectSetting in this.AICaptureProject.ProjectSettings)
+                        if (!(this.AICaptureProject is null))
                         {
-                            if (!this.parameters.Any(anyParam => anyParam.StartsWith(String.Format("{0}=", projectSetting.Name))))
+                            foreach (var projectSetting in this.AICaptureProject?.ProjectSettings)
                             {
-                                this.parameters.Add(String.Format("{0}={1}", projectSetting.Name, projectSetting.Value));
+                                if (!this.parameters.Any(anyParam => anyParam.StartsWith(String.Format("{0}=", projectSetting.Name))))
+                                {
+                                    this.parameters.Add(String.Format("{0}={1}", projectSetting.Name, projectSetting.Value));
+                                }
                             }
                         }
                     }
@@ -177,6 +183,55 @@ namespace SSoTme.OST.Lib.CLIOptions
                 Console.ReadKey();
 
             }
+        }
+
+        private void FixParameters(ref List<string> additionalArgs)
+        {
+            var cmd = additionalArgs.FirstOrDefault();
+            switch ($"{cmd}".ToLower())
+            {
+                case "init":
+                    this.init = true;
+                    break;
+
+                case "help":
+                    this.help = true;
+                    break;
+
+                case "install":
+                    this.install = true;
+                    break;
+
+                case "build":
+                    this.build = true;
+                    break;
+
+                case "buildall":
+                    this.buildAll = true;
+                    break;
+
+                case "clean":
+                    this.clean = true;
+                    break;
+
+                case "cleanall":
+                    this.cleanAll = true;
+                    break;
+
+                case "describe":
+                    this.describe = true;
+                    break;
+
+                case "descibeAll":
+                    this.descibeAll = true;
+                    break;
+
+                default:
+                    return;
+            }
+
+            this.transpiler = additionalArgs.Skip(1).FirstOrDefault();
+            if (additionalArgs.Count > 0) additionalArgs.RemoveAt(0);
         }
 
         public int TranspileProject(ProjectTranspiler projectTranspiler = null)
@@ -248,7 +303,7 @@ namespace SSoTme.OST.Lib.CLIOptions
                 else if (this.buildAll)
                 {
                     this.AICaptureProject.Rebuild(this.includeDisabled);
-                    this.AICaptureProject.CreateDocs();
+                    if (this.checkResults) this.AICaptureProject.CreateDocs();
 
                 }
                 else if (this.discuss)
@@ -274,11 +329,11 @@ namespace SSoTme.OST.Lib.CLIOptions
                 }
                 else if (this.clean && !hasRemainingArguments)
                 {
-                    this.AICaptureProject.Clean(Environment.CurrentDirectory, this.preserveZFS);
+                    this.AICaptureProject?.Clean(Environment.CurrentDirectory, this.preserveZFS);
                 }
                 else if (this.cleanAll && !hasRemainingArguments)
                 {
-                    this.AICaptureProject.Clean(this.preserveZFS);
+                    this.AICaptureProject?.Clean(this.preserveZFS);
                 }
                 else if (!hasRemainingArguments && !this.clean)
                 {
@@ -341,7 +396,7 @@ namespace SSoTme.OST.Lib.CLIOptions
                 Console.WriteLine("Already authenticated.  Reauthenticate now? y/N");
                 if (Console.ReadKey().Key != ConsoleKey.Y) return true;
             }
-            
+
             var startInfo = new ProcessStartInfo();
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
@@ -457,16 +512,7 @@ namespace SSoTme.OST.Lib.CLIOptions
 
         private void ProcessCommandLine(string commandLine)
         {
-            var executable = commandLine;
-            var args = "";
-            var indexOfFirstSpace = executable.IndexOf(" ");
-            if (indexOfFirstSpace > 0)
-            {
-                args = executable.Substring(indexOfFirstSpace + 1);
-                executable = executable.Substring(0, indexOfFirstSpace);
-            }
-
-            var process = Process.Start(executable, args);
+            var process = Process.Start(commandLine);
             process.WaitForExit(this.waitTimeout);
             if (!process.HasExited)
             {

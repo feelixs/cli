@@ -57,6 +57,12 @@ namespace SSoTme.OST.Lib.CLIOptions
         [CommandLineOption(Description = "Don't clean the output before cooking", MinOccurs = 0, Aliases = "sc")]
         public bool skipClean { get; set; }
         
+        [CommandLineOption(Description = "Lists seeds available to be clones", MinOccurs = 0, Aliases = "lsd")]
+        public bool listSeeds { get; set; }
+        
+        [CommandLineOption(Description = "Clones a specified seed", MinOccurs = 0, Aliases = "cs")]
+        public string cloneEAPISeed { get; set; }
+        
         [CommandLineOption(Description = "The account which the transpiler belongs to", MinOccurs = 0, Aliases = "a")]
         public string account { get; set; }
         
@@ -113,6 +119,15 @@ namespace SSoTme.OST.Lib.CLIOptions
         
         [CommandLineOption(Description = "Launch the aicapture.io website in order to authenticate (and/or register), and then to link that  user to your aicapture CLI.", MinOccurs = 0, Aliases = "auth")]
         public bool authenticate { get; set; }
+        
+        [CommandLineOption(Description = "Override the default URL specified by the seed repository", MinOccurs = 0, Aliases = "")]
+        public string repoUrl { get; set; }
+        
+        [CommandLineOption(Description = "Use the beta repository for this seed?", MinOccurs = 0, Aliases = "")]
+        public bool betaRepo { get; set; }
+        
+        [CommandLineOption(Description = "Skips the build part of cloning a Seed repository", MinOccurs = 0, Aliases = "")]
+        public bool skipBuild { get; set; }
         
     }
 }
