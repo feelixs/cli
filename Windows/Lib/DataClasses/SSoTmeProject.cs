@@ -163,9 +163,13 @@ namespace SSoTme.OST.Lib.DataClasses
             {
                 var gitIgnore = @"/**/obj/**/*
 /**/bin/**/*
-/.ssotme/**/*
-/DSPXml/**/*
-/SSoT/__patch.json";
+/**/.ssotme/**/*
+/**/DSPXml/**/*
+/SSoT/__patch.json
+/**/.vs/**/*
+/**/node_modules/**/*
+/**/.vscode/**/*";
+
                 File.WriteAllText(fi.FullName, gitIgnore);
             }
         }
