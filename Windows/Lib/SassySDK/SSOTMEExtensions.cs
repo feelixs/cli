@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 
 using SassyMQ.SSOTME.Lib.RMQActors;
+using System;
 namespace SassyMQ.SSOTME.Lib
 {
     public static class SSOTMEExtensions
@@ -20,5 +21,7 @@ namespace SassyMQ.SSOTME.Lib
             LexiconTerm term = Lexicon.Terms[termKey];
             return (payload.RoutingKey == term.RoutingKey);
         }
+
+        public static EventHandler FileWritten { get; set; }
     }
 }

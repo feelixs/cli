@@ -292,17 +292,24 @@ namespace SSoTme.OST.Lib.CLIOptions
                     this.ProcessCommandLine(this.execute);
                     if (this.install)
                     {
-                        object o = 1; // Need to write code to save the execute command line
+                        result = new SSOTMEPayload()
+                        {
+                            Transpiler = new Transpiler()
+                            {
+                                Name = "-execute"
+                            }
+                        };
+                        this.AICaptureProject.Install(result, this.transpilerGroup);
                     }
                 }
                 else if (this.build)
                 {
-                    this.AICaptureProject.Rebuild(Environment.CurrentDirectory, this.includeDisabled);
+                    this.AICaptureProject.Rebuild(Environment.CurrentDirectory, this.includeDisabled, this.transpilerGroup);
                     if (this.checkResults) this.AICaptureProject.CreateDocs();
                 }
                 else if (this.buildAll)
                 {
-                    this.AICaptureProject.Rebuild(this.includeDisabled);
+                    this.AICaptureProject.Rebuild(this.includeDisabled, this.transpilerGroup);
                     if (this.checkResults) this.AICaptureProject.CreateDocs();
 
                 }
@@ -437,7 +444,7 @@ namespace SSoTme.OST.Lib.CLIOptions
             }
             else
             {
-                ShowError("Syntax: aicapture unable to authenticate within the specified timeout period.");
+                ShowError("Syntax: ssotme unable to authenticate within the specified timeout period.");
                 return false;
             }
         }
@@ -512,7 +519,11 @@ namespace SSoTme.OST.Lib.CLIOptions
 
         private void ProcessCommandLine(string commandLine)
         {
-            var process = Process.Start(commandLine);
+            var cmd = $"{commandLine} ";
+            var executable = cmd.Substring(0, cmd.IndexOf(" "));
+            var args = cmd.Substring(executable.Length + 1);
+            var psi = new ProcessStartInfo(executable, args);
+            var process = Process.Start(psi);
             process.WaitForExit(this.waitTimeout);
             if (!process.HasExited)
             {

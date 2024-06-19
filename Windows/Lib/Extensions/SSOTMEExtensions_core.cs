@@ -34,12 +34,12 @@ using System.Xml.Serialization;
 
 namespace SSoTme.OST.Lib.Extensions
 {
-    public static class Default_SSOTMEExtensions
+    public static class SSOTMEExtensions
     {
         public static readonly IPluralizationApi Pluralizer;
         private static readonly CultureInfo CultureInfo;
 
-        static Default_SSOTMEExtensions()
+        static SSOTMEExtensions()
         {
 
             var builder = new PluralizationApiBuilder();
@@ -503,7 +503,7 @@ namespace SSoTme.OST.Lib.Extensions
         {
             if (!ReferenceEquals(fileSetFile.ZippedBinaryFileContents, null))
             {
-                return SSoTme.OST.Lib.Extensions.Default_SSOTMEExtensions.Unzip(fileSetFile.ZippedBinaryFileContents);
+                return SSoTme.OST.Lib.Extensions.SSOTMEExtensions.Unzip(fileSetFile.ZippedBinaryFileContents);
             }
             else return new Byte[] { };
         }
@@ -802,8 +802,8 @@ namespace SSoTme.OST.Lib.Extensions
             {
 
                 fileName = Path.GetFileNameWithoutExtension(fileName);
-                var pluralFileName = Default_SSOTMEExtensions.Pluralizer.Pluralize(fileName);
-                var singularFileName = Default_SSOTMEExtensions.Pluralizer.Singularize(fileName);
+                var pluralFileName = SSOTMEExtensions.Pluralizer.Pluralize(fileName);
+                var singularFileName = SSOTMEExtensions.Pluralizer.Singularize(fileName);
 
                 var xml = GetXMLFromCSV(fi, pluralFileName, singularFileName);
                 return xml.ToString();

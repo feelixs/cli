@@ -387,8 +387,8 @@ namespace SSoTme.OST.Lib.CLIOptions
                 patchFI.Delete();
             });
 
-            // 2) issue the command > aicapture -replayall
-            var replayCommand = "aicapture -replay";
+            // 2) issue the command > ssotme -replayall
+            var replayCommand = "ssotme -replay";
             ExecuteCommand(projectRootPath.FullName, replayCommand);
         }
 
@@ -401,8 +401,8 @@ namespace SSoTme.OST.Lib.CLIOptions
             //patchDocument.ApplyTo(jsonObj);
             //File.WriteAllText(fileFI.FullName, JsonConvert.SerializeObject(jsonObj));
 
-            //// 2) issue the command > aicapture -replayall
-            //var replayCommand = "aicapture -replay";
+            //// 2) issue the command > ssotme -replayall
+            //var replayCommand = "ssotme -replay";
             //ExecuteCommand(projectRootPath.FullName, replayCommand);
 
         }

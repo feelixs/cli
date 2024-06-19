@@ -8,7 +8,7 @@
     
     Access this using:
     
-    > aicapture xml-xslt-transform -i ../SSoT/AICPublic.xml -i CreateDesigners.xslt
+    > ssotme xml-xslt-transform -i ../SSoT/AICPublic.xml -i CreateDesigners.xslt
     
     -->
     <xsl:param name="output-filename" select="'output.txt'" />

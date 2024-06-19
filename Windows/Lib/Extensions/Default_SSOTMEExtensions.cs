@@ -13,6 +13,7 @@ using SassyMQ.Lib.RabbitMQ;
 using SSoTme.OST.Lib.DataClasses;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data;
 using System.Data.Entity.Design.PluralizationServices;
 using System.Data.OleDb;
@@ -23,11 +24,14 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
+using System.Windows;
+using System.Windows.Media.Imaging;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Schema;
@@ -36,12 +40,12 @@ using System.Xml.XPath;
 
 namespace SSoTme.OST.Lib.Extensions
 {
-    public static class Default_SSOTMEExtensions
+    public static class SSOTMEExtensions
     {
 
-        static Default_SSOTMEExtensions()
+        static SSOTMEExtensions()
         {
-            Default_SSOTMEExtensions.Pluralizer = PluralizationService.CreateService(CultureInfo.CurrentCulture);
+            SSOTMEExtensions.Pluralizer = PluralizationService.CreateService(CultureInfo.CurrentCulture);
         }
 
 
@@ -409,7 +413,9 @@ namespace SSoTme.OST.Lib.Extensions
                 {
                     CleanEmptyFolders(diChildDir);
                 }
-                if (!di.GetDirectories().Any() && !di.GetFiles().Any())
+                var diDirs = di.GetDirectories();
+                var diFiles = di.GetFiles();
+                if (!diDirs.Any() && !diFiles.Any())
                 {
                     Task.Factory.StartNew(() =>
                     {
@@ -427,7 +433,7 @@ namespace SSoTme.OST.Lib.Extensions
                             }
                             catch { } // ignore errors
                         }
-                    });
+                    }).Wait();
                 }
             }
         }
@@ -503,7 +509,7 @@ namespace SSoTme.OST.Lib.Extensions
         {
             if (!ReferenceEquals(fileSetFile.ZippedBinaryFileContents, null))
             {
-                return SSoTme.OST.Lib.Extensions.Default_SSOTMEExtensions.Unzip(fileSetFile.ZippedBinaryFileContents);
+                return SSoTme.OST.Lib.Extensions.SSOTMEExtensions.Unzip(fileSetFile.ZippedBinaryFileContents);
             }
             else return new Byte[] { };
         }
@@ -528,7 +534,8 @@ namespace SSoTme.OST.Lib.Extensions
             // Display the inferred schema.
             var index = 1;
             FileSet fs = new FileSet();
-            foreach (XmlSchema schema in schemaSet.Schemas())
+            var schemas = schemaSet.Schemas().OfType<XmlSchema>();
+            foreach (XmlSchema schema in schemas.Where(schema => schema.Elements.Count > 0))
             {
                 MemoryStream sms = new MemoryStream();
                 StreamWriter writer = new StreamWriter(sms);
@@ -835,11 +842,238 @@ namespace SSoTme.OST.Lib.Extensions
             }
         }
 
-
-        public static string ConvertJsonToXml(string inputFileName, string inputFileContents, bool removeAllExtensions = false)
+        public static string SingularizedNestedCollections(this string xml)
         {
-            var inputExtension = Path.GetExtension(inputFileName);
+            XDocument doc = XDocument.Parse(xml);
 
+            var nodesWithArrayAttribute = doc.Descendants()
+                .Where(node => (string)node.Attribute(XNamespace.Get("http://james.newtonking.com/projects/json") + "Array") == "true" && node.Parent != null && node.Name.LocalName == node.Parent.Name.LocalName);
+
+            foreach (var node in nodesWithArrayAttribute)
+            {
+                XName singularName = Pluralizer.Singularize(node.Name.LocalName);
+                node.Name = singularName;
+            }
+
+            xml = doc.ToString();
+            return xml;
+        }
+
+        public static void RemoveRedundantNamespaces(this XDocument xDoc)
+        {
+            XNamespace jsonNs = "http://james.newtonking.com/projects/json";
+            XElement root = xDoc.Root;
+
+            // Ensure the root has the namespace declared once
+            root.Attributes().Where(a => a.IsNamespaceDeclaration && a.Value == jsonNs && a.Parent != root).Remove();
+
+            // Remove all redundant xmlns:json declarations
+            foreach (var elem in root.Descendants())
+            {
+                elem.Attributes().Where(a => a.IsNamespaceDeclaration && a.Value == jsonNs && a.Parent != root).Remove();
+            }
+        }
+
+        public static string ConvertJsonToXml(string inputFileName, string singularName, string pluralName, string inputFileContents, bool removeAllExtensions = false, bool legacyJsonToXml = true, bool nestPluralCollections = true)
+        {
+            string xml = null;
+            var noExtensionFileName = Path.GetFileNameWithoutExtension(inputFileName);
+            (var isPlural, var singular, var plural) = GetSingularAndPluralForWord(noExtensionFileName);
+            if (String.IsNullOrEmpty(singularName)) singularName = singular;
+            if (String.IsNullOrEmpty(pluralName)) pluralName = plural;
+            if (legacyJsonToXml) xml = LegacyJsonToXml(inputFileName, ref inputFileContents, removeAllExtensions);
+            else xml = NewJsonXml(inputFileName, singularName, pluralName, inputFileContents, nestPluralCollections);
+            return xml;
+        }
+
+        private static string NewJsonXml(String inputFileName, string singularName, string pluralName, string inputFileContents, bool nestPluralCollections = false)
+        {
+            string rootWord = Path.GetFileNameWithoutExtension(inputFileName);
+            // Convert JSON to intermediate XML
+            var intermediateXml = ConvertJsonToIntermediateXml(inputFileContents, nestPluralCollections);
+
+            // Process intermediate XML to nest collections and mark arrays
+            if (nestPluralCollections && false)
+            {
+                // Load the XML into a document for manipulation
+                var xmlDoc = new XmlDocument();
+                xmlDoc.LoadXml(intermediateXml);
+                AddNewtonsoftNamespace(xmlDoc);
+
+
+                var rootElement = xmlDoc.DocumentElement as XmlElement;
+
+                // Iterate over all elements to find collections
+                foreach (XmlElement element in rootElement)
+                {
+                    // Determine if the current element is a collection
+                    var isPlural = true;
+                    // Mark the collection with json:array attribute
+                    if (isPlural)
+                    {
+                        // Wrap the collection items with a singular wrapper
+                        WrapCollectionItems(element, singularName);
+                    }
+                }
+
+                return xmlDoc.OuterXml;
+            }
+
+            // If no nesting is required, return the intermediate XML
+            return intermediateXml;
+        }
+
+        private static (bool, string, string) GetSingularAndPluralForWord(string candidateWord)
+        {
+            bool isPlural = Pluralizer.IsPlural(candidateWord);
+            string singularName = isPlural ? Pluralizer.Singularize(candidateWord) : candidateWord;
+            string pluralName = isPlural ? candidateWord : Pluralizer.Pluralize(candidateWord);
+            return (isPlural, singularName, pluralName);
+        }
+
+        private static string ConvertJsonToIntermediateXml(string json, bool nestPluralCollections = false)
+        {
+            // Parse the JSON into a JObject.
+            JObject jsonObject = JObject.Parse(json);
+
+            XmlDocument xmlDoc = new XmlDocument();
+
+            // Create an XmlDocument.
+            XmlElement root = xmlDoc.CreateElement("Root"); // The root element name can be dynamic if necessary.
+            xmlDoc.AppendChild(root);
+
+
+            AddNewtonsoftNamespace(xmlDoc);
+
+            // Convert the JSON object to an XML element.
+            ConvertJTokenToXmlElement(jsonObject, root, xmlDoc, nestPluralCollections: nestPluralCollections);
+
+            if (nestPluralCollections)
+            {
+                var updatedElement = TransformRecords(xmlDoc.DocumentElement.FirstChild as XmlElement);
+            }
+
+            // Return the OuterXml which is the string representation of the XML document.
+            return xmlDoc.DocumentElement.InnerXml;
+        }
+
+        public static void AddNewtonsoftNamespace(XmlDocument xmlDoc, XmlElement element = null)
+        {
+            if (element is null) element = xmlDoc.DocumentElement;
+
+            // Define the namespace URI for the JSON array
+            string jsonNamespaceUri = "http://james.newtonking.com/projects/json";
+
+            // Create an XmlNamespaceManager for adding the namespace
+            XmlNamespaceManager nsmgr = new XmlNamespaceManager(xmlDoc.NameTable);
+            nsmgr.AddNamespace("json", jsonNamespaceUri);
+
+            // Create the root element with the namespace
+            // Add the namespace attribute to the root element
+            element.SetAttribute("xmlns:json", jsonNamespaceUri);
+        }
+
+        public static void AddNewtonsoftNamespace(XDocument xDoc, XElement element = null)
+        {
+            if (element == null) element = xDoc.Root;
+
+            // Define the namespace URI for the JSON array
+            XNamespace jsonNamespaceUri = "http://james.newtonking.com/projects/json";
+
+            // Add the namespace attribute to the element. There's no direct equivalent to XmlNamespaceManager in XDocument,
+            // since namespaces are managed directly on the elements.
+            element.SetAttributeValue(XNamespace.Xmlns + "json", jsonNamespaceUri);
+        }
+
+
+        public static XmlElement TransformRecords(XmlElement rootElement)
+        {
+            AddNewtonsoftNamespace(rootElement.OwnerDocument, rootElement);
+            // Check if the provided element is not null and named "Root"
+            if (rootElement == null)
+            {
+                throw new ArgumentException("Invalid root element.", nameof(rootElement));
+            }
+
+            // Find the "records" element(s) - assuming there might be more than one such structure to fix
+            XmlNodeList recordsList = rootElement.FirstChild.ChildNodes;
+
+            foreach (XmlNode record in recordsList)
+            {
+                var newRecord = record.CloneNode(true);
+                rootElement.AppendChild(newRecord);
+                //rootElement.FirstChild.RemoveChild(record);
+            }
+
+            rootElement.RemoveChild(rootElement.FirstChild);
+
+            return rootElement;
+        }
+
+
+        private static void ConvertJTokenToXmlElement(JToken token, XmlNode parentXmlNode, XmlDocument xmlDoc, bool parentIsArray = false, bool nestPluralCollections = false)
+        {
+            if (token is JProperty property)
+            {
+                XmlElement element = xmlDoc.CreateElement(property.Name);
+                parentXmlNode.AppendChild(element);
+                ConvertJTokenToXmlElement(property.Value, element, xmlDoc, nestPluralCollections: nestPluralCollections);
+            }
+            else if (token is JObject obj)
+            {
+                foreach (var childToken in obj.Children())
+                {
+                    ConvertJTokenToXmlElement(childToken, parentXmlNode, xmlDoc, nestPluralCollections: nestPluralCollections);
+                }
+            }
+            else if (token is JArray array)
+            {
+                // Here we assume that the parentXmlNode is the plural element.
+                // We need to use the singular form for the child elements.
+                var isPlural = Pluralizer.IsSingular(parentXmlNode.Name);
+                string singularForm = isPlural ? Pluralizer.Singularize(parentXmlNode.Name) : parentXmlNode.Name;
+                foreach (var arrayItem in array.Children())
+                {
+                    XmlElement arrayElement = xmlDoc.CreateElement(singularForm);
+                    XmlAttribute arrayAttribute = xmlDoc.CreateAttribute("json", "Array", "http://james.newtonking.com/projects/json");
+                    arrayAttribute.Value = "true";
+                    arrayElement.Attributes.Append(arrayAttribute);
+                    parentXmlNode.AppendChild(arrayElement);
+                    ConvertJTokenToXmlElement(arrayItem, arrayElement, xmlDoc, true, nestPluralCollections: nestPluralCollections);
+                }
+
+                // Add the json:array attribute to denote it's an array.
+                //parentXmlNode.Attributes.Append(arrayAttribute);
+            }
+            else if (token is JValue value)
+            {
+                // If it's a value, set the text.
+                parentXmlNode.InnerText = $"{value?.Value}";
+            }
+        }
+
+
+        private static void WrapCollectionItems(XmlElement collectionElement, string singularName)
+        {
+            var xmlDoc = collectionElement.OwnerDocument;
+
+            // Create a wrapper element for each item in the collection
+            foreach (XmlNode child in collectionElement.ChildNodes)
+            {
+                var arrayAttribute = xmlDoc.CreateAttribute("json", "Array", "http://james.newtonking.com/projects/json");
+                arrayAttribute.Value = "true";
+                collectionElement.Attributes.Append(arrayAttribute);
+
+                var wrapper = xmlDoc.CreateElement(singularName);
+
+                wrapper.InnerXml = child.InnerXml;
+                collectionElement.ReplaceChild(wrapper, child);
+            }
+        }
+
+
+        private static string LegacyJsonToXml(string inputFileName, ref string inputFileContents, bool removeAllExtensions)
+        {
             var inputName = "root";
             if (!String.IsNullOrEmpty(inputFileName))
             {
@@ -864,7 +1098,6 @@ namespace SSoTme.OST.Lib.Extensions
             var xml = JsonToXml(inputFileContents).OuterXml;
             return xml;
         }
-
 
         public static String FormatXml(this String Xml)
         {
@@ -1271,7 +1504,7 @@ namespace SSoTme.OST.Lib.Extensions
         //    }
         //}
 
-        public static String XmlToJson(this String xml)
+        public static String XmlToJson(this String xml, bool convertNumbersAndDates = true)
         {
             var doc = XElement.Parse(xml);
 
@@ -1285,7 +1518,7 @@ namespace SSoTme.OST.Lib.Extensions
             string jsonText = JsonConvert.SerializeXNode(doc, Newtonsoft.Json.Formatting.Indented);
             var jo = JObject.Parse(jsonText);
 
-            ConvertNumbersAndDates(jo);
+            if (convertNumbersAndDates) ConvertNumbersAndDates(jo);
             var jsonTextClean = jo.ToString();
             return jsonTextClean;
         }
@@ -1306,7 +1539,10 @@ namespace SSoTme.OST.Lib.Extensions
                     }
                     else if (DateTime.TryParse(prop.Value.ToString(), out DateTime dateValue))
                     {
-                        prop.Value = dateValue;
+                        if (prop.Value.ToString().Contains("/") || prop.Value.ToString().Contains("-"))
+                        {
+                            prop.Value = dateValue;
+                        }
                     }
                 }
                 else if (prop.Value.Type == JTokenType.Object)
@@ -1650,7 +1886,8 @@ namespace SSoTme.OST.Lib.Extensions
             else return xelement.XPathSelectElement(xPath).GetValue();
         }
 
-        public static dynamic ToNewtonsoft(this object obj) {
+        public static dynamic ToNewtonsoft(this object obj)
+        {
             return JsonConvert.DeserializeObject(JsonConvert.SerializeObject(obj));
         }
     }

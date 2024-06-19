@@ -17,6 +17,7 @@ using System.Diagnostics;
 using System.Collections.Generic;
 //using System.Windows.Forms;
 using System.Threading;
+using EnumList;
 
 namespace SSoTme.OST.Lib.DataClasses
 {
@@ -55,7 +56,7 @@ namespace SSoTme.OST.Lib.DataClasses
             }
         }
 
-        public bool SaveDisabled { get; private set; }
+        private bool SaveDisabled { get; set; }
 
         private void WireProjectMonitor()
         {
@@ -254,7 +255,7 @@ namespace SSoTme.OST.Lib.DataClasses
 
         private void Save(DirectoryInfo rootDI)
         {
-            this.CheckUniqueIDs();
+            this.RemoveUUIds();
             this.AddSetting(string.Format("project-name={0}", this.Name));
             this.ProjectTranspilers
                 .ToList()
@@ -299,25 +300,25 @@ namespace SSoTme.OST.Lib.DataClasses
             }
         }
 
-        public void CheckUniqueIDs()
+        public void RemoveUUIds()
         {
-            IEnumerable<ProjectTranspiler> dupTranspilers = GetDuplicateTranpsilers();
-            while (dupTranspilers.Any())
+            this.SSoTmeProjectId = Guid.Empty;
+            this.ProjectSettings.ToList().ForEach(setting =>
             {
-                var firstDup = dupTranspilers.First();
-                firstDup.ProjectTranspilerId = Guid.NewGuid();
-                dupTranspilers = GetDuplicateTranpsilers();
-            }
+                setting.ProjectSettingId = Guid.Empty;
+            });
 
-            foreach (var transpiler in this.ProjectTranspilers.Where(wherePT => !ReferenceEquals(wherePT.MatchedTranspiler, null)))
+            this.ProjectTranspilers.ToList().ForEach(transpiler =>
             {
-                transpiler.MatchedTranspiler.UsageCount = 0;
-            }
-        }
-
-        private IEnumerable<ProjectTranspiler> GetDuplicateTranpsilers()
-        {
-            return this.ProjectTranspilers.Where(pt => this.ProjectTranspilers.Where(otherPT => otherPT != pt).Any(anyOtherPT => anyOtherPT.ProjectTranspilerId == pt.ProjectTranspilerId));
+                if (transpiler != null)
+                {
+                    transpiler.ProjectTranspilerId = Guid.Empty;
+                    if (transpiler.MatchedTranspiler != null)
+                    {
+                        transpiler.MatchedTranspiler.TranspilerId = Guid.Empty;
+                    }
+                }                
+            });
         }
 
         protected String GetProjectFileName()
@@ -555,13 +556,13 @@ namespace SSoTme.OST.Lib.DataClasses
             ProcessStartInfo psi = new ProcessStartInfo("cmd");
             psi.WorkingDirectory = di.FullName;
 
-            psi.Arguments = "/C aicapture spxml-to-detailed-spxml -i \"./SSoTmeProject.spxml\"";
+            psi.Arguments = "/C ssotme spxml-to-detailed-spxml -i \"./SSoTmeProject.spxml\"";
             var p = Process.Start(psi);
             p.WaitForExit(100000);
             if (!p.HasExited) throw new Exception("Failed waiting for Detailed SP Xml to be created.");
             else
             {
-                psi.Arguments = "/C aicapture detailed-spxml-to-html-docs -i \"./SSoTmeProject.dspxml\"";
+                psi.Arguments = "/C ssotme detailed-spxml-to-html-docs -i \"./SSoTmeProject.dspxml\"";
                 p = Process.Start(psi);
 
                 p.WaitForExit(100000);
@@ -643,13 +644,15 @@ namespace SSoTme.OST.Lib.DataClasses
             return relativePath.Replace("\\", "/");
         }
 
-        public void Rebuild(string buildPath, bool includeDisabled)
+        public void Rebuild(string buildPath, bool includeDisabled, string transpilerGroup)
         {
             var currentDirectory = Environment.CurrentDirectory;
             try
             {
                 var relativePath = this.GetProjectRelativePath(buildPath);
                 var matchingProjectTranspilers = this.ProjectTranspilers.Where(wherePT => wherePT.IsAtPath(relativePath));
+                matchingProjectTranspilers = matchingProjectTranspilers.Where(wherePT => String.IsNullOrEmpty(transpilerGroup) ||
+                                                                                        String.Equals(wherePT.TranspilerGroup, transpilerGroup, StringComparison.OrdinalIgnoreCase));
                 foreach (var pt in matchingProjectTranspilers)
                 {
                     if (!pt.IsDisabled || includeDisabled) pt.Rebuild(this);
@@ -719,9 +722,9 @@ namespace SSoTme.OST.Lib.DataClasses
             cleanDI.Delete();
         }
 
-        public void Rebuild(bool includeDisabled)
+        public void Rebuild(bool includeDisabled, string transpilerGroup)
         {
-            this.Rebuild(this.RootPath, includeDisabled);
+            this.Rebuild(this.RootPath, includeDisabled, transpilerGroup);
         }
 
 
@@ -737,21 +740,26 @@ namespace SSoTme.OST.Lib.DataClasses
 
         private void IntegrateTranspiler(ProjectTranspiler projectTranspiler, bool addIfMissing)
         {
-            var matchingTranspiler = this.ProjectTranspilers.FirstOrDefault(fodPT => (fodPT.Name == projectTranspiler.Name) &&
-                                                                                     (fodPT.RelativePath == projectTranspiler.RelativePath) &&
-                                                                                     (String.IsNullOrEmpty(fodPT.TranspilerGroup) || String.Equals(fodPT.TranspilerGroup, projectTranspiler.TranspilerGroup)));
+            ProjectTranspiler matchingTranspiler = FindMatchingTranspiler(projectTranspiler);
             int firstIndex = -1;
             while (!ReferenceEquals(matchingTranspiler, null))
             {
                 if (firstIndex == -1) firstIndex = this.ProjectTranspilers.IndexOf(matchingTranspiler);
                 this.ProjectTranspilers.Remove(matchingTranspiler);
-                matchingTranspiler = this.ProjectTranspilers.FirstOrDefault(fodPT => (fodPT.Name == projectTranspiler.Name) && (fodPT.RelativePath == projectTranspiler.RelativePath));
+                matchingTranspiler = FindMatchingTranspiler(projectTranspiler);
             }
+            firstIndex = Math.Min(firstIndex, this.ProjectTranspilers.Count - 1);
             if (firstIndex >= 0) this.ProjectTranspilers.Insert(firstIndex, projectTranspiler);
             else if (addIfMissing) this.ProjectTranspilers.Add(projectTranspiler);
             projectTranspiler.Name = projectTranspiler.MatchedTranspiler?.Name ?? "no-transpiler-found";
         }
 
+        private ProjectTranspiler FindMatchingTranspiler(ProjectTranspiler projectTranspiler)
+        {
+            return this.ProjectTranspilers.FirstOrDefault(fodPT => (fodPT.Name == projectTranspiler.Name) &&
+                                                                                     (fodPT.RelativePath == projectTranspiler.RelativePath) &&
+                                                                                     (String.Equals(fodPT.TranspilerGroup, projectTranspiler.TranspilerGroup)));
+        }
 
         public void RemoveSetting(string setting)
         {

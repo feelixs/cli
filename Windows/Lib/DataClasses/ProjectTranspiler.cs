@@ -57,6 +57,7 @@ namespace SSoTme.OST.Lib.DataClasses
             else if (lowerCLI.Contains("/aicapture.ost.cli.dll")) cmd0 = cmd0.Substring(lowerCLI.IndexOf("/aicapture.ost.cli.dll") + "/aicapture.ost.cli.dll".Length);            
             else if (lowerCLI.Contains("/ssotme")) cmd0 = cmd0.Substring(lowerCLI.IndexOf("/ssotme") + "/ssotme".Length);
             else if (lowerCLI.Contains("/aicapture")) cmd0 = cmd0.Substring(lowerCLI.IndexOf("/aicapture") + "/aicapture".Length);
+            else if (lowerCLI.Contains("/aic")) cmd0 = cmd0.Substring(lowerCLI.IndexOf("/aic") + "/aic".Length);
 
             cmd0 = cmd0.Replace("-install", "").Trim(" '\"".ToCharArray());
             this.CommandLine = cmd0;
@@ -67,8 +68,8 @@ namespace SSoTme.OST.Lib.DataClasses
         internal void Rebuild(SSoTmeProject project)
         {
             Console.WriteLine("\n\nRE-transpiling: " + this.RelativePath + ": " + this.Name);
-            Console.WriteLine("CommandLine:> aicapture {0}", this.CommandLine);
-            var transpileRootDI = new DirectoryInfo(Path.Combine(project.RootPath, this.RelativePath.Trim("\\/".ToCharArray())));
+            Console.WriteLine("CommandLine:> ssotme {0}", this.CommandLine);
+            var transpileRootDI = new DirectoryInfo(Path.Combine(project.RootPath, $"{this.RelativePath}".Trim("\\/".ToCharArray())));
             if (!transpileRootDI.Exists) transpileRootDI.Create();
 
             Environment.CurrentDirectory = transpileRootDI.FullName;
@@ -100,9 +101,9 @@ namespace SSoTme.OST.Lib.DataClasses
         { 
             Console.WriteLine("\n-----------------------------------");
             Console.WriteLine("---- {0}{1}", this.Name, this.IsDisabled ? "    **** DISABLED ****" : "");
-            Console.WriteLine("---- .{0}/", this.RelativePath.Replace("\\", "/"));
+            Console.WriteLine("---- .{0}/", $"{this.RelativePath}".Replace("\\", "/"));
             Console.WriteLine("-----------------------------------");
-            Console.WriteLine("\nCommand Line:> aicapture {0}\n", this.CommandLine);
+            Console.WriteLine("\nCommand Line:> ssotme {0}\n", this.CommandLine);
         }
 
         public bool IsAtPath(string relativePath)
