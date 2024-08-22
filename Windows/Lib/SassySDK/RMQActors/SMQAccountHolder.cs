@@ -27,7 +27,7 @@ namespace SassyMQ.SSOTME.Lib.RMQActors
             }
             else if (payload.IsLexiconTerm(LexiconTermEnum.accountholder_login_ssotmecoordinator))
             {
-                Console.WriteLine("Connected account");
+                // Console.WriteLine("Connected account");
             }
         }
 

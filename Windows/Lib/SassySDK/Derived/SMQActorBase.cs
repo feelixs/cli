@@ -156,7 +156,7 @@ namespace SassyMQ.Lib.RabbitMQ.Payload
 
             RMQChannel.QueueBind(queue: QueueName, exchange: this.AllExchange, routingKey: "#");
 
-            System.Console.WriteLine("\n\nCONNECTED: {0}: Waiting for messages. To exit press CTRL+C\n", this.GetType().Name.ToTitle());
+            //System.Console.WriteLine("\n\nCONNECTED: {0}: Waiting for messages. To exit press CTRL+C\n", this.GetType().Name.ToTitle());
         }
 
         private void MonitorMessages(Subscription subscription)

@@ -22,6 +22,13 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
+using Newtonsoft.Json.Linq;
+using System.Net.Http;
+using SSoTme.OST.Core.Lib.Extensions;
+using System.ComponentModel.DataAnnotations;
+using System.Drawing.Drawing2D;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.Information;
+using HtmlAgilityPack;
 
 namespace SSoTme.OST.Lib.CLIOptions
 {
@@ -40,6 +47,7 @@ namespace SSoTme.OST.Lib.CLIOptions
             this.account = "";
             this.waitTimeout = 30000;
             this.input = new List<string>();
+            this.OptionalInputCLIInputs = new List<string>();
             this.parameters = new List<string>();
             this.addSetting = new List<string>();
             this.removeSetting = new List<string>();
@@ -47,10 +55,10 @@ namespace SSoTme.OST.Lib.CLIOptions
 
         public static SSoTmeCLIHandler CreateHandler(string commandLine)
         {
-            var cliOptions = new SSoTmeCLIHandler();
-            cliOptions.commandLine = commandLine;
-            cliOptions.ParseCommand();
-            return cliOptions;
+            var cliHandler = new SSoTmeCLIHandler();
+            cliHandler.commandLine = commandLine;
+            cliHandler.ParseCommand();
+            return cliHandler;
         }
 
 
@@ -76,6 +84,7 @@ namespace SSoTme.OST.Lib.CLIOptions
                 this.FixParameters(ref remainingArguments);
 
                 this.HasRemainingArguments = remainingArguments.Any();
+                this.RemainingArguments = remainingArguments;
 
                 bool continueToLoad = false;
 
@@ -98,12 +107,13 @@ namespace SSoTme.OST.Lib.CLIOptions
 
                 if (this.help)
                 {
-
-                    Console.WriteLine(parser.UsageInfo.GetHeaderAsString(78));
+                    var helpWidth = Console.WindowWidth - 4;
+                    Console.WriteLine(parser.UsageInfo.GetHeaderAsString(helpWidth));
 
                     Console.WriteLine("\n\nSyntax: ssotme [account/]transpiler [Options]\n\n");
 
-                    Console.WriteLine(parser.UsageInfo.GetOptionsAsString(78));
+                    Console.WriteLine(parser.UsageInfo.GetOptionsAsString(helpWidth));
+                    Console.ReadKey();
                     this.SuppressTranspile = true;
                 }
                 else if (this.init)
@@ -130,7 +140,7 @@ namespace SSoTme.OST.Lib.CLIOptions
                     Console.ForegroundColor = curColor;
                     this.SuppressTranspile = true;
                 }
-                else if (this.authenticate || this.discuss)
+                else if (this.authenticate || this.discuss || this.listSeeds || this.cloneSeed)
                 {
                     continueToLoad = false;
                 }
@@ -140,9 +150,9 @@ namespace SSoTme.OST.Lib.CLIOptions
 
                 if (continueToLoad)
                 {
-                    if (String.IsNullOrEmpty(this.setAccountAPIKey) && !this.help && !this.authenticate)
+                    if (String.IsNullOrEmpty(this.setAccountAPIKey) && !this.help && !this.authenticate && !this.listSeeds && !this.cloneSeed)
                     {
-                        this.AICaptureProject = SSoTmeProject.LoadOrFail(new DirectoryInfo(Environment.CurrentDirectory), false);
+                        this.AICaptureProject = SSoTmeProject.LoadOrFail(new DirectoryInfo(Environment.CurrentDirectory), false, this.clean || this.cleanAll);
                         if (!(this.AICaptureProject is null))
                         {
                             foreach (var projectSetting in this.AICaptureProject?.ProjectSettings)
@@ -154,7 +164,6 @@ namespace SSoTme.OST.Lib.CLIOptions
                             }
                         }
                     }
-
                     this.LoadInputFiles();
 
                     var key = SSOTMEKey.GetSSoTmeKey(this.runAs);
@@ -174,16 +183,251 @@ namespace SSoTme.OST.Lib.CLIOptions
                 var curColor = Console.ForegroundColor;
                 Console.ForegroundColor = ConsoleColor.Red;
 
-                Console.WriteLine("\n********************************\nERROR: {0}\n********************************\n\n", ex.Message);
-                Console.WriteLine(ex.StackTrace);
-                Console.WriteLine("\n\nPress any key to continue...\n");
-                Console.WriteLine("\n\n");
+                var currentException = ex;
+                while (!(currentException is null))
+                {
+                    Console.WriteLine("\n********************************\nERROR: {0}\n********************************\n\n", currentException.Message);
+                    Console.WriteLine(currentException.StackTrace);
+                    Console.WriteLine("\n\nPress any key to continue...\n");
+                    Console.WriteLine("\n\n");
+                    if (currentException == ex.InnerException) break;
+                    currentException = ex.InnerException;
+                }
                 Console.ForegroundColor = curColor;
-
+                this.SuppressTranspile = true;
                 Console.ReadKey();
-
             }
         }
+
+        private GitRepo? ListSeeds(bool allowChoice, string requestedSeedName)
+        {
+            try
+            {
+                var publicRepos = GetPublicReposAsync("ssotme").GetAwaiter().GetResult();
+                var allSeeds = publicRepos.Where(repo => repo.Name.Contains("seed"));
+                var roots = allSeeds.Where(seed => seed.Name.Contains("root")).ToList();
+                var seeds = allSeeds.Where(seed => !seed.Name.Contains("root")).ToList();
+
+                // Set console window width to 90% of current width for wrapping
+                int maxLineWidth = Math.Max((int)(Console.WindowWidth * 0.9) - 15, 60);
+
+                Console.ResetColor();
+
+                if (this.IsCurrentSeedRoot())
+                {
+                    if (!String.IsNullOrEmpty(requestedSeedName))
+                    {
+                        var selectedSeed = seeds.FirstOrDefault(fod => fod.Name.Equals(requestedSeedName, StringComparison.OrdinalIgnoreCase) ||
+                                                                        fod.ShortName.Equals(requestedSeedName, StringComparison.OrdinalIgnoreCase));
+                        if (selectedSeed is null) throw new Exception($"Requested seed not found: {requestedSeedName}");
+
+                        return selectedSeed;
+                    }
+                    // Formatting for regular seeds
+                    Console.ForegroundColor = ConsoleColor.Green; // Header in green
+                    Console.WriteLine("\n\nPublic ssot.me starter seeds.");
+                    Console.ResetColor();
+
+                    return ListAndPickSeed(seeds, allowChoice, maxLineWidth);
+                }
+                else
+                {
+                    // Formatting for ROOT seeds
+                    Console.ForegroundColor = ConsoleColor.Green; // Header in green
+                    Console.WriteLine(@"Public ssot.me ROOT starter seeds.
+These seeds are designed to connect to a specific data source, 
+such as Airtable, MySQL, Postgress, GSheets, etc...
+
+They typically include the schema, role based permissions,
+documentation, along with other meta data about the datasource,
+such as which tables have authorization data, email addresses,
+roles, etc (if appropriate).
+");
+
+                    return ListAndPickSeed(roots, allowChoice, maxLineWidth);
+                }
+            }
+            finally
+            {
+                // Footer text
+                Console.ForegroundColor = ConsoleColor.White; // Default text color for the rest
+                Console.WriteLine(@"
+Go to https://github.com/ssotme for a current list of public Seeds available.
+
+Syntax: 
+     > ssotme -cloneseed https://github.com/ssotme/root-seed-mysql [seed-directory]\n\n\n");
+                Console.ResetColor();
+            }
+        }
+
+        private static GitRepo ListAndPickSeed(List<GitRepo> seeds, bool allowChoice, int maxLineWidth)
+        {
+            var selectedSeed = default(GitRepo);
+
+            int seedNumber = 1;
+            seeds.ForEach(seed =>
+            {
+                var seedName = seed.Name.Replace("root-", "");
+                seedName = seedName.Replace("seed-", "");
+                Console.ForegroundColor = ConsoleColor.Cyan; // Root seeds in cyan
+                var seedSyntax1 = $"\n{seedNumber++} - {WrapText(seedName, maxLineWidth)}";
+                seedSyntax1 += $"{"".PadLeft(Math.Max(0, 25 - seedSyntax1.Length))} > ssotme -cloneseed";
+                var seedSyntax2 = $" {seedName} ";
+                var seedSyntax3 = $"my-{seedName}";
+                var lines = $"{WrapText(seed.Description, maxLineWidth)}".Split(Environment.NewLine).ToList();
+                var description = String.Join(",\n", lines.Select(str => $"{"".PadRight(27)}{str}"));
+
+                Console.Write($"{seedSyntax1}");
+                Console.ForegroundColor = ConsoleColor.Blue; // Root seeds in cyan
+                Console.Write($"{seedSyntax2}");
+                Console.ForegroundColor = ConsoleColor.Cyan; // Root seeds in cyan
+                Console.WriteLine($"{seedSyntax3}");
+                Console.WriteLine($"{description}");
+                Console.WriteLine();
+                Console.ResetColor();
+            });
+
+            if (allowChoice)
+            {
+                Console.Write("Enter the number of the seed to clone here: ");
+                var readLn = Console.ReadLine();
+                if (Int32.TryParse(readLn, out int rootSeedSelected))
+                {
+                    selectedSeed = seeds[rootSeedSelected - 1];
+                }
+            }
+
+            return selectedSeed;
+        }
+
+        private bool IsCurrentSeedRoot()
+        {
+            var ssotmeFile = new FileInfo("ssotme.json");
+
+            // Check if the ssotme.json file exists in the current directory
+            if (!ssotmeFile.Exists) return false;
+
+            try
+            {
+                // Parse the JSON content of the ssotme.json file
+                var jsonContent = File.ReadAllText(ssotmeFile.FullName);
+                var project = JObject.Parse(jsonContent);
+
+                // Access the Transpilers array and check if any of the transpiler groups match "ssot"
+                var transpilers = project["ProjectTranspilers"] as JArray;
+                if (transpilers != null)
+                {
+                    return transpilers.Any(tp =>
+                        string.Equals((string)tp["TranspilerGroup"], "ssot", StringComparison.OrdinalIgnoreCase));
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error parsing ssotme.json: {ex.Message}");
+            }
+
+            return false;
+        }
+
+        // Helper function to wrap text to the specified width
+        private static string WrapText(string text, int maxWidth)
+        {
+            if (string.IsNullOrEmpty(text) || text.Length <= maxWidth) return text;
+
+            var lines = new List<string>();
+            var words = text.Split(' ');
+
+            var currentLine = string.Empty;
+            foreach (var word in words)
+            {
+                if ((currentLine.Length + word.Length + 1) > maxWidth)
+                {
+                    lines.Add(currentLine);
+                    currentLine = word;
+                }
+                else
+                {
+                    currentLine += (currentLine.Length > 0 ? " " : "") + word;
+                }
+            }
+            lines.Add(currentLine); // Add the last line
+
+            return string.Join(Environment.NewLine, lines);
+        }
+
+        public class GitRepo
+        {
+            public string Name { get; set; }
+            public string Description { get; set; }
+            public string ShortName => $"{this.Name}".Replace("root-", "").Replace("seed-", "");
+            public string Url { get => $"https://github.com/ssotme/{this.Name}"; }
+        }
+
+        public static async Task<List<GitRepo>> GetPublicReposAsync(String account)
+        {
+            var apiUrl = $"https://api.github.com/users/{account}/repos";
+            var reposList = new List<GitRepo>();
+
+            using (var client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Add("User-Agent", "request"); // GitHub API requires a user-agent header
+
+                try
+                {
+                    var response = await client.GetStringAsync(apiUrl);
+                    JArray repos = JArray.Parse(response);
+
+                    foreach (JObject repo in repos)
+                    {
+                        string name = repo["name"].ToString();
+                        string description = repo["description"].ToString();
+                        var repoMetaData = new GitRepo() { Name = name, Description = description } ;
+                        reposList.Add(repoMetaData);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error fetching repository data: {ex.Message}");
+                    // Optionally, handle exceptions in a way that suits your application's needs
+                }
+            }
+
+            reposList.Add(new GitRepo() { Name = "seed-airtable-dotnet-api", Description = "An EffortlessAPI for Airtable Dotnet REST-API, Swagger documentation." });
+            reposList.Add(new GitRepo() { Name = "seed-golang-dotnet-api", Description = "An EffortlessAPI for Airtable Golang REST-API, Swagger documentation." });
+
+            return reposList;
+        }
+
+        private async Task<string> CloneSeed(GitRepo seedRepo)
+        {
+            string seedRepoUrl = seedRepo?.Url;
+            seedRepoUrl = seedRepoUrl ?? this.GetSeedUrl();
+            string initialDirectoryName = this.RemainingArguments.FirstOrDefault();
+            return seedRepo.CloneRepositoryUsingCmd(initialDirectoryName);
+        }
+
+        private string _cachedSeedUrl;
+
+        private string GetSeedUrl()
+        {
+            if (String.IsNullOrEmpty(this._cachedSeedUrl))
+            {
+                var seedRepoUrl = this.RemainingArguments.FirstOrDefault();
+                if (String.IsNullOrEmpty(seedRepoUrl))
+                {
+                    Console.Write(@"Please enter the git url for the seed repository that you would like to clone.  Press ENTER to abort.
+eg: https://github.com/your-account/your-seed.git
+or: git@github.com:your-account/your-seed
+
+Seed Url: ");
+                    seedRepoUrl = Console.ReadLine();
+                }
+                else RemainingArguments.RemoveAt(0);
+                _cachedSeedUrl = seedRepoUrl;
+            }
+            return _cachedSeedUrl;
+        }
+
 
         private void FixParameters(ref List<string> additionalArgs)
         {
@@ -202,11 +446,21 @@ namespace SSoTme.OST.Lib.CLIOptions
                     this.install = true;
                     break;
 
+                case "cloneseed":
+                    this.cloneSeed = true;
+                    break;
+
+                case "listseeds":
+                    this.listSeeds = true;
+                    break;
+
                 case "build":
+                case "rebuild":
                     this.build = true;
                     break;
 
                 case "buildall":
+                case "rebuildall":
                     this.buildAll = true;
                     break;
 
@@ -269,6 +523,16 @@ namespace SSoTme.OST.Lib.CLIOptions
 
                     this.AICaptureProject.Save();
                 }
+                else if (this.listSeeds)
+                {
+                    this.ListSeeds(false, null);
+                    this.SuppressTranspile = true;
+                }
+                else if (this.cloneSeed)
+                {
+                    this.InitiateCloneSeedingProcess();
+                    this.SuppressTranspile = true;
+                }
                 else if (this.removeSetting.Any())
                 {
                     foreach (var setting in this.removeSetting)
@@ -305,12 +569,12 @@ namespace SSoTme.OST.Lib.CLIOptions
                 else if (this.build)
                 {
                     this.AICaptureProject.Rebuild(Environment.CurrentDirectory, this.includeDisabled, this.transpilerGroup);
-                    if (this.checkResults) this.AICaptureProject.CreateDocs();
+                    this.AICaptureProject.CreateDocs(this.checkResults);
                 }
                 else if (this.buildAll)
                 {
-                    this.AICaptureProject.Rebuild(this.includeDisabled, this.transpilerGroup);
-                    if (this.checkResults) this.AICaptureProject.CreateDocs();
+                    this.AICaptureProject.RebuildAll(this.AICaptureProject.RootPath, this.includeDisabled, this.transpilerGroup);
+                    this.AICaptureProject.CreateDocs(this.checkResults);
 
                 }
                 else if (this.discuss)
@@ -320,13 +584,13 @@ namespace SSoTme.OST.Lib.CLIOptions
                 }
                 else if (this.checkResults || this.createDocs && !hasRemainingArguments)
                 {
-                    if (this.checkResults) this.AICaptureProject.CheckResults();
-                    else this.AICaptureProject.CreateDocs();
+                    this.AICaptureProject.CreateDocs(this.checkResults);
                     updateProject = true;
                 }
                 else if (this.clean && !ReferenceEquals(zfsFileSetFile, null))
                 {
-                    var zfsFI = new FileInfo(zfsFileSetFile.RelativePath);
+                    var possiblyOptionalFileName = zfsFileSetFile.RelativePath;
+                    var zfsFI = new FileInfo(possiblyOptionalFileName);
                     if (zfsFI.Exists)
                     {
                         var zippedFileSet = File.ReadAllBytes(zfsFI.FullName);
@@ -337,10 +601,13 @@ namespace SSoTme.OST.Lib.CLIOptions
                 else if (this.clean && !hasRemainingArguments)
                 {
                     this.AICaptureProject?.Clean(Environment.CurrentDirectory, this.preserveZFS);
+                    Task.Run(() => new DirectoryInfo(Environment.CurrentDirectory).ApplySeedReplacementsAsync(true)).Wait();
+
                 }
                 else if (this.cleanAll && !hasRemainingArguments)
                 {
-                    this.AICaptureProject?.Clean(this.preserveZFS);
+                    this.AICaptureProject?.CleanAll(this.preserveZFS);
+                    Task.Run(() => new DirectoryInfo(Environment.CurrentDirectory).ApplySeedReplacementsAsync(true)).Wait();
                 }
                 else if (!hasRemainingArguments && !this.clean)
                 {
@@ -353,8 +620,13 @@ namespace SSoTme.OST.Lib.CLIOptions
 
                     if (!ReferenceEquals(result.Exception, null))
                     {
-                        ShowError("ERROR: " + result.Exception.Message);
-                        ShowError(result.Exception.StackTrace);
+                        var nextException = result.Exception;
+                        while (!(nextException is null))
+                        {
+                            ShowError("ERROR: " + nextException.Message);
+                            ShowError(nextException.StackTrace);
+                            nextException = nextException.InnerException;
+                        };
                         return -1;
                     }
                     else
@@ -363,7 +635,7 @@ namespace SSoTme.OST.Lib.CLIOptions
 
                         if (!ReferenceEquals(result.Transpiler, null))
                         {
-                            Console.WriteLine("\n\nTRANSPILER MATCHED: {0}\n\n", result.Transpiler.Name);
+                            //Console.WriteLine("\n\nTRANSPILER MATCHED: {0}\n\n", result.Transpiler.Name);
                         }
 
                         if (this.clean) result.CleanFileSet();
@@ -393,6 +665,20 @@ namespace SSoTme.OST.Lib.CLIOptions
             }
         }
 
+        private void InitiateCloneSeedingProcess()
+        {
+            var requestedSeedName = this.RemainingArguments.FirstOrDefault();
+            var seed = this.ListSeeds(true, requestedSeedName);
+            if (seed is null) return;
+            string seedRootPath = default;
+            var task = Task.Run(async () => seedRootPath = await this.CloneSeed(seed));
+            task.Wait(300000);
+            if (!task.IsCompleted || !(task.Exception is null)) throw new Exception($"Unable to clone repo {task.Exception.Message}", task.Exception);
+            var seedDI = new DirectoryInfo(seedRootPath);
+            seedDI.CheckSSoTmeCache(seed.Name);
+            seedDI.InvokeSSoTmeBuild();
+            seedDI.StartSeedBuild();
+        }
 
         private bool CheckAuthenticationNow()
         {
@@ -590,6 +876,7 @@ namespace SSoTme.OST.Lib.CLIOptions
 
         public FileSet FileSet { get; private set; }
         public bool HasRemainingArguments { get; private set; }
+        public List<string> RemainingArguments { get; private set; }
         public FileSetFile ZFSFileSetFile { get; private set; }
         public SSoTmeProject AICaptureProject { get; set; }
         public int ParseResult { get; private set; }
@@ -630,9 +917,27 @@ namespace SSoTme.OST.Lib.CLIOptions
             }
         }
 
+        public List<string> OptionalInputCLIInputs { get; internal set; }
+        private void SaveOptionalCLIInputs()
+        {
+            this.OptionalInputCLIInputs = this.OptionalInputCLIInputs ?? new List<string>();
+            var inputFileCount = this.input is null ? 0 : input.Count();
+            for (int fileIndex = 0; fileIndex < inputFileCount; fileIndex++)
+            {
+                var inputFileName = input[fileIndex];
+                if ((inputFileName ?? "").EndsWith("?"))
+                {
+                    var concreteFileName = inputFileName.TrimEnd('?');
+                    input[inputFileCount] = concreteFileName;
+                    this.OptionalInputCLIInputs.Add(concreteFileName);
+                }
+            }
+        }
+
 
         public void LoadInputFiles()
         {
+            this.SaveOptionalCLIInputs();
             var fs = new FileSet();
             if (!ReferenceEquals(this.input, null) && this.input.Any())
             {
@@ -671,7 +976,7 @@ namespace SSoTme.OST.Lib.CLIOptions
             {
                 matchingFiles = di.GetFiles(filePattern);
             }
-            if (!matchingFiles.Any())
+            if (!matchingFiles.Any() && !this.OptionalInputCLIInputs.Contains(filePattern))
             {
                 var curColor = Console.ForegroundColor;
                 Console.ForegroundColor = ConsoleColor.Yellow;
@@ -684,22 +989,25 @@ namespace SSoTme.OST.Lib.CLIOptions
 
             }
 
-            foreach (var fi in matchingFiles)
+            foreach (var matchingFileFI in matchingFiles)
             {
                 var fsf = new FileSetFile();
-                fsf.RelativePath = String.IsNullOrEmpty(fileNameReplacement) ? fi.Name : fileNameReplacement;
-                fsf.OriginalRelativePath = fi.FullName.Substring(this.AICaptureProject.RootPath.Length).Replace("\\", "/");
+                fsf.RelativePath = String.IsNullOrEmpty(fileNameReplacement) ? matchingFileFI.Name : fileNameReplacement;
+                var projectRootLength = this.AICaptureProject.RootPath.Length;
+                var matchingFileFILength = matchingFileFI.Directory.FullName.Length;
+                var minLength = Math.Min(projectRootLength, matchingFileFILength);
+                fsf.OriginalRelativePath = matchingFileFI.FullName.Substring(minLength).Replace("\\", "/");
                 fs.FileSetFiles.Add(fsf);
 
-                if (fi.Exists)
+                if (matchingFileFI.Exists)
                 {
-                    if (fi.IsBinaryFile())
+                    if (matchingFileFI.IsBinaryFile())
                     {
-                        fsf.ZippedBinaryFileContents = File.ReadAllBytes(fi.FullName).Zip();
+                        fsf.ZippedBinaryFileContents = File.ReadAllBytes(matchingFileFI.FullName).Zip();
                     }
                     else
                     {
-                        fsf.ZippedFileContents = File.ReadAllText(fi.FullName).Zip();
+                        fsf.ZippedFileContents = File.ReadAllText(matchingFileFI.FullName).Zip();
                     }
                 }
                 else
@@ -719,7 +1027,7 @@ namespace SSoTme.OST.Lib.CLIOptions
             if (e.Payload.IsLexiconTerm(LexiconTermEnum.accountholder_ping_ssotmecoordinator))
             {
                 CoordinatorProxy = new DMProxy(e.Payload.DirectMessageQueue);
-                Console.WriteLine("Got ping response");
+                //Console.WriteLine("Got ping response");
                 var payload = AccountHolder.CreatePayload();
                 payload.SaveCLIOptions(this);
                 payload.TranspileRequest = new TranspileRequest();

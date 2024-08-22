@@ -26,6 +26,8 @@ namespace SSoTme.OST.Lib.DataClasses
             this.InitPoco();
         }
 
+        public bool IsSSoTTranspiler { get; set; }
+
         public override string ToString()
         {
             var outputFileName = String.Empty;
@@ -67,7 +69,7 @@ namespace SSoTme.OST.Lib.DataClasses
 
         internal void Rebuild(SSoTmeProject project)
         {
-            Console.WriteLine("\n\nRE-transpiling: " + this.RelativePath + ": " + this.Name);
+            Console.WriteLine("\n\n **** " + this.RelativePath + ": " + this.Name + " ****");
             Console.WriteLine("CommandLine:> ssotme {0}", this.CommandLine);
             var transpileRootDI = new DirectoryInfo(Path.Combine(project.RootPath, $"{this.RelativePath}".Trim("\\/".ToCharArray())));
             if (!transpileRootDI.Exists) transpileRootDI.Create();

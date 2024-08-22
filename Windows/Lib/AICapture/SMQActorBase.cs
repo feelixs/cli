@@ -111,7 +111,7 @@ namespace AIC.SassyMQ.Lib
                 RMQChannel.QueueBind(queue: QueueName, exchange: this.AllExchange, routingKey: "#");
             }
 
-            System.Console.WriteLine($"CONNECTED: [{actorName}] Waiting for messages at {this.VirtualHost}@{this.Hostname}.");
+            // System.Console.WriteLine($"CONNECTED: [{actorName}] Waiting for messages at {this.VirtualHost}@{this.Hostname}.");
 
             this.AfterConnect();
 
