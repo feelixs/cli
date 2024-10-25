@@ -7,23 +7,21 @@ using static SSoTme.OST.Lib.CLIOptions.SSoTmeCLIHandler;
 
 public static class RepositoryManager
 {
-
     public static string CloneRepositoryUsingCmd(this GitRepo seed, string directoryName)
     {
         if (String.IsNullOrEmpty(directoryName))
         {
             directoryName = seed.ShortName;
-
             Console.Write($"\nChoose the directory if `{directoryName}` is not right: ");
             var suggestedName = Console.ReadLine();
             directoryName = String.IsNullOrEmpty(suggestedName) ? directoryName : suggestedName;
         }
 
+        directoryName = directoryName ?? Path.GetFileNameWithoutExtension(seed.ShortName);
+
         try
         {
-            directoryName = directoryName ?? Path.GetFileNameWithoutExtension(seed.ShortName);
-
-            // Setting up the process start information
+            // Set up the process start information
             var processStartInfo = new ProcessStartInfo
             {
                 FileName = "git",
@@ -34,35 +32,65 @@ public static class RepositoryManager
                 CreateNoWindow = true
             };
 
-            // Starting the process
+            // Start the process
             using (var process = new Process { StartInfo = processStartInfo })
             {
                 process.Start();
+                process.WaitForExit();  // Ensure the cloning completes before continuing
 
-                // Reading output to console
+                // Read the output and errors
                 string output = process.StandardOutput.ReadToEnd();
                 string errors = process.StandardError.ReadToEnd();
 
-                process.WaitForExit();
-
-                // Handling results based on process exit code
                 if (process.ExitCode == 0)
                 {
                     Console.WriteLine("Repository successfully cloned.");
                     Console.WriteLine(output);
+
+                    // Remove the .git folder
+                    RemoveGitFolder(directoryName);
                 }
                 else
                 {
                     Console.WriteLine("Failed to clone the repository:");
                     Console.WriteLine(errors);
-                    throw new Exception($"Failed to clone the respository: \n{errors}");
+                    throw new Exception($"Failed to clone the repository: \n{errors}");
                 }
             }
+
             return new FileInfo(directoryName).FullName;
         }
         catch (Exception ex)
         {
-            throw ex;
+            throw new Exception("Error in cloning and removing the .git directory: " + ex.Message, ex);
         }
     }
+
+    private static void RemoveGitFolder(string directoryName)
+    {
+        string gitFolderPath = Path.Combine(directoryName, ".git");
+        if (Directory.Exists(gitFolderPath))
+        {
+            // Attempt to remove read-only attributes
+            RemoveReadOnlyAttributes(gitFolderPath);
+
+            // Now attempt to delete the directory
+            Directory.Delete(gitFolderPath, true);
+            Console.WriteLine(".git folder removed successfully.");
+        }
+    }
+
+    private static void RemoveReadOnlyAttributes(string directoryPath)
+    {
+        var directoryInfo = new DirectoryInfo(directoryPath);
+        foreach (var file in directoryInfo.GetFiles("*", SearchOption.AllDirectories))
+        {
+            file.Attributes = FileAttributes.Normal;
+        }
+        foreach (var dir in directoryInfo.GetDirectories("*", SearchOption.AllDirectories))
+        {
+            dir.Attributes = FileAttributes.Normal;
+        }
+    }
+
 }

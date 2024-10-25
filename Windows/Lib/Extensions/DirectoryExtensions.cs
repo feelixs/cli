@@ -28,17 +28,19 @@ public static class DirectoryExtensions
 
         // Extract "start-on-complete" if it exists
         var startOnCompleteJO = jsonObject["start-on-complete"];
-        var startOnComplete = startOnCompleteJO?.ToObject<List<string>>();
+        var startOnCompleteCommands = startOnCompleteJO?.ToObject<List<string>>();
 
-        if (startOnComplete != null && startOnComplete.Any())
+        if (startOnCompleteCommands != null && startOnCompleteCommands.Any())
         {
             Console.WriteLine($"Starting processes defined in 'start-on-complete'...");
 
-            foreach (var command in startOnComplete)
+
+            foreach (var command in startOnCompleteCommands)
             {
                 // Start each command using Process.Start
                 Console.WriteLine($"Executing: {command}");
-                StartProcess(command, seedDI.Name);
+                bool isLast = startOnCompleteCommands.IndexOf(command) == startOnCompleteCommands.Count - 1;
+                StartProcess(command, seedDI.Name, !isLast);
             }
         }
         else
@@ -48,7 +50,7 @@ public static class DirectoryExtensions
     }
 
     // Method to start a process and not wait for it to finish
-    private static void StartProcess(string command, string seedPath)
+    private static void StartProcess(string command, string seedPath, bool wait)
     {
         try
         {
@@ -64,7 +66,8 @@ public static class DirectoryExtensions
                 WorkingDirectory = seedPath
             };
 
-            Process.Start(processStartInfo);
+            var process = Process.Start(processStartInfo);
+            if (wait) process.WaitForExit();
         }
         catch (Exception ex)
         {

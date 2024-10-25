@@ -447,6 +447,7 @@ Seed Url: ");
                     break;
 
                 case "cloneseed":
+                case "clone":
                     this.cloneSeed = true;
                     break;
 

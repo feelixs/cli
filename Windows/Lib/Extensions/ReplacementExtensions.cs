@@ -151,6 +151,8 @@ namespace SSoTme.OST.Core.Lib.Extensions
             bool allValuesProvided = true;
             JObject airtableSchema = null;
 
+            if (seedDetails["replacements"] is null) return;
+
             foreach (var replacement in seedDetails["replacements"])
             {
                 var key = (string)replacement["key"];
