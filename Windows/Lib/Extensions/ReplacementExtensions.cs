@@ -298,7 +298,6 @@ namespace SSoTme.OST.Core.Lib.Extensions
             var finalView = exportView ?? nonGridViewView ?? sharedViews.First();
             return finalView.Replace(" ", "%20");
         }
-
         private static string GetAirtableUserTableName(string currentDefault, JObject airtableSchema)
         {
             string singularTableName = GetSingularTableName(airtableSchema);
@@ -313,25 +312,88 @@ namespace SSoTme.OST.Core.Lib.Extensions
 
         private static string GetSingularTableName(JObject airtableSchema)
         {
-            string originalTableName = GetTableName(airtableSchema);
+            string originalTableName = GetUsersTableName(airtableSchema);
+            if (string.IsNullOrEmpty(originalTableName))
+                throw new Exception("User table not found in the schema.");
+
             return originalTableName.Singularize();
         }
 
-        private static string GetTableName(JObject airtableSchema)
+        private static string GetUsersTableName(JObject airtableSchema)
         {
-            var tableNames = (airtableSchema["tables"] as JArray).Select(table => $"{table["name"]}").ToList();
-            var userTable = tableNames.FirstOrDefault(fod => fod.Contains("user", StringComparison.OrdinalIgnoreCase));
-            var accountTable = tableNames.FirstOrDefault(fod => fod.Contains("account", StringComparison.OrdinalIgnoreCase));
+            if (airtableSchema == null)
+                throw new ArgumentNullException(nameof(airtableSchema));
+
+            var tablesToken = airtableSchema["tables"] as JArray;
+            if (tablesToken == null)
+                throw new Exception("The schema does not contain a 'tables' array.");
+
+            var tableNames = tablesToken
+                .Select(table => $"{table["name"]}")
+                .ToList();
+
+            var userTable = tableNames
+                .FirstOrDefault(fod => fod.Contains("user", StringComparison.OrdinalIgnoreCase));
+
+            var accountTable = tableNames
+                .FirstOrDefault(fod => fod.Contains("account", StringComparison.OrdinalIgnoreCase));
+
             var originalTableName = $"{userTable ?? accountTable}";
+
+            if (string.IsNullOrEmpty(originalTableName))
+            {
+                // Fall back logic: Look for any table with fields that include "email" and "role"
+                foreach (var table in tablesToken)
+                {
+                    var fields = table["fields"] as JArray;
+                    if (fields == null)
+                        continue;
+
+                    var fieldNames = fields
+                        .Select(field => $"{field["name"]}".ToLowerInvariant())
+                        .ToList();
+
+                    if (fieldNames.Any(fn => fn.Contains("email")) && fieldNames.Any(fn => fn.Contains("role")))
+                    {
+                        originalTableName = $"{table["name"]}";
+                        break;
+                    }
+                }
+
+                // If no such table is found, return null
+                if (string.IsNullOrEmpty(originalTableName))
+                    return null;
+            }
+
             return originalTableName;
         }
 
         private static string GetAirtableEmailAddressField(string currentDefault, JObject airtableSchema)
         {
-            var originalTableName = GetTableName(airtableSchema);
-            var table = (airtableSchema["tables"] as JArray).FirstOrDefault(fod => $"{fod["name"]}" == originalTableName);
-            var fields = table["fields"];
-            var emailField = fields.FirstOrDefault(fod => $"{fod["name"]}".Contains("email", StringComparison.OrdinalIgnoreCase));
+            var originalTableName = GetUsersTableName(airtableSchema);
+            if (string.IsNullOrEmpty(originalTableName))
+                throw new Exception("User table not found in the schema.");
+
+            var tablesArray = airtableSchema["tables"] as JArray;
+            if (tablesArray == null)
+                throw new Exception("The schema does not contain a 'tables' array.");
+
+            var table = tablesArray
+                .FirstOrDefault(fod => $"{fod["name"]}" == originalTableName);
+
+            if (table == null)
+                throw new Exception($"Table '{originalTableName}' not found in the schema.");
+
+            var fields = table["fields"] as JArray;
+            if (fields == null)
+                throw new Exception($"Fields not found in table '{originalTableName}'.");
+
+            var emailField = fields
+                .FirstOrDefault(fod => $"{fod["name"]}".Contains("email", StringComparison.OrdinalIgnoreCase));
+
+            if (emailField == null)
+                throw new Exception("Email field not found in the user table.");
+
             var emailFieldName = $"{emailField["name"]}";
             return emailFieldName;
         }
@@ -345,10 +407,30 @@ namespace SSoTme.OST.Core.Lib.Extensions
 
         private static JToken GetRolesField(JObject airtableSchema)
         {
-            var originalTableName = GetTableName(airtableSchema);
-            var table = (airtableSchema["tables"] as JArray).FirstOrDefault(fod => $"{fod["name"]}" == originalTableName);
-            var fields = table["fields"];
-            var rolesField = fields.FirstOrDefault(fod => $"{fod["name"]}".Contains("role", StringComparison.OrdinalIgnoreCase));
+            var originalTableName = GetUsersTableName(airtableSchema);
+            if (string.IsNullOrEmpty(originalTableName))
+                throw new Exception("User table not found in the schema.");
+
+            var tablesArray = airtableSchema["tables"] as JArray;
+            if (tablesArray == null)
+                throw new Exception("The schema does not contain a 'tables' array.");
+
+            var table = tablesArray
+                .FirstOrDefault(fod => $"{fod["name"]}" == originalTableName);
+
+            if (table == null)
+                throw new Exception($"Table '{originalTableName}' not found in the schema.");
+
+            var fields = table["fields"] as JArray;
+            if (fields == null)
+                throw new Exception($"Fields not found in table '{originalTableName}'.");
+
+            var rolesField = fields
+                .FirstOrDefault(fod => $"{fod["name"]}".Contains("role", StringComparison.OrdinalIgnoreCase));
+
+            if (rolesField == null)
+                throw new Exception("Roles field not found in the user table.");
+
             return rolesField;
         }
 
@@ -356,9 +438,15 @@ namespace SSoTme.OST.Core.Lib.Extensions
         {
             var rolesField = GetRolesField(airtableSchema);
             var options = rolesField["options"];
-            var choices = options["choices"];
+            if (options == null)
+                return "Admin,User,Guest";
+
+            var choices = options["choices"] as JArray;
+            if (choices == null)
+                return "Admin,User,Guest";
+
             var choiceNames = choices.Select(choice => $"{choice["name"]}");
-            var roles = String.Join(",", choiceNames);
+            var roles = string.Join(",", choiceNames);
             return roles;
         }
 
@@ -366,12 +454,20 @@ namespace SSoTme.OST.Core.Lib.Extensions
         {
             var rolesField = GetRolesField(airtableSchema);
             var options = rolesField["options"];
-            var choices = options["choices"];
-            var choiceNames = choices.Select(choice => $"{choice["name"]}");
+            if (options == null)
+                return "User";
 
-            var firstNonAdminOrGuestRole = choiceNames.FirstOrDefault(fod => !fod.Equals("admin", StringComparison.OrdinalIgnoreCase) &&
-                                                                            !fod.Equals("guest", StringComparison.OrdinalIgnoreCase));
-            return firstNonAdminOrGuestRole;
+            var choices = options["choices"] as JArray;
+            if (choices == null)
+                return "User";
+
+            var choiceNames = choices.Select(choice => $"{choice["name"]}");
+            var firstNonAdminOrGuestRole = choiceNames
+                .FirstOrDefault(fod =>
+                    !fod.Equals("admin", StringComparison.OrdinalIgnoreCase) &&
+                    !fod.Equals("guest", StringComparison.OrdinalIgnoreCase));
+
+            return firstNonAdminOrGuestRole ?? "User";
         }
 
         private static HttpClient httpClient = new HttpClient();
