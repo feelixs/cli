@@ -29,6 +29,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Drawing.Drawing2D;
 using OfficeOpenXml.FormulaParsing.Excel.Functions.Information;
 using HtmlAgilityPack;
+using System.ComponentModel;
 
 namespace SSoTme.OST.Lib.CLIOptions
 {
@@ -155,7 +156,7 @@ namespace SSoTme.OST.Lib.CLIOptions
                         this.AICaptureProject = SSoTmeProject.LoadOrFail(new DirectoryInfo(Environment.CurrentDirectory), false, this.clean || this.cleanAll);
                         if (!(this.AICaptureProject is null))
                         {
-                            foreach (var projectSetting in this.AICaptureProject?.ProjectSettings)
+                            foreach (var projectSetting in this.AICaptureProject?.ProjectSettings ?? new BindingList<ProjectSetting>())
                             {
                                 if (!this.parameters.Any(anyParam => anyParam.StartsWith(String.Format("{0}=", projectSetting.Name))))
                                 {

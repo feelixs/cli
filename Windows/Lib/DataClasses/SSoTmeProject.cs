@@ -134,18 +134,23 @@ namespace SSoTme.OST.Lib.DataClasses
 
         public static void Init(bool force = false, String projectName = "")
         {
+            var currentDirectoryFI = new DirectoryInfo(Environment.CurrentDirectory);
 
-            var currentProject = TryToLoad(new DirectoryInfo(Environment.CurrentDirectory));
+            FileInfo projectFI = GetProjectFIAt(currentDirectoryFI, false);
 
-
-            if (!ReferenceEquals(currentProject, null) && !force)
+            if (projectFI.Exists)
             {
-                if (!String.IsNullOrEmpty(projectName))
+                var currentProject = TryToLoad(currentDirectoryFI);
+                if (!ReferenceEquals(currentProject, null) && !force)
                 {
-                    currentProject.Name = projectName.SafeToString().Replace(" ", "");
-                    currentProject.Save();
+                    if (!String.IsNullOrEmpty(projectName))
+                    {
+                        currentProject.Name = projectName.SafeToString().Replace(" ", "");
+                        currentProject.Save();
+                    }
+                    else throw new Exception(String.Format("Project has already been initialized in: {0}", currentProject.RootPath));
                 }
-                else throw new Exception(String.Format("Project has already been initialized in: {0}", currentProject.RootPath));
+                else throw new Exception("Project not loaded - even though the file exists.  This is unexpected");
             }
             else
             {
@@ -674,7 +679,7 @@ namespace SSoTme.OST.Lib.DataClasses
             try
             {
                 var relativePath = this.GetProjectRelativePath(buildPath);
-                var matchingProjectTranspilers = this.ProjectTranspilers.Where(wherePT => wherePT.IsAtPath(relativePath));
+                var matchingProjectTranspilers = this.ProjectTranspilers?.Where(wherePT => wherePT.IsAtPath(relativePath)) ?? new List<ProjectTranspiler>();
                 matchingProjectTranspilers = matchingProjectTranspilers.Where(wherePT => String.IsNullOrEmpty(transpilerGroup) ||
                                                                                         String.Equals(wherePT.TranspilerGroup, transpilerGroup, StringComparison.OrdinalIgnoreCase));
                 foreach (var pt in matchingProjectTranspilers)

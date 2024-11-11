@@ -162,9 +162,9 @@ namespace SSoTme.OST.Core.Lib.Extensions
                 airtableSchema = await seedDetails.CheckForAirtableHints(configValues, airtableSchema);
                 var defaultValue = (isSecret ? secretValues : configValues).GetDefaultValue(key, replacement, parentConfigValues);
                 var currentValue = (isSecret ? secretValues : configValues).GetCurrentValue(key);
-
+                var skipValue = (isSecret ? secretValues : configValues).SkipValue(key);
                 // If the current value is still null or empty, user interaction is required.
-                if (string.IsNullOrEmpty(currentValue))
+                if (string.IsNullOrEmpty(currentValue) && !skipValue)
                 {
                     allValuesProvided = false;
 
@@ -307,12 +307,14 @@ namespace SSoTme.OST.Core.Lib.Extensions
         private static string GetAirtableUsersTableName(string currentDefault, JObject airtableSchema)
         {
             string singularTableName = GetSingularTableName(airtableSchema);
+            if (string.IsNullOrEmpty(singularTableName)) return null;
             return singularTableName.Pluralize();
         }
 
         private static string GetSingularTableName(JObject airtableSchema)
         {
             string originalTableName = GetUsersTableName(airtableSchema);
+            if (String.IsNullOrEmpty(originalTableName)) return string.Empty;
             if (string.IsNullOrEmpty(originalTableName))
                 throw new Exception("User table not found in the schema.");
 
@@ -371,6 +373,7 @@ namespace SSoTme.OST.Core.Lib.Extensions
         private static string GetAirtableEmailAddressField(string currentDefault, JObject airtableSchema)
         {
             var originalTableName = GetUsersTableName(airtableSchema);
+            if (String.IsNullOrEmpty(originalTableName)) return null;
             if (string.IsNullOrEmpty(originalTableName))
                 throw new Exception("User table not found in the schema.");
 
@@ -401,6 +404,7 @@ namespace SSoTme.OST.Core.Lib.Extensions
         private static string GetAirtableRolesField(string currentDefault, JObject airtableSchema)
         {
             JToken rolesField = GetRolesField(airtableSchema);
+            if (rolesField is null) return null;
             var rolesFieldName = $"{rolesField["name"]}";
             return rolesFieldName;
         }
@@ -408,6 +412,7 @@ namespace SSoTme.OST.Core.Lib.Extensions
         private static JToken GetRolesField(JObject airtableSchema)
         {
             var originalTableName = GetUsersTableName(airtableSchema);
+            if (String.IsNullOrEmpty(originalTableName)) return null;
             if (string.IsNullOrEmpty(originalTableName))
                 throw new Exception("User table not found in the schema.");
 
@@ -437,6 +442,7 @@ namespace SSoTme.OST.Core.Lib.Extensions
         private static string GetAirtableRoles(string currentDefault, JObject airtableSchema)
         {
             var rolesField = GetRolesField(airtableSchema);
+            if (rolesField is null) return null;
             var options = rolesField["options"];
             if (options == null)
                 return "Admin,User,Guest";
@@ -453,6 +459,7 @@ namespace SSoTme.OST.Core.Lib.Extensions
         private static string GetAirtableUserRoleName(string currentDefault, JObject airtableSchema)
         {
             var rolesField = GetRolesField(airtableSchema);
+            if (rolesField is null) return null;
             var options = rolesField["options"];
             if (options == null)
                 return "User";
@@ -561,6 +568,15 @@ namespace SSoTme.OST.Core.Lib.Extensions
             return value;
         }
 
+        //private static string GetCurrentValue(string key, bool isSecret)
+        private static bool SkipValue(this JObject container, string key)
+        {
+            // Try to get the value from the local secrets or response file.
+            string value = (string)container["replacements"]?.FirstOrDefault(x => (string)x["key"] == key)?["skip"];
+            return String.Equals(value ,"true", StringComparison.OrdinalIgnoreCase);
+        }
+
+
         private static string GetDefaultValue(this JObject parentContainer, string key, JToken replacement, JObject parentSeedReplacements)
         {
             var result = (string)parentContainer["replacements"]?.FirstOrDefault(x => (string)x["key"] == key)?["value"];
@@ -626,12 +642,15 @@ namespace SSoTme.OST.Core.Lib.Extensions
             if (foundResponse != null)
             {
                 foundResponse["value"] = value;
+                if (String.IsNullOrEmpty(value)) foundResponse["skip"] = true;
             }
             else
             {
                 responses["replacements"] = responses["replacements"] ?? new JArray();
                 var replacements = responses["replacements"].ToObject<JArray>();
-                replacements.Add(new JObject { ["key"] = key, ["value"] = value });
+                foundResponse = new JObject { ["key"] = key, ["value"] = value };
+                if (String.IsNullOrEmpty(value)) foundResponse["skip"] = true;
+                replacements.Add(foundResponse);
                 responses["replacements"] = replacements;
             }
         }
