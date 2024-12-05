@@ -1,19 +1,16 @@
 {
   "name": "ssotme",
-  "version": "2024.08.23",
+  "version": "2024.12.07",
   "description": "",
-  "devDependencies": {
+  "bin": {
+    "ssotme": "cli.js",
+    "aicapture": "cli.js",
+    "aic": "cli.js"
   },
-    "bin": {
-        "ssotme": "cli.js",
-        "aicapture": "cli.js",
-        "aic": "cli.js"
-    },
-    "scripts": {
-        "build": "",
-        "start": "dotnet Windows/CLI/bin/Release/net7.0/SSoTme.OST.CLI.dll",
-        "postinstall": "dotnet build %~dp0/SSoTme-OST-CLI.sln --configuration Release"
-    },
+  "scripts": {
+    "build": "dotnet build SSoTme-OST-CLI.sln --configuration Release",
+    "start": "node cli.js"
+  },
   "keywords": [],
   "author": "",
   "license": "GNU"
