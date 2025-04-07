@@ -31,7 +31,7 @@ try {
         process.argv.slice(2).join(' ')
     ], { 
         stdio: 'inherit',
-        cwd: appDir 
+        // cwd: appDir 
     });
 } catch (error) {
     console.error('Failed to run CLI:', error);
