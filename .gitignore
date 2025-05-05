@@ -11,3 +11,6 @@
 /Windows/CLI/Properties/launchSettings.json
 /package-lock.json
 /Windows/Lib/go-live.ps1
+
+.idea/
+.vscode/
