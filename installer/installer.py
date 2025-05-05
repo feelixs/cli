@@ -131,10 +131,10 @@ def install_dotnet(version: str):
     base_dir = os.path.dirname(os.path.abspath(__file__))
     if is_macos():
         print("Installing DotNet...")
-        subprocess.run(["brew", "install", "wget"])
-        subprocess.run(["wget", "https://dot.net/v1/dotnet-install.sh", "-P", base_dir])
-        subprocess.run(["chmod", "+x", os.path.join(base_dir, "dotnet-install.sh")])
-        subprocess.run([os.path.join(base_dir, "dotnet-install.sh"), "--version", version])
+        subprocess.run(["brew", "install", "wget"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        subprocess.run(["wget", "https://dot.net/v1/dotnet-install.sh", "-P", base_dir], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        subprocess.run(["chmod", "+x", os.path.join(base_dir, "dotnet-install.sh")], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        subprocess.run([os.path.join(base_dir, "dotnet-install.sh"), "--version", version], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 
 def main():
