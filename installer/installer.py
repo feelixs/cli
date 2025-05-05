@@ -165,7 +165,8 @@ def add_dotnet_path():
         f.write(path_entry)
 
     print(f"Added ~/.dotnet to PATH in {profile_path}")
-    subprocess.run(["source", profile_path], check=True)
+    dotnet_bin = os.path.expanduser("~/.dotnet")
+    os.environ["PATH"] = f"{dotnet_bin}:{os.environ['PATH']}" # make sure its also in path for this session
 
 
 def install_dotnet(version: str):
