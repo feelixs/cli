@@ -5,6 +5,15 @@ import sys
 from pathlib import Path
 import site
 
+import logging
+
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+)
+logger = logging.getLogger(__name__)
+
 
 def is_windows():
     return platform.system() == "Windows"
@@ -27,13 +36,18 @@ def check_dotnet_installed():
         return False
 
 
+def get_dotnet_version():
+    version = subprocess.run(["dotnet", "--version"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    return version.stdout.decode().strip()
+
+
 def build_dotnet_project():
     """Build the .NET project with the Release configuration."""
-    print("Building .NET project...")
+    logger.info("Building .NET project...")
 
     # Get the directory where setup.py is located
     base_dir = os.path.dirname(os.path.abspath(__file__))
-
+    logger.info(f"Base directory: {base_dir}")
     # Navigate to the directory containing the .sln file
     os.chdir(base_dir)
 
@@ -56,7 +70,7 @@ def build_dotnet_project():
 def get_dll_path():
     """Get the appropriate path to the DLL based on the platform."""
     base_dir = os.path.dirname(os.path.abspath(__file__))
-
+    logger.info(f"Build path: {base_dir}")
     if is_windows():
         return os.path.join(base_dir, "Windows", "CLI", "bin", "Release", "net7.0", "SSoTme.OST.CLI.dll")
     elif is_macos():

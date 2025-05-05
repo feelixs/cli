@@ -5,6 +5,11 @@ import logging
 
 BASE_VERSION = "2024.08.23"  # fallback if package.json is not found
 
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+)
 logger = logging.getLogger(__name__)
 
 

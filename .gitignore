@@ -12,5 +12,7 @@
 /package-lock.json
 /Windows/Lib/go-live.ps1
 
+*.egg-info
+build/
 .idea/
 .vscode/
