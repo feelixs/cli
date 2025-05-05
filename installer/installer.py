@@ -83,7 +83,7 @@ def build_dotnet_project():
     )
 
     if result.returncode != 0:
-        print(f"Error building .NET project: {result.stderr}")
+        print(f"Error building .NET project:\n{result.stderr}\n{result.stdout}")
         return False
 
     print("Build completed successfully.")
