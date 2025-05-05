@@ -1,15 +1,33 @@
 from setuptools import setup, find_packages
+import json
 
 import logging
 
-version = "2024.08.23"  # fallback if package.json is not found
+BASE_VERSION = "2024.08.23"  # fallback if package.json is not found
 
 logger = logging.getLogger(__name__)
 
 
+def get_package_version():
+    logger.info("Fetching package version from package.json")
+    try:
+        with open("../package.json") as f:
+            txt = f.read()
+            j = json.loads(txt)
+            return j["version"]
+    except FileNotFoundError:
+        logger.error("Could not find package.json")
+    except json.decoder.JSONDecodeError:
+        logger.error("Could not parse package.json")
+    except Exception as e:
+        logger.error(f"{e}: {str(e)}")
+
+    return BASE_VERSION
+
+
 setup(
     name="ssotme",
-    version=version,
+    version=get_package_version(),
     description="Python wrapper for SSoTme CLI tools",
     author="",
     author_email="",

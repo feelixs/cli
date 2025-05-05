@@ -1,4 +1,4 @@
-name: Django CI
+name: Python Installer
 
 on:
   push:
@@ -25,7 +25,6 @@ jobs:
         run: |
           pip install flake8
           flake8 . --ignore E501,F541,W293 
-  
 
   build:
 
@@ -55,4 +54,4 @@ jobs:
       - name: Run Setup
         run: |
           cd installer
-          python setup.py install
+          pip install .
