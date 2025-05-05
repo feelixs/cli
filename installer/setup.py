@@ -17,7 +17,7 @@ def get_package_version():
     except json.decoder.JSONDecodeError:
         print("Could not parse package.json")
     except Exception as e:
-        print(f"{e}: {str(e)}")
+        print(f"Error {e}: {str(e)}")
 
     print(f"Package version is '{version}'")
     return version

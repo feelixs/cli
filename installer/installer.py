@@ -127,26 +127,53 @@ def install_command_aliases(dotnet_version: str):
         print(f"Created launcher script: {script_path}")
 
 
+def add_dotnet_path():
+    def get_env_folder():
+        shell = os.environ.get("SHELL", "")
+        home = Path.home()
+        if "zsh" in shell:
+            return home / ".zshrc"
+        elif "bash" in shell:
+            # macOS prefers .bash_profile; Linux prefers .bashrc
+            if (home / ".bash_profile").exists():
+                return home / ".bash_profile"
+            else:
+                return home / ".bashrc"
+        else:
+            # Fallback
+            return home / ".profile"
+
+    profile_path = get_env_folder()
+    path_entry = '\n# Added by ssotme installer\nexport PATH="$HOME/.dotnet:$PATH"\n'
+    with open(profile_path, "a") as f:
+        f.write(path_entry)
+
+    print(f"✅ Added ~/.dotnet to PATH in {profile_path}")
+    print(f"⚠️ Please restart your terminal or run `source {profile_path}` for changes to take effect.")
+
+
 def install_dotnet(version: str):
     base_dir = os.path.dirname(os.path.abspath(__file__))
     if is_macos():
         print("Installing DotNet for MacOS...")
         print("brew install wget")
-        subprocess.run(["brew", "install", "wget"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        subprocess.run(["brew", "install", "wget"], check=True)
         print(f"wget", "https://dot.net/v1/dotnet-install.sh", "-P", base_dir)
-        subprocess.run(["wget", "https://dot.net/v1/dotnet-install.sh", "-P", base_dir], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        subprocess.run(["wget", "https://dot.net/v1/dotnet-install.sh", "-P", base_dir], check=True)
         print("chmod", "+x", os.path.join(base_dir, "dotnet-install.sh"))
-        subprocess.run(["chmod", "+x", os.path.join(base_dir, "dotnet-install.sh")], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        subprocess.run(["chmod", "+x", os.path.join(base_dir, "dotnet-install.sh")], check=True)
         print(os.path.join(base_dir, "dotnet-install.sh"), "--version", version)
-        subprocess.run([os.path.join(base_dir, "dotnet-install.sh"), "--version", version], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        subprocess.run([os.path.join(base_dir, "dotnet-install.sh"), "--version", version], check=True)
 
+    add_dotnet_path()
 
 def main():
     dotnet_version = get_dotnet_version()
     install_dotnet(dotnet_version)
 
     # verify dotnet installed
-    if installed_version := check_dotnet_installed() is not None:
+    installed_version = check_dotnet_installed()
+    if installed_version is None:
         print("Error: .NET SDK is not installed or not in PATH.")
         print("Please install .NET SDK from https://dotnet.microsoft.com/download")
         sys.exit(1)
