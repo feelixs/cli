@@ -50,6 +50,7 @@ def is_dotnet_version_installed(required_version):
         for line in sdk_versions:
             if line.startswith(required_version):
                 return True
+            print(f"{line} does not match {required_version}")
         return False
     except Exception as e:
         print(f"Error checking installed dotnet version - {e}: {str(e)}")
