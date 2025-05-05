@@ -55,3 +55,6 @@ jobs:
         run: |
           cd installer
           pip install . -v
+          ssotme --help
+          aicapture --version
+          

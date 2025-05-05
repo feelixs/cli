@@ -6,11 +6,12 @@ BASE_VERSION = "2024.08.23"  # fallback if package.json is not found
 
 def get_package_version():
     print("Fetching package version from package.json")
+    version = BASE_VERSION
     try:
         with open("../package.json") as f:
             txt = f.read()
             j = json.loads(txt)
-            return j["version"]
+            version = j["version"]
     except FileNotFoundError:
         print("Could not find package.json")
     except json.decoder.JSONDecodeError:
@@ -18,7 +19,8 @@ def get_package_version():
     except Exception as e:
         print(f"{e}: {str(e)}")
 
-    return BASE_VERSION
+    print(f"Package version is '{version}'")
+    return version
 
 
 setup(
