@@ -187,12 +187,12 @@ def main():
     install_dotnet(dotnet_version)
 
     # verify dotnet installed
-    installed_version = check_dotnet_installed()
+    installed_version = check_dotnet_installed()  # checks most recent version of those installed
     if installed_version is None:
         print("Error: .NET SDK is not installed or not in PATH.")
         print("Please install .NET SDK from https://dotnet.microsoft.com/download")
         sys.exit(1)
-    elif is_dotnet_version_installed(installed_version):
+    elif is_dotnet_version_installed(dotnet_version):  # verify that the package's specified version is also installed
         print(f"The dotnet version specified in the package.json ({installed_version}) was not detected in your system.")
         sys.exit(1)
 
