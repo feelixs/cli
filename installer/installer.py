@@ -41,6 +41,21 @@ def is_linux():
     return platform.system() == "Linux"
 
 
+def is_dotnet_version_installed(required_version):
+    # get all installed dotnet versions
+    try:
+        result = subprocess.run(["dotnet", "--list-sdks"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        sdk_versions = result.stdout.decode().splitlines()
+        print(f"Currently installed dotnet versions:\n\n{sdk_versions}")
+        for line in sdk_versions:
+            if line.startswith(required_version):
+                return True
+        return False
+    except Exception as e:
+        print(f"Error checking installed dotnet version - {e}: {str(e)}")
+        return False
+
+
 def check_dotnet_installed():
     try:
         version = subprocess.run(["dotnet", "--version"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -177,8 +192,8 @@ def main():
         print("Error: .NET SDK is not installed or not in PATH.")
         print("Please install .NET SDK from https://dotnet.microsoft.com/download")
         sys.exit(1)
-    elif installed_version != dotnet_version:
-        print(f"The installed dotnet version didn't match the one specified in the package.json (installed: {installed_version}, package specified: {dotnet_version}).")
+    elif is_dotnet_version_installed(installed_version):
+        print(f"The dotnet version specified in the package.json ({installed_version}) was not detected in your system.")
         sys.exit(1)
 
     # Build the .NET project
