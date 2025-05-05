@@ -164,8 +164,8 @@ def add_dotnet_path():
     with open(profile_path, "a") as f:
         f.write(path_entry)
 
-    print(f"✅ Added ~/.dotnet to PATH in {profile_path}")
-    print(f"⚠️ Please restart your terminal or run `source {profile_path}` for changes to take effect.")
+    print(f"Added ~/.dotnet to PATH in {profile_path}")
+    subprocess.run(["source", profile_path], check=True)
 
 
 def install_dotnet(version: str):
