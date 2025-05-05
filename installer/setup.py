@@ -2,7 +2,6 @@ from setuptools import setup, find_packages
 import json
 
 BASE_VERSION = "2024.08.23"  # fallback if package.json is not found
-SUPPORTED_DOTNET_VERSION = "7.0.410"
 
 
 def get_package_version():

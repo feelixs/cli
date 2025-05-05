@@ -4,7 +4,29 @@ import subprocess
 import sys
 from pathlib import Path
 import site
-from setup import SUPPORTED_DOTNET_VERSION
+import json
+
+
+FALLBACK_DOTNET_VERSION = "7.0.410"  # fallback
+
+
+def get_dotnet_version():
+    print("Fetching supported dotnet version from package.json")
+    version = FALLBACK_DOTNET_VERSION
+    try:
+        with open("../package.json") as f:
+            txt = f.read()
+            j = json.loads(txt)
+            version = j["dotnet"]
+    except FileNotFoundError:
+        print("Could not find package.json")
+    except json.decoder.JSONDecodeError:
+        print("Could not parse package.json")
+    except Exception as e:
+        print(f"{e}: {str(e)}")
+
+    print(f"Specified dotnet version is '{version}'")
+    return version
 
 
 def is_windows():
@@ -55,7 +77,10 @@ def build_dotnet_project():
 def get_dll_path(dotnet_version: str) -> str:
     """Get the appropriate path to the DLL based on the platform."""
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    return os.path.join(base_dir, "Windows", "CLI", "bin", "Release", f"net{SUPPORTED_DOTNET_VERSION.split('.')[0]}", "SSoTme.OST.CLI.dll")
+    # trim off the final version number (v.x.x -> v.x)
+    dotnet_base_version = dotnet_version.split('.')
+    dotnet_base_version = dotnet_base_version[0] + '.' + dotnet_base_version[1]
+    return os.path.join(base_dir, "Windows", "CLI", "bin", "Release", f"net{dotnet_base_version}", "SSoTme.OST.CLI.dll")
 
 
 def create_launcher_script(script_name, dotnet_version):
@@ -102,21 +127,27 @@ def install_command_aliases(dotnet_version: str):
         print(f"Created launcher script: {script_path}")
 
 
-def install_dotnet():
+def install_dotnet(version: str):
     base_dir = os.path.dirname(os.path.abspath(__file__))
     if is_macos():
         print("Installing DotNet...")
         subprocess.run(["brew", "install", "wget"])
         subprocess.run(["wget", "https://dot.net/v1/dotnet-install.sh", "-P", base_dir])
         subprocess.run(["chmod", "+x", os.path.join(base_dir, "dotnet-install.sh")])
-        subprocess.run([os.path.join(base_dir, "dotnet-install.sh"), "--version", SUPPORTED_DOTNET_VERSION])
+        subprocess.run([os.path.join(base_dir, "dotnet-install.sh"), "--version", version])
+
 
 def main():
+    dotnet_version = get_dotnet_version()
+    install_dotnet(dotnet_version)
 
     # verify dotnet installed
-    if version := check_dotnet_installed() is not None:
+    if installed_version := check_dotnet_installed() is not None:
         print("Error: .NET SDK is not installed or not in PATH.")
         print("Please install .NET SDK from https://dotnet.microsoft.com/download")
+        sys.exit(1)
+    elif installed_version != dotnet_version:
+        print(f"The installed dotnet version didn't match the one specified in the package.json (installed: {installed_version}, package specified: {dotnet_version}).")
         sys.exit(1)
 
     # Build the .NET project
@@ -125,7 +156,7 @@ def main():
         sys.exit(1)
 
     # Install command-line aliases
-    install_command_aliases(version)
+    install_command_aliases(dotnet_version)
 
     print("Installation completed successfully!")
     print("You can now use the 'ssotme', 'aicapture', or 'aic' commands from your terminal.")
