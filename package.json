@@ -1,7 +1,7 @@
 {
   "name": "ssotme",
   "version": "2024.08.23",
-  "dotnet": "8.0.408",
+  "dotnet": "7.0.410",
   "description": "",
   "devDependencies": {
   },

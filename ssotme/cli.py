@@ -5,7 +5,7 @@ import json
 import os
 
 
-BASE_SUPPORTED_DOTNET = "8.0.408"
+BASE_SUPPORTED_DOTNET = "7.0.410"
 
 
 def get_base_version_str(fullstr: str):

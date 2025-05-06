@@ -143,13 +143,26 @@ class Installer:
                 else:
                     cmd = f"sudo apt-get update && sudo apt-get install -y wget"
                     print(cmd)
+                    try:
+                        subprocess.run(cmd, shell=True, check=True)
+                    except Exception as e:
+                        print(f"Error executing command: {cmd}: {type(e).__name__}\n\nYou may need to re-run it with sudo, and retry the pip install")
+                        sys.exit(1)
+                cmd = f"sudo wget https://dot.net/v1/dotnet-install.sh -P {base_dir}"
+                try:
+                    print(cmd)
                     subprocess.run(cmd, shell=True, check=True)
-                print(f"wget", "https://dot.net/v1/dotnet-install.sh", "-P", base_dir)
-                subprocess.run(["wget", "https://dot.net/v1/dotnet-install.sh", "-P", base_dir], check=True)
-                print("chmod", "+x", os.path.join(base_dir, "dotnet-install.sh"))
-                subprocess.run(["chmod", "+x", os.path.join(base_dir, "dotnet-install.sh")], check=True)
-                print(os.path.join(base_dir, "dotnet-install.sh"), "--version", version)
-                subprocess.run([os.path.join(base_dir, "dotnet-install.sh"), "--version", version], check=True)
+
+                    cmd = f"sudo chmod +x {os.path.join(base_dir, "dotnet-install.sh")}"
+                    print(cmd)
+                    subprocess.run(cmd, shell=True, check=True)
+
+                    cmd = f"{os.path.join(base_dir, "dotnet-install.sh")} --version {version}"
+                    print(cmd)
+                    subprocess.run(cmd, shell=True, check=True)
+                except Exception as e:
+                    print(f"Error executing command: {cmd}: {type(e).__name__}\n\nYou may need to re-run it with sudo, and retry the pip install")
+                    sys.exit(1)
 
         except Exception as e:
             print(f"Error during .NET installation: {e}")
