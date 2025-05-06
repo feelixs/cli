@@ -204,11 +204,13 @@ class Installer:
         else:
             print(f"Found existing dotnet v{supported_version} installation")
 
+        # save dotnet info json into site-packages
         self.save_dotnet_info(supported_version)
+
+        # save global.json into site-packages
         base_dir = os.path.dirname(os.path.abspath(__file__))
         cli_dir = os.path.join(base_dir, "ssotme")
         global_json_path = os.path.join(cli_dir, "global.json")
-
         with open(global_json_path, "w") as f:
             f.write(f"""{{"sdk": {{"version": "{supported_version}"}}}}""")
         print(f"Write global.json to {global_json_path} to use version {supported_version}")
