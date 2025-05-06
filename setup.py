@@ -225,8 +225,9 @@ class Installer:
             print("Failed to build .NET project. Aborting installation.")
             sys.exit(1)
 
-        shutil.copytree(get_release_path(supported_version), cli_dir, dirs_exist_ok=True)
-        print(f"Copied {get_release_path(supported_version)} into {cli_dir}")
+        built_proj = get_release_path(supported_version, base_dir=os.path.join(os.path.dirname(os.path.abspath(__file__))))
+        shutil.copytree(built_proj, cli_dir, dirs_exist_ok=True)
+        print(f"Copied {built_proj} into {cli_dir}")
         print("Installation completed successfully!")
         print("You can now use the 'ssotme', 'aicapture', or 'aic' commands from your terminal.")
 
