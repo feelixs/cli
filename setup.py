@@ -153,11 +153,12 @@ class Installer:
                     print(cmd)
                     subprocess.run(cmd, shell=True, check=True)
 
-                    cmd = f"sudo chmod +x {os.path.join(base_dir, "dotnet-install.sh")}"
+                    script_path = os.path.join(base_dir, "dotnet-install.sh")
+                    cmd = f"sudo chmod +x {script_path}"
                     print(cmd)
                     subprocess.run(cmd, shell=True, check=True)
 
-                    cmd = f"{os.path.join(base_dir, "dotnet-install.sh")} --version {version}"
+                    cmd = f"{script_path} --version {version}"
                     print(cmd)
                     subprocess.run(cmd, shell=True, check=True)
                 except Exception as e:
