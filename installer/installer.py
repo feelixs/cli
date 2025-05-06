@@ -50,7 +50,7 @@ def is_dotnet_version_installed(required_version):
         for line in sdk_versions:
             if line.startswith(required_version):
                 return True
-            print(f"{line} does not match {required_version}")
+            print(f"{line} does not include {required_version}")
         return False
     except Exception as e:
         print(f"Error checking installed dotnet version - {e}: {str(e)}")
@@ -194,7 +194,9 @@ def main():
         print("Error: .NET SDK is not installed or not in PATH.")
         print("Please install .NET SDK from https://dotnet.microsoft.com/download")
         sys.exit(1)
-
+    elif is_dotnet_version_installed(dotnet_version):  # verify that the package's specified version is also installed
+        print(f"The dotnet version specified in the package.json ({dotnet_version}) was not detected in your system.")
+        sys.exit(1)
 
     # Build the .NET project
     if not build_dotnet_project():
