@@ -15,6 +15,12 @@ class Installer:
         self._dotnet_executable_path = None
 
     @property
+    def dotnet_executable_path(self):
+        if self._dotnet_executable_path is None:
+            raise Exception("DotNet executable path was not set!")
+        return self._dotnet_executable_path
+
+    @property
     def is_windows(self):
         return platform.system() == "Windows"
 
@@ -40,7 +46,7 @@ class Installer:
     def is_dotnet_version_installed(self, required_version):
         # get all installed dotnet versions
         try:
-            result = subprocess.run([self._dotnet_executable_path, "--list-sdks"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            result = subprocess.run([self.dotnet_executable_path, "--list-sdks"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             sdk_versions = result.stdout.decode().splitlines()
             for line in sdk_versions:
                 version = line.split(" ")[0]
@@ -87,11 +93,11 @@ class Installer:
                 j = json.loads(txt)
                 version = j["dotnet"]
         except FileNotFoundError:
-            print("Could not find package.json")
+            print("Could not find package.json - using default version")
         except json.decoder.JSONDecodeError:
-            print("Could not parse package.json")
+            print("Could not parse package.json - using default version")
         except Exception as e:
-            print(f"{e}: {str(e)}")
+            print(f"Error getting supported version {e}: {str(e)} - using default version")
 
         print(f"Specified dotnet version is '{version}'")
         return version
@@ -108,7 +114,7 @@ class Installer:
         # Build the project
         try:
             result = subprocess.run(
-                [self._dotnet_executable_path, "build", "SSoTme-OST-CLI.sln", "--configuration", "Release"],
+                [self.dotnet_executable_path, "build", "SSoTme-OST-CLI.sln", "--configuration", "Release"],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True
@@ -130,7 +136,6 @@ class Installer:
     def create_launcher_script(self, script_name, dotnet_version):
         """Create a launcher script that calls the appropriate dotnet command."""
         dll_path = self.get_dll_path(dotnet_version)
-
         script_content = f"""#!/usr/bin/env python3
     import subprocess
     import os
@@ -140,7 +145,7 @@ class Installer:
     
     # Forward any command-line arguments to the .NET application
     args = sys.argv[1:]
-    command = ["dotnet", dll_path] + args
+    command = ["{self.dotnet_executable_path}", dll_path] + args
     
     # Execute the command
     subprocess.run(command)
@@ -194,7 +199,7 @@ class Installer:
 
         print(f"Added ~/.dotnet to PATH in {profile_path}")
         dotnet_bin = os.path.expanduser("~/.dotnet")
-        os.environ["PATH"] = f"{dotnet_bin}:{os.environ['PATH']}" # make sure its also in path for this session
+        os.environ["PATH"] = f"{dotnet_bin}:{os.environ['PATH']}"  # make sure its also in path for this session
 
     def install_dotnet(self, version: str):
         base_dir = os.path.dirname(os.path.abspath(__file__))
