@@ -64,7 +64,7 @@ class Installer:
         print("Fetching package version from package.json")
         version = self.BASE_VERSION
         try:
-            with open("../package.json") as f:
+            with open("package.json") as f:
                 txt = f.read()
                 j = json.loads(txt)
                 version = j["version"]
@@ -82,7 +82,7 @@ class Installer:
         print("Fetching supported dotnet version from package.json")
         version = self.BASE_SUPPORTED_DOTNET
         try:
-            with open("../package.json") as f:
+            with open("package.json") as f:
                 txt = f.read()
                 j = json.loads(txt)
                 version = j["dotnet"]
@@ -108,7 +108,7 @@ class Installer:
         # Build the project
         try:
             result = subprocess.run(
-                [self._dotnet_executable_path, "build", "../SSoTme-OST-CLI.sln", "--configuration", "Release"],
+                [self._dotnet_executable_path, "build", "SSoTme-OST-CLI.sln", "--configuration", "Release"],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True
