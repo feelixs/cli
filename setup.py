@@ -134,21 +134,21 @@ class Installer:
     def install_dotnet(self, version: str):
         base_dir = os.path.dirname(os.path.abspath(__file__))
         try:
-            if self.is_macos or self.is_linux:
-                print("Installing DotNet...")
-                if self.is_macos:
-                    print("brew install wget")
-                    subprocess.run(["brew", "install", "wget"], check=True)
-                else:
-                    cmd = f"sudo apt-get update && sudo apt-get install -y wget"
-                    print(cmd)
-                    subprocess.run(cmd, shell=True, check=True)
+            if self.is_macos:
+                print("Installing DotNet for MacOS...")
+                print("brew install wget")
+                subprocess.run(["brew", "install", "wget"], check=True)
                 print(f"wget", "https://dot.net/v1/dotnet-install.sh", "-P", base_dir)
                 subprocess.run(["wget", "https://dot.net/v1/dotnet-install.sh", "-P", base_dir], check=True)
                 print("chmod", "+x", os.path.join(base_dir, "dotnet-install.sh"))
                 subprocess.run(["chmod", "+x", os.path.join(base_dir, "dotnet-install.sh")], check=True)
                 print(os.path.join(base_dir, "dotnet-install.sh"), "--version", version)
                 subprocess.run([os.path.join(base_dir, "dotnet-install.sh"), "--version", version], check=True)
+            elif self.is_linux:
+                print("Installing DotNet for Linux...")
+                cmd = f"sudo apt-get update && sudo apt-get install -y dotnet-sdk-{get_base_version_str(version)}"
+                print(cmd)
+                subprocess.run(cmd, shell=True, check=True)
 
         except Exception as e:
             print(f"Error during .NET installation: {e}")
