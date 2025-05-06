@@ -108,7 +108,7 @@ class Installer:
         # Build the project
         try:
             result = subprocess.run(
-                ["dotnet", "build", "SSoTme-OST-CLI.sln", "--configuration", "Release"],
+                [self._dotnet_executable_path, "build", "../SSoTme-OST-CLI.sln", "--configuration", "Release"],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True
