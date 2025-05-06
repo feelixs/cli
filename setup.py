@@ -136,6 +136,7 @@ class Installer:
     def create_launcher_script(self, script_name, dotnet_version):
         """Create a launcher script that calls the appropriate dotnet command."""
         dll_path = self.get_dll_path(dotnet_version)
+        print(f"Creating launcher script {script_name} with dll path {dll_path}")
         script_content = f"""#!/usr/bin/env python3
     import subprocess
     import os
