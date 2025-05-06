@@ -5,13 +5,13 @@ import platform
 import subprocess
 import sys
 from pathlib import Path
-import site
+from cli import BASE_SUPPORTED_DOTNET
 
 
 class Installer:
     def __init__(self):
         self.BASE_VERSION = "2024.08.23"  # fallback if package.json is not found
-        self.BASE_SUPPORTED_DOTNET = "7.0.410"
+        self.BASE_SUPPORTED_DOTNET = BASE_SUPPORTED_DOTNET
         self._dotnet_executable_path = None
 
     @property
@@ -57,15 +57,6 @@ class Installer:
             print(f"Error checking installed dotnet version - {e}: {str(e)}")
             return False
 
-    @staticmethod
-    def get_dll_path(dotnet_version: str) -> str:
-        """Get the appropriate path to the DLL based on the platform."""
-        base_dir = os.path.dirname(os.path.abspath(__file__))
-        # trim off the final version number (v.x.x -> v.x)
-        dotnet_base_version = dotnet_version.split('.')
-        dotnet_base_version = dotnet_base_version[0] + '.' + dotnet_base_version[1]
-        return os.path.join(base_dir, "Windows", "CLI", "bin", "Release", f"net{dotnet_base_version}", "SSoTme.OST.CLI.dll")
-
     def get_package_version(self):
         print("Fetching package version from package.json")
         version = self.BASE_VERSION
@@ -102,7 +93,7 @@ class Installer:
         print(f"Specified dotnet version is '{version}'")
         return version
 
-    def build_dotnet_project(self, runtime_version):
+    def build_dotnet_project(self):
         """Build the .NET project with the Release configuration."""
         print("Building .NET project...")
 
@@ -137,46 +128,6 @@ class Installer:
         except Exception as e:
             print(f"Error during build: {e}")
             return False
-
-    def create_launcher_script(self, script_name, dotnet_version):
-        """Create a launcher script that calls the appropriate dotnet command."""
-        dll_path = self.get_dll_path(dotnet_version)
-        print(f"Creating launcher script {script_name} with dll path {dll_path}")
-        script_content = f"""#!/usr/bin/env python3
-    import subprocess
-    import os
-    import sys
-    
-    # Forward any command-line arguments to the .NET application
-    args = sys.argv[1:]
-    command = ["{self.dotnet_executable_path}", r"{dll_path}"] + args
-    
-    # Execute the command
-    subprocess.run(command)
-    """
-
-        # Create the script in a platform-appropriate way
-        scripts_dir = Path(site.USER_BASE) / "bin" if not self.is_windows else Path(site.USER_BASE) / "Scripts"
-        scripts_dir.mkdir(parents=True, exist_ok=True)
-
-        script_path = scripts_dir / script_name
-        if self.is_windows:
-            script_path = script_path.with_suffix(".py")
-
-        with open(script_path, "w") as f:
-            f.write(script_content)
-
-        # Make the script executable on Unix-like systems
-        if not self.is_windows:
-            os.chmod(script_path, 0o755)
-
-        return script_path
-
-    def install_command_aliases(self, dotnet_version: str):
-        """Install command-line aliases as defined in package.json bin section."""
-        for command_name in ["ssotme", "aicapture", "aic"]:
-            script_path = self.create_launcher_script(command_name, dotnet_version)
-            print(f"Created launcher script: {script_path}")
 
     def add_dotnet_path(self):
         # TODO remove
@@ -255,13 +206,10 @@ class Installer:
         print(result.stdout)
 
         # Build the .NET project
-        build_result = self.build_dotnet_project(supported_version)
+        build_result = self.build_dotnet_project()
         if not build_result:
             print("Failed to build .NET project. Aborting installation.")
             sys.exit(1)
-
-        # Install command-line aliases
-        self.install_command_aliases(supported_version)
 
         print("Installation completed successfully!")
         print("You can now use the 'ssotme', 'aicapture', or 'aic' commands from your terminal.")
@@ -278,13 +226,13 @@ setup(
     license="GNU",
     packages=find_packages(),
     include_package_data=True,
-    py_modules=["setup"],
+    py_modules=["cli"],
     entry_points={
-        'console_scripts': [
-            'ssotme=setup:run_installer',
-            'aicapture=setup:run_installer',
-            'aic=setup:run_installer',
-        ],
+        "console_scripts": [
+            "ssotme = cli:main",
+            "aicapture = cli:main",
+            "aic = cli:main",
+        ]
     },
     classifiers=[
         "Development Status :: 4 - Beta",
