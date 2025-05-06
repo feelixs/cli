@@ -5,7 +5,7 @@ import platform
 import subprocess
 import sys
 from pathlib import Path
-from cli import BASE_SUPPORTED_DOTNET
+from ssotme.cli import BASE_SUPPORTED_DOTNET
 
 
 class Installer:
@@ -129,33 +129,6 @@ class Installer:
             print(f"Error during build: {e}")
             return False
 
-    def add_dotnet_path(self):
-        # TODO remove
-        # bad practice to add to path automatically :/
-        def get_env_folder():
-            shell = os.environ.get("SHELL", "")
-            home = Path.home()
-            if "zsh" in shell:
-                return home / ".zshrc"
-            elif "bash" in shell:
-                # macOS prefers .bash_profile; Linux prefers .bashrc
-                if (home / ".bash_profile").exists():
-                    return home / ".bash_profile"
-                else:
-                    return home / ".bashrc"
-            else:
-                # Fallback
-                return home / ".profile"
-
-        profile_path = get_env_folder()
-        path_entry = '\n# Added by ssotme installer\nexport PATH="$HOME/.dotnet:$PATH"\n'
-        with open(profile_path, "a") as f:
-            f.write(path_entry)
-
-        print(f"Added ~/.dotnet to PATH in {profile_path}")
-        dotnet_bin = os.path.expanduser("~/.dotnet")
-        os.environ["PATH"] = f"{dotnet_bin}:{os.environ['PATH']}"  # make sure its also in path for this session
-
     def install_dotnet(self, version: str):
         base_dir = os.path.dirname(os.path.abspath(__file__))
         if self.is_macos:
@@ -174,7 +147,39 @@ class Installer:
                 print("Please install .NET SDK manually from https://dotnet.microsoft.com/download")
                 sys.exit(1)
 
-        self.add_dotnet_path()  # todo remove
+    def get_installed_sdk_versions(self):
+        """Get all installed .NET SDK versions."""
+        try:
+            result = subprocess.run([self.dotnet_executable_path, "--list-sdks"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            sdk_versions = []
+            for line in result.stdout.decode().splitlines():
+                if line.strip():
+                    version = line.split(" ")[0]
+                    sdk_versions.append(version)
+            return sdk_versions
+        except Exception as e:
+            print(f"Error checking installed dotnet SDKs - {e}: {str(e)}")
+            return []
+
+    def save_dotnet_info(self, version):
+        """Save the .NET SDK information to a file."""
+        user_home = os.path.expanduser("~")
+        dotnet_info_dir = os.path.join(user_home, ".ssotme")
+        os.makedirs(dotnet_info_dir, exist_ok=True)
+
+        dotnet_info_path = os.path.join(dotnet_info_dir, "dotnet_info.json")
+        sdk_versions = self.get_installed_sdk_versions()
+
+        info = {
+            "current_version": version,
+            "installed_versions": sdk_versions,
+            "executable_path": self._dotnet_executable_path
+        }
+
+        with open(dotnet_info_path, "w") as f:
+            json.dump(info, f, indent=2)
+
+        print(f"Saved .NET SDK information to {dotnet_info_path}")
 
     def run_installer(self):
         """Run the installation process before setup package"""
@@ -189,16 +194,24 @@ class Installer:
             # verify dotnet installed
             if self.is_dotnet_version_installed(supported_version):
                 print(f"DotNet v{supported_version} successfully installed")
+                # Save the dotnet information
+                self.save_dotnet_info(supported_version)
             else:
                 print(f"The dotnet version specified in the package.json ({supported_version}) was not detected in your system.")
                 sys.exit(1)
         else:
             print(f"Found existing dotnet v{supported_version} installation")
+            # Save the dotnet information
+            self.save_dotnet_info(supported_version)
 
-        # specify the target sdk version
-        with open("global.json", "w") as f:
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        cli_dir = os.path.join(base_dir, "ssotme")
+        global_json_path = os.path.join(cli_dir, "global.json")
+
+        with open(global_json_path, "w") as f:
             f.write(f"""{{"sdk": {{"version": "{supported_version}"}}}}""")
-        print(f"Write global.json to use version {supported_version}")
+        print(f"Write global.json to {global_json_path} to use version {supported_version}")
+
         result = subprocess.run(
             [
                 self.dotnet_executable_path, "--info",
@@ -224,14 +237,19 @@ setup(
     author="",
     author_email="",
     license="GNU",
-    packages=find_packages(),
     include_package_data=True,
-    py_modules=["cli"],
+    packages=["ssotme"],
+    package_data={
+        "ssotme": ["global.json"],
+        "": ["global.json", "Windows/CLI/bin/Release/net7.0/*.dll", "Windows/CLI/bin/Release/net7.0/*.json", 
+             "Windows/CLI/bin/Release/net7.0/*.config", "Windows/CLI/bin/Release/net7.0/runtimes/**/*"]
+    },
+    py_modules=["ssotme.cli"],
     entry_points={
         "console_scripts": [
-            "ssotme = cli:main",
-            "aicapture = cli:main",
-            "aic = cli:main",
+            "ssotme = ssotme.cli:main",
+            "aicapture = ssotme.cli:main",
+            "aic = ssotme.cli:main",
         ]
     },
     classifiers=[
