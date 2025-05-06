@@ -18,11 +18,17 @@ def get_release_path(dotnet_version: str, base_dir=None):
     if base_dir is None:
         base_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)))
     # trim off the final version number (v.x.x -> v.x)
-    return os.path.join(base_dir, "Windows", "CLI", "bin", "Release", f"net{get_base_version_str(dotnet_version)}")
+    the_path = os.path.join(base_dir, "Windows", "CLI", "bin", "Release", f"net{get_base_version_str(dotnet_version)}")
+    if not os.path.exists(the_path):
+        raise FileNotFoundError(f"Could not find {the_path}")
+    return the_path
 
 
 def get_dll_path(dotnet_version: str) -> str:
-    return os.path.join(get_release_path(dotnet_version), "SSoTme.OST.CLI.dll")
+    the_path = os.path.join(get_release_path(dotnet_version), "SSoTme.OST.CLI.dll")
+    if not os.path.exists(the_path):
+        raise FileNotFoundError(f"Could not find {the_path}")
+    return the_path
 
 
 def get_dotnet_info():

@@ -195,7 +195,9 @@ class Installer:
             "using_version": version,
             "executable_path": exe_path
         }
-        with open("dotnet_info.json", "w") as f:
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        cli_dir = os.path.join(base_dir, "ssotme")
+        with open(os.path.join(cli_dir, "dotnet_info.json"), "w") as f:
             json.dump(info, f, indent=2)
 
         print(f"Saved .NET SDK information to dotnet_info.json")
