@@ -146,7 +146,9 @@ class Installer:
                 subprocess.run([os.path.join(base_dir, "dotnet-install.sh"), "--version", version], check=True)
             elif self.is_linux:
                 print("Installing DotNet for Linux...")
-                print(f"sudo apt-get update && sudo apt-get install -y dotnet-sdk-{get_base_version_str(version)}")
+                cmd = f"sudo apt-get update && sudo apt-get install -y dotnet-sdk-{get_base_version_str(version)}"
+                print(cmd)
+                subprocess.run(cmd, shell=True, check=True)
 
         except Exception as e:
             print(f"Error during .NET installation: {e}")
