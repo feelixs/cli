@@ -11,7 +11,8 @@ import site
 class Installer:
     def __init__(self):
         self.BASE_VERSION = "2024.08.23"  # fallback if package.json is not found
-        self.FALLBACK_DOTNET_VERSION = "7.0.410"  # fallback
+        self.BASE_SUPPORTED_DOTNET = "7.0.410"
+        self._dotnet_executable_path = None
 
     @property
     def is_windows(self):
@@ -25,30 +26,30 @@ class Installer:
     def is_linux(self):
         return platform.system() == "Linux"
 
-    @staticmethod
-    def is_dotnet_version_installed(required_version):
+    def get_dotnet_executable_path(self):
+        """Get the absolute path to the dotnet executable."""
+        user_home = os.path.expanduser("~")
+        dotnet_path = os.path.join(user_home, ".dotnet", "dotnet")
+        # Check if the dotnet executable exists
+        if os.path.isfile(dotnet_path) and os.access(dotnet_path, os.X_OK):
+            print(f"Found dotnet executable at: {dotnet_path}")
+            self._dotnet_executable_path = dotnet_path
+        else:
+            print("WARN: Dotnet executable not found in ~/.dotnet directory")
+
+    def is_dotnet_version_installed(self, required_version):
         # get all installed dotnet versions
         try:
-            result = subprocess.run(["dotnet", "--list-sdks"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            result = subprocess.run([self._dotnet_executable_path, "--list-sdks"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             sdk_versions = result.stdout.decode().splitlines()
-            print(f"Currently installed dotnet versions:\n\n{sdk_versions}")
             for line in sdk_versions:
                 version = line.split(" ")[0]
                 if version == required_version:
-                    print(f"Dotnet version {version} is installed")
                     return True
             return False
         except Exception as e:
             print(f"Error checking installed dotnet version - {e}: {str(e)}")
             return False
-
-    @staticmethod
-    def check_dotnet_installed():
-        try:
-            version = subprocess.run(["dotnet", "--version"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            return version.stdout.decode().strip()
-        except (subprocess.SubprocessError, FileNotFoundError):
-            return None
 
     @staticmethod
     def get_dll_path(dotnet_version: str) -> str:
@@ -77,9 +78,9 @@ class Installer:
         print(f"Package version is '{version}'")
         return version
 
-    def get_dotnet_version(self):
+    def get_supported_dotnet_version(self):
         print("Fetching supported dotnet version from package.json")
-        version = self.FALLBACK_DOTNET_VERSION
+        version = self.BASE_SUPPORTED_DOTNET
         try:
             with open("../package.json") as f:
                 txt = f.read()
@@ -215,21 +216,24 @@ class Installer:
 
         self.add_dotnet_path()  # todo remove
 
-
     def run_installer(self):
         """Run the installation process before setup package"""
-        dotnet_version = self.get_dotnet_version()
-        self.install_dotnet(dotnet_version)
+        supported_version = self.get_supported_dotnet_version()
 
-        # verify dotnet installed
-        installed_version = self.check_dotnet_installed()
-        if installed_version is None:
-            print("Error: .NET SDK is not installed or not in PATH.")
-            print("Please install .NET SDK from https://dotnet.microsoft.com/download")
-            sys.exit(1)
-        elif not self.is_dotnet_version_installed(dotnet_version):
-            print(f"The dotnet version specified in the package.json ({dotnet_version}) was not detected in your system.")
-            sys.exit(1)
+        # check if we need to install dotnet
+        self.get_dotnet_executable_path()
+        if self._dotnet_executable_path is None or not self.is_dotnet_version_installed(supported_version):
+            # dotnet isn't installed, or the wrong version is installed
+            print(f"DotNet v{supported_version} not installed - installing it now")
+            self.install_dotnet(supported_version)
+            # verify dotnet installed
+            if self.is_dotnet_version_installed(supported_version):
+                print(f"DotNet v{supported_version} successfully installed")
+            else:
+                print(f"The dotnet version specified in the package.json ({supported_version}) was not detected in your system.")
+                sys.exit(1)
+        else:
+            print(f"Found existing dotnet v{supported_version} installation")
 
         # Build the .NET project
         if not self.build_dotnet_project():
@@ -237,7 +241,7 @@ class Installer:
             sys.exit(1)
 
         # Install command-line aliases
-        self.install_command_aliases(dotnet_version)
+        self.install_command_aliases(supported_version)
 
         print("Installation completed successfully!")
         print("You can now use the 'ssotme', 'aicapture', or 'aic' commands from your terminal.")
