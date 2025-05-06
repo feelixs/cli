@@ -102,7 +102,7 @@ class Installer:
         print(f"Specified dotnet version is '{version}'")
         return version
 
-    def build_dotnet_project(self):
+    def build_dotnet_project(self, runtime_version):
         """Build the .NET project with the Release configuration."""
         print("Building .NET project...")
 
@@ -112,9 +112,15 @@ class Installer:
         os.chdir(base_dir)
 
         # Build the project
+        print(f"Run `{self.dotnet_executable_path} build SSoTme-OST-CLI.sln -c Release -r {runtime_version}`")
         try:
             result = subprocess.run(
-                [self.dotnet_executable_path, "build", "SSoTme-OST-CLI.sln", "--configuration", "Release"],
+                [
+                    self.dotnet_executable_path,
+                    "build", "SSoTme-OST-CLI.sln",
+                    "--configuration", "Release",
+                    "--runtime", runtime_version,
+                ],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True
@@ -242,7 +248,7 @@ class Installer:
             print(f"Found existing dotnet v{supported_version} installation")
 
         # Build the .NET project
-        if not self.build_dotnet_project():
+        if not self.build_dotnet_project(supported_version):
             print("Failed to build .NET project. Aborting installation.")
             sys.exit(1)
 
