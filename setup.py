@@ -249,6 +249,12 @@ class Installer:
         # specify the target sdk version
         with open("global.json", "w") as f:
             f.write(f"""{{"sdk": {{"version": "{supported_version}"}}}}""")
+        print(f"Write global.json to use version {supported_version}")
+        result = subprocess.run(
+            [
+                self.dotnet_executable_path, "--info",
+            ], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        print(result.stdout)
 
         # Build the .NET project
         build_result = self.build_dotnet_project(supported_version)
