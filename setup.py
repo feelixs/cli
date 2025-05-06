@@ -263,7 +263,7 @@ setup(
     include_package_data=True,
     packages=["ssotme"],
     package_data={
-        "ssotme": ["global.json", "dotnet_info.json"]
+        "ssotme": ["global.json", "dotnet_info.json", "Windows/**/*"]
     },
     entry_points={
         "console_scripts": [
