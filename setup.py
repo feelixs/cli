@@ -215,6 +215,8 @@ class Installer:
                 print(f"DotNet v{supported_version} successfully installed")
             else:
                 print(f"The dotnet version specified in the package.json ({supported_version}) was not detected in your system.")
+                if self.is_linux or self.is_macos:
+                    print(f"You may need manually download DotNet and then retry: https://dotnet.microsoft.com/en-us/download/dotnet/{get_base_version_str(supported_version)}")
                 sys.exit(1)
         else:
             print(f"Found existing dotnet v{supported_version} installation")
