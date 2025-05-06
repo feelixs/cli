@@ -240,10 +240,8 @@ setup(
     include_package_data=True,
     packages=["ssotme"],
     package_data={
-        "ssotme": ["global.json", "Windows/CLI/bin/Release/net7.0/*.dll", "Windows/CLI/bin/Release/net7.0/*.json",
-             "Windows/CLI/bin/Release/net7.0/*.config", "Windows/CLI/bin/Release/net7.0/runtimes/**/*"]
+        "ssotme": ["global.json"]
     },
-    py_modules=["ssotme.cli"],
     entry_points={
         "console_scripts": [
             "ssotme = ssotme.cli:main",

@@ -8,25 +8,6 @@ import os
 BASE_SUPPORTED_DOTNET = "7.0.410"
 
 
-def get_package_dotnet_version():
-    print("Fetching supported dotnet version from package.json")
-    version = BASE_SUPPORTED_DOTNET
-    try:
-        with open("package.json") as f:
-            txt = f.read()
-            j = json.loads(txt)
-            version = j["dotnet"]
-    except FileNotFoundError:
-        print("Could not find package.json - using default version")
-    except json.decoder.JSONDecodeError:
-        print("Could not parse package.json - using default version")
-    except Exception as e:
-        print(f"Error getting supported version {e}: {str(e)} - using default version")
-
-    print(f"Specified dotnet version is '{version}'")
-    return version
-
-
 def get_dll_path(dotnet_version: str) -> str:
     """Get the appropriate path to the DLL based on the platform."""
     base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -88,12 +69,9 @@ def main():
             sys.exit(1)
 
     # Get version from saved info or package.json
-    version = None
+    version = BASE_SUPPORTED_DOTNET
     if dotnet_info and "current_version" in dotnet_info:
         version = dotnet_info["current_version"]
-    
-    if not version:
-        version = get_package_dotnet_version()
     
     # Ensure global.json exists with correct version
     ensure_global_json(version)
