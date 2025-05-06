@@ -55,9 +55,6 @@ jobs:
         run: |
           pip install . -v
 
-      - name: Check DotNet version
-        run: dotnet --version
-
       - name: Run ssotme
         run: ssotme --help
 
@@ -89,9 +86,6 @@ jobs:
       - name: Run Setup
         run: |
           pip install . -v
-
-      - name: Check DotNet version
-        run: dotnet --version
 
       - name: Run ssotme
         run: ssotme --help
@@ -125,9 +119,6 @@ jobs:
       - name: Run Setup
         run: |
           pip install . -v
-
-      - name: Check DotNet version
-        run: dotnet --version
 
       - name: Run ssotme
         run: ssotme --help
