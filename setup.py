@@ -1,11 +1,12 @@
-from setuptools import setup, find_packages
+from setuptools import setup
+import shutil
 import json
 import os
 import platform
 import subprocess
 import sys
-from pathlib import Path
-from ssotme.cli import BASE_SUPPORTED_DOTNET
+
+from ssotme.cli import BASE_SUPPORTED_DOTNET, get_release_path
 
 
 class Installer:
@@ -224,6 +225,8 @@ class Installer:
             print("Failed to build .NET project. Aborting installation.")
             sys.exit(1)
 
+        shutil.copytree(get_release_path(supported_version), cli_dir, dirs_exist_ok=True)
+        print(f"Copied {get_release_path(supported_version)} into {cli_dir}")
         print("Installation completed successfully!")
         print("You can now use the 'ssotme', 'aicapture', or 'aic' commands from your terminal.")
 

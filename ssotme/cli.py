@@ -8,13 +8,17 @@ import os
 BASE_SUPPORTED_DOTNET = "7.0.410"
 
 
-def get_dll_path(dotnet_version: str) -> str:
+def get_release_path(dotnet_version: str):
     """Get the appropriate path to the DLL based on the platform."""
-    base_dir = os.path.dirname(os.path.abspath(__file__))
+    base_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../")
     # trim off the final version number (v.x.x -> v.x)
     dotnet_base_version = dotnet_version.split('.')
     dotnet_base_version = dotnet_base_version[0] + '.' + dotnet_base_version[1]
-    return os.path.join(base_dir, "Windows", "CLI", "bin", "Release", f"net{dotnet_base_version}", "SSoTme.OST.CLI.dll")
+    return os.path.join(base_dir, "Windows", "CLI", "bin", "Release", f"net{dotnet_base_version}")
+
+
+def get_dll_path(dotnet_version: str) -> str:
+    return os.path.join(get_release_path(dotnet_version), "SSoTme.OST.CLI.dll")
 
 
 def get_dotnet_info():
