@@ -10,6 +10,7 @@
 /AICapture/Backup/*.zip
 /package-lock.json
 
+*.DS_Store
 *.egg-info
 build/
 .idea/
