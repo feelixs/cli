@@ -52,7 +52,8 @@ class Installer:
             sdk_versions = result.stdout.decode().splitlines()
             for line in sdk_versions:
                 version = line.split(" ")[0]
-                if version == required_version:
+                # we can just check if the base versions are the same (dont need to be too picky)
+                if get_base_version_str(version) == get_base_version_str(required_version):
                     return True
             return False
         except Exception as e:
