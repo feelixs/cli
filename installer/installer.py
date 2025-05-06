@@ -48,9 +48,9 @@ def is_dotnet_version_installed(required_version):
         sdk_versions = result.stdout.decode().splitlines()
         print(f"Currently installed dotnet versions:\n\n{sdk_versions}")
         for line in sdk_versions:
-            if line.startswith(required_version):
+            version = line.split(" ")[0]
+            if version == required_version:
                 return True
-            print(f"{line} does not include {required_version}")
         return False
     except Exception as e:
         print(f"Error checking installed dotnet version - {e}: {str(e)}")
