@@ -56,7 +56,7 @@ class Installer:
                     return True
             return False
         except Exception as e:
-            print(f"Error checking installed dotnet version - {e}: {str(e)}")
+            print(f"Error checking installed dotnet version - {type(e).__name__}: {str(e)}")
             return False
 
     def get_package_version(self):
@@ -72,7 +72,7 @@ class Installer:
         except json.decoder.JSONDecodeError:
             print("Could not parse package.json")
         except Exception as e:
-            print(f"Error {e}: {str(e)}")
+            print(f"Error {type(e).__name__}: {str(e)}")
 
         print(f"Package version is '{version}'")
         return version
@@ -90,7 +90,7 @@ class Installer:
         except json.decoder.JSONDecodeError:
             print("Could not parse package.json - using default version")
         except Exception as e:
-            print(f"Error getting supported version {e}: {str(e)} - using default version")
+            print(f"Error getting supported version {type(e).__name__}: {str(e)} - using default version")
 
         print(f"Specified dotnet version is '{version}'")
         return version
@@ -134,21 +134,21 @@ class Installer:
     def install_dotnet(self, version: str):
         base_dir = os.path.dirname(os.path.abspath(__file__))
         try:
-            if self.is_macos:
-                print("Installing DotNet for MacOS...")
-                print("brew install wget")
-                subprocess.run(["brew", "install", "wget"], check=True)
+            if self.is_macos or self.is_linux:
+                print("Installing DotNet...")
+                if self.is_macos:
+                    print("brew install wget")
+                    subprocess.run(["brew", "install", "wget"], check=True)
+                else:
+                    cmd = f"sudo apt-get update && sudo apt-get install -y wget"
+                    print(cmd)
+                    subprocess.run(cmd, shell=True, check=True)
                 print(f"wget", "https://dot.net/v1/dotnet-install.sh", "-P", base_dir)
                 subprocess.run(["wget", "https://dot.net/v1/dotnet-install.sh", "-P", base_dir], check=True)
                 print("chmod", "+x", os.path.join(base_dir, "dotnet-install.sh"))
                 subprocess.run(["chmod", "+x", os.path.join(base_dir, "dotnet-install.sh")], check=True)
                 print(os.path.join(base_dir, "dotnet-install.sh"), "--version", version)
                 subprocess.run([os.path.join(base_dir, "dotnet-install.sh"), "--version", version], check=True)
-            elif self.is_linux:
-                print("Installing DotNet for Linux...")
-                cmd = f"sudo apt-get update && sudo apt-get install -y dotnet-sdk-{get_base_version_str(version)}"
-                print(cmd)
-                subprocess.run(cmd, shell=True, check=True)
 
         except Exception as e:
             print(f"Error during .NET installation: {e}")
@@ -166,7 +166,7 @@ class Installer:
                     sdk_versions.append(version)
             return sdk_versions
         except Exception as e:
-            print(f"Error checking installed dotnet SDKs - {e}: {str(e)}")
+            print(f"Error checking installed dotnet SDKs - {type(e).__name__}: {str(e)}")
             return []
 
     def save_dotnet_info(self, version):
