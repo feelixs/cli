@@ -12,7 +12,7 @@
     },
     "scripts": {
         "build": "",
-        "start": "dotnet Windows/CLI/bin/Release/net7.0/SSoTme.OST.CLI.dll",
+        "start": "dotnet ssotme/Windows/CLI/bin/Release/net7.0/SSoTme.OST.CLI.dll",
         "postinstall": "dotnet build SSoTme-OST-CLI.sln --configuration Release"
     },
   "keywords": [],

@@ -1,4 +1,4 @@
 include global.json
 include ssotme/global.json
-recursive-include Windows/CLI/bin/Release/net7.0 *.dll *.json *.config
-recursive-include Windows/CLI/bin/Release/net7.0/runtimes *
+recursive-include ssotme/Windows/CLI/bin/Release/net7.0 *.dll *.json *.config
+recursive-include ssotme/Windows/CLI/bin/Release/net7.0/runtimes *

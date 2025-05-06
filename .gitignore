@@ -4,11 +4,11 @@
 /**/Debug/**
 /**/.vs/**
 /.ssotme/**
-/Windows/CLI/SSoTme.OST.CLI.csproj.user
-/Windows/CLI/Properties/launchSettings.json
+/ssotme/Windows/CLI/SSoTme.OST.CLI.csproj.user
+/ssotme/Windows/CLI/Properties/launchSettings.json
+/ssotme/Windows/Lib/go-live.ps1
 /AICapture/Backup/*.zip
 /package-lock.json
-/Windows/Lib/go-live.ps1
 
 *.egg-info
 build/

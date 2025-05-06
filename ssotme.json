@@ -32,7 +32,7 @@
       },
       "ProjectTranspilerId": "1eddb117-d84d-464d-ae0e-75617e875e84",
       "Name": "OdxmlToCSharpPOCOs",
-      "RelativePath": "/Windows/Lib/DataClasses",
+      "RelativePath": "/ssotme/Windows/Lib/DataClasses",
       "CommandLine": "ODXMLToCSharpPOCOs -i ../../../ODXML/DataSchema.odxml -p namespace=SSoTme.OST.Lib.DataClasses -p include-load-methods=false"
     },
     {
@@ -43,7 +43,7 @@
       },
       "ProjectTranspilerId": "e3da958b-2f62-4f6b-a72d-7ce36918b604",
       "Name": "GSheetToPlossumCmdLineOptions",
-      "RelativePath": "/Windows/Lib/CLIOptions",
+      "RelativePath": "/ssotme/Windows/Lib/CLIOptions",
       "CommandLine": "GSheetToPlossumCmdLineOptions https://docs.google.com/spreadsheets/d/1v3pAQu6h3FYAaNqAmcL6j38ohckACRUSOVC33okFwI0/export?gid=1074048491&format=csv -p handlerName=SSoTmeCLIHandler -p namespace=SSoTme.OST.Lib.CLIOptions"
     },
     {
