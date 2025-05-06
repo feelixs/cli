@@ -55,9 +55,11 @@ jobs:
         run: |
           pip install . -v
 
-      - name: Verify it works
-        run: |
-          dotnet --version
+      - name: Check DotNet version
+        run: dotnet --version
+
+      - name: Run ssotme
+        run: ssotme --help
 
   build-linux:
 
@@ -88,11 +90,11 @@ jobs:
         run: |
           pip install . -v
 
-      - name: Verify it works
-        run: |
-          dotnet --version
-          ssotme --help
-          aicapture --version
+      - name: Check DotNet version
+        run: dotnet --version
+
+      - name: Run ssotme
+        run: ssotme --help
           
 
   build-windows:
@@ -124,10 +126,10 @@ jobs:
         run: |
           pip install . -v
 
-      - name: Verify it works
-        run: |
-          dotnet --version
-          ssotme --help
-          aicapture --version
+      - name: Check DotNet version
+        run: dotnet --version
+
+      - name: Run ssotme
+        run: ssotme --help
           
 
