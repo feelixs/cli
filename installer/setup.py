@@ -5,7 +5,6 @@ import platform
 import subprocess
 import sys
 from pathlib import Path
-from deprecation import deprecated
 import site
 
 
@@ -169,8 +168,9 @@ class Installer:
             script_path = self.create_launcher_script(command_name, dotnet_version)
             print(f"Created launcher script: {script_path}")
 
-    @deprecated  # bad practice to add to path automatically :/
     def add_dotnet_path(self):
+        # TODO remove
+        # bad practice to add to path automatically :/
         def get_env_folder():
             shell = os.environ.get("SHELL", "")
             home = Path.home()
