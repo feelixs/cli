@@ -119,7 +119,6 @@ class Installer:
                     self.dotnet_executable_path,
                     "build", "SSoTme-OST-CLI.sln",
                     "--configuration", "Release",
-                    "--runtime", runtime_version,
                 ],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
