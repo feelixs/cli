@@ -16,7 +16,7 @@ def get_base_version_str(fullstr: str):
 def get_release_path(dotnet_version: str, base_dir=None):
     """Get the appropriate path to the DLL based on the platform."""
     if base_dir is None:
-        base_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)))
+        base_dir = os.path.dirname(os.path.abspath(__file__))
     # trim off the final version number (v.x.x -> v.x)
     the_path = os.path.join(base_dir, "Windows", "CLI", "bin", "Release", f"net{get_base_version_str(dotnet_version)}")
     if not os.path.exists(the_path):

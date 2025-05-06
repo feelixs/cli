@@ -246,9 +246,17 @@ class Installer:
             print("Failed to build .NET project. Aborting installation.")
             sys.exit(1)
 
-        built_proj = get_release_path(supported_version, base_dir=os.path.join(os.path.dirname(os.path.abspath(__file__))))
-        shutil.copytree(built_proj, cli_dir, dirs_exist_ok=True)
-        print(f"Copied {built_proj} into {cli_dir}")
+        # the built source is now in cli/Windows/CLI/bin/Release
+        built_proj = get_release_path(supported_version, base_dir=os.path.dirname(os.path.abspath(__file__)))
+        # we need to copy it into cli/ssotme/lib/Windows/Release so that it's part of the installed pip package, and is copied to site-packages later
+        if not os.path.exists(built_proj):
+            print(f"Could not find {built_proj}. Aborting installation.")
+            sys.exit(1)
+
+        windows_dir = os.path.join(cli_dir, "Windows", "CLI", "bin", "Release", f"net{get_base_version_str(supported_version)}")
+        os.makedirs(windows_dir, exist_ok=True)
+        shutil.copytree(built_proj, windows_dir, dirs_exist_ok=True)
+        print(f"Copied {built_proj} into {windows_dir}")
         print("Installation completed successfully!")
         print("You can now use the 'ssotme', 'aicapture', or 'aic' commands from your terminal.")
 

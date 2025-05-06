@@ -14,12 +14,7 @@
 *.egg-info
 build/
 .idea/
-global.json
-dotnet_info.json
+
 *.pyc
-ssotme/runtimes/
-ssotme/*.dll
-ssotme/*.dll.config
-ssotme/*.pdb
+ssotme/lib/
 ssotme/*.json
-ssotme/*.CLI
