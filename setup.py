@@ -147,11 +147,9 @@ class Installer:
     import os
     import sys
     
-    dll_path = "{dll_path}"
-    
     # Forward any command-line arguments to the .NET application
     args = sys.argv[1:]
-    command = ["{self.dotnet_executable_path}", dll_path] + args
+    command = ["{self.dotnet_executable_path}", r"{dll_path}"] + args
     
     # Execute the command
     subprocess.run(command)

@@ -54,9 +54,10 @@ jobs:
       - name: Run Setup
         run: |
           pip install . -v
+
+      - name: Verify it works
+        run: |
           dotnet --version
-          ssotme --help
-          aicapture --version
 
   build-linux:
 
@@ -86,6 +87,9 @@ jobs:
       - name: Run Setup
         run: |
           pip install . -v
+
+      - name: Verify it works
+        run: |
           dotnet --version
           ssotme --help
           aicapture --version
@@ -119,6 +123,9 @@ jobs:
       - name: Run Setup
         run: |
           pip install . -v
+
+      - name: Verify it works
+        run: |
           dotnet --version
           ssotme --help
           aicapture --version
