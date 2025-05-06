@@ -24,16 +24,14 @@ def get_dll_path(dotnet_version: str) -> str:
 
 def get_dotnet_info():
     """Get the saved .NET SDK information."""
-    user_home = os.path.expanduser("~")
-    dotnet_info_path = os.path.join(user_home, ".ssotme", "dotnet_info.json")
-    
+    base_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)))
+    dotnet_info_path = os.path.join(base_dir, "dotnet_info.json")
     if os.path.exists(dotnet_info_path):
         try:
             with open(dotnet_info_path, "r") as f:
                 return json.load(f)
         except Exception as e:
             print(f"Error reading .NET SDK info: {e}")
-    
     return None
 
 
@@ -41,7 +39,7 @@ def ensure_global_json(version):
     """Ensure global.json exists in site-packages directory where cli.py is installed."""
     base_dir = os.path.dirname(os.path.abspath(__file__))
     global_json_path = os.path.join(base_dir, "global.json")
-    
+
     # If global.json doesn't exist or has wrong version, create it
     need_update = False
     if not os.path.exists(global_json_path):
@@ -63,11 +61,11 @@ def ensure_global_json(version):
 
 def main():
     dotnet_info = get_dotnet_info()
-    if dotnet_info and "executable_path" in dotnet_info and os.path.exists(dotnet_info["executable_path"]):
+    if dotnet_info is not None and "executable_path" in dotnet_info and os.path.exists(dotnet_info["executable_path"]):
         dotnet = dotnet_info["executable_path"]
         print(f"Using .NET SDK from saved configuration: {dotnet}")
     else:
-        # Fall back to PATH
+        # fall back to using 'dotnet' command (not direct path to exe)
         dotnet = shutil.which("dotnet")
         if not dotnet:
             print("dotnet is not installed or not in PATH.")
@@ -75,8 +73,8 @@ def main():
 
     # Get version from saved info or package.json
     version = BASE_SUPPORTED_DOTNET
-    if dotnet_info and "current_version" in dotnet_info:
-        version = dotnet_info["current_version"]
+    if dotnet_info and "using_version" in dotnet_info:
+        version = dotnet_info["using_version"]
     
     # Ensure global.json exists with correct version
     ensure_global_json(version)

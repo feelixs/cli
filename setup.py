@@ -47,7 +47,8 @@ class Installer:
     def is_dotnet_version_installed(self, required_version):
         # get all installed dotnet versions
         try:
-            result = subprocess.run([self.dotnet_executable_path, "--list-sdks"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            result = subprocess.run([self.dotnet_executable_path, "--list-sdks"],
+                                    check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             sdk_versions = result.stdout.decode().splitlines()
             for line in sdk_versions:
                 version = line.split(" ")[0]
@@ -164,23 +165,19 @@ class Installer:
 
     def save_dotnet_info(self, version):
         """Save the .NET SDK information to a file."""
-        user_home = os.path.expanduser("~")
-        dotnet_info_dir = os.path.join(user_home, ".ssotme")
-        os.makedirs(dotnet_info_dir, exist_ok=True)
-
-        dotnet_info_path = os.path.join(dotnet_info_dir, "dotnet_info.json")
         sdk_versions = self.get_installed_sdk_versions()
 
+        exe_path = self._dotnet_executable_path
+        exe_path = exe_path if exe_path is not None else "dotnet"
         info = {
-            "current_version": version,
             "installed_versions": sdk_versions,
-            "executable_path": self._dotnet_executable_path
+            "using_version": version,
+            "executable_path": exe_path
         }
-
-        with open(dotnet_info_path, "w") as f:
+        with open("dotnet_info.json", "w") as f:
             json.dump(info, f, indent=2)
 
-        print(f"Saved .NET SDK information to {dotnet_info_path}")
+        print(f"Saved .NET SDK information to dotnet_info.json")
 
     def run_installer(self):
         """Run the installation process before setup package"""
@@ -195,16 +192,13 @@ class Installer:
             # verify dotnet installed
             if self.is_dotnet_version_installed(supported_version):
                 print(f"DotNet v{supported_version} successfully installed")
-                # Save the dotnet information
-                self.save_dotnet_info(supported_version)
             else:
                 print(f"The dotnet version specified in the package.json ({supported_version}) was not detected in your system.")
                 sys.exit(1)
         else:
             print(f"Found existing dotnet v{supported_version} installation")
-            # Save the dotnet information
-            self.save_dotnet_info(supported_version)
 
+        self.save_dotnet_info(supported_version)
         base_dir = os.path.dirname(os.path.abspath(__file__))
         cli_dir = os.path.join(base_dir, "ssotme")
         global_json_path = os.path.join(cli_dir, "global.json")
@@ -244,7 +238,7 @@ setup(
     include_package_data=True,
     packages=["ssotme"],
     package_data={
-        "ssotme": ["global.json"]
+        "ssotme": ["global.json", "dotnet_info.json"]
     },
     entry_points={
         "console_scripts": [
