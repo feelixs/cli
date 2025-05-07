@@ -139,7 +139,19 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run ssotme and check for success marker
-        shell: cmd
+      - name: Run Setup
         run: |
-          ssotme -h
+          pip install . -v
+
+      - name: Run ssotme -h and check output
+        shell: pwsh
+        run: |
+          $output = & ssotme -h 2>&1
+          if ($output -match "Press any key to continue...") {
+            Write-Host "✅ ssotme CLI ran successfully (help displayed)"
+            exit 0
+          } else {
+            Write-Host "❌ ssotme CLI failed unexpectedly:"
+            Write-Host $output
+            exit 1
+          }
