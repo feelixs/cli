@@ -79,7 +79,7 @@ After installation, the commands `ssotme`, `aicapture`, and `aic` will be usable
 
 ### Troubleshooting the PIP install
 
-- To use PIP, you must have Python installed on your system. To make things as consistent as possible it's recommended to download & install Python directly from https://python.org instead of using an external package manager.
+- To use PIP, you must have Python installed on your system. To make things as consistent as possible it's recommended to download & install Python directly from https://python.org instead of using an external package manager. **Make sure to check off the box that says "Add Python to your PATH"**
 - For Linux and MacOS, in some versions of pip you may need to use `pip install git+https://github.com/SSoTme/cli --break-system-packages`
 - After the installer finishes, it may give a warning: 
         ```WARNING: The scripts aic, aicapture and ssotme are installed in '<home directory>' which is not on PATH.```
