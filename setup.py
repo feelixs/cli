@@ -140,7 +140,7 @@ class Installer:
             print(f"Error during build: {e}")
             return False
 
-    def _install_dotnet_sh_script(self):
+    def _install_dotnet_sh_script(self, home_dir):
         base_dir = os.path.dirname(os.path.abspath(__file__))
         if self.is_macos:
             try:
@@ -209,9 +209,10 @@ class Installer:
     def install_dotnet(self, version: str):
         """Attempt to install .NET SDK of a specific version."""
         try:
+            home = os.path.expanduser("~")
             print("Installing DotNet...")
             if self.is_macos or self.is_linux:
-                script_path = self._install_dotnet_sh_script()
+                script_path = self._install_dotnet_sh_script(home)
                 try:
                     os.chmod(script_path, 0o755)  # make the sh script executable
                 except Exception:
@@ -234,16 +235,20 @@ class Installer:
                         
             elif self.is_windows:
                 try:
-                    # check if winget is available
-                    if not shutil.which("winget"):
-                        raise DotNetInstallError("Winget not found. Please install .NET SDK manually from https://dotnet.microsoft.com/download")
-                    
-                    print(f"Installing .NET SDK via winget...")
-                    cmd = f"winget install Microsoft.DotNet.SDK.{get_base_version_str(version).split('.')[0]}"
+                    install_script = os.path.join(home, "dotnet-install.ps1")
+                    dotnet_install_dir = os.path.join(home, ".dotnet")
+
+                    # download install script
+                    cmd = f"Invoke-WebRequest https://dotnet.microsoft.com/download/dotnet/scripts/v1/dotnet-install.ps1 -OutFile {install_script}"
+                    print(cmd)
+                    subprocess.run([f"powershell -Command {cmd}"], shell=True, check=True)
+
+                    # Add PATH update to make dotnet immediately available
+                    cmd = f"powershell -ExecutionPolicy Bypass -File {install_script} -Version {version} -InstallDir {dotnet_install_dir}"
                     print(cmd)
                     subprocess.run(cmd, shell=True, check=True)
                 except Exception as e:
-                    raise DotNetInstallError(f"Failed to install .NET SDK via winget: {e}")
+                    raise DotNetInstallError(f"Failed to install .NET SDK: {e}")
             else:
                 raise DotNetInstallError(f"Unsupported platform: {platform.system()}")
 
