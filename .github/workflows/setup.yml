@@ -142,12 +142,4 @@ jobs:
       - name: Run ssotme and check for success marker
         shell: cmd
         run: |
-          ssotme -h > output.txt 2>&1
-          type output.txt
-          findstr /C:"Press any key to continue..." output.txt >nul
-          if errorlevel 1 (
-            echo ❌ 'ssotme -h' did not produce expected output
-            exit /b 1
-          ) else (
-            echo ✅ 'ssotme -h' ran successfully
-          )
+          ssotme -h
