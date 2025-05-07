@@ -209,10 +209,13 @@ class Installer:
     def install_dotnet(self, version: str):
         """Attempt to install .NET SDK of a specific version."""
         try:
-            home = os.path.join(os.path.expanduser("~"), '.ssotme')
+            home = os.path.expanduser("~")
+            # create .ssotme directory for installation artifacts
+            ssotme_dir = os.path.join(home, '.ssotme')
+            os.makedirs(ssotme_dir, exist_ok=True)
             print("Installing DotNet...")
             if self.is_macos or self.is_linux:
-                script_path = self._install_dotnet_sh_script(home)
+                script_path = self._install_dotnet_sh_script(ssotme_dir)
                 try:
                     os.chmod(script_path, 0o755)  # make the sh script executable
                 except Exception:
@@ -235,18 +238,25 @@ class Installer:
                         
             elif self.is_windows:
                 try:
-                    install_script = os.path.join(home, "dotnet-install.ps1")
+                    install_script = os.path.join(ssotme_dir, "dotnet-install.ps1")
                     dotnet_install_dir = os.path.join(home, ".dotnet")
 
-                    # download install script
+                    # download install script - ensure directory exists
+                    os.makedirs(os.path.dirname(install_script), exist_ok=True)
                     cmd = f"Invoke-WebRequest https://dotnet.microsoft.com/download/dotnet/scripts/v1/dotnet-install.ps1 -OutFile {install_script}"
                     print(cmd)
-                    subprocess.run([f"powershell -Command {cmd}"], shell=True, check=True)
+                    subprocess.run(["powershell", "-Command", cmd], check=True)
 
-                    # Add PATH update to make dotnet immediately available
-                    cmd = f"powershell -ExecutionPolicy Bypass -File {install_script} -Version {version} -InstallDir {dotnet_install_dir}"
-                    print(cmd)
-                    subprocess.run(cmd, shell=True, check=True)
+                    # create installation directory
+                    os.makedirs(dotnet_install_dir, exist_ok=True)
+                    print(f"Installing .NET SDK version {version} to {dotnet_install_dir}...")
+                    subprocess.run([
+                        "powershell", 
+                        "-ExecutionPolicy", "Bypass", 
+                        "-File", install_script, 
+                        "-Version", version, 
+                        "-InstallDir", dotnet_install_dir
+                    ], check=True)
                 except Exception as e:
                     raise DotNetInstallError(f"Failed to install .NET SDK: {e}")
             else:
