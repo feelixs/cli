@@ -50,7 +50,7 @@ turns A into B.  The transaction always follows this basic script though:
 
 
 ## Installation
-Installing the Windows *AICapture executable* command line tool will automatically update the path
+Installing the *AICapture executable* command line tool will automatically update the path
 to include the CLI.  
 
 When you register for an account with [SSoT.me](https://aicapture.io) - you will be emailed a secret key
@@ -66,6 +66,24 @@ That file should be put in this location:
 
 If you have multiple accounts, the format key file should have ethis format: `aicapture.{account-name}.key`
 For example: `aicapture.codee42.key`
+
+## Pip Install
+
+You can also install this tool using pip: 
+
+`pip install -U git+https://github.com/SSoTme/cli`
+
+After installation, the commands `ssotme`, `aicapture`, and `aic` will be usable in your terminal!
+
+### Troubleshooting the PIP install
+
+- To use PIP, you must have Python installed on your system. To make things as consistent as possible it's recommended to download & install Python directly from https://python.org instead of using an external package manager.
+- For Linux and MacOS, in some versions of pip you may need to use `pip install git+https://github.com/SSoTme/cli --break-system-packages`
+- After the installer finishes, it may give a warning: 
+        ```WARNING: The scripts aic, aicapture and ssotme are installed in '<home directory>' which is not on PATH.```
+  - To fix this, you can run the following command depending on your system:
+  - **MacOS** `echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc && source ~/.zshrc`
+  - **Linux** `echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc && source ~/.bashrc`
 
 ## Syntax: `aicapture -help`
 This command will show the following help.

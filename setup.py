@@ -234,13 +234,7 @@ class Installer:
             f.write(f"""{{"sdk": {{"version": "{supported_version}"}}}}""")
         print(f"Write global.json to {global_json_path} to use version {supported_version}")
 
-        result = subprocess.run(
-            [
-                self.dotnet_executable_path, "--info",
-            ], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        print(result.stdout)
-
-        # Build the .NET project
+        # build dotnet project
         build_result = self.build_dotnet_project()
         if not build_result:
             print("Failed to build .NET project. Aborting installation.")
@@ -248,13 +242,17 @@ class Installer:
 
         # the built source is now in cli/Windows/CLI/bin/Release
         built_proj = get_release_path(supported_version, base_dir=os.path.dirname(os.path.abspath(__file__)))
-        # we need to copy it into cli/ssotme/lib/Windows/Release so that it's part of the installed pip package, and is copied to site-packages later
+        # we need to copy it into cli/ssotme/lib/Windows/Release so that it's part of the
+        # ssotme pip package and is copied to site-packages later
         if not os.path.exists(built_proj):
             print(f"Could not find {built_proj}. Aborting installation.")
             sys.exit(1)
 
-        windows_dir = os.path.join(cli_dir, "Windows", "CLI", "bin", "Release", f"net{get_base_version_str(supported_version)}")
+        # create the cli/ssotme/lib/Windows/CLI/bin/Release/net7.0 dir structure
+        windows_dir = os.path.join(cli_dir, "lib", "Windows", "CLI", "bin", "Release", f"net{get_base_version_str(supported_version)}")
         os.makedirs(windows_dir, exist_ok=True)
+
+        # copy
         shutil.copytree(built_proj, windows_dir, dirs_exist_ok=True)
         print(f"Copied {built_proj} into {windows_dir}")
         print("Installation completed successfully!")
