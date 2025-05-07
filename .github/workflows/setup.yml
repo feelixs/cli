@@ -58,7 +58,8 @@ jobs:
       - name: Run ssotme
         run: |
          ls -la /Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/ssotme/
-         ssotme --help
+         ssotme -h
+
 
   build-linux:
 
@@ -94,8 +95,8 @@ jobs:
           pip install . -v
 
       - name: Run ssotme
-        run: ssotme --help
-          
+        run: ssotme -h
+
 
   build-windows:
 
@@ -130,6 +131,6 @@ jobs:
           pip install . -v
 
       - name: Run ssotme
-        run: ssotme --help
-          
+        run: ssotme -h
+
 
