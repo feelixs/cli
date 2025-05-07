@@ -135,8 +135,8 @@ class Installer:
     def install_dotnet(self, version: str):
         base_dir = os.path.dirname(os.path.abspath(__file__))
         try:
+            print("Installing DotNet...")
             if self.is_macos or self.is_linux:
-                print("Installing DotNet...")
                 if self.is_macos:
                     print("brew install wget")
                     subprocess.run(["brew", "install", "wget"], check=True)
@@ -164,6 +164,13 @@ class Installer:
                 except Exception as e:
                     print(f"Error executing command: {cmd}: {type(e).__name__}\n\nYou may need to re-run it with sudo, and retry the pip install")
                     sys.exit(1)
+            elif self.is_windows:
+                cmd = f"winget install Microsoft.DotNet.SDK.{get_base_version_str(version).split('.')[0]}"
+                print(cmd)
+                subprocess.run(cmd, shell=True, check=True)
+            else:
+                print(f"DotNet installation failed: unsupported platform: {platform.system()}\nPlease Manually install DotNet and try again.")
+                sys.exit(1)
 
         except Exception as e:
             print(f"Error during .NET installation: {e}")

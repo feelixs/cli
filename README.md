@@ -73,6 +73,8 @@ You can also install this tool using pip:
 
 `pip install -U git+https://github.com/SSoTme/cli`
 
+This will also attempt to automatically install the required .NET version into your system.
+
 After installation, the commands `ssotme`, `aicapture`, and `aic` will be usable in your terminal!
 
 ### Troubleshooting the PIP install
@@ -84,6 +86,7 @@ After installation, the commands `ssotme`, `aicapture`, and `aic` will be usable
   - To fix this, you can run the following command depending on your system:
   - **MacOS** `echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc && source ~/.zshrc`
   - **Linux** `echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc && source ~/.bashrc`
+  - This behavior shouldn't occur on Windows, but if Python ever changes this in the future, you can resolve it by simply adding your Python installation to your system PATH.
 
 ## Syntax: `aicapture -help`
 This command will show the following help.
