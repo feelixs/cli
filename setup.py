@@ -40,10 +40,15 @@ class Installer:
         """Get the absolute path to the dotnet executable."""
         user_home = os.path.expanduser("~")
         dotnet_path = os.path.join(user_home, ".dotnet", "dotnet")
+        dotnet_windows_path = os.path.join(user_home, ".dotnet", "dotnet.exe")
+
         # Check if the dotnet executable exists
         if os.path.isfile(dotnet_path) and os.access(dotnet_path, os.X_OK):
             print(f"Found dotnet executable at: {dotnet_path}")
             self._dotnet_executable_path = dotnet_path
+        elif os.path.isfile(dotnet_windows_path) and os.access(dotnet_windows_path, os.X_OK):
+            print(f"Found dotnet executable at: {dotnet_windows_path}")
+            self._dotnet_executable_path = dotnet_windows_path
         else:
             print("WARN: Dotnet executable not found in ~/.dotnet directory")
 
