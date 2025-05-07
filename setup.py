@@ -251,10 +251,10 @@ class Installer:
                     os.makedirs(dotnet_install_dir, exist_ok=True)
                     print(f"Installing .NET SDK version {version} to {dotnet_install_dir}...")
                     subprocess.run([
-                        "powershell", 
-                        "-ExecutionPolicy", "Bypass", 
-                        "-File", install_script, 
-                        "-Version", version, 
+                        "powershell",
+                        "-ExecutionPolicy", "Bypass",
+                        "-File", install_script,
+                        "-Version", version,
                         "-InstallDir", dotnet_install_dir
                     ], check=True)
                 except Exception as e:
