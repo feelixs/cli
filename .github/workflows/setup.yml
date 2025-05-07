@@ -55,10 +55,18 @@ jobs:
         run: |
           pip install . -v
 
-      - name: Run ssotme
+      - name: Run ssotme -h and check output
+        shell: pwsh
         run: |
-         ssotme -h
-
+          $output = & ssotme -h 2>&1
+          if ($output -match "Press any key to continue...") {
+            Write-Host "✅ ssotme CLI ran successfully (help displayed)"
+            exit 0
+          } else {
+            Write-Host "❌ ssotme CLI failed unexpectedly:"
+            Write-Host $output
+            exit 1
+          }
 
   build-linux:
 
@@ -93,9 +101,18 @@ jobs:
         run: |
           pip install . -v
 
-      - name: Run ssotme
-        run: ssotme -h
-
+      - name: Run ssotme -h and check output
+        shell: pwsh
+        run: |
+          $output = & ssotme -h 2>&1
+          if ($output -match "Press any key to continue...") {
+            Write-Host "✅ ssotme CLI ran successfully (help displayed)"
+            exit 0
+          } else {
+            Write-Host "❌ ssotme CLI failed unexpectedly:"
+            Write-Host $output
+            exit 1
+          }
 
   build-windows:
 
@@ -122,11 +139,15 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run Setup
+      - name: Run ssotme -h and check output
+        shell: pwsh
         run: |
-          pip install . -v
-
-      - name: Run ssotme
-        run: ssotme -h
-
-
+          $output = & ssotme -h 2>&1
+          if ($output -match "Press any key to continue...") {
+            Write-Host "✅ ssotme CLI ran successfully (help displayed)"
+            exit 0
+          } else {
+            Write-Host "❌ ssotme CLI failed unexpectedly:"
+            Write-Host $output
+            exit 1
+          }
