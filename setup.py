@@ -178,7 +178,7 @@ class Installer:
                 raise DotNetInstallError(f"Unsupported platform: {platform.system()}")
 
         # download the .sh script provided my microsoft that downloads dotnet
-        script_path = os.path.join(base_dir, "dotnet-install.sh")
+        script_path = os.path.join(home_dir, "dotnet-install.sh")
         if shutil.which("curl"):
             try:
                 print("Downloading dotnet-install.sh with curl...")
@@ -209,7 +209,7 @@ class Installer:
     def install_dotnet(self, version: str):
         """Attempt to install .NET SDK of a specific version."""
         try:
-            home = os.path.expanduser("~")
+            home = os.path.join(os.path.expanduser("~"), '.ssotme')
             print("Installing DotNet...")
             if self.is_macos or self.is_linux:
                 script_path = self._install_dotnet_sh_script(home)
