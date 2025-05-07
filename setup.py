@@ -368,16 +368,16 @@ class Installer:
             print("You can now use the 'ssotme', 'aicapture', or 'aic' commands from your terminal.")
             
         except Exception as e:
-            print("\n" + "="*60)
+            print("\n" + "=" * 60)
             print("INSTALLATION ERROR")
-            print("="*60)
+            print("=" * 60)
             print(f"Error: {str(e)}")
             print("\nTroubleshooting steps:")
             print("1. Ensure you have the correct permissions to install packages")
             print("2. Try running the installation with administrative privileges")
             print("3. Check that your system meets the requirements (.NET SDK compatibility)")
             print("4. If the problem persists, please report the issue with the error details above")
-            print("="*60 + "\n")
+            print("=" * 60 + "\n")
             raise
 
 
@@ -397,7 +397,8 @@ def run_setup():
             "include_package_data": True,
             "packages": ["ssotme"],
             "package_data": {
-                "ssotme": ["global.json", "dotnet_info.json", "lib/**/*"]
+                "ssotme": ["global.json", "dotnet_info.json"],
+                "ssotme/lib": ["lib/**/*"]
             },
             "entry_points": {
                 "console_scripts": [
@@ -422,13 +423,13 @@ def run_setup():
         setup(**setup_config)
         
     except Exception as e:
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("SETUP ERROR")
-        print("="*60)
+        print("=" * 60)
         print(f"Error: {str(e)}")
         print("\nThe installation process failed. Please check the error message above.")
         print("If you need assistance, please open an issue at https://github.com/SSoTme/cli/issues/new with the error details.")
-        print("="*60 + "\n")
+        print("=" * 60 + "\n")
         # re-raise the error into pip
         raise
 

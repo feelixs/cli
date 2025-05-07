@@ -13,19 +13,19 @@ def get_base_version_str(fullstr: str):
     return dotnet_base_version[0] + '.' + dotnet_base_version[1]
 
 
-def get_release_path(dotnet_version: str, base_dir=None):
-    """Get the appropriate path to the DLL based on the platform."""
-    if base_dir is None:
-        base_dir = os.path.dirname(os.path.abspath(__file__))
+def get_release_path(dotnet_version: str, base_dir):
+    """Get the path to the built project (Windows/CLI/bin/Release/...)"""
     # trim off the final version number (v.x.x -> v.x)
-    the_path = os.path.join(base_dir, "lib", "Windows", "CLI", "bin", "Release", f"net{get_base_version_str(dotnet_version)}")
+    the_path = os.path.join(base_dir, "Windows", "CLI", "bin", "Release", f"net{get_base_version_str(dotnet_version)}")
     if not os.path.exists(the_path):
         raise FileNotFoundError(f"Could not find {the_path}")
     return the_path
 
 
 def get_dll_path(dotnet_version: str) -> str:
-    the_path = os.path.join(get_release_path(dotnet_version), "SSoTme.OST.CLI.dll")
+    """Get the dll path relative to this file (ssotme/cli.py -> ssotme/lib/Windows/CLI/bin/Release/...)"""
+    base_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "lib")
+    the_path = os.path.join(get_release_path(dotnet_version, base_dir), "SSoTme.OST.CLI.dll")
     if not os.path.exists(the_path):
         raise FileNotFoundError(f"Could not find {the_path}")
     return the_path
