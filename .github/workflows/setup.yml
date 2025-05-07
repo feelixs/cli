@@ -128,6 +128,20 @@ jobs:
         with:
           dotnet-version: '7.0.x'
 
+      - name: Print .NET SDK path
+        run: |
+          echo "Checking for .NET SDK executable..."
+          if [ -f "$HOME/.dotnet/dotnet" ]; then
+            echo "Found .NET SDK at: $HOME/.dotnet/dotnet"
+            $HOME/.dotnet/dotnet --info
+          elif [ -f "$HOME/.dotnet/dotnet.exe" ]; then
+            echo "Found .NET SDK at: $HOME/.dotnet/dotnet.exe"
+            "$HOME/.dotnet/dotnet.exe" --info
+          else
+            echo "ERROR: .NET SDK not found in expected location: $HOME/.dotnet"
+            ls -al "$HOME/.dotnet" || true
+          fi
+
       - name: Run Setup
         run: |
           pip install . -v
