@@ -2,7 +2,7 @@ from setuptools import setup
 
 from pyinstaller_setuptools import setup
 # NOTE: when creating an executable uncomment the line above and run this command:
-# python ./setup.py pyinstaller -- -n ssotme --console --onedir --add-data "ssotme:ssotme" --collect-all ssotme --hidden-import json
+# python ./setup.py pyinstaller -- -n ssotme --console --onefile --add-data "ssotme:ssotme" --collect-all ssotme --hidden-import json
 
 import shutil
 import json
