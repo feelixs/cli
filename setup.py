@@ -412,7 +412,7 @@ def run_setup():
             "version": installer.get_package_version(),
             "description": "Python wrapper for installing SSoTme CLI tools",
             "author": "SSoTme",
-            "author_email": "michael@effortlessapi.com",
+            "author_email": "michael@ssot.me",
             "url": "https://ssot.me",
             "license": "GNU",
             "include_package_data": True,
