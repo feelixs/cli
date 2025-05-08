@@ -90,17 +90,17 @@ Write-Host "Reverted setup.py to original state"
 
 Write-Host "Build completed."
 
-Push-Location $distDir
+Push-Location $OutputDir
 try {
     # Copy the main executable to the dist folder
     $mainExe = "ssotme.exe"
-    Copy-Item -Path $mainExe -Destination "$distDir/" -Force
+    Copy-Item -Path $mainExe -Destination "$OutputDir/" -Force
 
     # Create alias executables (copy the main executable)
-    Copy-Item -Path $mainExe -Destination "$distDir/aic.exe" -Force
-    Copy-Item -Path $mainExe -Destination "$distDir/aicapture.exe" -Force
+    Copy-Item -Path $mainExe -Destination "$OutputDir/aic.exe" -Force
+    Copy-Item -Path $mainExe -Destination "$OutputDir/aicapture.exe" -Force
 
-    Write-Host "Created alias executables in: $distDir"
+    Write-Host "Created alias executables in: $OutputDir"
 } finally {
     Pop-Location
 }
