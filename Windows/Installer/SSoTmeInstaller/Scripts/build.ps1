@@ -42,6 +42,15 @@ if (Test-Path $licenseSrc) {
     Write-Warning "LICENSE file not found at root."
 }
 
+# Copy ssotme.json
+$licenseSrc = Join-Path $RootDir "ssotme.json"
+$licenseDest = Join-Path $ResourcesDir "ssotme.json"
+if (Test-Path $licenseSrc) {
+    Copy-Item $licenseSrc -Destination $licenseDest -Force
+} else {
+    Write-Warning "ssotme.json file not found at root."
+}
+
 Write-Host "Building .NET CLI project..."
 Push-Location $distDir
 try {

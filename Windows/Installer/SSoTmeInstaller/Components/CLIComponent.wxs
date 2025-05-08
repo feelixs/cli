@@ -6,7 +6,7 @@
       <Component Id="SSoTmeCLI" Guid="*">
         <File Id="SSoTmeExe" 
               Name="ssotme.exe" 
-              Source="..\..\dist\ssotme.exe" 
+              Source="..\bin\Release\ssotme.exe"
               KeyPath="yes">
           <!-- Create file associations -->
           <Shortcut Id="SSoTmeShortcut"
@@ -30,7 +30,7 @@
       <Component Id="CLIDocumentation" Guid="*">
         <File Id="ReadmeFile" 
               Name="README.md" 
-              Source="..\..\README.md" 
+              Source="..\Assets\README.md"
               KeyPath="yes" />
       </Component>
       
@@ -38,7 +38,7 @@
       <Component Id="CLIConfigFiles" Guid="*">
         <File Id="DefaultConfig" 
               Name="ssotme.json" 
-              Source="..\..\ssotme.json" 
+              Source="..\Resources\ssotme.json"
               KeyPath="yes" />
       </Component>
     </ComponentGroup>
