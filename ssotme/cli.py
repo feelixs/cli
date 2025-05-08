@@ -86,8 +86,7 @@ def main():
         result = subprocess.run([dotnet, "--version"], stdout=subprocess.PIPE)
         dotnet_version = result.stdout.decode().strip()
         if dotnet_version != version:
-            ...
-            # print(f"WARNING: .NET SDK version does not match .NET executable - configured to use .NET SDK {version}, but `{dotnet} --version` returned {dotnet_version}\n")
+            print(f"WARNING: .NET SDK version does not match .NET executable - configured to use .NET SDK {version}, but `{dotnet} --version` returned {dotnet_version}\n")
 
     else:
         # run the actual cli
