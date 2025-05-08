@@ -57,9 +57,6 @@
     </WixExtension>
   </ItemGroup>
   <PropertyGroup>
-    <DefineConstants>DOTNET_DOWNLOAD=https://builds.dotnet.microsoft.com/dotnet/Sdk/7.0.410/dotnet-sdk-7.0.410-win-x86.exe</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup>
     <WixTargetsPath>C:\Program Files (x86)\MSBuild\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
   </PropertyGroup>
   <Import Project="$(WixTargetsPath)" Condition=" '$(WixTargetsPath)' != ''" />

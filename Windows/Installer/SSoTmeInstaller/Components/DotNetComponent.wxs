@@ -5,7 +5,8 @@
   <!-- Constants for .NET installation -->
   <?define DotNetVersion = "7.0.410" ?>
   <?define DotNetBaseVersion = "7.0" ?>
-  <?define DotNetDownloadUrl = "https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/sdk-7.0.410-windows-x64-installer" ?>
+  <?define Architecture = "x64" ?>
+  <?define DotNetDownloadUrl = "https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/sdk-$(var.DotNetVersion)-windows-$(var.Architecture)-installer" ?>
   
   <Fragment>
     <!-- .NET SDK detection properties -->
@@ -34,7 +35,7 @@
                   Return="check" />
     
     <SetProperty Id="InstallDotNet"
-                Value="&quot;[TempFolder]$(var.DOTNET_DOWNLOAD)&quot; /install /quiet /norestart"
+                Value="&quot;[TempFolder]$(var.DotNetDownloadUrl)&quot; /install /quiet /norestart"
                 Before="InstallDotNet"
                 Sequence="execute">
       NOT DOTNET_INSTALLED
