@@ -50,28 +50,17 @@ Write-Host "Building cli.py..."
 
 $ErrorActionPreference = "Stop"
 
-# Define paths
-$ProjectDir = "C:\Users\michaelfelix\Documents\GitHub\cli"
-$SetupPath = Join-Path $ProjectDir "setup.py"
-$VenvActivate = "$env:USERPROFILE\.venv-3.12\Scripts\Activate.ps1"
+$SetupPath = Join-Path $RootDir "setup.py"
 
 # Clean build and dist directories
-Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "$ProjectDir\dist"
-Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "$ProjectDir\build"
+Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "$RootDir\dist"
+Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "$RootDir\build"
 
 # Substitute setuptools with pyinstaller_setuptools
 $originalContent = Get-Content $SetupPath
 $modifiedContent = $originalContent -replace 'setuptools', 'pyinstaller_setuptools'
 $modifiedContent | Set-Content $SetupPath
 Write-Host "Modified setup.py to use pyinstaller_setuptools"
-
-# Activate virtual environment
-if (Test-Path $VenvActivate) {
-    & $VenvActivate
-} else {
-    Write-Error "Virtual environment activation script not found: $VenvActivate"
-    exit 1
-}
 
 # Run PyInstaller build via setup.py
 Push-Location $ProjectDir
