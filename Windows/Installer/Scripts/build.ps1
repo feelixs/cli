@@ -2,7 +2,7 @@
 param (
     [string]$Configuration = "Release",
     [switch]$SkipPyInstaller = $false,
-    [string]$OutputDir = "../../../dist"
+    [string]$distDir = "../../../dist/out/"
 )
 
 $ErrorActionPreference = "Stop"
@@ -17,11 +17,10 @@ Write-Host "Creating necessary directories..."
 $Directories = @(
     $ResourcesDir,
     $OutputDir,
+    $distDir,
     (Join-Path $WixProjectDir "Assets"),
     (Join-Path $WixProjectDir "Scripts")
 )
-$distDir = Resolve-Path $OutputDir
-Write-Host "Creating distribution in: $distDir"
 
 foreach ($Dir in $Directories) {
     if (-not (Test-Path $Dir)) {
@@ -46,38 +45,17 @@ if (-not (Test-Path $IconFile)) {
     Write-Host "Please create an icon file at: $IconFile"
 }
 
-# Build the C# CLI wrapper
-Write-Host "Building C# CLI wrapper..."
-Push-Location "CLI"
+Write-Host "Building cli.py..."
+Push-Location $distDir
 try {
-    # Restore NuGet packages
-    dotnet restore
-    if ($LASTEXITCODE -ne 0) {
-        Write-Error "Failed to restore NuGet packages"
-        exit 1
-    }
-
-    # Build the project
-    if ($Release) {
-        dotnet publish -c Release --self-contained -r win-x64 -p:PublishSingleFile=true -p:PublishTrimmed=true
-    } else {
-        dotnet publish -c Debug --self-contained -r win-x64 -p:PublishSingleFile=true
-    }
-
-    if ($LASTEXITCODE -ne 0) {
-        Write-Error "Failed to build CLI wrapper"
-        exit 1
-    }
-
-    # Get the build output path
-    $buildOutput = if ($Release) { "bin/Release/net7.0/win-x64/publish" } else { "bin/Debug/net7.0/win-x64/publish" }
+    ./ssotme/build.sh
+    Copy-Item Join-Path $RootDir "dist" $OutputDir
 } finally {
     Pop-Location
 }
 
-# Make sure the .NET DLL is built
 Write-Host "Building .NET CLI project..."
-Push-Location "../CLI"
+Push-Location $distDir
 try {
     dotnet build -c Release
     if ($LASTEXITCODE -ne 0) {
@@ -88,8 +66,7 @@ try {
     Pop-Location
 }
 
-# Create alias executables for aic and aicapture
-Push-Location "CLI/$buildOutput"
+Push-Location $distDir
 try {
     # Copy the main executable to the dist folder
     $mainExe = "ssotme.exe"
