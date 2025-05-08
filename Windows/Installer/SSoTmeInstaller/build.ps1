@@ -108,7 +108,7 @@ try {
 
 Write-Host "Build complete! Executables are in: $OutputDir"
 
-Set-Location $RootDir
+Set-Location $WixProjectDir
 
 # Build the WiX project
 Write-Host "Building WiX installer project..."
