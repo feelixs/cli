@@ -90,7 +90,7 @@ Write-Host "Reverted setup.py to original state"
 
 Write-Host "Build completed."
 
-Push-Location $OutputDir
+Push-Location $distDir
 try {
     # Copy the main executable to the dist folder
     $mainExe = "ssotme.exe"
