@@ -31,17 +31,17 @@ def get_dll_path(dotnet_version: str) -> str:
     return the_path
 
 
-def get_dotnet_info():
+def get_dotnet_info() -> (str, str):
     """Get the saved .NET SDK information."""
     base_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)))
     dotnet_info_path = os.path.join(base_dir, "dotnet_info.json")
     if os.path.exists(dotnet_info_path):
         try:
             with open(dotnet_info_path, "r") as f:
-                return json.load(f)
+                return dotnet_info_path, json.load(f)
         except Exception as e:
             print(f"Error reading .NET SDK info: {e}")
-    return None
+    return dotnet_info_path, None
 
 
 def ensure_global_json(version):
@@ -69,10 +69,10 @@ def ensure_global_json(version):
 
 
 def main():
-    dotnet_info = get_dotnet_info()
+    info_filepath, dotnet_info = get_dotnet_info()
     if dotnet_info is not None and "executable_path" in dotnet_info and os.path.exists(dotnet_info["executable_path"]):
         dotnet = dotnet_info["executable_path"]
-        print(f"Using .NET SDK from saved configuration: {dotnet}")
+        print(f"Using .NET SDK `{dotnet}` from saved configuration: {info_filepath}")
     else:
         # fall back to using 'dotnet' command (not direct path to exe)
         dotnet = shutil.which("dotnet")
