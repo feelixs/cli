@@ -100,7 +100,7 @@ def main():
     sys.exit(code)
 
 # todo: we're tracking which dotnet sdk version we should use in package.json['dotnet'], and across the python codebase
-# The package.json['dotnet'] also tells setup.py which dotnet version to automatically install.
+# The package.json['dotnet'] only tells setup.py which dotnet version to automatically install.
 # the question is whether we need to keep tracking the version (do we need to warn users?)
 # if so, we could just add these to path to force dotnet to use a specific version:
 
