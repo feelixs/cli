@@ -3,7 +3,6 @@
      xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
   
   <!-- Constants for .NET installation -->
-  <?define DotNetVersion = "7.0.410" ?>
   <?define DotNetBaseVersion = "7.0" ?>
   <?define Architecture = "x64" ?>
   <?define DotNetDownloadUrl = "https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/sdk-$(var.DotNetVersion)-windows-$(var.Architecture)-installer" ?>
@@ -18,7 +17,7 @@
                      Type="raw" />
     </Property>
 
-    <Property Id="DOTNET_INSTALLER_PATH" Value="[TempFolder]$(var.DotNetDownloadUrl)" />
+    <Property Id="DOTNET_INSTALLER_PATH" Value="[[TempFolder]]$(var.DotNetDownloadUrl)" />
     
     <!-- Custom actions for .NET installation -->
     <SetProperty Id="DownloadDotNet"

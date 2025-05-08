@@ -7,10 +7,10 @@
   <Product Id="*" 
            Name="SSoTme CLI" 
            Language="1033" 
-           Version="!(bind.FileVersion.SSoTmeExe)" 
+           Version="$(var.SSoTmeVersion)"
            Manufacturer="SSoTme" 
-           UpgradeCode="6E6E1CA8-8A27-4920-A37A-CF980859414C">
-    
+           UpgradeCode="EB59dEFF-B979-464F-B36A-57F272E872A1">
+
     <!-- Define package information -->
     <Package InstallerVersion="200" 
              Compressed="yes" 
@@ -30,6 +30,7 @@
       <ComponentGroupRef Id="DotNetComponents" />
       <ComponentRef Id="ApplicationShortcut" />
       <ComponentRef Id="RegistryEntries" />
+      <ComponentRef Id="SSoTmeCLI" />
     </Feature>
     
     <!-- Define properties -->
@@ -59,11 +60,6 @@
         <Directory Id="ApplicationProgramsFolder" Name="SSoTme" />
       </Directory>
     </Directory>
-
-    <!-- Define components -->
-    <ComponentGroup Id="ProductComponents" Directory="BinFolder">
-
-    </ComponentGroup>
     
     <!-- Define shortcuts -->
     <DirectoryRef Id="ApplicationProgramsFolder">
@@ -83,7 +79,7 @@
       <Component Id="RegistryEntries" Guid="*">
         <RegistryKey Root="HKLM" Key="Software\SSoTme\CLI">
           <RegistryValue Type="string" Name="InstallPath" Value="[INSTALLFOLDER]" KeyPath="yes" />
-          <RegistryValue Type="string" Name="Version" Value="!(bind.FileVersion.SSoTmeExe)" />
+          <RegistryValue Type="string" Name="Version" Value="$(var.SSoTmeVersion)" />
         </RegistryKey>
       </Component>
     </DirectoryRef>
@@ -98,7 +94,7 @@
     
     <!-- Sequence the installation -->
     <InstallExecuteSequence>
-      <Custom Action="PostInstallSetup" After="InstallFinalize">NOT Installed</Custom>
+      <Custom Action="PostInstallSetup" After="InstallFiles">NOT Installed</Custom>
     </InstallExecuteSequence>
   </Product>
 </Wix>
