@@ -1,7 +1,8 @@
 # Build script for SSoTme Windows Installer
 param (
     [string]$Configuration = "Release",
-    [switch]$SkipPyInstaller = $false
+    [switch]$SkipPyInstaller = $false,
+    [string]$Platform = "x86"
 )
 
 $ErrorActionPreference = "Stop"
@@ -49,7 +50,7 @@ if (-not (Test-Path $IconFile)) {
 Write-Host "Building .NET CLI project..."
 Push-Location $distDir
 try {
-    cd $SourceDir
+    Set-Location $SourceDir
     dotnet build -c Release
     if ($LASTEXITCODE -ne 0) {
         Write-Error "Failed to build .NET CLI project"
@@ -107,12 +108,14 @@ try {
 
 Write-Host "Build complete! Executables are in: $OutputDir"
 
+Set-Location $RootDir
+
 # Build the WiX project
 Write-Host "Building WiX installer project..."
 try {
     # Check if WiX toolset is installed
     $WixPath = (Get-Command candle.exe -ErrorAction SilentlyContinue).Source
-    
+
     if (-not $WixPath) {
         Write-Error "WiX Toolset not found. Please install WiX Toolset from https://wixtoolset.org/releases/"
         return
@@ -122,7 +125,8 @@ try {
     Push-Location $WixProjectDir
     
     # Build the WiX project
-    & msbuild /p:Configuration=$Configuration /p:Platform=x86
+    Write-Host "msbuild /p:Configuration=$Configuration /p:Platform=$Platform"
+    & msbuild /p:Configuration=$Configuration /p:Platform=$Platform
     
     if ($LASTEXITCODE -ne 0) {
         Write-Error "Failed to build WiX project"
