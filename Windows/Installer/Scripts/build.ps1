@@ -46,13 +46,47 @@ if (-not (Test-Path $IconFile)) {
 }
 
 Write-Host "Building cli.py..."
-Push-Location $distDir
+# PowerShell script to build the CLI with PyInstaller modifications
+
+$ErrorActionPreference = "Stop"
+
+# Define paths
+$ProjectDir = "C:\Users\michaelfelix\Documents\GitHub\cli"
+$SetupPath = Join-Path $ProjectDir "setup.py"
+$VenvActivate = "$env:USERPROFILE\.venv-3.12\Scripts\Activate.ps1"
+
+# Clean build and dist directories
+Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "$ProjectDir\dist"
+Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "$ProjectDir\build"
+
+# Substitute setuptools with pyinstaller_setuptools
+$originalContent = Get-Content $SetupPath
+$modifiedContent = $originalContent -replace 'setuptools', 'pyinstaller_setuptools'
+$modifiedContent | Set-Content $SetupPath
+Write-Host "Modified setup.py to use pyinstaller_setuptools"
+
+# Activate virtual environment
+if (Test-Path $VenvActivate) {
+    & $VenvActivate
+} else {
+    Write-Error "Virtual environment activation script not found: $VenvActivate"
+    exit 1
+}
+
+# Run PyInstaller build via setup.py
+Push-Location $ProjectDir
 try {
-    ./ssotme/build.sh
-    Copy-Item Join-Path $RootDir "dist" $OutputDir
+    python .\setup.py pyinstaller -- -n ssotme --console --onefile --add-data "ssotme:ssotme" --hidden-import json
 } finally {
     Pop-Location
 }
+
+# Revert setup.py changes
+$originalContent | Set-Content $SetupPath
+Write-Host "Reverted setup.py to original state"
+
+Write-Host "Build completed."
+
 
 Write-Host "Building .NET CLI project..."
 Push-Location $distDir
