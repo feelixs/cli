@@ -9,6 +9,7 @@ $ErrorActionPreference = "Stop"
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $RootDir = Split-Path -Parent (Split-Path -Parent (Split-Path -Parent $ScriptDir))
 $InstallerDir = Join-Path $RootDir "Windows\Installer"
+$SourceDir = Join-Path $RootDir "Windows\CLI"
 $WixProjectDir = Join-Path $InstallerDir "SSoTmeInstaller"
 $ResourcesDir = Join-Path $WixProjectDir "Resources"
 $OutputDir = Join-Path $WixProjectDir "bin\$Configuration"
@@ -45,6 +46,19 @@ if (-not (Test-Path $IconFile)) {
     Write-Host "Please create an icon file at: $IconFile"
 }
 
+Write-Host "Building .NET CLI project..."
+Push-Location $distDir
+try {
+    cd $SourceDir
+    dotnet build -c Release
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "Failed to build .NET CLI project"
+        exit 1
+    }
+} finally {
+    Pop-Location
+}
+
 Write-Host "Building cli.py..."
 # PowerShell script to build the CLI with PyInstaller modifications
 
@@ -75,19 +89,6 @@ $originalContent | Set-Content $SetupPath
 Write-Host "Reverted setup.py to original state"
 
 Write-Host "Build completed."
-
-
-Write-Host "Building .NET CLI project..."
-Push-Location $distDir
-try {
-    dotnet build -c Release
-    if ($LASTEXITCODE -ne 0) {
-        Write-Error "Failed to build .NET CLI project"
-        exit 1
-    }
-} finally {
-    Pop-Location
-}
 
 Push-Location $distDir
 try {
