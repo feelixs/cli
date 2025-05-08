@@ -7,11 +7,13 @@ param (
 
 $ErrorActionPreference = "Stop"
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$RootDir = Split-Path -Parent (Split-Path -Parent (Split-Path -Parent $ScriptDir))
-$InstallerDir = Join-Path $RootDir "Windows\Installer"
+$SSoTmeInstallerDir = Split-Path -Parent $ScriptDir
+$InstallerDir = Split-Path -Parent $SSoTmeInstallerDir
+$RootDir = Split-Path -Parent (Split-Path -Parent $InstallerDir)
 $SourceDir = Join-Path $RootDir "Windows\CLI"
 $WixProjectDir = Join-Path $InstallerDir "SSoTmeInstaller"
 $ResourcesDir = Join-Path $WixProjectDir "Resources"
+$AssetsDir = Join-Path $WixProjectDir "Assets"
 $OutputDir = Join-Path $WixProjectDir "bin\$Configuration"
 $distDir = Join-Path $RootDir "dist"
 
@@ -20,8 +22,7 @@ $Directories = @(
     $ResourcesDir,
     $OutputDir,
     $distDir,
-    (Join-Path $WixProjectDir "Assets"),
-    (Join-Path $WixProjectDir "Scripts")
+    $AssetsDir
 )
 
 foreach ($Dir in $Directories) {
@@ -33,18 +34,12 @@ foreach ($Dir in $Directories) {
 
 # Copy LICENSE file
 $licenseSrc = Join-Path $RootDir "LICENSE"
-$licenseDest = Join-Path $distDir "LICENSE"
+$licenseDest = Join-Path $ResourcesDir "LICENSE"
 if (Test-Path $licenseSrc) {
     Copy-Item $licenseSrc -Destination $licenseDest -Force
     Write-Host "Copied LICENSE file to distribution directory."
 } else {
     Write-Warning "LICENSE file not found at root."
-}
-
-# Create icon if it doesn't exist
-$IconFile = Join-Path $ResourcesDir "Icon.ico"
-if (-not (Test-Path $IconFile)) {
-    Write-Host "Please create an icon file at: $IconFile"
 }
 
 Write-Host "Building .NET CLI project..."

@@ -45,9 +45,8 @@
     <!-- Define UI -->
     <UIRef Id="WixUI_InstallDir" />
     <UIRef Id="WixUI_ErrorProgressText" />
-    <WixVariable Id="WixUILicenseRtf" Value="Resources\License.rtf" />
-    <WixVariable Id="WixUIBannerBmp" Value="Resources\Banner.png" />
-    <WixVariable Id="WixUIDialogBmp" Value="Resources\Banner.png" />
+    <WixVariable Id="WixUILicenseRtf" Value="Resources\LICENSE" />
+    <WixVariable Id="WixUIDialogBmp" Value="Assets\Icon.ico" />
     
     <!-- Define directory structure -->
     <Directory Id="TARGETDIR" Name="SourceDir">
