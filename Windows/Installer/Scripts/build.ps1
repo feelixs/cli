@@ -105,20 +105,7 @@ try {
     Pop-Location
 }
 
-# Copy the required .NET DLLs
-$netDllPath = "../CLI/bin/Release/net7.0"
-$targetNetPath = "$distDir/Windows/CLI/bin/Release/net7.0"
-
-# Create the target directory structure
-if (-not (Test-Path -Path $targetNetPath)) {
-    New-Item -ItemType Directory -Path $targetNetPath -Force | Out-Null
-}
-
-# Copy all DLLs and config files
-Copy-Item -Path "$netDllPath/*" -Destination $targetNetPath -Recurse -Force
-
-Write-Host "Copied .NET DLLs to: $targetNetPath"
-Write-Host "Build complete! Executables are in: $distDir"
+Write-Host "Build complete! Executables are in: $OutputDir"
 
 # Build the WiX project
 Write-Host "Building WiX installer project..."
