@@ -26,7 +26,7 @@
     
     <!-- Define features -->
     <Feature Id="ProductFeature" Title="SSoTme CLI" Level="1">
-      <ComponentGroupRef Id="ProductComponents" />
+      <ComponentGroupRef Id="CLIComponents" />
       <ComponentGroupRef Id="DotNetComponents" />
       <ComponentRef Id="ApplicationShortcut" />
       <ComponentRef Id="RegistryEntries" />
@@ -60,19 +60,10 @@
         <Directory Id="ApplicationProgramsFolder" Name="SSoTme" />
       </Directory>
     </Directory>
-    
+
     <!-- Define components -->
     <ComponentGroup Id="ProductComponents" Directory="BinFolder">
-      <!-- TODO: Define the files that should be included in the installer -->
-      <Component Id="SSoTmeCLI" Guid="*">
-        <File Id="SSoTmeExe" Name="ssotme.exe" Source="..\..\dist\ssotme.exe" KeyPath="yes" />
-        <Environment Id="PATH" Name="PATH" Value="[BinFolder]" Permanent="no" Part="last" Action="set" System="yes" />
-      </Component>
-    </ComponentGroup>
-    
-    <!-- Define .NET components -->
-    <ComponentGroup Id="DotNetComponents" Directory="INSTALLFOLDER">
-      <!-- Will be populated during build time or defined in DotNetComponent.wxs -->
+
     </ComponentGroup>
     
     <!-- Define shortcuts -->

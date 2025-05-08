@@ -16,8 +16,7 @@
                      Name="$(var.DotNetVersion)"
                      Type="raw" />
     </Property>
-    
-    <Property Id="DOTNET_DOWNLOAD" Value="dotnet-sdk-$(var.DotNetVersion)-win-x64.exe" />
+
     <Property Id="DOTNET_INSTALLER_PATH" Value="[TempFolder]$(var.DotNetDownloadUrl)" />
     
     <!-- Custom actions for .NET installation -->
