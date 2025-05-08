@@ -18,7 +18,3 @@
 ssotme/lib/
 ssotme/*.json
 
-# pyinstaller stuff
-dist/
-build/
-ssotme.spec
