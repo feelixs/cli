@@ -2,7 +2,6 @@
 param (
     [string]$Configuration = "Release",
     [switch]$SkipPyInstaller = $false,
-    [string]$distDir = "../../../dist/out/"
 )
 
 $ErrorActionPreference = "Stop"
@@ -13,6 +12,7 @@ $SourceDir = Join-Path $RootDir "Windows\CLI"
 $WixProjectDir = Join-Path $InstallerDir "SSoTmeInstaller"
 $ResourcesDir = Join-Path $WixProjectDir "Resources"
 $OutputDir = Join-Path $WixProjectDir "bin\$Configuration"
+$distDir = Join-Path $RootDir "dist"
 
 Write-Host "Creating necessary directories..."
 $Directories = @(
