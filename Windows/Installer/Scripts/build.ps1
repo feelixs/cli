@@ -1,7 +1,7 @@
 # Build script for SSoTme Windows Installer
 param (
     [string]$Configuration = "Release",
-    [switch]$SkipPyInstaller = $false,
+    [switch]$SkipPyInstaller = $false
 )
 
 $ErrorActionPreference = "Stop"
