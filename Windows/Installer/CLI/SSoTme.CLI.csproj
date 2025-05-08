@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net7.0</TargetFramework>
+    <RootNamespace>SSoTme.CLI</RootNamespace>
+    <AssemblyName>ssotme</AssemblyName>
+    <Version>2024.08.23</Version>
+    <Authors>SSoTme</Authors>
+    <Company>SSoTme</Company>
+    <Product>SSoTme CLI Wrapper</Product>
+    <Description>Command line interface for SSoTme</Description>
+    <Copyright>Copyright 2024</Copyright>
+    <PackageProjectUrl>https://github.com/ssotme/cli</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/ssotme/cli</RepositoryUrl>
+    
+    <!-- For Windows builds -->
+    <RuntimeIdentifiers>win-x64;osx-x64</RuntimeIdentifiers>
+    
+    <!-- Conditionally apply these only when publishing -->
+    <PublishTrimmed Condition="'$(Configuration)'=='Release'">true</PublishTrimmed>
+    <PublishSingleFile Condition="'$(Configuration)'=='Release'">true</PublishSingleFile>
+    <SelfContained Condition="'$(Configuration)'=='Release'">true</SelfContained>
+    <IncludeNativeLibrariesForSelfExtract Condition="'$(Configuration)'=='Release'">true</IncludeNativeLibrariesForSelfExtract>
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+
+  <!-- Explicitly don't reference anything that's not part of the base SDK -->
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.NETCore.App" />
+  </ItemGroup>
+
+</Project>

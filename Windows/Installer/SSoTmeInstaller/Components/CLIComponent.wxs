@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Fragment>
+    <!-- Main CLI components -->
+    <ComponentGroup Id="CLIComponents" Directory="BinFolder">
+      <Component Id="SSoTmeCLI" Guid="*">
+        <File Id="SSoTmeExe" 
+              Name="ssotme.exe" 
+              Source="..\..\dist\ssotme.exe" 
+              KeyPath="yes">
+          <!-- Create file associations -->
+          <Shortcut Id="SSoTmeShortcut"
+                    Directory="ApplicationProgramsFolder"
+                    Name="SSoTme CLI"
+                    WorkingDirectory="BinFolder"
+                    Advertise="yes" />
+        </File>
+        
+        <!-- Add to PATH -->
+        <Environment Id="PATH" 
+                     Name="PATH" 
+                     Value="[BinFolder]" 
+                     Permanent="no" 
+                     Part="last" 
+                     Action="set" 
+                     System="yes" />
+      </Component>
+      
+      <!-- Supporting files -->
+      <Component Id="CLIDocumentation" Guid="*">
+        <File Id="ReadmeFile" 
+              Name="README.md" 
+              Source="..\..\README.md" 
+              KeyPath="yes" />
+      </Component>
+      
+      <!-- Configuration files -->
+      <Component Id="CLIConfigFiles" Guid="*">
+        <File Id="DefaultConfig" 
+              Name="ssotme.json" 
+              Source="..\..\ssotme.json" 
+              KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
+    
+    <!-- Post-installation setup -->
+    <CustomAction Id="ConfigureCLI"
+                  FileKey="SSoTmeExe"
+                  ExeCommand="--configure-first-run"
+                  Execute="deferred"
+                  Return="check"
+                  Impersonate="no" />
+    
+    <InstallExecuteSequence>
+      <Custom Action="ConfigureCLI" After="InstallFinalize">NOT Installed</Custom>
+    </InstallExecuteSequence>
+  </Fragment>
+</Wix>

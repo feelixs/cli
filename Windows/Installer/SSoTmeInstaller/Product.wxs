@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
+     xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension"
+     xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+  
+  <!-- Define product information -->
+  <Product Id="*" 
+           Name="SSoTme CLI" 
+           Language="1033" 
+           Version="!(bind.FileVersion.SSoTmeExe)" 
+           Manufacturer="SSoTme" 
+           UpgradeCode="6E6E1CA8-8A27-4920-A37A-CF980859414C">
+    
+    <!-- Define package information -->
+    <Package InstallerVersion="200" 
+             Compressed="yes" 
+             InstallScope="perMachine" 
+             Description="SSoTme Command Line Interface"
+             Comments="Installs the SSoTme CLI tool" />
+    
+    <!-- Enable compression -->
+    <MediaTemplate EmbedCab="yes" />
+    
+    <!-- Define upgrade behavior -->
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    
+    <!-- Define features -->
+    <Feature Id="ProductFeature" Title="SSoTme CLI" Level="1">
+      <ComponentGroupRef Id="ProductComponents" />
+      <ComponentGroupRef Id="DotNetComponents" />
+      <ComponentRef Id="ApplicationShortcut" />
+      <ComponentRef Id="RegistryEntries" />
+    </Feature>
+    
+    <!-- Define properties -->
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
+    <Property Id="DOTNETINSTALLED" Value="0" />
+    
+    <!-- Check for .NET installation -->
+    <PropertyRef Id="NETFRAMEWORK45" />
+    <Condition Message="This application requires .NET Framework 4.7 or higher. Please install the .NET Framework then run this installer again.">
+      <![CDATA[Installed OR NETFRAMEWORK45]]>
+    </Condition>
+    
+    <!-- Define UI -->
+    <UIRef Id="WixUI_InstallDir" />
+    <UIRef Id="WixUI_ErrorProgressText" />
+    <WixVariable Id="WixUILicenseRtf" Value="Resources\License.rtf" />
+    <WixVariable Id="WixUIBannerBmp" Value="Resources\Banner.png" />
+    <WixVariable Id="WixUIDialogBmp" Value="Resources\Banner.png" />
+    
+    <!-- Define directory structure -->
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="INSTALLFOLDER" Name="SSoTme">
+          <Directory Id="BinFolder" Name="bin" />
+        </Directory>
+      </Directory>
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="ApplicationProgramsFolder" Name="SSoTme" />
+      </Directory>
+    </Directory>
+    
+    <!-- Define components -->
+    <ComponentGroup Id="ProductComponents" Directory="BinFolder">
+      <!-- TODO: Define the files that should be included in the installer -->
+      <Component Id="SSoTmeCLI" Guid="*">
+        <File Id="SSoTmeExe" Name="ssotme.exe" Source="..\..\dist\ssotme.exe" KeyPath="yes" />
+        <Environment Id="PATH" Name="PATH" Value="[BinFolder]" Permanent="no" Part="last" Action="set" System="yes" />
+      </Component>
+    </ComponentGroup>
+    
+    <!-- Define .NET components -->
+    <ComponentGroup Id="DotNetComponents" Directory="INSTALLFOLDER">
+      <!-- Will be populated during build time or defined in DotNetComponent.wxs -->
+    </ComponentGroup>
+    
+    <!-- Define shortcuts -->
+    <DirectoryRef Id="ApplicationProgramsFolder">
+      <Component Id="ApplicationShortcut" Guid="*">
+        <Shortcut Id="ApplicationStartMenuShortcut" 
+                  Name="SSoTme CLI" 
+                  Description="SSoTme Command Line Interface"
+                  Target="[BinFolder]ssotme.exe"
+                  WorkingDirectory="BinFolder" />
+        <RemoveFolder Id="CleanUpShortcut" Directory="ApplicationProgramsFolder" On="uninstall" />
+        <RegistryValue Root="HKCU" Key="Software\SSoTme\CLI" Name="installed" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+    </DirectoryRef>
+    
+    <!-- Define registry entries -->
+    <DirectoryRef Id="TARGETDIR">
+      <Component Id="RegistryEntries" Guid="*">
+        <RegistryKey Root="HKLM" Key="Software\SSoTme\CLI">
+          <RegistryValue Type="string" Name="InstallPath" Value="[INSTALLFOLDER]" KeyPath="yes" />
+          <RegistryValue Type="string" Name="Version" Value="!(bind.FileVersion.SSoTmeExe)" />
+        </RegistryKey>
+      </Component>
+    </DirectoryRef>
+    
+    <!-- Custom actions for post-install setup -->
+    <CustomAction Id="PostInstallSetup" 
+                  FileKey="SSoTmeExe"
+                  ExeCommand="--post-install"
+                  Execute="deferred"
+                  Return="check"
+                  Impersonate="no" />
+    
+    <!-- Sequence the installation -->
+    <InstallExecuteSequence>
+      <Custom Action="PostInstallSetup" After="InstallFinalize">NOT Installed</Custom>
+    </InstallExecuteSequence>
+  </Product>
+</Wix>

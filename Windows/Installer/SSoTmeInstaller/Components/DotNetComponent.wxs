@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
+     xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+  
+  <!-- Constants for .NET installation -->
+  <?define DotNetVersion = "7.0.410" ?>
+  <?define DotNetBaseVersion = "7.0" ?>
+  <?define DotNetDownloadUrl = "https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/sdk-7.0.410-windows-x64-installer" ?>
+  
+  <Fragment>
+    <!-- .NET SDK detection properties -->
+    <Property Id="DOTNET_INSTALLED" Secure="yes">
+      <RegistrySearch Id="DotNetCoreSDKSearch"
+                     Root="HKLM"
+                     Key="SOFTWARE\dotnet\Setup\InstalledVersions\x64\sdk"
+                     Name="$(var.DotNetVersion)"
+                     Type="raw" />
+    </Property>
+    
+    <Property Id="DOTNET_DOWNLOAD" Value="dotnet-sdk-$(var.DotNetVersion)-win-x64.exe" />
+    <Property Id="DOTNET_INSTALLER_PATH" Value="[TempFolder]$(var.DotNetDownloadUrl)" />
+    
+    <!-- Custom actions for .NET installation -->
+    <SetProperty Id="DownloadDotNet"
+                Value="&quot;[SystemFolder]WindowsPowerShell\v1.0\powershell.exe&quot; -NoProfile -ExecutionPolicy Bypass -Command &quot;[#DownloadScript]&quot;"
+                Before="DownloadDotNet"
+                Sequence="execute">
+      NOT DOTNET_INSTALLED
+    </SetProperty>
+    
+    <CustomAction Id="DownloadDotNet"
+                  BinaryKey="WixCA"
+                  DllEntry="WixQuietExec"
+                  Execute="immediate"
+                  Return="check" />
+    
+    <SetProperty Id="InstallDotNet"
+                Value="&quot;[TempFolder]$(var.DOTNET_DOWNLOAD)&quot; /install /quiet /norestart"
+                Before="InstallDotNet"
+                Sequence="execute">
+      NOT DOTNET_INSTALLED
+    </SetProperty>
+    
+    <CustomAction Id="InstallDotNet"
+                  BinaryKey="WixCA"
+                  DllEntry="WixQuietExec"
+                  Execute="deferred"
+                  Return="check"
+                  Impersonate="no" />
+    
+    <!-- .NET component -->
+    <ComponentGroup Id="DotNetComponents" Directory="INSTALLFOLDER">
+      <Component Id="DotNetDetection" Guid="*">
+        <File Id="DownloadScript" Source="Scripts\DownloadDotNet.ps1" KeyPath="yes" />
+        <Condition>NOT DOTNET_INSTALLED</Condition>
+      </Component>
+    </ComponentGroup>
+    
+    <!-- Installation sequence -->
+    <InstallExecuteSequence>
+      <Custom Action="DownloadDotNet" Before="InstallDotNet">NOT DOTNET_INSTALLED</Custom>
+      <Custom Action="InstallDotNet" Before="InstallFinalize">NOT DOTNET_INSTALLED</Custom>
+    </InstallExecuteSequence>
+  </Fragment>
+</Wix>
