@@ -21,7 +21,6 @@
 
     <Feature Id="ProductFeature" Title="SSoTme CLI" Level="1">
       <ComponentGroupRef Id="CLIComponents" />
-      <ComponentRef Id="ApplicationShortcut" />
       <ComponentRef Id="RegistryEntries" />
       <ComponentRef Id="CopyToHomeComp" />
       <ComponentRef Id="SSoTmeCLI" />
