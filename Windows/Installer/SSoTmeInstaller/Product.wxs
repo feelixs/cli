@@ -42,14 +42,12 @@
     <Condition Message="This application requires .NET Framework 4.7 or higher. Please install the .NET Framework then run this installer again.">
       <![CDATA[Installed OR NETFRAMEWORK45]]>
     </Condition>
-    
-    <!-- Define UI -->
+
     <UIRef Id="WixUI_InstallDir" />
     <UIRef Id="WixUI_ErrorProgressText" />
-    <WixVariable Id="WixUILicenseRtf" Value="Resources\LICENSE" />
+    <WixVariable Id="WixUILicenseRtf" Value="Assets\LICENSE.rtf" />
     <WixVariable Id="WixUIDialogBmp" Value="Assets\Icon.ico" />
-    
-    <!-- Define directory structure -->
+
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="ProgramFilesFolder">
         <Directory Id="INSTALLFOLDER" Name="SSoTme">
@@ -83,8 +81,7 @@
         </RegistryKey>
       </Component>
     </DirectoryRef>
-    
-    <!-- Custom actions for post-install setup -->
+
     <CustomAction Id="PostInstallSetup" 
                   FileKey="SSoTmeExe"
                   ExeCommand="--post-install"
@@ -92,7 +89,9 @@
                   Return="check"
                   Impersonate="no" />
     
-    <!-- Sequence the installation -->
+    <InstallUISequence>
+      <Custom Action="SetDotNetInstallerPath" Before="CostFinalize" />
+    </InstallUISequence>
     <InstallExecuteSequence>
       <Custom Action="PostInstallSetup" After="InstallFiles">NOT Installed</Custom>
     </InstallExecuteSequence>

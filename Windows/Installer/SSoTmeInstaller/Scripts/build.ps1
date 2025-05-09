@@ -17,6 +17,13 @@ $AssetsDir = Join-Path $WixProjectDir "Assets"
 $OutputDir = Join-Path $WixProjectDir "bin\$Configuration"
 $distDir = Join-Path $RootDir "dist"
 
+# clean any previous builds
+Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $distDir
+Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $ResourcesDir  # resources are copied into here from the root dir during build
+Remove-Item -Recurse -Force -ErrorAction SilentlyContinue (Join-Path $RootDir "build")
+Remove-Item -Recurse -Force -ErrorAction SilentlyContinue (Join-Path $WixProjectDir "bin")
+Remove-Item -Recurse -Force -ErrorAction SilentlyContinue (Join-Path $WixProjectDir "obj")
+
 Write-Host "Creating necessary directories..."
 $Directories = @(
     $ResourcesDir,
@@ -32,17 +39,7 @@ foreach ($Dir in $Directories) {
     }
 }
 
-# Copy LICENSE file
-$licenseSrc = Join-Path $RootDir "LICENSE"
-$licenseDest = Join-Path $ResourcesDir "LICENSE"
-if (Test-Path $licenseSrc) {
-    Copy-Item $licenseSrc -Destination $licenseDest -Force
-    Write-Host "Copied LICENSE file to distribution directory."
-} else {
-    Write-Warning "LICENSE file not found at root."
-}
-
-# Copy ssotme.json
+# copy ssotme.json from the root dir into Resources
 $licenseSrc = Join-Path $RootDir "ssotme.json"
 $licenseDest = Join-Path $ResourcesDir "ssotme.json"
 if (Test-Path $licenseSrc) {
@@ -70,10 +67,6 @@ Write-Host "Building cli.py..."
 $ErrorActionPreference = "Stop"
 
 $SetupPath = Join-Path $RootDir "setup.py"
-
-# Clean build and dist directories
-Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "$RootDir\dist"
-Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "$RootDir\build"
 
 # Substitute setuptools with pyinstaller_setuptools
 $originalContent = Get-Content $SetupPath

@@ -10,6 +10,7 @@
     <OutputType>Package</OutputType>
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' ">$(MSBuildExtensionsPath)\WiX Toolset\v3.14\Wix.targets</WixTargetsPath>
     <Name>SSoTmeInstaller</Name>
+    <DefineSolutionProperties>false</DefineSolutionProperties>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <OutputPath>bin\$(Configuration)\</OutputPath>
@@ -38,7 +39,7 @@
     <Folder Include="Assets" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resources\LICENSE" />
+    <Content Include="Assets\LICENSE.rtf" />
     <Content Include="Assets\Icon.ico" />
   </ItemGroup>
   <ItemGroup>

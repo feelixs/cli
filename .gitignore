@@ -26,5 +26,4 @@ ssotme.spec
 # windows installer stuff
 Windows/Installer/SSoTmeInstaller/bin
 Windows/Installer/SSoTmeInstaller/obj
-Windows/Installer/SSoTmeInstaller/Assets
 Windows/Installer/SSoTmeInstaller/Resources

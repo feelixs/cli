@@ -17,8 +17,10 @@
                      Type="raw" />
     </Property>
 
-    <Property Id="DOTNET_INSTALLER_PATH" Value="[[TempFolder]]$(var.DotNetDownloadUrl)" />
-    
+    <CustomAction Id="SetDotNetInstallerPath"
+                  Property="DOTNET_INSTALLER_PATH"
+                  Value="[TempFolder]$(var.DotNetDownloadUrl)" />
+
     <!-- Custom actions for .NET installation -->
     <SetProperty Id="DownloadDotNet"
                 Value="&quot;[SystemFolder]WindowsPowerShell\v1.0\powershell.exe&quot; -NoProfile -ExecutionPolicy Bypass -Command &quot;[#DownloadScript]&quot;"
