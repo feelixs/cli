@@ -42,17 +42,5 @@
               KeyPath="yes" />
       </Component>
     </ComponentGroup>
-    
-    <!-- Post-installation setup -->
-    <CustomAction Id="ConfigureCLI"
-                  FileKey="SSoTmeExe"
-                  ExeCommand="--configure-first-run"
-                  Execute="deferred"
-                  Return="check"
-                  Impersonate="no" />
-    
-    <InstallExecuteSequence>
-      <Custom Action="ConfigureCLI" After="InstallFiles">NOT Installed</Custom>
-    </InstallExecuteSequence>
   </Fragment>
 </Wix>

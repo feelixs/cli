@@ -81,19 +81,9 @@
         </RegistryKey>
       </Component>
     </DirectoryRef>
-
-    <CustomAction Id="PostInstallSetup" 
-                  FileKey="SSoTmeExe"
-                  ExeCommand="--post-install"
-                  Execute="deferred"
-                  Return="check"
-                  Impersonate="no" />
     
     <InstallUISequence>
       <Custom Action="SetDotNetInstallerPath" Before="CostFinalize" />
     </InstallUISequence>
-    <InstallExecuteSequence>
-      <Custom Action="PostInstallSetup" After="InstallFiles">NOT Installed</Custom>
-    </InstallExecuteSequence>
   </Product>
 </Wix>
