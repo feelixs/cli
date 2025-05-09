@@ -30,6 +30,8 @@
       <ComponentGroupRef Id="DotNetComponents" />
       <ComponentRef Id="ApplicationShortcut" />
       <ComponentRef Id="RegistryEntries" />
+      <ComponentRef Id="DotNetDetection" />
+      <ComponentRef Id="CopyToHomeComp" />
       <ComponentRef Id="SSoTmeCLI" />
     </Feature>
     

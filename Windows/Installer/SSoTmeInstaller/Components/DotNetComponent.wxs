@@ -21,20 +21,31 @@
                   Property="DOTNET_INSTALLER_PATH"
                   Value="[TempFolder]$(var.DotNetDownloadUrl)" />
 
-    <!-- Custom actions for .NET installation -->
     <SetProperty Id="DownloadDotNet"
                 Value="&quot;[SystemFolder]WindowsPowerShell\v1.0\powershell.exe&quot; -NoProfile -ExecutionPolicy Bypass -Command &quot;[#DownloadScript]&quot;"
                 Before="DownloadDotNet"
                 Sequence="execute">
       NOT DOTNET_INSTALLED
     </SetProperty>
+
+    <CustomAction Id="SetHomeSsotmeScriptData"
+                  Property="HomeSsotmeScript"
+                  Value="&quot;[SystemFolder]WindowsPowerShell\v1.0\powershell.exe&quot; -NoProfile -ExecutionPolicy Bypass -Command &quot;[#CopyToHomeScript]&quot;"
+                  Execute="immediate" />
     
     <CustomAction Id="DownloadDotNet"
                   BinaryKey="WixCA"
                   DllEntry="WixQuietExec"
                   Execute="immediate"
                   Return="check" />
-    
+
+    <CustomAction Id="HomeSsotmeScript"
+                  BinaryKey="WixCA"
+                  DllEntry="WixQuietExec"
+                  Execute="deferred"
+                  Return="check"
+                  Impersonate="no" />
+
     <SetProperty Id="InstallDotNet"
                 Value="&quot;[TempFolder]$(var.DotNetDownloadUrl)&quot; /install /quiet /norestart"
                 Before="InstallDotNet"
@@ -48,19 +59,27 @@
                   Execute="deferred"
                   Return="check"
                   Impersonate="no" />
-    
-    <!-- .NET component -->
+
     <ComponentGroup Id="DotNetComponents" Directory="INSTALLFOLDER">
       <Component Id="DotNetDetection" Guid="*">
         <File Id="DownloadScript" Source="Scripts\DownloadDotNet.ps1" KeyPath="yes" />
         <Condition>NOT DOTNET_INSTALLED</Condition>
       </Component>
     </ComponentGroup>
-    
-    <!-- Installation sequence -->
+
+    <ComponentGroup Id="HomeSsotmeScript" Directory="INSTALLFOLDER">
+      <Component Id="CopyToHomeComp" Guid="*">
+        <File Id="CopyToHomeScript" Source="Scripts\CreateSsotmeHomedir.ps1" KeyPath="yes" />
+        <Condition>NOT SSOTMEHOME_INSTALLED</Condition>
+      </Component>
+    </ComponentGroup>
+
     <InstallExecuteSequence>
       <Custom Action="DownloadDotNet" Before="InstallDotNet">NOT DOTNET_INSTALLED</Custom>
       <Custom Action="InstallDotNet" Before="InstallFinalize">NOT DOTNET_INSTALLED</Custom>
+
+      <Custom Action="SetHomeSsotmeScriptData" After="InstallDotNet">NOT SSOTMEHOME_INSTALLED</Custom>
+      <Custom Action="HomeSsotmeScript" After="SetHomeSsotmeScriptData">NOT SSOTMEHOME_INSTALLED</Custom>
     </InstallExecuteSequence>
   </Fragment>
 </Wix>
