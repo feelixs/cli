@@ -30,7 +30,7 @@
 
     <CustomAction Id="SetHomeSsotmeScriptData"
                   Property="HomeSsotmeScript"
-                  Value="&quot;[SystemFolder]WindowsPowerShell\v1.0\powershell.exe&quot; -NoProfile -ExecutionPolicy Bypass -Command &quot;[#CopyToHomeScript]&quot;"
+                  Value="&quot;[SystemFolder]WindowsPowerShell\v1.0\powershell.exe&quot; -NoProfile -ExecutionPolicy Bypass -File &quot;[INSTALLFOLDER]CreateSsotmeHomedir.ps1&quot; &quot;[INSTALLFOLDER]&quot;"
                   Execute="immediate" />
     
     <CustomAction Id="DownloadDotNet"

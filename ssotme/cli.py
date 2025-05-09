@@ -50,7 +50,8 @@ def get_dotnet_info() -> (str, str):
     except Exception:
         raise Exception(f"FATAL: Could not find dotnet_info.json\n"
               f"If it's been moved or modified, please make sure it's in the correct path\n"
-              f"Or if it was deleted, re-install ssotme from https://github.com/ssotme/cli or using pip\n\n"
+              f"Or if it was deleted, you can re-run the installer, re-install ssotme from https://github.com/ssotme/cli, "
+              f"or run pip install git+https://github.com/ssotme/cli\n\n"
               f"Error reading dotnet_info.json at {dotnet_info_path}\n")
 
 
