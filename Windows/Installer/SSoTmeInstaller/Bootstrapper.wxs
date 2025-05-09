@@ -33,7 +33,7 @@
           ProductName=".NET SDK 7.0.410"
           Size="229368400"
           Version="7.0.410.0"
-          Hash="213041DA41E854DEFBC5089C882129698B7CDCA48B7AD9F000B9A819EEDB4547" />
+          Hash="90BE446AD6E42B57A25E0CD2F7572764C4E161EB" />
       </ExePackage>
 
       <MsiPackage
