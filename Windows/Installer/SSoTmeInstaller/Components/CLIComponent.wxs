@@ -70,9 +70,13 @@
                 Property="CreateSsotmeDir"
                 Value='cmd.exe /c mkdir "[USERPROFILE]\.ssotme"' />
 
+    <CustomAction Id="SetCopyDotnetConfig"
+                Property="CopyDotnetConfig"
+                Value='cmd.exe /c copy "[#DefaultConfig]" "[USERPROFILE]\.ssotme\dotnet_info.json"' />
+                
     <CustomAction Id="CopyDotnetConfig"
-                FileKey="DefaultConfig"
-                ExeCommand='cmd.exe /c copy "[#DefaultConfig]" "[USERPROFILE]\.ssotme\dotnet_info.json"'
+                BinaryKey="WixCA"
+                DllEntry="WixQuietExec"
                 Execute="deferred"
                 Impersonate="yes"
                 Return="check" />
@@ -80,6 +84,7 @@
     <InstallExecuteSequence>
       <Custom Action="SetCreateSsotmeDir" Before="CreateSsotmeDir">NOT Installed</Custom>
       <Custom Action="CreateSsotmeDir" After="InstallFiles">NOT Installed</Custom>
+      <Custom Action="SetCopyDotnetConfig" Before="CopyDotnetConfig">NOT Installed</Custom>
       <Custom Action="CopyDotnetConfig" After="CreateSsotmeDir">NOT Installed</Custom>
     </InstallExecuteSequence>
   </Fragment>
