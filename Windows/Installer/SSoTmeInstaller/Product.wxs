@@ -36,7 +36,10 @@
     <!-- Define properties -->
     <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
     <Property Id="DOTNETINSTALLED" Value="0" />
-    
+    <Property Id="USER_FOLDER" >
+        <DirectorySearch Id="userProfileSearch" Depth="0" Path="[%USERPROFILE]" />
+    </Property>
+
     <!-- Check for .NET installation -->
     <PropertyRef Id="NETFRAMEWORK45" />
     <Condition Message="This application requires .NET Framework 4.7 or higher. Please install the .NET Framework then run this installer again.">

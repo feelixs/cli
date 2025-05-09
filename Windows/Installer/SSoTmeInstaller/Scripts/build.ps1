@@ -16,6 +16,7 @@ $ResourcesDir = Join-Path $WixProjectDir "Resources"
 $AssetsDir = Join-Path $WixProjectDir "Assets"
 $OutputDir = Join-Path $WixProjectDir "bin\$Configuration"
 $distDir = Join-Path $RootDir "dist"
+$ssotmeDir = Join-Path $HOME ".ssotme"
 
 # clean any previous builds
 Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $distDir
@@ -39,13 +40,13 @@ foreach ($Dir in $Directories) {
     }
 }
 
-# copy ssotme.json from the root dir into Resources
-$licenseSrc = Join-Path $RootDir "ssotme.json"
-$licenseDest = Join-Path $ResourcesDir "ssotme.json"
+# copy LISENCE from the root dir into Resources/ (this will be included in the app, while Assets/LICENSE.rtf is only showed at install time)
+$licenseSrc = Join-Path $RootDir "LICENSE"
+$licenseDest = Join-Path $ResourcesDir "LICENSE.txt"
 if (Test-Path $licenseSrc) {
     Copy-Item $licenseSrc -Destination $licenseDest -Force
 } else {
-    Write-Warning "ssotme.json file not found at root."
+    Write-Warning "LICENSE file not found at root."
 }
 
 Write-Host "Building .NET CLI project..."
@@ -97,6 +98,9 @@ try {
     # Create alias executables (copy the main executable)
     Copy-Item -Path $mainExe -Destination "$OutputDir/aic.exe" -Force
     Copy-Item -Path $mainExe -Destination "$OutputDir/aicapture.exe" -Force
+
+    # copy the config json from the home dir - generated during pyinstaller build (setup.py)
+    Copy-Item -Path (Join-Path $ssotmeDir "dotnet_info.json") -Destination (Join-Path $ResourcesDir "dotnet_info.json") -Force
 
     Write-Host "Created alias executables in: $OutputDir"
 } finally {

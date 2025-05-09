@@ -4,17 +4,11 @@
     <!-- Main CLI components -->
     <ComponentGroup Id="CLIComponents" Directory="BinFolder">
       <Component Id="SSoTmeCLI" Guid="*">
-        <File Id="SSoTmeExe"
-              Name="ssotme.exe"
-              Source="bin\Release\ssotme.exe"
-              KeyPath="yes">
-          <!-- Create file associations -->
-          <Shortcut Id="SSoTmeShortcut"
-              Directory="ApplicationProgramsFolder"
-              Name="SSoTme CLI"
-              WorkingDirectory="BinFolder"
-              Advertise="yes" />
-        </File>
+          <File Id="SSoTmeExe"
+                Name="ssotme.exe"
+                Source="bin\Release\ssotme.exe"
+                KeyPath="yes">
+          </File>
 
         <!-- Add to PATH -->
         <Environment Id="PATH"
@@ -42,21 +36,51 @@
           </File>
       </Component>
 
-      <!-- Supporting files -->
-      <Component Id="CLIDocumentation" Guid="*">
+      <Component Id="CLIReadme" Guid="*">
         <File Id="ReadmeFile" 
-              Name="README.md" 
-              Source="README.md"
-              KeyPath="yes" />
+                Name="README.md"
+                Source="Assets\README.md"
+                KeyPath="yes" />
       </Component>
-      
-      <!-- Configuration files -->
-      <Component Id="CLIConfigFiles" Guid="*">
-        <File Id="DefaultConfig" 
-              Name="ssotme.json" 
-              Source="Resources\ssotme.json"
-              KeyPath="yes" />
+
+      <Component Id="CLILicense" Guid="*">
+        <File Id="LicenseTxtFile"
+                Name="LICENSE.txt"
+                Source="Resources\LICENSE.txt"
+                KeyPath="yes" />
+      </Component>
+
+      <Component Id="CLIConfig" Guid="*">
+        <File Id="DefaultConfig"
+                Name="dotnet_info.json"
+                Source="Resources\dotnet_info.json"
+                KeyPath="yes" />
       </Component>
     </ComponentGroup>
+
+    <!-- create %HOME%.ssotme directory and copy dotnet_info.json there -->
+    <CustomAction Id="CreateSsotmeDir"
+                BinaryKey="WixCA"
+                DllEntry="WixQuietExec"
+                Execute="deferred"
+                Impersonate="yes"
+                Return="check" />
+
+    <CustomAction Id="SetCreateSsotmeDir"
+                Property="CreateSsotmeDir"
+                Value='cmd.exe /c mkdir "[USERPROFILE]\.ssotme"' />
+
+    <CustomAction Id="CopyDotnetConfig"
+                FileKey="DefaultConfig"
+                ExeCommand='cmd.exe /c copy "[#DefaultConfig]" "[USERPROFILE]\.ssotme\dotnet_info.json"'
+                Execute="deferred"
+                Impersonate="yes"
+                Return="check" />
+
+    <InstallExecuteSequence>
+      <Custom Action="SetCreateSsotmeDir" Before="CreateSsotmeDir">NOT Installed</Custom>
+      <Custom Action="CreateSsotmeDir" After="InstallFiles">NOT Installed</Custom>
+      <Custom Action="CopyDotnetConfig" After="CreateSsotmeDir">NOT Installed</Custom>
+    </InstallExecuteSequence>
   </Fragment>
 </Wix>
