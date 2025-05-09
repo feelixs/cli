@@ -37,7 +37,6 @@
       <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
 
       <!-- Define strings for the UI -->
-      <UIText Id="DotNetRequiredText">SSoTme CLI requires .NET SDK version 7.0 or higher. The installer will automatically download and install it if needed.</UIText>
       <UIText Id="InstallationCompleteText">SSoTme CLI has been successfully installed. You can access it from the command line by typing 'ssotme'.</UIText>
     </UI>
   </Fragment>

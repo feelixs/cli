@@ -10,9 +10,7 @@
         <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" TabSkip="no" Text="WixUI_Bmp_Banner" />
         <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="370" Height="0" />
         <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
-        
-        <Control Id="DotNetText" Type="Text" X="20" Y="60" Width="330" Height="80" NoPrefix="yes" Text="The SSoTme CLI requires .NET SDK version 7.0 or higher. If not already installed, the setup will download and install it automatically.&#xA;&#xA;This will require an internet connection and approximately 150 MB of disk space." />
-        
+
         <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="!(loc.WixUIBack)" />
         <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="!(loc.WixUINext)" />
         <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="!(loc.WixUICancel)">

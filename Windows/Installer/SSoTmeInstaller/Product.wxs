@@ -2,8 +2,7 @@
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
      xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension"
      xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
-  
-  <!-- Define product information -->
+
   <Product Id="*" 
            Name="SSoTme CLI" 
            Language="1033" 
@@ -11,20 +10,15 @@
            Manufacturer="SSoTme" 
            UpgradeCode="EB59dEFF-B979-464F-B36A-57F272E872A1">
 
-    <!-- Define package information -->
     <Package InstallerVersion="200" 
              Compressed="yes" 
              InstallScope="perMachine" 
              Description="SSoTme Command Line Interface"
              Comments="Installs the SSoTme CLI tool" />
-    
-    <!-- Enable compression -->
+
     <MediaTemplate EmbedCab="yes" />
-    
-    <!-- Define upgrade behavior -->
     <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
-    
-    <!-- Define features -->
+
     <Feature Id="ProductFeature" Title="SSoTme CLI" Level="1">
       <ComponentGroupRef Id="CLIComponents" />
       <ComponentRef Id="ApplicationShortcut" />
@@ -32,19 +26,12 @@
       <ComponentRef Id="CopyToHomeComp" />
       <ComponentRef Id="SSoTmeCLI" />
     </Feature>
-    
-    <!-- Define properties -->
+
     <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
     <Property Id="DOTNETINSTALLED" Value="0" />
     <Property Id="USER_FOLDER" >
         <DirectorySearch Id="userProfileSearch" Depth="0" Path="[%USERPROFILE]" />
     </Property>
-
-    <!-- Check for .NET installation -->
-    <PropertyRef Id="NETFRAMEWORK45" />
-    <Condition Message="This application requires .NET Framework 4.7 or higher. Please install the .NET Framework then run this installer again.">
-      <![CDATA[Installed OR NETFRAMEWORK45]]>
-    </Condition>
 
     <UIRef Id="WixUI_InstallDir" />
     <UIRef Id="WixUI_ErrorProgressText" />
@@ -61,21 +48,7 @@
         <Directory Id="ApplicationProgramsFolder" Name="SSoTme" />
       </Directory>
     </Directory>
-    
-    <!-- Define shortcuts -->
-    <DirectoryRef Id="ApplicationProgramsFolder">
-      <Component Id="ApplicationShortcut" Guid="*">
-        <Shortcut Id="ApplicationStartMenuShortcut" 
-                  Name="SSoTme CLI" 
-                  Description="SSoTme Command Line Interface"
-                  Target="[BinFolder]ssotme.exe"
-                  WorkingDirectory="BinFolder" />
-        <RemoveFolder Id="CleanUpShortcut" Directory="ApplicationProgramsFolder" On="uninstall" />
-        <RegistryValue Root="HKCU" Key="Software\SSoTme\CLI" Name="installed" Type="integer" Value="1" KeyPath="yes" />
-      </Component>
-    </DirectoryRef>
-    
-    <!-- Define registry entries -->
+
     <DirectoryRef Id="TARGETDIR">
       <Component Id="RegistryEntries" Guid="*">
         <RegistryKey Root="HKLM" Key="Software\SSoTme\CLI">
