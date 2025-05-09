@@ -4,9 +4,10 @@
   
   <!-- Constants for .NET installation -->
   <?define DotNetBaseVersion = "7.0" ?>
+  <?define DotNetVersion = "7.0.410" ?>
   <?define Architecture = "x64" ?>
-  <?define DotNetDownloadUrl = "https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/sdk-$(var.DotNetVersion)-windows-$(var.Architecture)-installer" ?>
-  
+  <?define DotNetInstallerName = "dotnet-sdk-$(var.DotNetVersion)-win-$(var.Architecture).exe" ?>
+
   <Fragment>
     <!-- .NET SDK detection properties -->
     <Property Id="DOTNET_INSTALLED" Secure="yes">
@@ -17,43 +18,40 @@
                      Type="raw" />
     </Property>
 
-    <CustomAction Id="SetDotNetInstallerPath"
-                  Property="DOTNET_INSTALLER_PATH"
-                  Value="[TempFolder]$(var.DotNetDownloadUrl)" />
-
     <SetProperty Id="DownloadDotNet"
-                Value="&quot;[SystemFolder]WindowsPowerShell\v1.0\powershell.exe&quot; -NoProfile -ExecutionPolicy Bypass -Command &quot;[#DownloadScript]&quot;"
+                Value="&quot;[SystemFolder]WindowsPowerShell\v1.0\powershell.exe&quot; -NoProfile -ExecutionPolicy Bypass -File &quot;[INSTALLFOLDER]DownloadDotNet.ps1&quot;"
                 Before="DownloadDotNet"
                 Sequence="execute">
       NOT DOTNET_INSTALLED
     </SetProperty>
 
-    <CustomAction Id="SetHomeSsotmeScriptData"
-                  Property="HomeSsotmeScript"
-                  Value="&quot;[SystemFolder]WindowsPowerShell\v1.0\powershell.exe&quot; -NoProfile -ExecutionPolicy Bypass -File &quot;[INSTALLFOLDER]CreateSsotmeHomedir.ps1&quot; &quot;[INSTALLFOLDER]&quot;"
-                  Execute="immediate" />
-    
     <CustomAction Id="DownloadDotNet"
                   BinaryKey="WixCA"
                   DllEntry="WixQuietExec"
                   Execute="immediate"
                   Return="check" />
 
-    <CustomAction Id="HomeSsotmeScript"
+    <!-- Set the installer path after download -->
+    <SetProperty Id="InstallDotNet"
+                Value="&quot;[TempFolder]$(var.DotNetInstallerName)&quot; /install /quiet /norestart"
+                Before="InstallDotNet"
+                Sequence="execute">
+      NOT DOTNET_INSTALLED
+    </SetProperty>
+
+    <CustomAction Id="InstallDotNet"
                   BinaryKey="WixCA"
                   DllEntry="WixQuietExec"
                   Execute="deferred"
                   Return="check"
                   Impersonate="no" />
 
-    <SetProperty Id="InstallDotNet"
-                Value="&quot;[TempFolder]$(var.DotNetDownloadUrl)&quot; /install /quiet /norestart"
-                Before="InstallDotNet"
-                Sequence="execute">
-      NOT DOTNET_INSTALLED
-    </SetProperty>
-    
-    <CustomAction Id="InstallDotNet"
+    <CustomAction Id="SetHomeSsotmeScriptData"
+                  Property="HomeSsotmeScript"
+                  Value="&quot;[SystemFolder]WindowsPowerShell\v1.0\powershell.exe&quot; -NoProfile -ExecutionPolicy Bypass -File &quot;[INSTALLFOLDER]CreateSsotmeHomedir.ps1&quot; &quot;[INSTALLFOLDER]&quot;"
+                  Execute="immediate" />
+
+    <CustomAction Id="HomeSsotmeScript"
                   BinaryKey="WixCA"
                   DllEntry="WixQuietExec"
                   Execute="deferred"
