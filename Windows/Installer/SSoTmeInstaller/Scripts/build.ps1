@@ -14,7 +14,8 @@ $SourceDir = Join-Path $RootDir "Windows\CLI"
 $WixProjectDir = Join-Path $InstallerDir "SSoTmeInstaller"
 $ResourcesDir = Join-Path $WixProjectDir "Resources"
 $AssetsDir = Join-Path $WixProjectDir "Assets"
-$OutputDir = Join-Path $WixProjectDir "bin\$Configuration"
+$binFolder = Join-Path $WixProjectDir "bin"
+$OutputDir = Join-Path $binFolder "cli-installer\$Configuration"
 $distDir = Join-Path $RootDir "dist"
 $ssotmeDir = Join-Path $HOME ".ssotme"
 
@@ -22,7 +23,7 @@ $ssotmeDir = Join-Path $HOME ".ssotme"
 Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $distDir
 Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $ResourcesDir  # resources are copied into here from the root dir during build
 Remove-Item -Recurse -Force -ErrorAction SilentlyContinue (Join-Path $RootDir "build")
-Remove-Item -Recurse -Force -ErrorAction SilentlyContinue (Join-Path $WixProjectDir "bin")
+Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $binFolder
 Remove-Item -Recurse -Force -ErrorAction SilentlyContinue (Join-Path $WixProjectDir "obj")
 
 Write-Host "Creating necessary directories..."
@@ -126,9 +127,18 @@ try {
     Push-Location $WixProjectDir
     
     # Build the WiX project
-    Write-Host "msbuild /p:Configuration=$Configuration /p:Platform=$Platform"
-    & msbuild /p:Configuration=$Configuration /p:Platform=$Platform
-    
+    Write-Host "msbuild .\SSoTmeInstaller.wixproj /p:Configuration=$Configuration /p:Platform=$Platform"
+    & msbuild .\SSoTmeInstaller.wixproj /p:Configuration=$Configuration /p:Platform=$Platform
+
+    $MsiPath = Join-Path $OutputDir "CLI-Installer.msi"
+    if (-Not (Test-Path $MsiPath)) {
+        Write-Host "ERROR: CLI-Installer.msi not found at expected location: $MsiPath"
+        exit 1
+    }
+
+    Write-Host "msbuild .\SSoTmeBootstrapper.wixproj /p:Configuration=$Configuration /p:Platform=$Platform"
+    & msbuild .\SSoTmeBootstrapper.wixproj /p:Configuration=$Configuration /p:Platform=$Platform
+
     if ($LASTEXITCODE -ne 0) {
         Write-Error "Failed to build WiX project"
         return
@@ -137,12 +147,12 @@ try {
     Write-Host "WiX installer built successfully"
     
     # Output the path to the MSI
-    $MsiPath = Join-Path $OutputDir "SSoTmeInstaller.msi"
+    $FinalExePath = Join-Path (Join-Path $binFolder "bootstrapper") "SSoTmeInstaller.exe"
     if (Test-Path $MsiPath) {
         Write-Host "Installer created at: $MsiPath"
     }
     else {
-        Write-Error "Installer not created. Check the WiX build logs for errors."
+        Write-Error "Installer not created. Check the WiX build logs for errors. Checked path: $FinalExePath"
     }
 }
 catch {

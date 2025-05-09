@@ -6,28 +6,28 @@
     <ProductVersion>3.14</ProductVersion>
     <ProjectGuid>{6D387D42-FDC3-4AB2-9F3E-2A9678045B34}</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
-    <OutputName>SSoTmeInstaller</OutputName>
+    <OutputName>CLI-Installer</OutputName>
     <OutputType>Package</OutputType>
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' ">$(MSBuildExtensionsPath)\WiX Toolset\v3.14\Wix.targets</WixTargetsPath>
     <Name>SSoTmeInstaller</Name>
     <DefineSolutionProperties>false</DefineSolutionProperties>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <OutputPath>bin\$(Configuration)\</OutputPath>
-    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <OutputPath>bin\cli-installer\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\cli-installer\$(Configuration)\</IntermediateOutputPath>
     <DefineConstants>Debug</DefineConstants>
     <SuppressValidation>False</SuppressValidation>
     <SuppressIces>ICE20;ICE38;ICE64;ICE91</SuppressIces>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <OutputPath>bin\$(Configuration)\</OutputPath>
-    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <OutputPath>bin\cli-installer\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\cli-installer\$(Configuration)\</IntermediateOutputPath>
     <SuppressValidation>False</SuppressValidation>
     <SuppressIces>ICE20;ICE38;ICE64;ICE91</SuppressIces>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Product.wxs" />
-    <Compile Include="Components\DotNetComponent.wxs" />
+    <Compile Include="Components\HomeDirComponent.wxs" />
     <Compile Include="Components\CLIComponent.wxs" />
     <Compile Include="UI\CustomDialog.wxs" />
     <Compile Include="UI\InstallUI.wxs" />

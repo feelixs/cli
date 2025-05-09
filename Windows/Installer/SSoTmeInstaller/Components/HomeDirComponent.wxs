@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+  <Fragment>
+    <CustomAction Id="SetHomeSsotmeScriptData"
+                  Property="HomeSsotmeScript"
+                  Value="&quot;[SystemFolder]WindowsPowerShell\v1.0\powershell.exe&quot; -NoProfile -ExecutionPolicy Bypass -File &quot;[INSTALLFOLDER]CreateSsotmeHomedir.ps1&quot; &quot;[INSTALLFOLDER]&quot;"
+                  Execute="immediate" />
+
+    <CustomAction Id="HomeSsotmeScript"
+                  BinaryKey="WixCA"
+                  DllEntry="WixQuietExec"
+                  Execute="deferred"
+                  Return="check"
+                  Impersonate="no" />
+
+    <ComponentGroup Id="HomeSsotmeScript" Directory="INSTALLFOLDER">
+      <Component Id="CopyToHomeComp" Guid="*">
+        <File Id="CopyToHomeScript" Source="Scripts\CreateSsotmeHomedir.ps1" KeyPath="yes" />
+        <Condition>NOT SSOTMEHOME_INSTALLED</Condition>
+      </Component>
+    </ComponentGroup>
+
+    <InstallExecuteSequence>
+      <Custom Action="SetHomeSsotmeScriptData" Before="InstallFinalize">NOT SSOTMEHOME_INSTALLED</Custom>
+      <Custom Action="HomeSsotmeScript" After="SetHomeSsotmeScriptData">NOT SSOTMEHOME_INSTALLED</Custom>
+    </InstallExecuteSequence>
+  </Fragment>
+</Wix>

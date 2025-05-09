@@ -27,10 +27,8 @@
     <!-- Define features -->
     <Feature Id="ProductFeature" Title="SSoTme CLI" Level="1">
       <ComponentGroupRef Id="CLIComponents" />
-      <ComponentGroupRef Id="DotNetComponents" />
       <ComponentRef Id="ApplicationShortcut" />
       <ComponentRef Id="RegistryEntries" />
-      <ComponentRef Id="DotNetDetection" />
       <ComponentRef Id="CopyToHomeComp" />
       <ComponentRef Id="SSoTmeCLI" />
     </Feature>
