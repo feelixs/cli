@@ -86,9 +86,5 @@
         </RegistryKey>
       </Component>
     </DirectoryRef>
-    
-    <InstallUISequence>
-      <Custom Action="SetDotNetInstallerPath" Before="CostFinalize" />
-    </InstallUISequence>
   </Product>
 </Wix>
