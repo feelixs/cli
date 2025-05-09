@@ -26,6 +26,22 @@
                      System="yes" />
       </Component>
 
+      <Component Id="AicCLI" Guid="*">
+          <File Id="AicExe"
+                Name="aic.exe"
+                Source="bin\Release\aic.exe"
+                KeyPath="yes">
+          </File>
+      </Component>
+
+      <Component Id="AiCaptureCLI" Guid="*">
+          <File Id="AiCaptureExe"
+                Name="aicapture.exe"
+                Source="bin\Release\aicapture.exe"
+                KeyPath="yes">
+          </File>
+      </Component>
+
       <!-- Supporting files -->
       <Component Id="CLIDocumentation" Guid="*">
         <File Id="ReadmeFile" 

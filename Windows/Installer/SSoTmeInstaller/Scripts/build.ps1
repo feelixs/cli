@@ -77,7 +77,7 @@ Write-Host "Modified setup.py to use pyinstaller_setuptools"
 # Run PyInstaller build via setup.py
 Push-Location $ProjectDir
 try {
-    python .\setup.py pyinstaller -- -n ssotme --console --onefile --add-data "ssotme:ssotme" --hidden-import json
+    python .\setup.py pyinstaller -- -n ssotme --console --onefile --add-data "ssotme:ssotme" --hidden-import json --icon (Join-Path $AssetsDir "Icon.ico")
 } finally {
     Pop-Location
 }
