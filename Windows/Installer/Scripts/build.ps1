@@ -7,7 +7,7 @@
 
 param (
     [string]$Configuration = "Release",
-    [string]$Platform = "x64"
+    [string]$Platform = "x86"
 )
 
 $ErrorActionPreference = "Stop"
