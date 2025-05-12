@@ -23,7 +23,6 @@
       <ComponentGroupRef Id="CLIComponents" />
       <ComponentRef Id="RegistryEntries" />
       <ComponentRef Id="SSoTmeCLI" />
-      <ComponentGroupRef Id="HomeSsotmeScriptComponents" />
     </Feature>
 
     <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
