@@ -21,7 +21,7 @@
 
     <Feature Id="ProductFeature" Title="SSoTme CLI" Level="1">
       <ComponentGroupRef Id="CLIComponents" />
-      <ComponentGroupRef Id="SSoTmeHomeDir" />
+      <ComponentGroupRef Id="HomeSsotmeScript" />
       <ComponentRef Id="RegistryEntries" />
       <ComponentRef Id="SSoTmeCLI" />
     </Feature>
