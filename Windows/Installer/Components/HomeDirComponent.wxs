@@ -4,10 +4,20 @@
     <!-- Embed the script as a binary resource -->
     <Binary Id="CreateSsotmeHomedirPs1" SourceFile="Scripts\CreateSsotmeHomedir.ps1" />
 
-    <!-- CA to extract script to temp location and run it -->
+    <!-- Instead of trying to use Binary directly (which is problematic in WiX v3),
+         copy the script to a temporary file as part of installation -->
+    <DirectoryRef Id="TARGETDIR">
+      <Directory Id="TempFolder">
+        <Component Id="TempScriptComponent" Guid="*">
+          <File Id="TempScriptFile" Source="Scripts\CreateSsotmeHomedir.ps1" Temporary="yes" />
+        </Component>
+      </Directory>
+    </DirectoryRef>
+
+    <!-- Reference the temp file directly, which works with [#FileId] syntax -->
     <CustomAction Id="SetHomeSsotmeScriptData"
                   Property="HomeSsotmeScript"
-                  Value="&quot;[SystemFolder]WindowsPowerShell\v1.0\powershell.exe&quot; -NoProfile -ExecutionPolicy Bypass -Command &quot;$temp = [IO.Path]::GetTempPath() + 'CreateSsotmeHomedir.ps1'; [IO.File]::WriteAllBytes($temp, [System.Convert]::FromBase64String('[#CreateSsotmeHomedirPs1]')); &amp; powershell.exe -NoProfile -ExecutionPolicy Bypass -File $temp '[INSTALLFOLDER]'; Remove-Item -Path $temp -Force&quot;"
+                  Value="&quot;[SystemFolder]WindowsPowerShell\v1.0\powershell.exe&quot; -NoProfile -ExecutionPolicy Bypass -File &quot;[#TempScriptFile]&quot; &quot;[INSTALLFOLDER]&quot;"
                   Execute="immediate" />
 
     <CustomAction Id="HomeSsotmeScript"
@@ -16,6 +26,11 @@
                   Execute="deferred"
                   Return="check"
                   Impersonate="no" />
+
+    <!-- ComponentGroup to include our temp component -->
+    <ComponentGroup Id="HomeSsotmeScriptComponents">
+      <ComponentRef Id="TempScriptComponent" />
+    </ComponentGroup>
 
     <InstallExecuteSequence>
       <Custom Action="SetHomeSsotmeScriptData" Before="InstallFinalize">NOT SSOTMEHOME_INSTALLED</Custom>
