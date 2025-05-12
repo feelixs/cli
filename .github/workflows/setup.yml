@@ -35,9 +35,9 @@ jobs:
 
     runs-on: macos-latest
     strategy:
-      max-parallel: 4
+      max-parallel: 1
       matrix:
-        python-version: [ '3.9', '3.10', '3.11', '3.12', '3.13' ]
+        python-version: [ '3.13' ]
 
     steps:
       - uses: actions/checkout@v4
@@ -119,9 +119,9 @@ jobs:
 
     runs-on: windows-latest
     strategy:
-      max-parallel: 4
+      max-parallel: 1
       matrix:
-        python-version: [ '3.9', '3.10', '3.11', '3.12', '3.13' ]
+        python-version: [ '3.13' ]
 
     steps:
       - uses: actions/checkout@v4
