@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -58,7 +58,7 @@
   </ItemGroup>
   <PropertyGroup>
     <WixTargetsPath>C:\Program Files (x86)\MSBuild\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
-    <SSoTmeVersion>24.08.23</SSoTmeVersion>
+    <SSoTmeVersion>224.8.23</SSoTmeVersion>
 
     <DefineConstants>SSoTmeVersion=$(SSoTmeVersion)</DefineConstants>
   </PropertyGroup>
@@ -68,3 +68,5 @@
        <Error Text="The WiX Toolset v3.11 (or newer) build tools must be installed to build this project. To download the WiX Toolset, see http://wixtoolset.org/releases/" />
     </Target>
 </Project>
+
+
