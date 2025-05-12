@@ -1,4 +1,4 @@
-# bin/bash
+#!/bin/bash
 
 rm -rf /Users/michaelfelix/Documents/GitHub/cli/dist
 rm -rf /Users/michaelfelix/Documents/GitHub/cli/build
@@ -14,3 +14,5 @@ python ./setup.py pyinstaller -- -n ssotme --console --onefile --add-data "ssotm
 
 # revert the setup.py change
 sed -i '' 's/pyinstaller_setuptools/setuptools/' /Users/michaelfelix/Documents/GitHub/cli/setup.py
+
+deactivate

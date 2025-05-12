@@ -27,3 +27,4 @@ ssotme.spec
 Windows/Installer/bin
 Windows/Installer/obj
 Windows/Installer/Resources
+Windows/macOS_Installer/Resources
