@@ -1,7 +1,12 @@
 # Build script for SSoTme Windows Installer
+#
+# Generates:
+#           - bin/cli-installer/Release/CLI-Installer.msi -> installs just ssotme
+#           - bin/main/Release/SSoTmeInstaller.exe -> installs .NET & ssotme
+
+
 param (
     [string]$Configuration = "Release",
-    [switch]$SkipPyInstaller = $false,
     [string]$Platform = "x86"
 )
 
@@ -50,6 +55,15 @@ if (Test-Path $licenseSrc) {
     Write-Warning "LICENSE file not found at root."
 }
 
+# copy README into Resources/
+$rdmeSrc = Join-Path $RootDir "README.md"
+$rdmeDest = Join-Path $ResourcesDir "README.md"
+if (Test-Path $rdmeSrc) {
+    Copy-Item $rdmeSrc -Destination $rdmeDest -Force
+} else {
+    Write-Warning "README.md not found at root."
+}
+
 Write-Host "Building .NET CLI project..."
 Push-Location $distDir
 try {
@@ -92,23 +106,19 @@ Write-Host "Build completed."
 
 Push-Location $distDir
 try {
-    # Copy the main executable to the dist folder
-    $mainExe = "ssotme.exe"
-    Copy-Item -Path $mainExe -Destination "$OutputDir/" -Force
+    # copy the files generated during pyinstaller build of setup.py
+    # copy the ssotme.exe into ssotme, aic, aicapture
+    Copy-Item -Path "ssotme.exe" -Destination "$ResourcesDir/ssotme.exe" -Force
+    Copy-Item -Path "ssotme.exe" -Destination "$ResourcesDir/aic.exe" -Force
+    Copy-Item -Path "ssotme.exe" -Destination "$ResourcesDir/aicapture.exe" -Force
 
-    # Create alias executables (copy the main executable)
-    Copy-Item -Path $mainExe -Destination "$OutputDir/aic.exe" -Force
-    Copy-Item -Path $mainExe -Destination "$OutputDir/aicapture.exe" -Force
-
-    # copy the config json from the home dir - generated during pyinstaller build (setup.py)
+    # copy the config json from the home dir
     Copy-Item -Path (Join-Path $ssotmeDir "dotnet_info.json") -Destination (Join-Path $ResourcesDir "dotnet_info.json") -Force
 
-    Write-Host "Created alias executables in: $OutputDir"
+    Write-Host "Created alias executables in: $ResourcesDir"
 } finally {
     Pop-Location
 }
-
-Write-Host "Build complete! Executables are in: $OutputDir"
 
 Set-Location $WixProjectDir
 
@@ -147,7 +157,7 @@ try {
     Write-Host "WiX installer built successfully"
     
     # Output the path to the MSI
-    $FinalExePath = Join-Path (Join-Path $binFolder "bootstrapper") "SSoTmeInstaller.exe"
+    $FinalExePath = Join-Path (Join-Path $binFolder "main") "SSoTmeInstaller.exe"
     if (Test-Path $MsiPath) {
         Write-Host "Installer created at: $MsiPath"
     }

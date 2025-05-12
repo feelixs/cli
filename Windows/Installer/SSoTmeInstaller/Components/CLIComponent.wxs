@@ -6,7 +6,7 @@
       <Component Id="SSoTmeCLI" Guid="*">
           <File Id="SSoTmeExe"
                 Name="ssotme.exe"
-                Source="bin\cli-installer\Release\ssotme.exe"
+                Source="Resources\ssotme.exe"
                 KeyPath="yes">
           </File>
 
@@ -23,7 +23,7 @@
       <Component Id="AicCLI" Guid="*">
           <File Id="AicExe"
                 Name="aic.exe"
-                Source="bin\cli-installer\Release\aic.exe"
+                Source="Resources\aic.exe"
                 KeyPath="yes">
           </File>
       </Component>
@@ -31,7 +31,7 @@
       <Component Id="AiCaptureCLI" Guid="*">
           <File Id="AiCaptureExe"
                 Name="aicapture.exe"
-                Source="bin\cli-installer\Release\aicapture.exe"
+                Source="Resources\aicapture.exe"
                 KeyPath="yes">
           </File>
       </Component>
@@ -39,7 +39,7 @@
       <Component Id="CLIReadme" Guid="*">
         <File Id="ReadmeFile" 
                 Name="README.md"
-                Source="Assets\README.md"
+                Source="Resources\README.md"
                 KeyPath="yes" />
       </Component>
 

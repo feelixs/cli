@@ -14,15 +14,15 @@
     </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-      <OutputPath>bin\bootstrapper\$(Configuration)\</OutputPath>
-      <IntermediateOutputPath>obj\bootstrapper\$(Configuration)\</IntermediateOutputPath>
+      <OutputPath>bin\main\$(Configuration)\</OutputPath>
+      <IntermediateOutputPath>obj\main\$(Configuration)\</IntermediateOutputPath>
       <DefineConstants>Debug</DefineConstants>
       <SuppressValidation>False</SuppressValidation>
       <SuppressIces>ICE20;ICE38;ICE64;ICE91</SuppressIces>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-      <OutputPath>bin\bootstrapper\$(Configuration)\</OutputPath>
-      <IntermediateOutputPath>obj\bootstrapper\$(Configuration)\</IntermediateOutputPath>
+      <OutputPath>bin\main\$(Configuration)\</OutputPath>
+      <IntermediateOutputPath>obj\main\$(Configuration)\</IntermediateOutputPath>
       <SuppressValidation>False</SuppressValidation>
       <SuppressIces>ICE20;ICE38;ICE64;ICE91</SuppressIces>
     </PropertyGroup>
