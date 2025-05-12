@@ -24,6 +24,6 @@ dist/
 ssotme.spec
 
 # windows installer stuff
-Windows/Installer/SSoTmeInstaller/bin
-Windows/Installer/SSoTmeInstaller/obj
-Windows/Installer/SSoTmeInstaller/Resources
+Windows/Installer/bin
+Windows/Installer/obj
+Windows/Installer/Resources
