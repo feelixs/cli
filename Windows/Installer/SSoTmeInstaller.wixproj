@@ -2,7 +2,7 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
     <ProductVersion>3.14</ProductVersion>
     <ProjectGuid>{6D387D42-FDC3-4AB2-9F3E-2A9678045B34}</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
@@ -12,14 +12,14 @@
     <Name>SSoTmeInstaller</Name>
     <DefineSolutionProperties>false</DefineSolutionProperties>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
     <OutputPath>bin\cli-installer\$(Configuration)\</OutputPath>
     <IntermediateOutputPath>obj\cli-installer\$(Configuration)\</IntermediateOutputPath>
     <DefineConstants>Debug</DefineConstants>
     <SuppressValidation>False</SuppressValidation>
     <SuppressIces>ICE20;ICE38;ICE64;ICE91</SuppressIces>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
     <OutputPath>bin\cli-installer\$(Configuration)\</OutputPath>
     <IntermediateOutputPath>obj\cli-installer\$(Configuration)\</IntermediateOutputPath>
     <SuppressValidation>False</SuppressValidation>
@@ -57,7 +57,7 @@
     </WixExtension>
   </ItemGroup>
   <PropertyGroup>
-    <WixTargetsPath>C:\Program Files (x86)\MSBuild\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
+    <WixTargetsPath>C:\Program Files (x64)\MSBuild\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
     <SSoTmeVersion>224.8.23</SSoTmeVersion>
 
     <DefineConstants>SSoTmeVersion=$(SSoTmeVersion)</DefineConstants>
