@@ -7,7 +7,7 @@
            Name="SSoTme CLI" 
            Language="1033" 
            Version="$(var.SSoTmeVersion)"
-           Manufacturer="SSoTme" 
+           Manufacturer="EffortlessAPI"
            UpgradeCode="EB59dEFF-B979-464F-B36A-57F272E872A1">
 
     <Package InstallerVersion="200" 

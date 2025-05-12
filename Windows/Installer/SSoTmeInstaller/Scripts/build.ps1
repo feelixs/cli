@@ -122,6 +122,25 @@ try {
 
 Set-Location $WixProjectDir
 
+$packageJsonTxt = Get-Content (Join-Path $RootDir "package.json") -Raw | ConvertFrom-Json
+$ssotmeVersion = $packageJsonTxt.version
+Write-Host "Using version: $ssotmeVersion from package.json"
+
+$projConfig = Join-Path $WixProjectDir "Bootstrapper.wxs"
+$projConfigTxt = Get-Content $projConfig
+$newConfigTxt = $projConfigTxt -replace '(<Bundle\s+Name="[^"]*"\s+Version=")[^"]*(")', "`${1}$ssotmeVersion`${2}"
+
+Set-Content $projConfig $newConfigTxt
+Write-Host "Updated Bootstrapper.wxs with version $ssotmeVersion"
+
+$projConfig = Join-Path $WixProjectDir "SSoTmeInstaller.wixproj"
+$projConfigTxt = Get-Content $projConfig -Raw
+$newConfigTxt = $projConfigTxt -replace '(<SSoTmeVersion>).*?(</SSoTmeVersion>)', "`$1$ssotmeVersion`$2"
+
+Set-Content $projConfig $newConfigTxt -Encoding UTF8
+Write-Host "Updated SSoTmeInstaller.wixproj with version $ssotmeVersion"
+
+
 # Build the WiX project
 Write-Host "Building WiX installer project..."
 try {

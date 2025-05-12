@@ -27,3 +27,13 @@ if (-not (Test-Path $SourceFilePath)) {
 # Copy the file
 Copy-Item -Path $SourceFilePath -Destination $destinationFile -Force
 Write-Host "dotnet_info.json has been copied to $destinationFile"
+
+# Delete the original file
+try {
+    Remove-Item -Path $SourceFilePath -Force
+    Write-Host "Original dotnet_info.json deleted from $SourceFilePath"
+}
+catch {
+    Write-Warning "Failed to delete original file: $_"
+    exit 1
+}

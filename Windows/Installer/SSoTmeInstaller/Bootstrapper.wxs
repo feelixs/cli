@@ -5,9 +5,16 @@
 
   <Bundle Name="SSoTme CLI Installer"
           Version="1.0.0.0"
-          Manufacturer="SSoTme"
+          Manufacturer="EffortlessAPI"
           UpgradeCode="EB59dEFF-B979-464F-B36A-57F272E872A1">
-    <BootstrapperApplicationRef Id="WixStandardBootstrapperApplication.RtfLicense" />
+    <BootstrapperApplicationRef Id="WixStandardBootstrapperApplication.RtfLicense">
+      <bal:WixStandardBootstrapperApplication
+        LicenseFile="Assets\LICENSE.rtf"
+        LogoFile="Assets\Icon.ico"
+        ShowVersion="yes"
+        SuppressOptionsUI="no"
+        ThemeFile="None" />
+    </BootstrapperApplicationRef>
 
     <util:RegistrySearch
       Root="HKLM"
