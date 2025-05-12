@@ -12,14 +12,12 @@ param (
 
 $ErrorActionPreference = "Stop"
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$SSoTmeInstallerDir = Split-Path -Parent $ScriptDir
-$InstallerDir = Split-Path -Parent $SSoTmeInstallerDir
+$InstallerDir = Split-Path -Parent $ScriptDir
 $RootDir = Split-Path -Parent (Split-Path -Parent $InstallerDir)
 $SourceDir = Join-Path $RootDir "Windows\CLI"
-$WixProjectDir = Join-Path $InstallerDir "SSoTmeInstaller"
-$ResourcesDir = Join-Path $WixProjectDir "Resources"
-$AssetsDir = Join-Path $WixProjectDir "Assets"
-$binFolder = Join-Path $WixProjectDir "bin"
+$ResourcesDir = Join-Path $InstallerDir "Resources"
+$AssetsDir = Join-Path $InstallerDir "Assets"
+$binFolder = Join-Path $InstallerDir "bin"
 $OutputDir = Join-Path $binFolder "cli-installer\$Configuration"
 $distDir = Join-Path $RootDir "dist"
 $ssotmeDir = Join-Path $HOME ".ssotme"
@@ -29,7 +27,7 @@ Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $distDir
 Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $ResourcesDir  # resources are copied into here from the root dir during build
 Remove-Item -Recurse -Force -ErrorAction SilentlyContinue (Join-Path $RootDir "build")
 Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $binFolder
-Remove-Item -Recurse -Force -ErrorAction SilentlyContinue (Join-Path $WixProjectDir "obj")
+Remove-Item -Recurse -Force -ErrorAction SilentlyContinue (Join-Path $InstallerDir "obj")
 
 Write-Host "Creating necessary directories..."
 $Directories = @(
@@ -120,20 +118,20 @@ try {
     Pop-Location
 }
 
-Set-Location $WixProjectDir
+Set-Location $InstallerDir
 
 $packageJsonTxt = Get-Content (Join-Path $RootDir "package.json") -Raw | ConvertFrom-Json
 $ssotmeVersion = $packageJsonTxt.version -replace "0", ""  #  Invalid product version '2024.08.23'. Product version must have a major version less than 256, a minor version less than 256
 Write-Host "Using version: $ssotmeVersion from package.json"
 
-$projConfig = Join-Path $WixProjectDir "Bootstrapper.wxs"
+$projConfig = Join-Path $InstallerDir "Bootstrapper.wxs"
 $projConfigTxt = Get-Content $projConfig
 $newConfigTxt = $projConfigTxt -replace '(<Bundle\s+Name="[^"]*"\s+Version=")[^"]*(")', "`${1}$ssotmeVersion`${2}"
 
 Set-Content $projConfig $newConfigTxt
 Write-Host "Updated Bootstrapper.wxs with version $ssotmeVersion"
 
-$projConfig = Join-Path $WixProjectDir "SSoTmeInstaller.wixproj"
+$projConfig = Join-Path $InstallerDir "SSoTmeInstaller.wixproj"
 $projConfigTxt = Get-Content $projConfig -Raw
 $newConfigTxt = $projConfigTxt -replace '<SSoTmeVersion>.*?</SSoTmeVersion>', "`<SSoTmeVersion>$ssotmeVersion`</SSoTmeVersion>"
 
@@ -153,7 +151,7 @@ try {
     }
     
     # Change directory to the WiX project
-    Push-Location $WixProjectDir
+    Push-Location $InstallerDir
     
     # Build the WiX project
     Write-Host "msbuild .\SSoTmeInstaller.wixproj /p:Configuration=$Configuration /p:Platform=$Platform"
