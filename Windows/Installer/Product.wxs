@@ -17,16 +17,18 @@
              Comments="Installs the SSoTme CLI tool" />
 
     <MediaTemplate EmbedCab="yes" />
-    <MajorUpgrade
-      AllowSameVersionUpgrades="yes"
+    <MajorUpgrade 
       DowngradeErrorMessage="A newer version of [ProductName] is already installed."
-      Schedule="afterInstallInitialize" />
+      Schedule="afterInstallInitialize"
+      AllowSameVersionUpgrades="yes"
+      RemoveExistingProducts="yes" />
 
     <Feature Id="ProductFeature" Title="SSoTme CLI" Level="1">
       <ComponentGroupRef Id="CLIComponents" />
       <ComponentRef Id="RegistryEntries" />
       <ComponentRef Id="CopyToHomeComp" />
       <ComponentRef Id="SSoTmeCLI" />
+      <ComponentRef Id="RemoveInstallDirectoryComponent" />
     </Feature>
 
     <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
@@ -57,6 +59,15 @@
           <RegistryValue Type="string" Name="InstallPath" Value="[INSTALLFOLDER]" KeyPath="yes" />
           <RegistryValue Type="string" Name="Version" Value="$(var.SSoTmeVersion)" />
         </RegistryKey>
+      </Component>
+    </DirectoryRef>
+    
+    <DirectoryRef Id="INSTALLFOLDER">
+      <Component Id="RemoveInstallDirectoryComponent" Guid="*">
+        <RemoveFolder Id="RemoveInstallDirectory" On="uninstall" />
+        <RemoveFolder Id="RemoveBinDirectory" Directory="BinFolder" On="uninstall" />
+        <RegistryValue Root="HKLM" Key="Software\SSoTme\CLI\Uninstall" 
+                      Name="InstallFolder" Type="string" Value="1" KeyPath="yes" />
       </Component>
     </DirectoryRef>
   </Product>
