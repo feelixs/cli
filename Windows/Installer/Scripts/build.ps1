@@ -1,7 +1,7 @@
 # Build script for SSoTme Windows Installer
 #
 # Generates:
-#           - bin/cli-installer/Release/CliInstaller.msi -> installs just ssotme
+#           - bin/cli-installer/Release/CLI_Installer.msi -> installs just ssotme
 #           - bin/main/Release/SSoTmeInstaller.exe -> installs .NET & ssotme
 
 
@@ -158,9 +158,9 @@ try {
     Write-Host "msbuild .\SSoTmeInstaller.wixproj /p:Configuration=$Configuration /p:Platform=$Platform"
     & msbuild .\SSoTmeInstaller.wixproj /p:Configuration=$Configuration /p:Platform=$Platform
 
-    $MsiPath = Join-Path $OutputDir "CliInstaller.msi"
+    $MsiPath = Join-Path $OutputDir "CLI_Installer.msi"
     if (-Not (Test-Path $MsiPath)) {
-        Write-Host "ERROR: CliInstaller.msi not found at expected location: $MsiPath"
+        Write-Host "ERROR: CLI_Installer.msi not found at expected location: $MsiPath"
         exit 1
     }
 
