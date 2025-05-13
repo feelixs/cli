@@ -20,8 +20,7 @@
     <MajorUpgrade 
       DowngradeErrorMessage="A newer version of [ProductName] is already installed."
       Schedule="afterInstallInitialize"
-      AllowSameVersionUpgrades="yes"
-      RemoveExistingProducts="yes" />
+      AllowSameVersionUpgrades="yes" />
 
     <Feature Id="ProductFeature" Title="SSoTme CLI" Level="1">
       <ComponentGroupRef Id="CLIComponents" />
