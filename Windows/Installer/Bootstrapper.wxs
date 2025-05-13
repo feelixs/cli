@@ -44,7 +44,7 @@
 
       <MsiPackage
         Id="MainInstaller"
-        SourceFile="bin\cli-installer\Release\CLI-Installer.msi"
+        SourceFile="bin\cli-installer\Release\CliInstaller.msi"
         DisplayInternalUI="yes"
         Vital="yes" />
     </Chain>
