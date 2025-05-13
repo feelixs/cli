@@ -24,7 +24,7 @@ dist/
 ssotme.spec
 
 # windows installer stuff
-Windows/Installer/bin
-Windows/Installer/obj
 Windows/Installer/Resources
 Windows/macOS_Installer/Resources
+Windows/macOS_Installer/*.pkg
+

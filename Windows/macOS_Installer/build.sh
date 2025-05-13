@@ -23,6 +23,7 @@ RESOURCES_DIR="$INSTALLER_DIR/Resources"
 ASSETS_DIR="$INSTALLER_DIR/Assets"
 BUILD_DIR="$INSTALLER_DIR/build"
 DIST_DIR="$ROOT_DIR/dist"
+BIN_DIR="$INSTALLER_DIR/bin"
 SSOTME_DIR="$HOME/.ssotme"
 SSOTME_VERSION=$(grep -o '"version": "[^"]*"' "$ROOT_DIR/package.json" | cut -d'"' -f4)
 
@@ -32,10 +33,11 @@ echo "Using version: $SSOTME_VERSION from package.json"
 # Clean previous builds
 rm -rf "$DIST_DIR"
 rm -rf "$BUILD_DIR"
+rm -rf "$BIN_DIR"
 rm -rf "$ROOT_DIR/build"
 
 echo "Creating necessary directories..."
-mkdir -p "$RESOURCES_DIR" "$BUILD_DIR" "$DIST_DIR" "$ASSETS_DIR"
+mkdir -p "$RESOURCES_DIR" "$BUILD_DIR" "$DIST_DIR" "$ASSETS_DIR" "$BIN_DIR"
 
 # Copy LICENSE and README into Resources
 LICENSE_SRC="$ROOT_DIR/LICENSE"
@@ -69,36 +71,21 @@ else
     echo "$SSOTME_DIR/dotnet_info.json does not exist (pyinstaller should have generated this!)"
 fi
 
+# copy the postinstall script to the build
 mkdir -p "$BUILD_DIR/scripts"
-cat > "$BUILD_DIR/scripts/postinstall" << 'EOF'
-#!/bin/bash
-# Post-installation script
-
-# Create ~/.ssotme directory
-mkdir -p "$HOME/.ssotme"
-
-# Create symbolic links for the CLI executables
-ln -sf "/Applications/SSoTme/ssotme" "/usr/local/bin/ssotme"
-ln -sf "/Applications/SSoTme/aic" "/usr/local/bin/aic"
-ln -sf "/Applications/SSoTme/aicapture" "/usr/local/bin/aicapture"
-
-# Copy config files
-if [ -f "/Applications/SSoTme/dotnet_info.json" ]; then
-    cp "/Applications/SSoTme/dotnet_info.json" "$HOME/.ssotme/"
-    rm "/Applications/SSoTme/dotnet_info.json"
+if [ -f "$SCRIPT_DIR/postinstall.sh" ]; then
+    cp "$SCRIPT_DIR/postinstall.sh" "$BUILD_DIR/scripts/postinstall"
+else
+    echo "FATAL: $SCRIPT_DIR/postinstall.sh does not exist!"
+    exit 1
 fi
-
-exit 0
-EOF
-
 chmod +x "$BUILD_DIR/scripts/postinstall"
 
-# Create package
+# Create package -> this will create the 'component package' inside the build/ folder
+# the build/ folder will be passed into productbuild command later which will re-package everything for distribution
 echo "Building package..."
 mkdir -p "$BUILD_DIR/payload/Applications/SSoTme"
 cp -r "$RESOURCES_DIR"/* "$BUILD_DIR/payload/Applications/SSoTme/"
-
-# Build component package
 pkgbuild --root "$BUILD_DIR/payload" \
     --install-location "/" \
     --scripts "$BUILD_DIR/scripts" \
@@ -113,7 +100,6 @@ else
     echo "No such file: $ASSETS_DIR/distribution.xml"
 fi
 
-# Create required resource files for the installer UI
 # License
 if [ -f "$ASSETS_DIR/LICENSE.rtf" ]; then
     cp "$ASSETS_DIR/LICENSE.rtf" "$BUILD_DIR/license.rtf"
@@ -121,19 +107,21 @@ else
     echo "No such file: $ASSETS_DIR/LICENSE.rtf"
 fi
 
+ARTCHITECTURE=$(uname -p)  # detect if arm or intel processor (we need separate installers for each)
+
 # Build the final installer
 productbuild --distribution "$BUILD_DIR/distribution.xml" \
     --resources "$BUILD_DIR" \
     --package-path "$BUILD_DIR" \
-    "$INSTALLER_DIR/SSoTme-Installer.pkg"
+    "$BIN_DIR/SSoTme-Installer-$ARTCHITECTURE.pkg"
 
-
+# set the icon of the product .pkg file
 if command -v fileicon >/dev/null 2>&1; then
-  fileicon set "$INSTALLER_DIR/SSoTme-Installer.pkg" "$ASSETS_DIR/Icon.icns"
+  fileicon set "$BIN_DIR/SSoTme-Installer-$ARTCHITECTURE.pkg" "$ASSETS_DIR/Icon.icns"
 else
   echo "fileicon was not found, please run: brew install fileicon"
 fi
 
-echo "Build completed. Installer is at: $DIST_DIR/SSoTme-Installer.pkg"
+echo "Build completed. Installer is at: $BIN_DIR/SSoTme-Installer-$ARTCHITECTURE.pkg"
 
 # todo install dotnet in postinstall
