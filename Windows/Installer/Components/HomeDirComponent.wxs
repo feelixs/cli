@@ -21,8 +21,8 @@
     </ComponentGroup>
 
     <InstallExecuteSequence>
-      <Custom Action="SetHomeSsotmeScriptData" Before="InstallFinalize">NOT SSOTMEHOME_INSTALLED</Custom>
-      <Custom Action="HomeSsotmeScript" After="SetHomeSsotmeScriptData">NOT SSOTMEHOME_INSTALLED</Custom>
+      <Custom Action="SetHomeSsotmeScriptData" Before="InstallFinalize">NOT Installed AND NOT SSOTMEHOME_INSTALLED</Custom>
+      <Custom Action="HomeSsotmeScript" After="SetHomeSsotmeScriptData">NOT Installed AND NOT SSOTMEHOME_INSTALLED</Custom>
     </InstallExecuteSequence>
   </Fragment>
 </Wix>
