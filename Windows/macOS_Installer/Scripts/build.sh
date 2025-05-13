@@ -4,7 +4,7 @@
 # Generates:
 #           - dist/SSoTme-Installer.pkg - macOS installer package
 
-INSTALLER_DIR="$( dirname "${BASH_SOURCE[0]}" )"
+INSTALLER_DIR="$( dirname "$( dirname "${BASH_SOURCE[0]}" )")"
 
 echo "my dir: $INSTALLER_DIR"
 
