@@ -55,6 +55,19 @@ def get_dotnet_info() -> (str, str):
                         f"Error reading dotnet_info.json at {dotnet_info_path}\n")
 
 
+def get_api_keys():
+    home, ssotme = get_home_ssotme_dir()
+    api_keys_path = os.path.join(ssotme, "ssotme.key")
+    try:
+        with open(api_keys_path, "r") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return None  # nonfatal if the file doesn't exist
+    except Exception:
+        raise Exception(f"Could not parse ssotme.key at {api_keys_path}. You may need to delete the file and re-run "
+                        f"`ssotme -api ...` to save your API keys again.\n")
+
+
 def main():
     try:
         info_filepath, dotnet_info = get_dotnet_info()
@@ -82,6 +95,17 @@ def main():
                   f"Configured to use .NET SDK {version}\n"
                   f"Configured to use .NET executable: {dotnet}\n"
                   f"Using config file: {info_filepath}\n")
+
+            # print api keys that were configured with `ssotme -api ...` if the key file exists in ~/.ssotme/ssotme.key
+            try:
+                configured_keys = get_api_keys()
+                if configured_keys is not None:
+                    keys = ""
+                    for key in configured_keys:
+                        keys += f"{key}: {configured_keys[key]}\n"
+                    print(f"Configured API keys:\n{keys}")
+            except Exception as e:
+                print(e)
 
             # verify the dotnet version being used
             result = subprocess.run([dotnet, "--version"], stdout=subprocess.PIPE)

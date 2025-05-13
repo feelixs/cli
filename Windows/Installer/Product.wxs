@@ -10,14 +10,17 @@
            Manufacturer="EffortlessAPI"
            UpgradeCode="EB59dEFF-B979-464F-B36A-57F272E872A1">
 
-    <Package InstallerVersion="200" 
+    <Package InstallerVersion="200"
              Compressed="yes" 
              InstallScope="perMachine" 
              Description="SSoTme Command Line Interface"
              Comments="Installs the SSoTme CLI tool" />
 
     <MediaTemplate EmbedCab="yes" />
-    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <MajorUpgrade
+      AllowSameVersionUpgrades="yes"
+      DowngradeErrorMessage="A newer version of [ProductName] is already installed."
+      Schedule="afterInstallInitialize" />
 
     <Feature Id="ProductFeature" Title="SSoTme CLI" Level="1">
       <ComponentGroupRef Id="CLIComponents" />

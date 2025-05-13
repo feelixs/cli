@@ -131,12 +131,13 @@ $newConfigTxt = $projConfigTxt -replace '(<Bundle\s+Name="[^"]*"\s+Version=")[^"
 Set-Content $projConfig $newConfigTxt
 Write-Host "Updated Bootstrapper.wxs with version $ssotmeVersion"
 
-$projConfig = Join-Path $InstallerDir "SSoTmeInstaller.wixproj"
-$projConfigTxt = Get-Content $projConfig -Raw
-$newConfigTxt = $projConfigTxt -replace '<SSoTmeVersion>.*?</SSoTmeVersion>', "`<SSoTmeVersion>$ssotmeVersion`</SSoTmeVersion>"
+$projSsotmeConfig = Join-Path $InstallerDir "SSoTmeInstaller.wixproj"
+$projSsotmeConfigTxt = Get-Content $projSsotmeConfig
+$newSsotmeConfigTxt = $projSsotmeConfigTxt -replace '<SSoTmeVersion>.*?</SSoTmeVersion>', "`<SSoTmeVersion>$ssotmeVersion`</SSoTmeVersion>"
 
-Set-Content $projConfig $newConfigTxt -Encoding UTF8
-Write-Host "Updated SSoTmeInstaller.wixproj with version $ssotmeVersion"
+Set-Content $projSsotmeConfig $newSsotmeConfigTxt
+
+Write-Host "Updated $projSsotmeConfig with version $ssotmeVersion"
 
 
 # Build the WiX project
