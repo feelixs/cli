@@ -39,15 +39,7 @@ rm -rf "$ROOT_DIR/build"
 echo "Creating necessary directories..."
 mkdir -p "$RESOURCES_DIR" "$BUILD_DIR" "$DIST_DIR" "$ASSETS_DIR" "$BIN_DIR"
 
-# Copy LICENSE and README into Resources
-LICENSE_SRC="$ROOT_DIR/LICENSE"
-LICENSE_DEST="$RESOURCES_DIR/LICENSE.txt"
-if [ -f "$LICENSE_SRC" ]; then
-    cp "$LICENSE_SRC" "$LICENSE_DEST"
-else
-    echo "WARNING: LICENSE file not found at root."
-fi
-
+# Copy README into Resources
 README_SRC="$ROOT_DIR/README.md"
 README_DEST="$RESOURCES_DIR/README.md"
 if [ -f "$README_SRC" ]; then
