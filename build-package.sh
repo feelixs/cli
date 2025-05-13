@@ -1,0 +1,1 @@
+sudo /bin/bash "./Windows/macOS_Installer/Scripts/build.sh"

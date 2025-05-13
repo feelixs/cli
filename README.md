@@ -88,6 +88,15 @@ After installation, the commands `ssotme`, `aicapture`, and `aic` will be usable
   - **Linux** `echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc && source ~/.bashrc`
   - This behavior shouldn't occur on Windows, but if Python ever changes this in the future, you can resolve it by simply adding your Python installation to your system PATH.
 
+- If you're re-installing, you may get the error below. If that occurs, please delete the `/Users/<user>/.ssotme/` directory and re-try
+    ```
+    ============================================================
+    INSTALLATION ERROR
+    ============================================================
+    Error: [Errno 13] Permission denied: '/Users/<user>/.ssotme/dotnet_info.json'
+    ```
+
+
 ### Uninstall with PIP
 
 If you've installed through pip, you can uninstall by simply running: `pip uninstall ssotme -y`. Note that the DotNet SDK that was installed along with `ssotme` won't be uninstalled automatically, though.
