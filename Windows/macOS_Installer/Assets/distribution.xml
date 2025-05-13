@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<installer-gui-script minSpecVersion="1">
+    <title>SSoTme CLI</title>
+    <organization>EffortlessAPI</organization>
+    <domains enable_localSystem="true"/>
+    <options customize="never" require-scripts="true" />
+    <license file="license.rtf"/>
+    <pkg-ref id="com.ssotme.cli"
+             version="2024.08.23"
+             auth="root">SSoTme-CLI.pkg</pkg-ref>
+    <choices-outline>
+        <line choice="default">
+            <line choice="com.ssotme.cli"/>
+        </line>
+    </choices-outline>
+    <choice id="default"/>
+    <choice id="com.ssotme.cli" visible="false">
+        <pkg-ref id="com.ssotme.cli"/>
+    </choice>
+</installer-gui-script>
