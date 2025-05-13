@@ -1,18 +1,30 @@
 #!/bin/bash
 # Uninstaller script for SSoTme CLI macOS package
-echo "Uninstalling SSoTme CLI..."
 
-# Remove symbolic links from /usr/local/bin
-sudo rm -f /usr/local/bin/ssotme
-sudo rm -f /usr/local/bin/aic
-sudo rm -f /usr/local/bin/aicapture
+echo "Are you sure you want to uninstall SSoTme CLI and remove all data? (y/n)"
+read -r response
 
-# Remove application files
-sudo rm -rf /Applications/SSoTme
+case "$response" in
+    [yY][eE][sS]|[yY])  # yes, YES, Y, y was entered
+        echo "Uninstalling SSoTme CLI..."
 
-echo "Removing configuration files..."
-rm -rf ~/.ssotme
+        # Remove symbolic links from /usr/local/bin
+        sudo rm -f /usr/local/bin/ssotme
+        sudo rm -f /usr/local/bin/aic
+        sudo rm -f /usr/local/bin/aicapture
 
-echo "SSoTme CLI has been uninstalled successfully."
+        # Remove application files
+        sudo rm -rf /Applications/SSoTme
+
+        echo "Removing configuration files..."
+        sudo rm -rf ~/.ssotme
+
+        echo "SSoTme CLI has been uninstalled successfully."
+        ;;
+    *)  # anything else was entered
+        echo "Uninstall cancelled."
+        exit 1
+        ;;
+esac
 
 exit 0

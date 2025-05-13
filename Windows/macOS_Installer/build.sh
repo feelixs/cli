@@ -81,6 +81,13 @@ else
 fi
 chmod +x "$BUILD_DIR/scripts/postinstall"
 
+if [ -f "$SCRIPT_DIR/uninstall.sh" ]; then
+    cp "$SCRIPT_DIR/uninstall.sh" "$RESOURCES_DIR/uninstall"
+    chmod +x "$RESOURCES_DIR/uninstall"
+else
+    echo "No such file: $SCRIPT_DIR/uninstall.sh"
+fi
+
 # Create package -> this will create the 'component package' inside the build/ folder
 # the build/ folder will be passed into productbuild command later which will re-package everything for distribution
 echo "Building package..."
@@ -123,5 +130,3 @@ else
 fi
 
 echo "Build completed. Installer is at: $BIN_DIR/SSoTme-Installer-$ARTCHITECTURE.pkg"
-
-# todo install dotnet in postinstall

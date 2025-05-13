@@ -1,1 +1,1 @@
-/bin/bash "./Windows/macOS_Installer/build.sh"
+sudo /bin/bash "./Windows/macOS_Installer/build.sh"
