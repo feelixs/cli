@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 mkdir -p "$HOME/.ssotme"
 
 # Create symbolic links for the CLI executables
@@ -22,11 +24,17 @@ else
    echo "FATAL: Could not install .NET: curl command not available"
    exit 1
 fi
+
+if [ ! -x "$TARGETHOMEDIR/dotnet-install.sh" ]; then
+    echo "FATAL: dotnet-install.sh not executable or missing"
+    exit 1
+fi
+
 chmod +x "$TARGETHOMEDIR/dotnet-install.sh"
 
-$THEVERSION=$(grep -o '"using_version": "[^"]*"' "$TARGETHOMEDIR/dotnet_info.json" | cut -d'"' -f4)
+THEVERSION=$(grep -o '"using_version": "[^"]*"' "$TARGETHOMEDIR/dotnet_info.json" | cut -d'"' -f4)
 
 # run the downloaded script to install the right version of dotnet
-"$TARGETHOMEDIR/dotnet-install.sh" --version $THEVERSION
+"$TARGETHOMEDIR/dotnet-install.sh" --version "$THEVERSION"
 
 exit 0
