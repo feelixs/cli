@@ -1,0 +1,1 @@
+/bin/bash "./Windows/macOS_Installer/build.sh"
