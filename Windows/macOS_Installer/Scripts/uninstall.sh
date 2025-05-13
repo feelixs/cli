@@ -16,8 +16,8 @@ case "$response" in
         # Remove application files
         sudo rm -rf /Applications/SSoTme
 
-        echo "Removing configuration files..."
-        sudo rm -rf ~/.ssotme
+        #echo "Removing configuration files..."
+        #sudo rm -rf ~/.ssotme
 
         echo "SSoTme CLI has been uninstalled successfully."
         ;;
