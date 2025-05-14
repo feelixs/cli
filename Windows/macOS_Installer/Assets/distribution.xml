@@ -5,16 +5,16 @@
     <domains enable_localSystem="true"/>
     <options customize="never" require-scripts="true" />
     <license file="license.rtf"/>
-    <pkg-ref id="com.ssotme.cli"
+    <pkg-ref id="com.effortlessapi.ssotmecli"
              version="2024.08.23"
              auth="root">SSoTme-CLI.pkg</pkg-ref>
     <choices-outline>
         <line choice="default">
-            <line choice="com.ssotme.cli"/>
+            <line choice="com.effortlessapi.ssotmecli"/>
         </line>
     </choices-outline>
     <choice id="default"/>
-    <choice id="com.ssotme.cli" visible="false">
-        <pkg-ref id="com.ssotme.cli"/>
+    <choice id="com.effortlessapi.ssotmecli" visible="false">
+        <pkg-ref id="com.effortlessapi.ssotmecli"/>
     </choice>
 </installer-gui-script>

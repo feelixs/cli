@@ -4,6 +4,9 @@
 # Generates:
 #           - dist/SSoTme-Installer.pkg - macOS installer package
 
+
+THE_INSTALLER_FILENAME=$1
+
 INSTALLER_DIR="$( dirname "$( dirname "${BASH_SOURCE[0]}" )")"
 
 echo "my dir: $INSTALLER_DIR"
@@ -88,7 +91,7 @@ cp -r "$RESOURCES_DIR"/* "$BUILD_DIR/payload/Applications/SSoTme/"
 pkgbuild --root "$BUILD_DIR/payload" \
     --install-location "/" \
     --scripts "$BUILD_DIR/scripts" \
-    --identifier "com.ssotme.cli" \
+    --identifier "com.effortlessapi.ssotmecli" \
     --version "$SSOTME_VERSION" \
     "$BUILD_DIR/SSoTme-CLI.pkg"
 
@@ -106,19 +109,17 @@ else
     echo "No such file: $ASSETS_DIR/LICENSE.rtf"
 fi
 
-ARTCHITECTURE=$(uname -p)  # detect if arm or intel processor (we need separate installers for each)
-
 # Build the final installer
 productbuild --distribution "$BUILD_DIR/distribution.xml" \
     --resources "$BUILD_DIR" \
     --package-path "$BUILD_DIR" \
-    "$BIN_DIR/SSoTme-Installer-$ARTCHITECTURE.pkg"
+    "$BIN_DIR/$THE_INSTALLER_FILENAME"
 
 # set the icon of the product .pkg file
 if command -v fileicon >/dev/null 2>&1; then
-  fileicon set "$BIN_DIR/SSoTme-Installer-$ARTCHITECTURE.pkg" "$ASSETS_DIR/Icon.icns"
+  fileicon set "$BIN_DIR/$THE_INSTALLER_FILENAME" "$ASSETS_DIR/Icon.icns"
 else
   echo "fileicon was not found, please run: brew install fileicon"
 fi
 
-echo "Build completed. Installer is at: $BIN_DIR/SSoTme-Installer-$ARTCHITECTURE.pkg"
+echo "Build completed. Installer is at: $BIN_DIR/$THE_INSTALLER_FILENAME"
