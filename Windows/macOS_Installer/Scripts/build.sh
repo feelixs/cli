@@ -125,6 +125,8 @@ if echo "$NOTARY_RESULT" | grep -q '"status":"Accepted"'; then
     if xcrun stapler staple "$BIN_DIR/$THE_INSTALLER_FILENAME"; then
         echo "Stapling completed successfully!"
     else
+      # not necessary - only 'staples' to the installer an official note saying it's been notarized
+      # if the stapling fails, it doesn't necessarily mean that notarization failed
         echo "Stapling failed, but package is still notarized."
         echo "Users will need an internet connection during first installation."
     fi
