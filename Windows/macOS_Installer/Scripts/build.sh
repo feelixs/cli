@@ -87,44 +87,19 @@ else
     echo "No such file: $SCRIPT_DIR/uninstall.sh"
 fi
 
-# Create package -> this will create the 'component package' inside the build/ folder
-# the build/ folder will be passed into productbuild command later which will re-package everything for distribution
 echo "Building package..."
 mkdir -p "$BUILD_DIR/payload/Applications/SSoTme"
 cp -r "$RESOURCES_DIR"/* "$BUILD_DIR/payload/Applications/SSoTme/"
+
+# Build a single package directly
 pkgbuild --root "$BUILD_DIR/payload" \
     --install-location "/" \
     --scripts "$BUILD_DIR/scripts" \
     --identifier "com.effortlessapi.ssotmecli" \
     --version "$SSOTME_VERSION" \
-    "$BUILD_DIR/tmp-SSoTme-CLI.pkg"
-
-echo "Signing nested pkg tmp-SSoTme-CLI.pkg -> SSoTme-CLI.pkg"
-/bin/bash "$SCRIPT_DIR/packagesign.sh" "$BUILD_DIR/tmp-SSoTme-CLI.pkg" "$BUILD_DIR/SSoTme-CLI.pkg" $DEV_INSTALLER_KEYCHAIN_ID
-echo "Removing unsigned tmp-SSoTme-CLI.pkg"
-sudo rm "$BUILD_DIR/tmp-SSoTme-CLI.pkg"
-
-
-if [ -f "$ASSETS_DIR/distribution.xml" ]; then
-    cp "$ASSETS_DIR/distribution.xml" "$BUILD_DIR/distribution.xml"
-else
-    echo "No such file: $ASSETS_DIR/distribution.xml"
-fi
-
-# License
-if [ -f "$ASSETS_DIR/LICENSE.rtf" ]; then
-    cp "$ASSETS_DIR/LICENSE.rtf" "$BUILD_DIR/license.rtf"
-else
-    echo "No such file: $ASSETS_DIR/LICENSE.rtf"
-fi
-
-# Build the final installer
-productbuild --distribution "$BUILD_DIR/distribution.xml" \
-    --resources "$BUILD_DIR" \
-    --package-path "$BUILD_DIR" \
     "$BIN_DIR/unsigned_$THE_INSTALLER_FILENAME"
 
-echo "Signing final package file $BIN_DIR/unsigned_$THE_INSTALLER_FILENAME -> $BIN_DIR/$THE_INSTALLER_FILENAME"
+echo "Signing package $BIN_DIR/unsigned_$THE_INSTALLER_FILENAME -> $BIN_DIR/$THE_INSTALLER_FILENAME"
 /bin/bash "$SCRIPT_DIR/packagesign.sh" "$BIN_DIR/unsigned_$THE_INSTALLER_FILENAME" "$BIN_DIR/$THE_INSTALLER_FILENAME" $DEV_INSTALLER_KEYCHAIN_ID
 
 # set the icon of the product .pkg file
@@ -137,12 +112,23 @@ fi
 echo "Build completed. Installer is at: $BIN_DIR/$THE_INSTALLER_FILENAME"
 
 echo "Running notary tool..."
-xcrun notarytool submit "$BIN_DIR/$THE_INSTALLER_FILENAME" --apple-id $APPLE_EMAIL \
-                                                           --password $NOTARYPASS \
-                                                           --team-id SLMGMPYNKS --wait \
-                                                           --output-format json
+NOTARY_RESULT=$(xcrun notarytool submit "$BIN_DIR/$THE_INSTALLER_FILENAME" --apple-id $APPLE_EMAIL \
+                                         --password $NOTARYPASS \
+                                         --team-id SLMGMPYNKS --wait \
+                                         --output-format json)
 
-echo "Stapling notarization ticket to package..."
-xcrun stapler staple "$BIN_DIR/$THE_INSTALLER_FILENAME"
+echo "$NOTARY_RESULT"
 
-echo "Staple complete."
+# Check if notarization was successful
+if echo "$NOTARY_RESULT" | grep -q '"status":"Accepted"'; then
+    echo "Stapling notarization ticket to package..."
+    if xcrun stapler staple "$BIN_DIR/$THE_INSTALLER_FILENAME"; then
+        echo "Stapling completed successfully!"
+    else
+        echo "Stapling failed, but package is still notarized."
+        echo "Users will need an internet connection during first installation."
+    fi
+else
+    echo "Notarization failed. Package will not pass Gatekeeper validation."
+    echo "See the notarization result for details."
+fi
