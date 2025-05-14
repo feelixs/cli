@@ -6,6 +6,7 @@
 
 
 THE_INSTALLER_FILENAME=$1
+DEV_KEYCHAIN_ID=$2
 
 INSTALLER_DIR="$( dirname "$( dirname "${BASH_SOURCE[0]}" )")"
 
@@ -93,7 +94,12 @@ pkgbuild --root "$BUILD_DIR/payload" \
     --scripts "$BUILD_DIR/scripts" \
     --identifier "com.effortlessapi.ssotmecli" \
     --version "$SSOTME_VERSION" \
-    "$BUILD_DIR/SSoTme-CLI.pkg"
+    "$BUILD_DIR/tmp-SSoTme-CLI.pkg"
+
+echo "Signing nested pkg tmp-SSoTme-CLI.pkg -> SSoTme-CLI.pkg"
+sudo /bin/bash "$SCRIPT_DIR/packagesign.sh" "$BUILD_DIR/tmp-SSoTme-CLI.pkg" "$BUILD_DIR/SSoTme-CLI.pkg" $DEV_KEYCHAIN_ID
+echo "Removing unsigned tmp-SSoTme-CLI.pkg"
+sudo rm "$BUILD_DIR/tmp-SSoTme-CLI.pkg"
 
 
 if [ -f "$ASSETS_DIR/distribution.xml" ]; then
@@ -113,7 +119,10 @@ fi
 productbuild --distribution "$BUILD_DIR/distribution.xml" \
     --resources "$BUILD_DIR" \
     --package-path "$BUILD_DIR" \
-    "$BIN_DIR/$THE_INSTALLER_FILENAME"
+    "$BIN_DIR/unsigned_$THE_INSTALLER_FILENAME"
+
+echo "Signing final package file $BIN_DIR/unsigned_$THE_INSTALLER_FILENAME -> $BIN_DIR/$THE_INSTALLER_FILENAME"
+sudo /bin/bash "$SCRIPT_DIR/packagesign.sh" "$BIN_DIR/unsigned_$THE_INSTALLER_FILENAME" "$BIN_DIR/$THE_INSTALLER_FILENAME" $DEV_KEYCHAIN_ID
 
 # set the icon of the product .pkg file
 if command -v fileicon >/dev/null 2>&1; then

@@ -3,6 +3,8 @@
 # Usage: ./packagesign.sh <input_package> <output_package> <certificate_id>
 # Example: ./packagesign.sh unsigned.pkg signed.pkg "65N8AM5L8K"
 
+set -e
+
 # Check if correct number of arguments is provided
 if [ $# -lt 3 ]; then
     echo "Usage: $0 <input_package> <output_package> <certificate_id>"
@@ -18,11 +20,6 @@ CERTIFICATE_ID="$3"
 if [ ! -f "$INPUT_PACKAGE" ]; then
     echo "Error: Input package not found at $INPUT_PACKAGE"
     exit 1
-fi
-
-# Check if output package already exists
-if [ -f "$OUTPUT_PACKAGE" ]; then
-    echo "Warning: Output package already exists at $OUTPUT_PACKAGE. It will be overwritten."
 fi
 
 # Sign the package
