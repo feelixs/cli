@@ -8,6 +8,7 @@
 THE_INSTALLER_FILENAME=$1
 DEV_INSTALLER_KEYCHAIN_ID=$2
 DEV_EXECUTABLE_KEYCHAIN_ID=$3
+NOTARYPASS=$4
 
 INSTALLER_DIR="$( dirname "$( dirname "${BASH_SOURCE[0]}" )")"
 
@@ -133,3 +134,9 @@ else
 fi
 
 echo "Build completed. Installer is at: $BIN_DIR/$THE_INSTALLER_FILENAME"
+
+echo "Running notary tool..."
+xcrun notarytool submit "$BIN_DIR/$THE_INSTALLER_FILENAME" --apple-id mmh@yellahouse.com \
+                                                           --password $NOTARYPASS \
+                                                           --team-id SLMGMPYNKS --wait \
+                                                           --output-format json
