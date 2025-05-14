@@ -4,8 +4,9 @@ INSTALLERDIR="./Windows/macOS_Installer"
 
 INSTALLERNAME="SSoTme-Installer-$ARTCHITECTURE.pkg"
 
-DEV_KEYCHAIN_ID=""
+DEV_INS_KEYCHAIN_ID=""
+DEV_APP_KEYCHAIN_ID=""
 
 echo "Running build.sh"
 echo "=============================="
-sudo /bin/bash "$INSTALLERDIR/Scripts/build.sh" $INSTALLERNAME $DEV_KEYCHAIN_ID
+/bin/bash "$INSTALLERDIR/Scripts/build.sh" $INSTALLERNAME $DEV_INS_KEYCHAIN_ID $DEV_APP_KEYCHAIN_ID

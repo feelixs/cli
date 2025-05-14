@@ -6,7 +6,8 @@
 
 
 THE_INSTALLER_FILENAME=$1
-DEV_KEYCHAIN_ID=$2
+DEV_INSTALLER_KEYCHAIN_ID=$2
+DEV_EXECUTABLE_KEYCHAIN_ID=$3
 
 INSTALLER_DIR="$( dirname "$( dirname "${BASH_SOURCE[0]}" )")"
 
@@ -35,10 +36,10 @@ SSOTME_VERSION=$(grep -o '"version": "[^"]*"' "$ROOT_DIR/package.json" | cut -d'
 echo "Using version: $SSOTME_VERSION from package.json"
 
 # Clean previous builds
-rm -rf "$DIST_DIR"
-rm -rf "$BUILD_DIR"
-rm -rf "$BIN_DIR"
-rm -rf "$ROOT_DIR/build"
+sudo rm -rf "$DIST_DIR"
+sudo rm -rf "$BUILD_DIR"
+sudo rm -rf "$BIN_DIR"
+sudo rm -rf "$ROOT_DIR/build"
 
 echo "Creating necessary directories..."
 mkdir -p "$RESOURCES_DIR" "$BUILD_DIR" "$DIST_DIR" "$ASSETS_DIR" "$BIN_DIR"
@@ -53,7 +54,7 @@ else
 fi
 
 echo "Building cli.py..."
-/bin/bash "$SOURCE_DIR/build-cli.sh"
+/bin/bash "$SOURCE_DIR/build-cli.sh" $DEV_EXECUTABLE_KEYCHAIN_ID "$SOURCE_DIR/entitlements.plist"
 
 echo "Copy executable file ssotme into Resources under aliases: ssotme, aic, aicapture..."
 cp "$DIST_DIR/ssotme" "$RESOURCES_DIR/ssotme"
@@ -97,7 +98,7 @@ pkgbuild --root "$BUILD_DIR/payload" \
     "$BUILD_DIR/tmp-SSoTme-CLI.pkg"
 
 echo "Signing nested pkg tmp-SSoTme-CLI.pkg -> SSoTme-CLI.pkg"
-sudo /bin/bash "$SCRIPT_DIR/packagesign.sh" "$BUILD_DIR/tmp-SSoTme-CLI.pkg" "$BUILD_DIR/SSoTme-CLI.pkg" $DEV_KEYCHAIN_ID
+/bin/bash "$SCRIPT_DIR/packagesign.sh" "$BUILD_DIR/tmp-SSoTme-CLI.pkg" "$BUILD_DIR/SSoTme-CLI.pkg" $DEV_INSTALLER_KEYCHAIN_ID
 echo "Removing unsigned tmp-SSoTme-CLI.pkg"
 sudo rm "$BUILD_DIR/tmp-SSoTme-CLI.pkg"
 
@@ -122,7 +123,7 @@ productbuild --distribution "$BUILD_DIR/distribution.xml" \
     "$BIN_DIR/unsigned_$THE_INSTALLER_FILENAME"
 
 echo "Signing final package file $BIN_DIR/unsigned_$THE_INSTALLER_FILENAME -> $BIN_DIR/$THE_INSTALLER_FILENAME"
-sudo /bin/bash "$SCRIPT_DIR/packagesign.sh" "$BIN_DIR/unsigned_$THE_INSTALLER_FILENAME" "$BIN_DIR/$THE_INSTALLER_FILENAME" $DEV_KEYCHAIN_ID
+/bin/bash "$SCRIPT_DIR/packagesign.sh" "$BIN_DIR/unsigned_$THE_INSTALLER_FILENAME" "$BIN_DIR/$THE_INSTALLER_FILENAME" $DEV_INSTALLER_KEYCHAIN_ID
 
 # set the icon of the product .pkg file
 if command -v fileicon >/dev/null 2>&1; then

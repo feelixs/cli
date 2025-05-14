@@ -26,7 +26,7 @@ fi
 echo "Signing package: $INPUT_PACKAGE -> $OUTPUT_PACKAGE"
 echo "Using certificate ID: $CERTIFICATE_ID"
 
-sudo productsign --sign "$CERTIFICATE_ID" "$INPUT_PACKAGE" "$OUTPUT_PACKAGE"
+productsign --sign "$CERTIFICATE_ID" "$INPUT_PACKAGE" "$OUTPUT_PACKAGE"
 
 # Verify the signature
 echo "Verifying package signature..."
