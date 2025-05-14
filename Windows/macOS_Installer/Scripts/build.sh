@@ -8,7 +8,8 @@
 THE_INSTALLER_FILENAME=$1
 DEV_INSTALLER_KEYCHAIN_ID=$2
 DEV_EXECUTABLE_KEYCHAIN_ID=$3
-NOTARYPASS=$4
+APPLE_EMAIL=$4
+NOTARYPASS=$5
 
 INSTALLER_DIR="$( dirname "$( dirname "${BASH_SOURCE[0]}" )")"
 
@@ -136,7 +137,12 @@ fi
 echo "Build completed. Installer is at: $BIN_DIR/$THE_INSTALLER_FILENAME"
 
 echo "Running notary tool..."
-xcrun notarytool submit "$BIN_DIR/$THE_INSTALLER_FILENAME" --apple-id mmh@yellahouse.com \
+xcrun notarytool submit "$BIN_DIR/$THE_INSTALLER_FILENAME" --apple-id $APPLE_EMAIL \
                                                            --password $NOTARYPASS \
                                                            --team-id SLMGMPYNKS --wait \
                                                            --output-format json
+
+echo "Stapling notarization ticket to package..."
+xcrun stapler staple "$BIN_DIR/$THE_INSTALLER_FILENAME"
+
+echo "Staple complete."
