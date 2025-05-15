@@ -3,7 +3,7 @@
   <Fragment>
     <!-- Main CLI components -->
     <ComponentGroup Id="CLIComponents" Directory="BinFolder">
-      <Component Id="SSoTmeCLI" Guid="*">
+      <Component Id="SSoTmeCLI" Guid="{B1C2D3E4-F5A6-47B8-9C0D-1E2F3A4B5C6D}" Shared="no" Permanent="no">
           <File Id="SSoTmeExe"
                 Name="ssotme.exe"
                 Source="Resources\ssotme.exe"
@@ -20,7 +20,7 @@
                      System="yes" />
       </Component>
 
-      <Component Id="AicCLI" Guid="*">
+      <Component Id="AicCLI" Guid="{C2D3E4F5-A6B7-48C9-0D1E-2F3A4B5C6D7E}" Shared="no" Permanent="no">
           <File Id="AicExe"
                 Name="aic.exe"
                 Source="Resources\aic.exe"
@@ -28,7 +28,7 @@
           </File>
       </Component>
 
-      <Component Id="AiCaptureCLI" Guid="*">
+      <Component Id="AiCaptureCLI" Guid="{D3E4F5A6-B7C8-49D0-1E2F-3A4B5C6D7E8F}" Shared="no" Permanent="no">
           <File Id="AiCaptureExe"
                 Name="aicapture.exe"
                 Source="Resources\aicapture.exe"
@@ -36,21 +36,21 @@
           </File>
       </Component>
 
-      <Component Id="CLIReadme" Guid="*">
+      <Component Id="CLIReadme" Guid="{E4F5A6B7-C8D9-40E1-2F3A-4B5C6D7E8F9A}" Shared="no" Permanent="no">
         <File Id="ReadmeFile" 
                 Name="README.md"
                 Source="Resources\README.md"
                 KeyPath="yes" />
       </Component>
 
-      <Component Id="CLILicense" Guid="*">
+      <Component Id="CLILicense" Guid="{F5A6B7C8-D9E0-41F2-3A4B-5C6D7E8F9A0B}" Shared="no" Permanent="no">
         <File Id="LicenseTxtFile"
                 Name="LICENSE.txt"
                 Source="Resources\LICENSE.txt"
                 KeyPath="yes" />
       </Component>
 
-      <Component Id="CLIConfig" Guid="*">
+      <Component Id="CLIConfig" Guid="{A6B7C8D9-E0F1-42A3-4B5C-6D7E8F9A0B1C}" Shared="no" Permanent="no">
         <File Id="DefaultConfig"
                 Name="dotnet_info.json"
                 Source="Resources\dotnet_info.json"
