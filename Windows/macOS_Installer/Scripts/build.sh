@@ -10,6 +10,7 @@ DEV_INSTALLER_KEYCHAIN_ID=$2
 DEV_EXECUTABLE_KEYCHAIN_ID=$3
 APPLE_EMAIL=$4
 NOTARYPASS=$5
+PYTHON_VENVPATH=$6
 
 INSTALLER_DIR="$( dirname "$( dirname "${BASH_SOURCE[0]}" )")"
 
@@ -56,7 +57,7 @@ else
 fi
 
 echo "Building cli.py..."
-/bin/bash "$SOURCE_DIR/build-cli.sh"
+/bin/bash "$SOURCE_DIR/build-cli.sh" $PYTHON_VENVPATH
 
 echo "Copy executable file ssotme into Resources under aliases: ssotme, aic, aicapture..."
 cp "$DIST_DIR/ssotme" "$RESOURCES_DIR/ssotme"
