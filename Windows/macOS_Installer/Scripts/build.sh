@@ -123,4 +123,6 @@ productsign --sign $DEV_INSTALLER_KEYCHAIN_ID "$BIN_DIR/unsigned_$THE_INSTALLER_
 
 echo "Build completed. Installer is at: $BIN_DIR/$THE_INSTALLER_FILENAME"
 
+echo ""
+echo "$SCRIPT_DIR/notarize.sh" "$BIN_DIR/$THE_INSTALLER_FILENAME" $APPLE_EMAIL $NOTARYPASS
 /bin/bash "$SCRIPT_DIR/notarize.sh" "$BIN_DIR/$THE_INSTALLER_FILENAME" $APPLE_EMAIL $NOTARYPASS
