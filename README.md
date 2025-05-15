@@ -50,22 +50,38 @@ turns A into B.  The transaction always follows this basic script though:
 
 
 ## Installation
-Installing the *AICapture executable* command line tool will automatically update the path
-to include the CLI.  
 
-When you register for an account with [SSoT.me](https://aicapture.io) - you will be emailed a secret key
-That file should be put in this location:
+You can install the SSoTme CLI by downloading the appropriate installer from the [release page](https://github.com/ssotme/cli/releases/latest).
 
-*Key File:* `%USERPROFILE%/.aicapture/aicapture.key`
+Installing the **SSoTme Command Line Interface** tool will download the compatible .NET SDK version, and automatically
+update the system path to include the CLI, allowing you to use it through the `ssotme/aicapture/aic` commands.
+
+### Authentication
+
+Use `ssotme -auth` or `-authenticate` to provide the CLI access to your account. 
+
+If for some reason the authenticate command doesn't work, you can edit the configuration manually:
+
+When you register for an account with [SSoT.me](https://aicapture.io) - you will be emailed a secret key file 
+that should be put in this location:
+
+*Key File:* `%USERPROFILE%/.ssotme/ssotme.key`
 ```
 {
-   "emailAddress": "you@domain.com",
-   "secret": "your-secret-key-here-123abc"
+   "EmailAddress": "you@domain.com",
+   "Secret": "your-secret-key-here-123abc"
 }
 ```
 
-If you have multiple accounts, the format key file should have ethis format: `aicapture.{account-name}.key`
-For example: `aicapture.codee42.key`
+If you have multiple accounts, the key file should have this format: `ssotme.{account-name}.key`
+
+For example: `ssotme.codee42.key`
+
+### External Auth
+
+SSoTme must communicate with external APIs, for example Airtable, to execute some commands. To setup your CLI 
+with the right personal access tokens for these situations, you can run `ssotme -api provider=private_key` or 
+`ssotme -setAccountApiKey provider/private_key`.
 
 ## Pip Install
 
@@ -75,7 +91,8 @@ You can also install this tool using pip:
 
 This will also attempt to automatically install the required .NET version into your system.
 
-After installation, the commands `ssotme`, `aicapture`, and `aic` will be usable in your terminal!
+After installation, the commands `ssotme`, `aicapture`, and `aic` will be usable in your terminal, and you can continue
+following the setup listed above in the **Auth** section.
 
 ### Troubleshooting the PIP install
 
@@ -88,63 +105,64 @@ After installation, the commands `ssotme`, `aicapture`, and `aic` will be usable
   - **Linux** `echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc && source ~/.bashrc`
   - This behavior shouldn't occur on Windows, but if Python ever changes this in the future, you can resolve it by simply adding your Python installation to your system PATH.
 
-- If you're re-installing, you may get the error below. If that occurs, please delete the `/Users/<user>/.ssotme/` directory and re-try
-    ```
-    ============================================================
-    INSTALLATION ERROR
-    ============================================================
-    Error: [Errno 13] Permission denied: '/Users/<user>/.ssotme/dotnet_info.json'
-    ```
-
-
 ### Uninstall with PIP
 
 If you've installed through pip, you can uninstall by simply running: `pip uninstall ssotme -y`. Note that the DotNet SDK that was installed along with `ssotme` won't be uninstalled automatically, though.
 
-## Syntax: `aicapture -help`
+## Syntax: `ssotme -help`
 This command will show the following help.
 
 ```
-aicapture [account/]transpiler [parameters,...] [options]
+Syntax: ssotme [account/]transpiler [Options]
 
-options:
-   -account, -a          The account which the transpiler belongs to
-   -addSetting, -as      Adds a setting to the aicapture.json
-   -build, -b            Build any transpilers in the
-                         current folder (or children).
-   -buildAll, -ba        Builds all transpilers in the project
-   -checkResults, -cr    Checks the result of a build linking up input
-                         and output files of the transpiles.  Creates a
-                         SPXML file in the DSPXml folder of the project.
-   -clean, -c            Don't output the final results - instead, clean
-   -cleanAll, -ca        Don't output the final results - instead, clean
-   -createDocs, -cd      Creates documentation based on a DSPXml
-                         file created with the -checkResults flag.
-   -descibeAll, -da      Descibe all of the transpiler in the project
-   -describe, -d         Describes the current AICapture
-                         project (and all transpilers)
-   -emailAddress, -e     The email address for the account authenticating
-   -execute, -exec       Executes the given command as a ProcessInfo.Start
-   -help, -h             Show help about how to use the aicapture cli
-   -includeDisabled,
-   -id                   Include disabled tools in th ebuild
-   -init                 Initialize the current folder as
-                         the root of an SSOT.me project
-   -input, -i            Input filename or comma separated list of file names
-   -install              Saves the current command into the aicapture.json file
-   -keyFile, -f          The keyfile to use.  By default
-                         it looks for ~/.aicapture/aicapture.key.
-   -listSettings, -ls    List of project settings
-   -output, -o           Output filename
-   -parameters, -p       A list of parameters
-   -preserveZFS, -rz     Determines if the input should be preserved.
-   -removeSetting, -rs   REmoves a setting from the aicapture project
-   -runAs, -ra           Run as this user (look for this user's key file)
-   -secret, -k           The secret associated with that email address
-   -skipClean, -sc       Don't clean the output before cooking
-   -uninstall            Removes the current command
-                         from the AICapture project file
-   -waitTimeout, -w      The amount of time to wait
-                         for the command to continue
+Options:                                                                                                                                                                      
+   -account, -a           The account which the transpiler belongs to                                                                                                         
+   -addSetting, -as       Adds a setting to the SSoT.me Project                                                                                                               
+   -addTranspiler         Add a transpiler to for the given account                                                                                                           
+   -authenticate, -auth   Launch the SSoT.me website in order to authenticate (and/or register), and then to link that  user to your ssotme CLI.                              
+   -betaRepo              Use the beta repository for this seed?                                                                                                              
+   -build, -b,                                                                                                                                                                
+   -replay, -rebuild      Build any transpilers in the current folder (or children).                                                                                          
+   -buildAll, -ba,                                                                                                                                                            
+   -replayall,                                                                                                                                                                
+   -rebuildAll            Builds all transpilers in the project                                                                                                               
+   -buildLocal, -bl,                                                                                                                                                          
+   -replaylocal,                                                                                                                                                              
+   -rebuildLocal          Builds only the root level transpilers, not the sub-directories.                                                                                    
+   -checkResults, -cr     Checks the result of a build linking up input and output files of the transpiles.  Creates a SPXML file in the DSPXml folder of the project.        
+   -clean, -c             Don't output the final results - instead, clean                                                                                                     
+   -cleanAll, -ca         Don't output the final results - instead, clean                                                                                                     
+   -cloneSeed,                                                                                                                                                                
+   -cs, -clone            Clones a specified seed                                                                                                                             
+   -createDocs, -cd       Creates documentation based on a DSPXml file created with the -checkResults flag.                                                                   
+   -deleteTranspiler      Delete the transpiler with the given name                                                                                                           
+   -descibeAll, -da       Descibe all of the transpiler in the project                                                                                                        
+   -describe, -d          Describes the current SSoT.me Project (and all transpilers)                                                                                         
+   -discuss, -ai          Discuss the project with an AI                                                                                                                      
+   -execute, -exec        Executes the given command as a ProcessInfo.Start                                                                                                   
+   -help, -h              Show help about how to use the SSoT.me CLI                                                                                                          
+   -includeDisabled,                                                                                                                                                          
+   -id                    Include disabled tools in th ebuild                                                                                                                 
+   -init                  Initialize the current folder as the root of an SSoT.me project. An Optional parameter of force will create a sub-project.                          
+   -input, -i             Input filename or comma separated list of file names                                                                                                
+   -install               Saves the current command into the SSoT.me Project file                                                                                             
+   -keyFile, -f           The keyfile to use.  By default it looks for ~/.ssotme/ssotme.key. (or ~/.ssotme/ssotme.{username}.key)                                             
+   -listSeeds, -lsd       Lists seeds available to be clones                                                                                                                  
+   -listSettings, -ls     List of project settings                                                                                                                            
+   -output, -o            Output filename                                                                                                                                     
+   -parameters, -p        A list of parameters                                                                                                                                
+   -preserveZFS, -rz      Determines if the input should be preserved.                                                                                                        
+   -projectName, -name    Name of the project (optional parameter to the init command)                                                                                        
+   -removeSetting, -rs    REmoves a setting from the SSoT.me Project                                                                                                          
+   -repoUrl               Override the default URL specified by the seed repository                                                                                           
+   -runAs, -ra            Run as this user (look for this user's key file)                                                                                                    
+   -setAccountAPIKey,                                                                                                                                                         
+   -api                   Add an account api key                                                                                                                              
+   -skipBuild             Skips the build part of cloning a Seed repository                                                                                                   
+   -skipClean, -sc        Don't clean the output before cooking                                                                                                               
+   -transpilerGroup,                                                                                                                                                          
+   -tg                    Name of a group to put a transpiler in within a specific folder                                                                                     
+   -uninstall             Removes the current command from the SSoT.me Project file                                                                                           
+   -waitTimeout, -w       The amount of time to wait for the command to continue 
 ```
 
