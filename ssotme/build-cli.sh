@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# build-cli.sh
+
 rm -rf /Users/michaelfelix/Documents/GitHub/cli/dist
 rm -rf /Users/michaelfelix/Documents/GitHub/cli/build
 
@@ -10,10 +12,8 @@ sed -i '' 's/setuptools/pyinstaller_setuptools/' /Users/michaelfelix/Documents/G
 
 source ~/.venv-3.12/bin/activate
 # run the build executable command
-python ./setup.py pyinstaller -- -n ssotme --console --onefile \
-                              --add-data "ssotme:ssotme" --hidden-import json \
-                              --codesign-identity="$1" \
-                              --osx-entitlements-file="$2"
+python ./setup.py pyinstaller -- -n ssotme --console --onefile --clean \
+                              --add-data "ssotme:ssotme" --hidden-import json
 
 # revert the setup.py change
 sed -i '' 's/pyinstaller_setuptools/setuptools/' /Users/michaelfelix/Documents/GitHub/cli/setup.py

@@ -1,4 +1,4 @@
-ARTCHITECTURE=$(uname -p)  # detect if arm or intel processor (we need separate installers for each)
+ARTCHITECTURE=$(uname -m)  # detect if arm or intel processor (we need separate installers for each)
 
 INSTALLERDIR="./Windows/macOS_Installer"
 

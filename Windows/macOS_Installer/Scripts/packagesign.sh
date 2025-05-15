@@ -32,12 +32,4 @@ productsign --sign "$CERTIFICATE_ID" "$INPUT_PACKAGE" "$OUTPUT_PACKAGE"
 echo "Verifying package signature..."
 pkgutil --check-signature "$OUTPUT_PACKAGE"
 
-ASSETS_DIR="$( dirname "$( dirname "${BASH_SOURCE[0]}" )")/Assets"
-# set the icon of the product .pkg file
-if command -v fileicon >/dev/null 2>&1; then
-  sudo fileicon set "$OUTPUT_PACKAGE" "$ASSETS_DIR/Icon.icns"
-else
-  echo "fileicon was not found, please run: brew install fileicon"
-fi
-
 echo "Package signing complete"

@@ -56,12 +56,25 @@ else
 fi
 
 echo "Building cli.py..."
-/bin/bash "$SOURCE_DIR/build-cli.sh" $DEV_EXECUTABLE_KEYCHAIN_ID "$SOURCE_DIR/entitlements.plist"
+/bin/bash "$SOURCE_DIR/build-cli.sh"
 
 echo "Copy executable file ssotme into Resources under aliases: ssotme, aic, aicapture..."
 cp "$DIST_DIR/ssotme" "$RESOURCES_DIR/ssotme"
 cp "$DIST_DIR/ssotme" "$RESOURCES_DIR/aic"
 cp "$DIST_DIR/ssotme" "$RESOURCES_DIR/aicapture"
+
+# sign the executables
+codesign --force --timestamp --options runtime \
+  --entitlements "$SOURCE_DIR/entitlements.plist" \
+  --sign "$DEV_EXECUTABLE_KEYCHAIN_ID" "$RESOURCES_DIR/ssotme" --identifier "com.effortlessapi.ssotme"
+
+codesign --force --timestamp --options runtime \
+  --entitlements "$SOURCE_DIR/entitlements.plist" \
+  --sign "$DEV_EXECUTABLE_KEYCHAIN_ID" "$RESOURCES_DIR/aic" --identifier "com.effortlessapi.aic"
+
+codesign --force --timestamp --options runtime \
+  --entitlements "$SOURCE_DIR/entitlements.plist" \
+  --sign "$DEV_EXECUTABLE_KEYCHAIN_ID" "$RESOURCES_DIR/aicapture" --identifier "com.effortlessapi.aicapture"
 
 # this will exist because we just ran the python build (setup.py will generate this json in the home directory)
 if [ -f "$SSOTME_DIR/dotnet_info.json" ]; then
@@ -91,6 +104,11 @@ echo "Building package..."
 mkdir -p "$BUILD_DIR/payload/Applications/SSoTme"
 cp -r "$RESOURCES_DIR"/* "$BUILD_DIR/payload/Applications/SSoTme/"
 
+echo "Verifying code signature on copied binaries..."
+codesign -dv --verbose=4 "$RESOURCES_DIR/ssotme"
+codesign -dv --verbose=4 "$RESOURCES_DIR/aic"
+codesign -dv --verbose=4 "$RESOURCES_DIR/aicapture"
+
 # Build a single package directly
 pkgbuild --root "$BUILD_DIR/payload" \
     --install-location "/" \
@@ -100,14 +118,7 @@ pkgbuild --root "$BUILD_DIR/payload" \
     "$BIN_DIR/unsigned_$THE_INSTALLER_FILENAME"
 
 echo "Signing package $BIN_DIR/unsigned_$THE_INSTALLER_FILENAME -> $BIN_DIR/$THE_INSTALLER_FILENAME"
-/bin/bash "$SCRIPT_DIR/packagesign.sh" "$BIN_DIR/unsigned_$THE_INSTALLER_FILENAME" "$BIN_DIR/$THE_INSTALLER_FILENAME" $DEV_INSTALLER_KEYCHAIN_ID
-
-# set the icon of the product .pkg file
-if command -v fileicon >/dev/null 2>&1; then
-  fileicon set "$BIN_DIR/$THE_INSTALLER_FILENAME" "$ASSETS_DIR/Icon.icns"
-else
-  echo "fileicon was not found, please run: brew install fileicon"
-fi
+productsign --sign $DEV_INSTALLER_KEYCHAIN_ID "$BIN_DIR/unsigned_$THE_INSTALLER_FILENAME"  "$BIN_DIR/$THE_INSTALLER_FILENAME"
 
 echo "Build completed. Installer is at: $BIN_DIR/$THE_INSTALLER_FILENAME"
 
@@ -122,13 +133,10 @@ echo "$NOTARY_RESULT"
 # Check if notarization was successful
 if echo "$NOTARY_RESULT" | grep -q '"status":"Accepted"'; then
     echo "Stapling notarization ticket to package..."
-    if xcrun stapler staple "$BIN_DIR/$THE_INSTALLER_FILENAME"; then
+    if xcrun stapler staple -v "$BIN_DIR/$THE_INSTALLER_FILENAME"; then
         echo "Stapling completed successfully!"
     else
-      # not necessary - only 'staples' to the installer an official note saying it's been notarized
-      # if the stapling fails, it doesn't necessarily mean that notarization failed
-        echo "Stapling failed, but package is still notarized."
-        echo "Users will need an internet connection during first installation."
+        echo "Stapling failed, package might be blocked from being opened"
     fi
 else
     echo "Notarization failed. Package will not pass Gatekeeper validation."
