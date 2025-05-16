@@ -130,7 +130,7 @@ def main():
         print(type(e).__name__)
         code = 1
 
-    exit(code)
+    sys.exit(code)
 
 # todo: we're tracking which dotnet sdk version we should use in package.json['dotnet'], and across the python codebase
 # The package.json['dotnet'] also tells setup.py which dotnet version to automatically install.
