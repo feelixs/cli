@@ -1,31 +1,31 @@
 # SSOTME CLI
 
-[SSoTme Platform](http://ssot.me)
+[SSoTme Platform](https://explore.ssot.me/app/#!/publicTranspilers)
 The Single Source of Truth Toolbox!
 
-## Additional Docs
-In addition to the summary below - there is [additional documentation](https://aicapture.github.io/AICapture-Open-Source-Tools/) on
-the github.io site.
-
 ## About A Single Source of Truth
-Software based on a single source of truth is software that does not tolorate duplication of 
-Authority.  "Source Code" is frequently a terrible place for decisions about how software
-should work.  SSoT development is based on the notion that there should always be one,
-Authoritative place for these decisions.  
 
-*AICapture* is a command line package manager like NPM, Bower, Nuget, etc - however, the packages
-delivered are dynamic in nature.  If 100 projects install a bower package, they all get the
-same bytes.
+The **SSoTme CLI** is similar to command line package managers like NPM, Bower, Nuget, etc - however, the packages
+delivered are dynamic in nature. If 100 projects install a bower package, they all get the same bytes.
 
-If, by contrast, 100 projects each install the same SSoT.me package, they will all get
-different bytes - because they will each be required to provide a single source of truth
-which describes their project.  Since each project will start with a different SSoT - 
-they will each get a package which works with their project.  It will be the same KIND of 
-content that the other projects all needed, but will differ in ways specific to each project.
+SSoTme packages differ from normal packages (NPM/Bower/etc packages) in that they must be supplied with a 
+Single Source of Truth, a set of foundational rules, which describes the project's core functionality. 
+Based on your project's SSoT, you can install any SSoTme package - each one representing a specific language or 
+framework - and it will output your SSoT, implemented in that environment.
 
-Similarly - if you one project installs 10 AICapture packages, they will all match each other,
-because they are all derived from the same SSoT.  And any time that SSoT changes, all 10
-packages will also update themselves to match the new "truth".
+So, by contrast to your usual package, if 100 projects each install the same SSoTme package, they will all get
+different bytes - because they will each provide a different single source of truth
+which describes their project. Since each project will start with a different SSoT - 
+they will each get an implementation which works with their project. It will be the same KIND of 
+content that each package provides, but will differ in ways specific to each project.
+
+Similarly - if one project installs 100 different SSoTme packages, their functionality will all match each other,
+because they are all derived from the same SSoT - the same foundational rules.  And any time that SSoT changes, 
+all 100 packages will also update themselves to match the new "truth".
+
+Overall, software built on SSoT avoids duplicating important decisions across the codebase. 
+Instead of scattering business rules or structural definitions throughout the source code, SSoT development 
+places them in one authoritative location - a central definition that drives behavior across the system.
 
 ## Open Source Tools
 These tools are open source.  Eventually, the SSoT.me Website, Coordinator as well as the Codee42 
@@ -59,7 +59,7 @@ update the system path to include the CLI, allowing you to use it through the `s
 
 ### Authentication
 
-Use `ssotme -auth` or `-authenticate` to provide the CLI access to your account. 
+Use `ssotme -auth` or `-authenticate` to provide the CLI access to your ssot.me account. 
 
 If for some reason the authenticate command doesn't work, you can edit the configuration manually:
 
@@ -80,7 +80,7 @@ For example: `ssotme.codee42.key`
 
 ### External Auth
 
-SSoTme must communicate with external APIs, for example Airtable, to execute some commands. To setup your CLI 
+SSoTme must communicate with external APIs, for example Airtable, to execute some commands. To set up your CLI 
 with the right personal access tokens for these situations, you can run `ssotme -api provider=private_key` or 
 `ssotme -setAccountApiKey provider/private_key`.
 
