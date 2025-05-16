@@ -1,7 +1,7 @@
 #!/bin/bash
 # Uninstaller script for SSoTme CLI macOS package
 
-echo "Are you sure you want to uninstall SSoTme CLI and remove all data? (y/n)"
+echo "Are you sure you want to uninstall SSoTme CLI? (y/n)"
 read -r response
 
 case "$response" in
