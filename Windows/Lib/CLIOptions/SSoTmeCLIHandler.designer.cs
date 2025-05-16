@@ -39,8 +39,8 @@ namespace SSoTme.OST.Lib.CLIOptions
         [CommandLineOption(Description = "Describes the current SSoT.me Project (and all transpilers)", MinOccurs = 0, Aliases = "d")]
         public bool describe { get; set; }
         
-        [CommandLineOption(Description = "Descibe all of the transpiler in the project", MinOccurs = 0, Aliases = "da")]
-        public bool descibeAll { get; set; }
+        [CommandLineOption(Description = "Describe all of the transpiler in the project", MinOccurs = 0, Aliases = "da")]
+        public bool describeAll { get; set; }
         
         [CommandLineOption(Description = "Discuss the project with an AI", MinOccurs = 0, Aliases = "ai")]
         public bool discuss { get; set; }
