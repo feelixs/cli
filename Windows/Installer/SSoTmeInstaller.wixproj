@@ -6,7 +6,7 @@
     <ProductVersion>3.14</ProductVersion>
     <ProjectGuid>{6D387D42-FDC3-4AB2-9F3E-2A9678045B34}</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
-    <OutputName>CLI-Installer</OutputName>
+    <OutputName>CLI_Installer</OutputName>
     <OutputType>Package</OutputType>
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' ">$(MSBuildExtensionsPath)\WiX Toolset\v3.14\Wix.targets</WixTargetsPath>
     <Name>SSoTmeInstaller</Name>
@@ -31,6 +31,7 @@
     <Compile Include="Components\CLIComponent.wxs" />
     <Compile Include="UI\CustomDialog.wxs" />
     <Compile Include="UI\InstallUI.wxs" />
+    <Compile Include="Components\RemoveInstallFolderComponent.wxs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Components" />
