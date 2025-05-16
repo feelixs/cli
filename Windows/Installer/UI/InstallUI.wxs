@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Fragment>
+    <!-- Define the customized installer UI -->
+    <UI Id="SSoTmeInstallerUI">
+      <!-- Use the standard WiX UI framework as a base -->
+      <UIRef Id="WixUI_InstallDir" />
+      
+      <!-- Override certain dialogs with our custom ones -->
+      <DialogRef Id="DotNetRequirementsDlg" />
+      <DialogRef Id="ProgressDlg" />
+      <DialogRef Id="FinishDlg" />
+      
+      <!-- Customize the installation flow -->
+      <Publish Dialog="WelcomeDlg"
+               Control="Next"
+               Event="NewDialog"
+               Value="DotNetRequirementsDlg">1</Publish>
+      
+      <Publish Dialog="DotNetRequirementsDlg"
+               Control="Back"
+               Event="NewDialog"
+               Value="WelcomeDlg">1</Publish>
+      
+      <Publish Dialog="DotNetRequirementsDlg"
+               Control="Next"
+               Event="NewDialog"
+               Value="LicenseAgreementDlg">1</Publish>
+      
+      <!-- Include error dialogs -->
+      <DialogRef Id="ErrorDlg" />
+      <DialogRef Id="FatalError" />
+      <DialogRef Id="FilesInUse" />
+      <DialogRef Id="UserExit" />
+      
+      <!-- Add property to track installation progress -->
+      <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
+
+      <!-- Define strings for the UI -->
+      <UIText Id="InstallationCompleteText">SSoTme CLI has been successfully installed. You can access it from the command line by typing 'ssotme'.</UIText>
+    </UI>
+  </Fragment>
+</Wix>
