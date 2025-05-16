@@ -105,9 +105,15 @@ following the setup listed above in the **Auth** section.
   - **Linux** `echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc && source ~/.bashrc`
   - This behavior shouldn't occur on Windows, but if Python ever changes this in the future, you can resolve it by simply adding your Python installation to your system PATH.
 
+## Uninstalling the CLI
+
 ### Uninstall with PIP
 
-If you've installed through pip, you can uninstall by simply running: `pip uninstall ssotme -y`. Note that the DotNet SDK that was installed along with `ssotme` won't be uninstalled automatically, though.
+If you've installed through pip, you can uninstall by simply running: `pip uninstall ssotme -y`.
+
+### MacOS Uninstaller
+
+To uninstall a Mac .pkg installation, run the uninstall script by entering `/Applications/ssotme/uninstall`
 
 ## Syntax: `ssotme -help`
 This command will show the following help.

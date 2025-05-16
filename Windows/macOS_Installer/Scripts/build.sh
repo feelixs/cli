@@ -94,6 +94,17 @@ else
 fi
 chmod +x "$BUILD_DIR/scripts/postinstall"
 
+# we need to make sure that the target mac's cpu type matches the type we're building on
+TARGET_ARCH=$(uname -m)
+echo "#!/bin/bash
+      TARGET_ARCH=\"$TARGET_ARCH\" 
+      if [ \$(uname -m) != \"\$TARGET_ARCH\" ]; then 
+        echo \"[ERROR] CPU mismatch: expected \$TARGET_ARCH, got \$(uname -m)\" >&2 
+        exit 64  # error code other than 1 
+      fi
+" > "$BUILD_DIR/scripts/preinstall"
+chmod +x "$BUILD_DIR/scripts/preinstall"
+
 if [ -f "$SCRIPT_DIR/uninstall.sh" ]; then
     cp "$SCRIPT_DIR/uninstall.sh" "$RESOURCES_DIR/uninstall"
     chmod +x "$RESOURCES_DIR/uninstall"

@@ -9,7 +9,7 @@ DEV_APP_KEYCHAIN_ID=""
 NOTARYPASS=""
 APPLEID=""
 
-PYTHON_VENV_PATH=""
+PYTHON_VENV_PATH="$HOME/.venv"
 
 echo "Running build.sh"
 echo "=============================="
