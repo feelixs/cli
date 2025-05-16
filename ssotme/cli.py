@@ -53,10 +53,10 @@ def get_dotnet_info() -> (str, str):
             return dotnet_info_path, json.load(f)
     except Exception:
         raise CustomException(f"FATAL: Could not find dotnet_info.json\n"
-                        f"If it's been moved or modified, please make sure it's in the correct path\n"
-                        f"Or if it was deleted, you can re-run the installer, re-install ssotme from "
-                        f"https://github.com/ssotme/cli/releases, or run pip install git+https://github.com/ssotme/cli\n\n"
-                        f"Error reading dotnet_info.json at {dotnet_info_path}\n")
+                              f"If it's been moved or modified, please make sure it's in the correct path\n"
+                              f"Or if it was deleted, you can re-run the installer, re-install ssotme from "
+                              f"https://github.com/ssotme/cli/releases, or run pip install git+https://github.com/ssotme/cli"
+                              f"\n\nError reading dotnet_info.json at {dotnet_info_path}\n")
 
 
 def get_api_keys():
