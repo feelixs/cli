@@ -5,6 +5,10 @@ import json
 import os
 
 
+class CustomException(Exception):
+    pass
+
+
 BASE_SUPPORTED_DOTNET = "7.0.410"
 
 
@@ -48,10 +52,10 @@ def get_dotnet_info() -> (str, str):
         with open(dotnet_info_path, "r") as f:
             return dotnet_info_path, json.load(f)
     except Exception:
-        raise Exception(f"FATAL: Could not find dotnet_info.json\n"
+        raise CustomException(f"FATAL: Could not find dotnet_info.json\n"
                         f"If it's been moved or modified, please make sure it's in the correct path\n"
                         f"Or if it was deleted, you can re-run the installer, re-install ssotme from "
-                        f"https://github.com/ssotme/cli, or run pip install git+https://github.com/ssotme/cli\n\n"
+                        f"https://github.com/ssotme/cli/releases, or run pip install git+https://github.com/ssotme/cli\n\n"
                         f"Error reading dotnet_info.json at {dotnet_info_path}\n")
 
 
@@ -64,7 +68,7 @@ def get_api_keys():
     except FileNotFoundError:
         return None  # nonfatal if the file doesn't exist
     except Exception:
-        raise Exception(f"Could not parse ssotme.key at {api_keys_path}. You may need to delete the file and re-run "
+        raise CustomException(f"Could not parse ssotme.key at {api_keys_path}. You may need to delete the file and re-run "
                         f"`ssotme -api ...` to save your API keys again.\n")
 
 
@@ -78,7 +82,7 @@ def main():
             dotnet = shutil.which("dotnet")
             if not dotnet:
                 print("dotnet is not installed or not in PATH.")
-                sys.exit(1)
+                raise CustomException("The .NET SDK was not found in your System PATH")
 
         # Get version from saved info or package.json
         version = BASE_SUPPORTED_DOTNET
@@ -112,19 +116,21 @@ def main():
             dotnet_version = result.stdout.decode().strip()
             if dotnet_version != version:
                 print(f"WARNING: .NET SDK version does not match .NET executable - configured to use .NET SDK {version}, but `{dotnet} --version` returned {dotnet_version}\n")
-
         else:
             # run the actual cli
-            try:
-                result = subprocess.run([dotnet, dll_path] + args)
-                code = result.returncode
-            except Exception as e:
-                raise Exception(f"Execution failed: {str(e)}")
+            result = subprocess.run([dotnet, dll_path] + args)
+            code = result.returncode
+    except CustomException as e:
+        print(e)
+        code = 1
+    except KeyboardInterrupt:
+        print("Execution interrupted by user")
+        code = 2
     except Exception as e:
-        print(str(e))
+        print(type(e).__name__)
         code = 1
 
-    sys.exit(code)
+    exit(code)
 
 # todo: we're tracking which dotnet sdk version we should use in package.json['dotnet'], and across the python codebase
 # The package.json['dotnet'] also tells setup.py which dotnet version to automatically install.
