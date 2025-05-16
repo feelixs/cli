@@ -1,6 +1,6 @@
 ARTCHITECTURE=$(uname -m)  # detect if arm or intel processor (we need separate installers for each)
 
-INSTALLERDIR="./Windows/macOS_Installer"
+INSTALLERDIR="./macOS/Installer"
 
 INSTALLERNAME="SSoTme-Installer-$ARTCHITECTURE.pkg"
 

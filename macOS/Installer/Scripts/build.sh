@@ -2,7 +2,7 @@
 # Build script for SSoTme macOS Installer
 #
 # Generates:
-#           - dist/SSoTme-Installer.pkg - macOS installer package
+#           - cli/macOS/Installer/bin/SSoTme-Installer.pkg
 
 
 THE_INSTALLER_FILENAME=$1

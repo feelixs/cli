@@ -4,7 +4,7 @@ NOTARYPASS=$3
 
 echo ""
 echo "Running notary tool..."
-(echo "notarytool submit "$THE_INSTALLER_FILENAME" --apple-id $APPLE_EMAIL --password $NOTARYPASS --team-id SLMGMPYNKS --wait --output-format json")
+(echo "xcrun notarytool submit "$THE_INSTALLER_FILENAME" --apple-id $APPLE_EMAIL --password $NOTARYPASS --team-id SLMGMPYNKS --wait --output-format json")
 
 NOTARY_RESULT=$(xcrun notarytool submit "$THE_INSTALLER_FILENAME" --apple-id $APPLE_EMAIL \
                                          --password $NOTARYPASS \
