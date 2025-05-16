@@ -11,7 +11,7 @@
            Manufacturer="EffortlessAPI"
            UpgradeCode="EB59dEFF-B979-464F-B36A-57F272E872A1">
 
-    <Package InstallerVersion="200" 
+    <Package InstallerVersion="200"
              Compressed="yes" 
              InstallScope="perMachine" 
              Description="SSoTme Command Line Interface"
@@ -22,7 +22,10 @@
 		</Condition>
 
     <MediaTemplate EmbedCab="yes" />
-    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <MajorUpgrade 
+      DowngradeErrorMessage="A newer version of [ProductName] is already installed."
+      Schedule="afterInstallInitialize"
+      AllowSameVersionUpgrades="yes" />
 
     <Feature Id="ProductFeature" Title="SSoTme CLI" Level="1">
       <ComponentGroupRef Id="CLIComponents" />
@@ -59,6 +62,15 @@
           <RegistryValue Type="string" Name="InstallPath" Value="[INSTALLFOLDER]" KeyPath="yes" />
           <RegistryValue Type="string" Name="Version" Value="1.0.16"/>
         </RegistryKey>
+      </Component>
+    </DirectoryRef>
+    
+    <DirectoryRef Id="INSTALLFOLDER">
+      <Component Id="RemoveInstallDirectoryComponent" Guid="*">
+        <RemoveFolder Id="RemoveInstallDirectory" On="uninstall" />
+        <RemoveFolder Id="RemoveBinDirectory" Directory="BinFolder" On="uninstall" />
+        <RegistryValue Root="HKLM" Key="Software\SSoTme\CLI\Uninstall" 
+                      Name="InstallFolder" Type="string" Value="1" KeyPath="yes" />
       </Component>
     </DirectoryRef>
   </Product>

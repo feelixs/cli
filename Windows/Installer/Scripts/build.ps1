@@ -1,7 +1,7 @@
 # Build script for SSoTme Windows Installer
 #
 # Generates:
-#           - bin/cli-installer/Release/CLI-Installer.msi -> installs just ssotme
+#           - bin/cli-installer/Release/CLI_Installer.msi -> installs just ssotme
 #           - bin/main/Release/SSoTmeInstaller.exe -> installs .NET & ssotme
 
 
@@ -131,12 +131,13 @@ $newConfigTxt = $projConfigTxt -replace '(<Bundle\s+Name="[^"]*"\s+Version=")[^"
 Set-Content $projConfig $newConfigTxt
 Write-Host "Updated Bootstrapper.wxs with version $ssotmeVersion"
 
-$projConfig = Join-Path $InstallerDir "SSoTmeInstaller.wixproj"
-$projConfigTxt = Get-Content $projConfig -Raw
-$newConfigTxt = $projConfigTxt -replace '<SSoTmeVersion>.*?</SSoTmeVersion>', "`<SSoTmeVersion>$ssotmeVersion`</SSoTmeVersion>"
+$projSsotmeConfig = Join-Path $InstallerDir "SSoTmeInstaller.wixproj"
+$projSsotmeConfigTxt = Get-Content $projSsotmeConfig
+$newSsotmeConfigTxt = $projSsotmeConfigTxt -replace '<SSoTmeVersion>.*?</SSoTmeVersion>', "`<SSoTmeVersion>$ssotmeVersion`</SSoTmeVersion>"
 
-Set-Content $projConfig $newConfigTxt -Encoding UTF8
-Write-Host "Updated SSoTmeInstaller.wixproj with version $ssotmeVersion"
+Set-Content $projSsotmeConfig $newSsotmeConfigTxt
+
+Write-Host "Updated $projSsotmeConfig with version $ssotmeVersion"
 
 
 # Build the WiX project
@@ -157,9 +158,9 @@ try {
     Write-Host "msbuild .\SSoTmeInstaller.wixproj /p:Configuration=$Configuration /p:Platform=$Platform"
     & msbuild .\SSoTmeInstaller.wixproj /p:Configuration=$Configuration /p:Platform=$Platform
 
-    $MsiPath = Join-Path $OutputDir "CLI-Installer.msi"
+    $MsiPath = Join-Path $OutputDir "CLI_Installer.msi"
     if (-Not (Test-Path $MsiPath)) {
-        Write-Host "ERROR: CLI-Installer.msi not found at expected location: $MsiPath"
+        Write-Host "ERROR: CLI_Installer.msi not found at expected location: $MsiPath"
         exit 1
     }
 
