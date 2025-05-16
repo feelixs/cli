@@ -1,6 +1,5 @@
-# SSOTME CLI
-
-[SSoTme Platform](http://ssot.me)
+# AI Capture CLI OST
+[AICapture Platform](http://aicapture.io)
 The Single Source of Truth Toolbox!
 
 ## Additional Docs
@@ -143,7 +142,7 @@ Options:
    -cs, -clone            Clones a specified seed                                                                                                                             
    -createDocs, -cd       Creates documentation based on a DSPXml file created with the -checkResults flag.                                                                   
    -deleteTranspiler      Delete the transpiler with the given name                                                                                                           
-   -describeAll, -da      Describe all of the transpiler in the project                                                                                                        
+   -descibeAll, -da       Descibe all of the transpiler in the project                                                                                                        
    -describe, -d          Describes the current SSoT.me Project (and all transpilers)                                                                                         
    -discuss, -ai          Discuss the project with an AI                                                                                                                      
    -execute, -exec        Executes the given command as a ProcessInfo.Start                                                                                                   
