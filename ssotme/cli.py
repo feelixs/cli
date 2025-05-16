@@ -68,8 +68,8 @@ def get_api_keys():
     except FileNotFoundError:
         return None  # nonfatal if the file doesn't exist
     except Exception:
-        raise CustomException(f"Could not parse ssotme.key at {api_keys_path}. You may need to delete the file and re-run "
-                        f"`ssotme -api ...` to save your API keys again.\n")
+        raise CustomException(f"Could not parse ssotme.key at {api_keys_path}. You may need to delete the file and "
+                              f"re-run `ssotme -api ...` to save your API keys again.\n")
 
 
 def main():
