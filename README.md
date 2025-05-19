@@ -1,5 +1,7 @@
 # SSOTME CLI
 
+### [View Latest Release](https://github.com/ssotme/cli/releases/latest)
+
 [SSoTme Platform](https://explore.ssot.me/app/#!/publicTranspilers)
 The Single Source of Truth Toolbox!
 
