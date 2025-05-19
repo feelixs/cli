@@ -111,7 +111,7 @@ namespace SSoTme.OST.Lib.CLIOptions
         [CommandLineOption(Description = "Executes the given command as a ProcessInfo.Start", MinOccurs = 0, Aliases = "exec")]
         public string execute { get; set; }
         
-        [CommandLineOption(Description = "Include disabled tools in th ebuild", MinOccurs = 0, Aliases = "id")]
+        [CommandLineOption(Description = "Include disabled tools in the build", MinOccurs = 0, Aliases = "id")]
         public bool includeDisabled { get; set; }
         
         [CommandLineOption(Description = "Name of the project (optional parameter to the init command)", MinOccurs = 0, Aliases = "name")]
