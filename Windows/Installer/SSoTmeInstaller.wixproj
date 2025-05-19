@@ -59,7 +59,7 @@
   </ItemGroup>
   <PropertyGroup>
     <WixTargetsPath>C:\Program Files (x86)\MSBuild\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
-    <SSoTmeVersion>224.8.23</SSoTmeVersion>
+    <SSoTmeVersion>224.12.7</SSoTmeVersion>
 
     <DefineConstants>SSoTmeVersion=$(SSoTmeVersion)</DefineConstants>
   </PropertyGroup>
