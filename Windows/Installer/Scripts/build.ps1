@@ -126,14 +126,14 @@ Write-Host "Using version: $ssotmeVersion from package.json"
 
 $projConfig = Join-Path $InstallerDir "Bootstrapper.wxs"
 $projConfigTxt = Get-Content $projConfig
-$newConfigTxt = $projConfigTxt -replace '(<Bundle\s+Name="[^"]*"\s+Version=")[^"]*(")', "`${1}$ssotmeVersion`${2}"
+$newConfigTxt = $projConfigTxt -replace '<Bundle Name=".*?" Version=".*?"', "<Bundle Name=`"SSoTme CLI Installer`" Version=`"$ssotmeVersion`""
 
 Set-Content $projConfig $newConfigTxt
 Write-Host "Updated Bootstrapper.wxs with version $ssotmeVersion"
 
 $projSsotmeConfig = Join-Path $InstallerDir "SSoTmeInstaller.wixproj"
 $projSsotmeConfigTxt = Get-Content $projSsotmeConfig
-$newSsotmeConfigTxt = $projSsotmeConfigTxt -replace '<SSoTmeVersion>.*?</SSoTmeVersion>', "`<SSoTmeVersion>$ssotmeVersion`</SSoTmeVersion>"
+$newSsotmeConfigTxt = $projSsotmeConfigTxt -replace '<SSoTmeVersion>.*?</SSoTmeVersion>', "<SSoTmeVersion>$ssotmeVersion</SSoTmeVersion>"
 
 Set-Content $projSsotmeConfig $newSsotmeConfigTxt
 
@@ -150,10 +150,10 @@ try {
         Write-Error "WiX Toolset not found. Please install WiX Toolset from https://wixtoolset.org/releases/"
         return
     }
-    
+
     # Change directory to the WiX project
     Push-Location $InstallerDir
-    
+
     # Build the WiX project
     Write-Host "msbuild .\SSoTmeInstaller.wixproj /p:Configuration=$Configuration /p:Platform=$Platform"
     & msbuild .\SSoTmeInstaller.wixproj /p:Configuration=$Configuration /p:Platform=$Platform
@@ -171,9 +171,9 @@ try {
         Write-Error "Failed to build WiX project"
         return
     }
-    
+
     Write-Host "WiX installer built successfully"
-    
+
     # Output the path to the MSI
     $FinalExePath = Join-Path (Join-Path $binFolder "main") "SSoTmeInstaller.exe"
     if (Test-Path $MsiPath) {
