@@ -1,6 +1,7 @@
 {
   "name": "ssotme",
   "version": "2024.12.07",
+  "dotnet": "7.0.410",
   "description": "",
   "bin": {
     "ssotme": "cli.js",

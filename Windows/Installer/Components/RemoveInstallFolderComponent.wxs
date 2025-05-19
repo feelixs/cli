@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Fragment>
+    <DirectoryRef Id="INSTALLFOLDER">
+      <Component Id="RemoveInstallFolder" Guid="{D7A7B3C1-5E8F-4F2A-9B1D-8C3E4F5A6B7C}">
+        <!-- Removes all files in INSTALLFOLDER on uninstall -->
+        <RemoveFile Id="RemoveInstallFolderContents" Name="*" On="uninstall" Directory="INSTALLFOLDER" />
+        
+        <!-- Remove the directory itself -->
+        <RemoveFolder Id="RemoveInstallFolderDir" Directory="INSTALLFOLDER" On="uninstall" />
+        <RemoveFolder Id="RemoveBinFolderDir" Directory="BinFolder" On="uninstall" />
+
+        <!-- Registry anchor for KeyPath -->
+        <RegistryValue Id="RemoveInstallFolderKeyPath" Root="HKLM" Key="Software\SSoTme\Cleanup" Name="Anchor" Type="string" Value="true" KeyPath="yes" />
+        
+        <!-- Clean up registry entries -->
+        <RegistryKey Root="HKLM" Key="Software\SSoTme\CLI" ForceDeleteOnUninstall="yes" />
+        <RegistryKey Root="HKLM" Key="Software\SSoTme\Cleanup" ForceDeleteOnUninstall="yes" />
+      </Component>
+    </DirectoryRef>
+
+    <ComponentGroup Id="CleanupComponents">
+      <ComponentRef Id="RemoveInstallFolder" />
+    </ComponentGroup>
+  </Fragment>
+</Wix>

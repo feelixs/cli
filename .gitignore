@@ -6,8 +6,26 @@
 /.ssotme/**
 /Windows/CLI/SSoTme.OST.CLI.csproj.user
 /Windows/CLI/Properties/launchSettings.json
-/Windows/CLI/Properties/launchSettings.json
-/AICapture/Backup/*.zip
-/Windows/CLI/Properties/launchSettings.json
-/package-lock.json
 /Windows/Lib/go-live.ps1
+/AICapture/Backup/*.zip
+/package-lock.json
+*.DS_Store
+.idea/
+.vscode/
+
+# pip install stuff
+*.egg-info
+*.pyc
+ssotme/lib/
+ssotme/*.json
+
+# pyinstaller stuff
+build/
+dist/
+ssotme.spec
+
+# installer stuff
+Windows/Installer/Resources
+macOS/Installer/Resources
+macOS/Installer/*.pkg
+
