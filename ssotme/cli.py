@@ -127,18 +127,8 @@ def main():
         print("Execution interrupted by user")
         code = 2
     except Exception as e:
-        print(type(e).__name__)
+        print(f"An unexpected error occurred: {type(e).__name__}\n"
+              f"Please report this issue at https://github.com/ssotme/cli/issues\n")
         code = 1
 
     sys.exit(code)
-
-# todo: we're tracking which dotnet sdk version we should use in package.json['dotnet'], and across the python codebase
-# The package.json['dotnet'] also tells setup.py which dotnet version to automatically install.
-# the question is whether we need to keep tracking the version (do we need to warn users?)
-# if so, we could just add these to path to force dotnet to use a specific version:
-
-# export DOTNET_ROOT=$HOME/dotnet
-# export PATH=$DOTNET_ROOT:$PATH
-
-# set DOTNET_ROOT=C:\path\to\sdk
-# set PATH=%DOTNET_ROOT%;%PATH%
