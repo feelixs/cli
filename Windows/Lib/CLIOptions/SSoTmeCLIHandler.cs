@@ -480,8 +480,8 @@ Seed Url: ");
                     this.describe = true;
                     break;
 
-                case "describeAll":
-                    this.describeAll = true;
+                case "descibeAll":
+                    this.descibeAll = true;
                     break;
 
                 default:
@@ -510,7 +510,7 @@ Seed Url: ");
                 {
                     this.AICaptureProject.Describe(Environment.CurrentDirectory);
                 }
-                else if (this.describeAll)
+                else if (this.descibeAll)
                 {
                     this.AICaptureProject.Describe();
                 }
