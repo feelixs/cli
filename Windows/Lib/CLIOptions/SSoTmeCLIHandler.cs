@@ -155,7 +155,7 @@ namespace SSoTme.OST.Lib.CLIOptions
                     {
                         this.AICaptureProject = SSoTmeProject.LoadOrFail(new DirectoryInfo(Environment.CurrentDirectory), false, this.clean || this.cleanAll);
                         if (this.AICaptureProject is null) {
-                            ShowError("ERROR: project is null. Please initialize a project first with `ssotme -init -name=...`");
+                            ShowError("ERROR: project is null. Please make sure you're in a valid project directory, or initialize a new project with `ssotme -init -name=...`");
                         }
                         else {
                             foreach (var projectSetting in this.AICaptureProject?.ProjectSettings ?? new BindingList<ProjectSetting>())
