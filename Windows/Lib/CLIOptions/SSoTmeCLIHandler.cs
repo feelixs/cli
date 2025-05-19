@@ -154,10 +154,7 @@ namespace SSoTme.OST.Lib.CLIOptions
                     if (String.IsNullOrEmpty(this.setAccountAPIKey) && !this.help && !this.authenticate && !this.listSeeds && !this.cloneSeed)
                     {
                         this.AICaptureProject = SSoTmeProject.LoadOrFail(new DirectoryInfo(Environment.CurrentDirectory), false, this.clean || this.cleanAll);
-                        if (this.AICaptureProject is null) {
-                            ShowError("ERROR: project is null. Please initialize a project first with `ssotme -init -name=...`");
-                        }
-                        else {
+                        if (!(this.AICaptureProject is null)) {
                             foreach (var projectSetting in this.AICaptureProject?.ProjectSettings ?? new BindingList<ProjectSetting>())
                             {
                                 if (!this.parameters.Any(anyParam => anyParam.StartsWith(String.Format("{0}=", projectSetting.Name))))
