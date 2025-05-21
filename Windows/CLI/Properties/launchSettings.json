@@ -3,7 +3,7 @@
     "DotNetStandardCLI": {
       "commandName": "Project",
       "commandLineArgs": "-build",
-      "workingDirectory": "C:\\Users\\auto1\\go\\src\\github.com\\eejai42\\cusa-v4\\cusa-v4\\cusa-ssot\\advertising-portal-ssot\\airtable"
+      "workingDirectory": "C:\\Users\\auto1\\go\\src\\github.com\\eejai42\\surprising-paradox-of-intercultural-communication"
     }
   }
 }
