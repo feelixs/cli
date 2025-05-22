@@ -329,7 +329,7 @@ class Installer:
             else:
                 print(f"Found existing dotnet v{supported_version} installation")
 
-            # save dotnet info json into site-packages - will tell ssotme commands to use the specific dotnet executable path
+            # save dotnet info json
             self.save_dotnet_info(supported_version)
 
             # create global.json, which tells dotnet commands ran in this dir to use the specific sdk version
