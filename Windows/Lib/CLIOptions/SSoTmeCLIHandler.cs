@@ -33,8 +33,6 @@ using System.ComponentModel;
 
 namespace SSoTme.OST.Lib.CLIOptions
 {
-
-
     public partial class SSoTmeCLIHandler
     {
         private SSOTMEPayload result;
@@ -76,7 +74,6 @@ namespace SSoTme.OST.Lib.CLIOptions
         {
             try
             {
-
                 CommandLineParser parser = new CommandLineParser(this);
                 if (!String.IsNullOrEmpty(this.commandLine)) parser.Parse(this.commandLine, false);
                 else parser.Parse(this.args, false);
@@ -117,6 +114,12 @@ namespace SSoTme.OST.Lib.CLIOptions
                     Console.ReadKey();
                     this.SuppressTranspile = true;
                 }
+                else if (this.info)
+                {
+                    // handled by the python cli wrapper:
+                    // code execution will never get here since the python cli catches this case before running the cs cli
+                    // WHY? -> because if dotnet isn't found the python cli can still run and print debugging stuff
+                }
                 else if (this.init)
                 {
                     if (String.IsNullOrEmpty(this.projectName))
@@ -124,8 +127,7 @@ namespace SSoTme.OST.Lib.CLIOptions
                         this.projectName = Path.GetFileName(Environment.CurrentDirectory);
                     }
 
-                    var force = this.args.Count() == 2 &&
-                                this.args[1] == "force";
+                    var force = this.args.Count() == 2 && this.args[1] == "force";
 
                     DataClasses.AICaptureProject.Init(force, this.projectName);
 
@@ -154,7 +156,10 @@ namespace SSoTme.OST.Lib.CLIOptions
                     if (String.IsNullOrEmpty(this.setAccountAPIKey) && !this.help && !this.authenticate && !this.listSeeds && !this.cloneSeed)
                     {
                         this.AICaptureProject = SSoTmeProject.LoadOrFail(new DirectoryInfo(Environment.CurrentDirectory), false, this.clean || this.cleanAll);
-                        if (!(this.AICaptureProject is null)) {
+                        if (this.AICaptureProject is null) {
+                            ShowError("ERROR: project is null. Please make sure you're in a valid project directory, or initialize a new project with `ssotme -init -name=...`");
+                        }
+                        else {
                             foreach (var projectSetting in this.AICaptureProject?.ProjectSettings ?? new BindingList<ProjectSetting>())
                             {
                                 if (!this.parameters.Any(anyParam => anyParam.StartsWith(String.Format("{0}=", projectSetting.Name))))

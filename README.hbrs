@@ -151,7 +151,8 @@ Options:
    -execute, -exec        Executes the given command as a ProcessInfo.Start
    -help, -h              Show help about how to use the SSoT.me CLI
    -includeDisabled,
-   -id                    Include disabled tools in th ebuild
+   -id                    Include disabled tools in the build
+   -info                  View your SSoTme CLI global settings
    -init                  Initialize the current folder as the root of an SSoT.me project. An Optional parameter of force will create a sub-project.
    -input, -i             Input filename or comma separated list of file names
    -install               Saves the current command into the SSoT.me Project file
