@@ -39,6 +39,9 @@ namespace SSoTme.OST.Lib.CLIOptions
         [CommandLineOption(Description = "Describes the current SSoT.me Project (and all transpilers)", MinOccurs = 0, Aliases = "d")]
         public bool describe { get; set; }
         
+        [CommandLineOption(Description = "View your SSoTme CLI global settings", MinOccurs = 0)]
+        public bool info { get; set; }
+        
         [CommandLineOption(Description = "Descibe all of the transpiler in the project", MinOccurs = 0, Aliases = "da")]
         public bool descibeAll { get; set; }
         
@@ -108,7 +111,7 @@ namespace SSoTme.OST.Lib.CLIOptions
         [CommandLineOption(Description = "Executes the given command as a ProcessInfo.Start", MinOccurs = 0, Aliases = "exec")]
         public string execute { get; set; }
         
-        [CommandLineOption(Description = "Include disabled tools in th ebuild", MinOccurs = 0, Aliases = "id")]
+        [CommandLineOption(Description = "Include disabled tools in the build", MinOccurs = 0, Aliases = "id")]
         public bool includeDisabled { get; set; }
         
         [CommandLineOption(Description = "Name of the project (optional parameter to the init command)", MinOccurs = 0, Aliases = "name")]

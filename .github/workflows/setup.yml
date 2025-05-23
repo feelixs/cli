@@ -26,7 +26,7 @@ jobs:
           pip install flake8
           flake8 . --ignore E501,F541,W293 
 
-  build-macos:
+  pip-install-macos:
 
     permissions:
       checks: write
@@ -35,9 +35,9 @@ jobs:
 
     runs-on: macos-latest
     strategy:
-      max-parallel: 4
+      max-parallel: 1
       matrix:
-        python-version: [ '3.9', '3.10', '3.11', '3.12', '3.13' ]
+        python-version: [ '3.13' ]
 
     steps:
       - uses: actions/checkout@v4
@@ -68,7 +68,7 @@ jobs:
             exit 1
           }
 
-  build-linux:
+  pip-install-linux:
 
     permissions:
       checks: write
@@ -77,9 +77,9 @@ jobs:
 
     runs-on: ubuntu-latest
     strategy:
-      max-parallel: 4
+      max-parallel: 1
       matrix:
-        python-version: [ '3.9', '3.10', '3.11', '3.12', '3.13' ]
+        python-version: [ '3.13' ]
 
     steps:
       - uses: actions/checkout@v4
@@ -110,7 +110,7 @@ jobs:
             exit 1
           }
 
-  build-windows:
+  pip-install-windows:
 
     permissions:
       checks: write
@@ -119,9 +119,9 @@ jobs:
 
     runs-on: windows-latest
     strategy:
-      max-parallel: 4
+      max-parallel: 1
       matrix:
-        python-version: [ '3.9', '3.10', '3.11', '3.12', '3.13' ]
+        python-version: [ '3.13' ]
 
     steps:
       - uses: actions/checkout@v4

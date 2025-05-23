@@ -11,10 +11,21 @@
 /package-lock.json
 *.DS_Store
 .idea/
+.vscode/
 
 # pip install stuff
 *.egg-info
 *.pyc
 ssotme/lib/
 ssotme/*.json
+
+# pyinstaller stuff
+build/
+dist/
+ssotme.spec
+
+# installer stuff
+Windows/Installer/Resources
+macOS/Installer/Resources
+macOS/Installer/*.pkg
 

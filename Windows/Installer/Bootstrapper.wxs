@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
+     xmlns:util="http://schemas.microsoft.com/wix/UtilExtension"
+     xmlns:bal="http://schemas.microsoft.com/wix/BalExtension">
+
+  <Bundle Name="SSoTme CLI Installer" Version="224.12.7"
+          Manufacturer="EffortlessAPI"
+          UpgradeCode="EB59dEFF-B979-464F-B36A-57F272E872A1">
+    <BootstrapperApplicationRef Id="WixStandardBootstrapperApplication.RtfLicense">
+      <bal:WixStandardBootstrapperApplication
+        LicenseFile="Assets\LICENSE.rtf"
+        LogoFile="Assets\Icon.ico"
+        ShowVersion="yes"
+        SuppressOptionsUI="no" />
+    </BootstrapperApplicationRef>
+
+    <util:RegistrySearch
+      Root="HKLM"
+      Key="SOFTWARE\dotnet\Setup\InstalledVersions\x64\sdk"
+      Value="7.0.410"
+      Variable="DOTNETSDK_INSTALLED" />
+
+    <Chain>
+      <ExePackage
+        Id="DotNetSdk"
+        DisplayName=".NET SDK 7.0.410"
+        Cache="no"
+        Compressed="no"
+        PerMachine="yes"
+        Vital="yes"
+        InstallCommand="/install /quiet /norestart"
+        UninstallCommand="/uninstall /quiet /norestart"
+        DownloadUrl="https://builds.dotnet.microsoft.com/dotnet/Sdk/7.0.410/dotnet-sdk-7.0.410-win-x64.exe"
+        DetectCondition="DOTNETSDK_INSTALLED"
+        Name="dotnet-sdk-7.0.410-win-x64">
+        <RemotePayload
+          Description="Microsoft .NET SDK 7.0.410"
+          ProductName=".NET SDK 7.0.410"
+          Size="229368400"
+          Version="7.0.410.0"
+          Hash="90BE446AD6E42B57A25E0CD2F7572764C4E161EB" />
+      </ExePackage>
+
+      <MsiPackage
+        Id="MainInstaller"
+        SourceFile="bin\cli-installer\Release\CLI_Installer.msi"
+        DisplayInternalUI="yes"
+        Vital="yes" />
+    </Chain>
+  </Bundle>
+</Wix>

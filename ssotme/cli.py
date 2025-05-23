@@ -5,6 +5,10 @@ import json
 import os
 
 
+class CustomException(Exception):
+    pass
+
+
 BASE_SUPPORTED_DOTNET = "7.0.410"
 
 
@@ -48,64 +52,83 @@ def get_dotnet_info() -> (str, str):
         with open(dotnet_info_path, "r") as f:
             return dotnet_info_path, json.load(f)
     except Exception:
-        print(f"FATAL: Could not find dotnet_info.json\n"
-              f"If it's been moved or modified, please make sure it's in the correct path\n"
-              f"Or if it was deleted, re-install ssotme from https://github.com/ssotme/cli or using pip\n\n"
-              f"Error reading dotnet_info.json at {dotnet_info_path}\n")
-        raise
+        raise CustomException(f"FATAL: Could not find dotnet_info.json\n"
+                              f"If it's been moved or modified, please make sure it's in the correct path\n"
+                              f"Or if it was deleted, you can re-run the installer, re-install ssotme from "
+                              f"https://github.com/ssotme/cli/releases, or run pip install git+https://github.com/ssotme/cli"
+                              f"\n\nError reading dotnet_info.json at {dotnet_info_path}\n")
+
+
+def get_api_keys():
+    home, ssotme = get_home_ssotme_dir()
+    api_keys_path = os.path.join(ssotme, "ssotme.key")
+    try:
+        with open(api_keys_path, "r") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return None  # nonfatal if the file doesn't exist
+    except Exception:
+        raise CustomException(f"Could not parse ssotme.key at {api_keys_path}. You may need to delete the file and "
+                              f"re-run `ssotme -api ...` to save your API keys again.\n")
 
 
 def main():
-    info_filepath, dotnet_info = get_dotnet_info()
-    if dotnet_info is not None and "executable_path" in dotnet_info and os.path.exists(dotnet_info["executable_path"]):
-        dotnet = dotnet_info["executable_path"]
-    else:
-        # fall back to using 'dotnet' command (not direct path to exe)
-        dotnet = shutil.which("dotnet")
-        if not dotnet:
-            print("dotnet is not installed or not in PATH.")
-            sys.exit(1)
+    try:
+        info_filepath, dotnet_info = get_dotnet_info()
+        if dotnet_info is not None and "executable_path" in dotnet_info and os.path.exists(dotnet_info["executable_path"]):
+            dotnet = dotnet_info["executable_path"]
+        else:
+            # fall back to using 'dotnet' command (not direct path to exe)
+            dotnet = shutil.which("dotnet")
+            if not dotnet:
+                print("dotnet is not installed or not in PATH.")
+                raise CustomException("The .NET SDK was not found in your System PATH")
 
-    # Get version from saved info or package.json
-    version = BASE_SUPPORTED_DOTNET
-    if dotnet_info and "using_version" in dotnet_info:
-        version = dotnet_info["using_version"]
-    
-    dll_path = get_dll_path(version)
+        # Get version from saved info or package.json
+        version = BASE_SUPPORTED_DOTNET
+        if dotnet_info and "using_version" in dotnet_info:
+            version = dotnet_info["using_version"]
 
-    args = sys.argv[1:]
-    code = 0
-    if len(args) > 0 and (args[0] == "--info" or args[0] == "-i"):
-        # print debugging info
-        print(f"SSOTME Version: {dotnet_info['ssotme_version']}\n"
-              f"Configured to use .NET SDK {version}\n"
-              f"Configured to use .NET executable: {dotnet}\n"
-              f"Using config file: {info_filepath}\n")
+        dll_path = get_dll_path(version)
 
-        # verify the dotnet version being used
-        result = subprocess.run([dotnet, "--version"], stdout=subprocess.PIPE)
-        dotnet_version = result.stdout.decode().strip()
-        if dotnet_version != version:
-            print(f"WARNING: .NET SDK version does not match .NET executable - configured to use .NET SDK {version}, but `{dotnet} --version` returned {dotnet_version}\n")
+        args = sys.argv[1:]
+        code = 0
+        if len(args) > 0 and (args[0] == "-info"):
+            # print debugging info
+            print(f"SSOTME Version: {dotnet_info['ssotme_version']}\n"
+                  f"Configured to use .NET SDK {version}\n"
+                  f"Configured to use .NET executable: {dotnet}\n"
+                  f"Using config file: {info_filepath}\n")
 
-    else:
-        # run the actual cli
-        try:
+            # print api keys that were configured with `ssotme -api ...` if the key file exists in ~/.ssotme/ssotme.key
+            try:
+                configured_keys = get_api_keys()
+                if configured_keys is not None:
+                    keys = ""
+                    for key in configured_keys:
+                        keys += f"{key}: {configured_keys[key]}\n"
+                    print(f"Configured API keys:\n{keys}")
+            except Exception as e:
+                print(e)
+
+            # verify the dotnet version being used
+            result = subprocess.run([dotnet, "--version"], stdout=subprocess.PIPE)
+            dotnet_version = result.stdout.decode().strip()
+            if dotnet_version != version:
+                print(f"WARNING: .NET SDK version does not match .NET executable - configured to use .NET SDK {version}, but `{dotnet} --version` returned {dotnet_version}\n")
+        else:
+            # run the actual cli
             result = subprocess.run([dotnet, dll_path] + args)
             code = result.returncode
-        except Exception as e:
-            print(f"Execution failed: {e}")
-            code = 1
+    except CustomException as e:
+        print(e)
+        code = 1
+    except KeyboardInterrupt:
+        print("Execution interrupted by user")
+        code = 2
+    except Exception as e:
+        print(f"An unexpected error occurred: {type(e).__name__}\n"
+              f"Please report this issue at https://github.com/ssotme/cli/issues\n")
+        code = 1
 
     sys.exit(code)
-
-# todo: we're tracking which dotnet sdk version we should use in package.json['dotnet'], and across the python codebase
-# The package.json['dotnet'] also tells setup.py which dotnet version to automatically install.
-# the question is whether we need to keep tracking the version (do we need to warn users?)
-# if so, we could just add these to path to force dotnet to use a specific version:
-
-# export DOTNET_ROOT=$HOME/dotnet
-# export PATH=$DOTNET_ROOT:$PATH
-
-# set DOTNET_ROOT=C:\path\to\sdk
-# set PATH=%DOTNET_ROOT%;%PATH%
