@@ -6,23 +6,24 @@ const TTL_MS = 60 * 1000;
 
 const server = http.createServer((req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
-  const appid = url.searchParams.get("appid");
+  const baseId = url.searchParams.get("baseId");
 
-  if (!appid) {
+  if (!baseId) {
     res.writeHead(400);
-    return res.end("Missing appid");
+    return res.end("Missing baseId=app123xyz321");
   }
 
   if (req.method === "GET" && url.pathname === "/mark") {
-    state.set(appid, Date.now());
+    state.set(baseId, Date.now());
     res.writeHead(200);
     return res.end("Marked");
   }
 
   if (req.method === "GET" && url.pathname === "/check") {
-    const ts = state.get(appid) || 0;
+    const ts = state.get(baseId) || 0;
     const changed = (Date.now() - ts) < TTL_MS;
     res.writeHead(200, { "Content-Type": "application/json" });
+    state.delete(baseId);
     return res.end(JSON.stringify({ changed }));
   }
 
