@@ -82,8 +82,8 @@ public static class DirectoryExtensions
             throw new NotImplementedException("The specified directory does not exist.");
         }
 
-        Console.WriteLine($"Executing 'ssotme -build' in {di.FullName}");
-        var p = Process.Start(new ProcessStartInfo("cmd.exe", $"/c ssotme -build") { WorkingDirectory = di.FullName });
+        Console.WriteLine($"Executing 'ssotme -buildLocal' in {di.FullName}");
+        var p = Process.Start(new ProcessStartInfo("cmd.exe", $"/c ssotme -buildLocal") { WorkingDirectory = di.FullName });
         p.WaitForExit(300000);
     }
 

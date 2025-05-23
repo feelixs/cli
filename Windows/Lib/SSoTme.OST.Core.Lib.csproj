@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <Version>2021.04.08.0557</Version>
+    <Version>2025.05.22.42301</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -33,6 +33,8 @@
     <PackageReference Include="RabbitMQ.Client" Version="5.1.0" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.5.0" />
     <PackageReference Include="System.Data.Common" Version="4.3.0" />
+    <PackageReference Include="System.Text.Json" Version="9.0.5" />
+    <PackageReference Include="System.Xml.XmlSerializer" Version="4.3.0" />
   </ItemGroup>
 
   <ItemGroup>

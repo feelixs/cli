@@ -22,6 +22,8 @@ using Newtonsoft.Json.Linq;
 using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
 using SSoTme.OST.Core.Lib.Extensions;
+using System.Net.Http;
+using System.Text.Json;
 
 namespace SSoTme.OST.Lib.DataClasses
 {
@@ -666,14 +668,100 @@ namespace SSoTme.OST.Lib.DataClasses
             return relativePath.Replace("\\", "/");
         }
 
-        internal void RebuildAll(string rootPath, bool includeDisabled, string transpilerGroup)
+        internal void RebuildAll(string rootPath, bool includeDisabled, string transpilerGroup, string buildOnTrigger, bool isLocalBuild)
         {
-            this.Rebuild(rootPath, includeDisabled, transpilerGroup, true);
+            this.Rebuild(rootPath, includeDisabled, transpilerGroup, buildOnTrigger, isLocalBuild, true);
         }
 
-        internal void Rebuild(string buildPath, bool includeDisabled, string transpilerGroup, bool isBuildAll = false)
+        internal void Rebuild(
+            string buildPath,
+            bool includeDisabled,
+            string transpilerGroup,
+            string buildOnTrigger,
+            bool isBuildLocal,
+            bool isBuildAll = false)
         {
-            this.CheckIfParentIsRootSeed();
+            if (!string.IsNullOrEmpty(buildOnTrigger))
+            {
+                this.LogMessage("Watching for Airtable changes using baseId: {0}...", buildOnTrigger);
+                this.ListenForChangesAndRebuild(buildPath, includeDisabled, transpilerGroup, isBuildLocal, isBuildAll, buildOnTrigger);
+            }
+            else
+            {
+                this.DoRebuild(buildPath, includeDisabled, transpilerGroup, isBuildLocal, isBuildAll);
+            }
+        }
+
+        private void ListenForChangesAndRebuild(
+    string buildPath,
+    bool includeDisabled,
+    string transpilerGroup,
+    bool isBuildLocal,
+    bool isBuildAll,
+    string baseId)
+        {
+            DateTime? lastChangedTime = null;
+            bool changeEverDetected = false;
+            string uri = $"https://ssotme-cli-airtable-bridge-ahrnz660db6k4.aws-us-east-1.controlplane.us/check?baseId={baseId}";
+
+            Console.WriteLine($"Polling {uri} for changes...");
+
+            while (true)
+            {
+                if (CheckChanged(uri))
+                {
+                    lastChangedTime = DateTime.UtcNow;
+                    changeEverDetected = true;
+                    Console.WriteLine($"Change detected at {lastChangedTime.Value.ToLocalTime():HH:mm:ss}");
+                }
+                else if (changeEverDetected && lastChangedTime.HasValue)
+                {
+                    var elapsed = (DateTime.UtcNow - lastChangedTime.Value).TotalSeconds;
+
+                    if (elapsed > 10)
+                    {
+                        Console.WriteLine("No changes in last 10 seconds. Rebuilding...");
+                        this.DoRebuild(buildPath, includeDisabled, transpilerGroup, isBuildLocal, isBuildAll);
+                        changeEverDetected = false;
+                        lastChangedTime = null;
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Waiting... {Math.Round(elapsed, 1)}s since last change.");
+                    }
+                }
+                else
+                {
+                    Console.Write(".");
+                }
+
+                Thread.Sleep(3000);
+            }
+        }
+
+        private bool CheckChanged(string uri)
+        {
+            try
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    var response = httpClient.GetStringAsync(uri).Result;
+                    var json = JsonDocument.Parse(response);
+                    var changed = json.RootElement.GetProperty("changed").GetRawText();
+                    return changed == "true";
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error calling listener API: {ex.Message}");
+                return false;
+            }
+        }
+
+
+        internal void DoRebuild(string buildPath, bool includeDisabled, string transpilerGroup, bool isBuildLocal, bool isBuildAll = false)
+        {
+            if (!isBuildLocal) this.CheckIfParentIsRootSeed();
             if (isBuildAll) this.FindSSoTmeJsonFiles();
             var currentDirectory = Environment.CurrentDirectory;
             try
@@ -758,7 +846,7 @@ namespace SSoTme.OST.Lib.DataClasses
         {
             if (File.Exists("../ssotme.json"))
             {
-                var p = Process.Start(new ProcessStartInfo("cmd.exe", $"/c ssotme -build -tg ssot") { WorkingDirectory = ".." });
+                var p = Process.Start(new ProcessStartInfo("cmd.exe", $"/c ssotme -buildLocal -tg ssot") { WorkingDirectory = ".." });
                 p.WaitForExit(300000);
             }
         }
