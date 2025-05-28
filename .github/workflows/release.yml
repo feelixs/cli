@@ -22,7 +22,8 @@ jobs:
         run: |
           VERSION=$(node -p "require('./package.json').version")
           echo "version=v$VERSION" >> $GITHUB_OUTPUT
-          if git rev-parse "v$VERSION" >/dev/null 2>&1; then
+          git fetch --tags
+          if git tag -l | grep -q "^v$VERSION$"; then
             echo "Tag v$VERSION already exists, skipping release"
             echo "skip=true" >> $GITHUB_OUTPUT
           else
