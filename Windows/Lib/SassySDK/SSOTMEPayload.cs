@@ -107,6 +107,9 @@ namespace SassyMQ.SSOTME.Lib.RMQActors
 
         public void CleanFileSet()
         {
+            // skip cleaning if no project
+            if (this.SSoTmeProject is null) return;
+            
             FileInfo zfsFI = GetZFSFI();
             if (zfsFI.Exists)
             {
@@ -143,6 +146,9 @@ namespace SassyMQ.SSOTME.Lib.RMQActors
 
         public void SavePreviousFileSet(string fileSetXml)
         {
+            // skip for null projects
+            if (this.SSoTmeProject is null) return;
+            
             var zfsFI = this.GetZFSFI();
             if (!zfsFI.Directory.Exists) zfsFI.Directory.Create();
             File.WriteAllBytes(zfsFI.FullName, fileSetXml.Zip());
