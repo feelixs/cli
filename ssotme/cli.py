@@ -9,7 +9,7 @@ class CustomException(Exception):
     pass
 
 
-BASE_SUPPORTED_DOTNET = "7.0.410"
+BASE_SUPPORTED_DOTNET = "8.0.410"
 
 
 def get_home_ssotme_dir():
