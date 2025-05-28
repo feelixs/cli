@@ -1,0 +1,33 @@
+name: Release
+on:
+  release:
+    types: [ prereleased, released ]
+
+jobs:
+
+  # Prepare and publish the plugin to JetBrains Marketplace repository
+  release:
+    name: Publish Plugin
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Fetch Package Version
+        id: version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=v$VERSION" >> $GITHUB_OUTPUT
+          if git rev-parse "v$VERSION" >/dev/null 2>&1; then
+            echo "Tag v$VERSION already exists"
+          else
+            git tag "v$VERSION"
+            git push origin "v$VERSION"
+          fi
+
+      # Upload installers as release assets
+      - name: Upload Installers to Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload ${{ steps.version.outputs.version }} ./macOS/Installer/pkg/signed/*
