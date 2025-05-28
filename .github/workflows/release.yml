@@ -1,7 +1,7 @@
 name: Release
 on:
-  release:
-    types: [ prereleased, released ]
+  push:
+    branches: [ "*" ]
 
 jobs:
 
@@ -28,6 +28,17 @@ jobs:
             git tag "v$VERSION"
             git push origin "v$VERSION"
           fi
+          
+      # Create initial pre-release
+      - name: Create Pre-Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create ${{ steps.version.outputs.version }} \
+            --title "Release ${{ steps.version.outputs.version }}" \
+            --notes "Automated release from ${{ github.ref_name }} branch" \
+            --target ${{ github.sha }} \
+            --prerelease
 
       # Upload installers as release assets
       - name: Upload Installers to Release
