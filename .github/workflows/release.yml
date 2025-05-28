@@ -34,3 +34,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh release upload ${{ steps.version.outputs.version }} ./macOS/Installer/pkg/signed/*
+        
+      # Convert pre-release to latest release
+      - name: Mark as Latest Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release edit ${{ steps.version.outputs.version }} --prerelease=false --latest
