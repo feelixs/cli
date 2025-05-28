@@ -14,8 +14,6 @@ namespace SSoTme.OST.Lib.CLIOptions
                         Description = @"-p description=\n\nSYNTAX: ssotme {command} [...{additional_args}] [options]\nOptions")]
     public partial class SSoTmeCLIHandler
     {
-        public bool dirIsValidProject = true;  // we will explicitly set to false if needed
-        
         [CommandLineOption(Description = "Show help about how to use the SSoT.me CLI", MinOccurs = 0, Aliases = "h")]
         public bool help { get; set; }
         

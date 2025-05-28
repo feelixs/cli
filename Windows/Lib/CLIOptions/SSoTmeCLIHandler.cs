@@ -158,8 +158,7 @@ namespace SSoTme.OST.Lib.CLIOptions
                         this.AICaptureProject = SSoTmeProject.LoadOrFail(new DirectoryInfo(Environment.CurrentDirectory), false, this.clean || this.cleanAll);
                         if (this.AICaptureProject is null) {
                             // warn user for clarity
-                            ShowError("WARN: Running in a non-project directory. Some ssotme commands may fail.", ConsoleColor.DarkYellow);
-                            this.dirIsValidProject = false;
+                            ShowError("WARN: Running in a non-project directory", ConsoleColor.DarkYellow);
                         }
                         
                         // still can continue with basic transpilers
