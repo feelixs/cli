@@ -157,7 +157,8 @@ namespace SSoTme.OST.Lib.CLIOptions
                     {
                         this.AICaptureProject = SSoTmeProject.LoadOrFail(new DirectoryInfo(Environment.CurrentDirectory), false, this.clean || this.cleanAll);
                         if (this.AICaptureProject is null) {
-                            // ShowError("WARNING: project is null. Please make sure you're in a valid project directory, or initialize a new project with `ssotme -init -name=...`");
+                            // warn user for clarity
+                            ShowError("WARN: Running in a non-project directory. Some ssotme commands may fail.", ConsoleColor.DarkYellow);
                             this.dirIsValidProject = false;
                         }
                         
@@ -803,10 +804,10 @@ Seed Url: ");
             }
         }
 
-        private static void ShowError(string msg)
+        private static void ShowError(string msg, ConsoleColor color = ConsoleColor.Red)
         {
             var curColor = Console.ForegroundColor;
-            Console.ForegroundColor = ConsoleColor.Red;
+            Console.ForegroundColor = color;
             Console.WriteLine(msg);
             Console.ForegroundColor = curColor;
         }
