@@ -5,9 +5,9 @@ on:
 
 jobs:
 
-  # Prepare and publish the plugin to JetBrains Marketplace repository
+  # Upload the package files from ./macOS/Installer/psk/signed/* to the GitHub Release
   release:
-    name: Publish Plugin
+    name: Publish Package
     runs-on: ubuntu-latest
     permissions:
       contents: write
