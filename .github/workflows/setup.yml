@@ -24,7 +24,7 @@ jobs:
       - name: Code Analysis
         run: |
           pip install flake8
-          flake8 . --ignore E501,F541,W293 --exclude build-on-triggers
+          flake8 . --ignore E501,F541,W293 --exclude build-on-trigger
 
   pip-install-macos:
 
