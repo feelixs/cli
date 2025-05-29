@@ -5,7 +5,7 @@ on:
 
 jobs:
 
-  # Upload the package files from ./macOS/Installer/psk/signed/* to the GitHub Release
+  # Upload the package files from ./release/* to the GitHub Release
   release:
     name: Publish Package
     runs-on: ubuntu-latest
