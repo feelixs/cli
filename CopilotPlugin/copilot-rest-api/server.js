@@ -15,6 +15,8 @@ const server = http.createServer((req, res) => {
     }
 
     if (req.method === "POST" && url.pathname === "/mark") {
+        // mark this ID with the specified content
+        // think of a pull request make via this endpoint which the CLI needs to merge into airtable/baserow/etc
         let body = '';
         req.on('data', chunk => {
             body += chunk.toString();
