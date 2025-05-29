@@ -1,0 +1,230 @@
+openapi: "3.0.0"
+info:
+  title: Echo Plugin
+  version: "1.0"
+  description: Echo Plugin API that accepts POST requests to echo messages
+servers:
+  - url: https://felixcreations.com/api/products/testplugin/
+    description: Development server
+paths:
+  /echo/:
+    post:
+      summary: Echoes a message via POST request
+      description: Revives a message to be echoed back.
+      operationId: echoMessage
+      requestBody:
+        required: true
+        description: Message to be echoed
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - message
+              properties:
+                message:
+                  type: string
+                  description: The message to echo back
+                  example: "Hello, world!"
+      responses:
+        '200':
+          description: Successfully echoed the message
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - reply
+                  - description
+                  - code
+                properties:
+                  reply:
+                    type: string
+                    description: The echoed message
+                    example: "Hello, world!"
+                  description:
+                    type: string
+                    description: Status description
+                    example: "Successfully echoed the message"
+                  code:
+                    type: integer
+                    description: Status code
+                    example: 200
+        '400':
+          description: Bad request - missing or invalid input
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message
+                    example: "Missing 'a' field"
+                  code:
+                    type: integer
+                    description: Error code
+                    example: 400
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message
+                    example: "Internal server error"
+                  code:
+                    type: integer
+                    description: Error code
+                    example: 500
+
+  /add/:
+    post:
+      summary: Adds two numbers
+      description: REQUIRED for all addition operations. Takes two input numbers, a and b, and returns their sum. Always use this endpoint for any addition calculation.
+      operationId: add
+      requestBody:
+        required: true
+        description: The input numbers to add together
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - a
+                - b
+              properties:
+                a:
+                  type: number
+                  description: First input number
+                  example: 1
+                b:
+                  type: number
+                  description: Second input number
+                  example: 3
+      responses:
+        '200':
+          description: Numbers were successfully added
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - result
+                  - code
+                properties:
+                  result:
+                    type: number
+                    description: The sum of the input numbers
+                    example: 4
+                  code:
+                    type: integer
+                    description: Status code
+                    example: 200
+        '400':
+          description: Bad request - missing or invalid input
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message
+                    example: "Missing 'a' field"
+                  code:
+                    type: integer
+                    description: Error code
+                    example: 400
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message
+                    example: "Internal server error"
+                  code:
+                    type: integer
+                    description: Error code
+                    example: 500
+
+  /subtract/:
+    post:
+      summary: Subtracts two numbers
+      description: REQUIRED for all subtraction operations. Takes two input numbers, a and b, and returns a - b. Always use this endpoint for any subtraction calculation.
+      operationId: subtract
+      requestBody:
+        required: true
+        description: The input numbers for the subtract operation
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - a
+                - b
+              properties:
+                a:
+                  type: number
+                  description: First input number
+                  example: 1
+                b:
+                  type: number
+                  description: Second input number, will be subtracted from `a`
+                  example: 3
+      responses:
+        '200':
+          description: The numbers were successfully subtracted
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - result
+                  - code
+                properties:
+                  result:
+                    type: number
+                    description: The result of the subtraction
+                    example: -2
+                  code:
+                    type: integer
+                    description: Status code
+                    example: 200
+        '400':
+          description: Bad request - missing or invalid input
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message
+                    example: "Missing 'a' field"
+                  code:
+                    type: integer
+                    description: Error code
+                    example: 400
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message
+                    example: "Internal server error"
+                  code:
+                    type: integer
+                    description: Error code
+                    example: 500
