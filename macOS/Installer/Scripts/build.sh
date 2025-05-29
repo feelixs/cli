@@ -44,7 +44,7 @@ sudo rm -rf "$DIST_DIR"
 sudo rm -rf "$BUILD_DIR"
 sudo rm -rf "$BIN_DIR"
 sudo rm -rf "$ROOT_DIR/build"
-sudo rm release/*.pkg
+sudo rm -f release/*.pkg
 
 echo "Creating necessary directories..."
 mkdir -p "$RESOURCES_DIR" "$BUILD_DIR" "$DIST_DIR" "$ASSETS_DIR" "$BIN_DIR" "$BIN_DIR/signed" "$BIN_DIR/unsigned"
