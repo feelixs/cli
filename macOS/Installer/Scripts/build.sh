@@ -31,7 +31,8 @@ RESOURCES_DIR="$INSTALLER_DIR/Resources"
 ASSETS_DIR="$INSTALLER_DIR/Assets"
 BUILD_DIR="$INSTALLER_DIR/build"
 DIST_DIR="$ROOT_DIR/dist"
-BIN_DIR="$INSTALLER_DIR/pkg"
+BIN_DIR="$INSTALLER_DIR/bin"
+RELEASE_FOLDER="$ROOT_DIR/release"
 SSOTME_DIR="$HOME/.ssotme"
 SSOTME_VERSION=$(grep -o '"version": "[^"]*"' "$ROOT_DIR/package.json" | cut -d'"' -f4)
 
@@ -43,6 +44,7 @@ sudo rm -rf "$DIST_DIR"
 sudo rm -rf "$BUILD_DIR"
 sudo rm -rf "$BIN_DIR"
 sudo rm -rf "$ROOT_DIR/build"
+sudo rm release/*.pkg
 
 echo "Creating necessary directories..."
 mkdir -p "$RESOURCES_DIR" "$BUILD_DIR" "$DIST_DIR" "$ASSETS_DIR" "$BIN_DIR" "$BIN_DIR/signed" "$BIN_DIR/unsigned"
@@ -57,7 +59,7 @@ else
 fi
 
 echo "Building cli.py..."
-/bin/bash "$SOURCE_DIR/build-cli.sh" $PYTHON_VENVPATH
+/bin/bash "$SOURCE_DIR/build-cli.sh" "$PYTHON_VENVPATH"
 
 echo "Copy executable file ssotme into Resources under aliases: ssotme, aic, aicapture..."
 cp "$DIST_DIR/ssotme" "$RESOURCES_DIR/ssotme"
@@ -138,4 +140,5 @@ echo ""
 echo "$SCRIPT_DIR/notarize.sh" "$BIN_DIR/signed/$THE_INSTALLER_FILENAME" $APPLE_EMAIL $NOTARYPASS
 /bin/bash "$SCRIPT_DIR/notarize.sh" "$BIN_DIR/signed/$THE_INSTALLER_FILENAME" $APPLE_EMAIL $NOTARYPASS
 
-open "$BIN_DIR/signed" -a Finder
+cp "$BIN_DIR/signed/$THE_INSTALLER_FILENAME" "$RELEASE_FOLDER/$THE_INSTALLER_FILENAME"
+open "$RELEASE_FOLDER" -a Finder

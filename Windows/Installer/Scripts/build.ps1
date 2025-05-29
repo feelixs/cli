@@ -21,6 +21,7 @@ $binFolder = Join-Path $InstallerDir "bin"
 $OutputDir = Join-Path $binFolder "cli-installer\$Configuration"
 $distDir = Join-Path $RootDir "dist"
 $ssotmeDir = Join-Path $HOME ".ssotme"
+$releaseDir = Join-Path $RootDir "release"
 
 # clean any previous builds
 Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $distDir
@@ -34,8 +35,11 @@ $Directories = @(
     $ResourcesDir,
     $OutputDir,
     $distDir,
-    $AssetsDir
+    $AssetsDir,
+    $releaseDir
 )
+
+Remove-Item -Path "$releaseDir\*.exe" -Force -ErrorAction SilentlyContinue
 
 foreach ($Dir in $Directories) {
     if (-not (Test-Path $Dir)) {
@@ -174,10 +178,12 @@ try {
 
     Write-Host "WiX installer built successfully"
 
-    # Output the path to the MSI
-    $FinalExePath = Join-Path (Join-Path $binFolder "main") "SSoTmeInstaller.exe"
-    if (Test-Path $MsiPath) {
-        Write-Host "Installer created at: $MsiPath"
+    $FinalExePath = Join-Path (Join-Path (Join-Path $binFolder "main") "Release" ) "SSoTmeInstaller.exe"
+    if (Test-Path $FinalExePath) {
+        Write-Host "Installer created at: $FinalExePath"
+        Copy-Item -Path $FinalExePath -Destination "$releaseDir/SSoTmeInstaller.exe" -Force
+        Write-Host "Preview $releaseDir"
+        Invoke-Item "$releaseDir"  # open in file explorer
     }
     else {
         Write-Error "Installer not created. Check the WiX build logs for errors. Checked path: $FinalExePath"

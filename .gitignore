@@ -27,5 +27,5 @@ ssotme.spec
 # installer stuff
 Windows/Installer/Resources
 macOS/Installer/Resources
-macOS/Installer/*.pkg
+macOS/Installer/pkg/unsigned
 
