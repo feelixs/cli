@@ -8,35 +8,78 @@
       "items": [
         {
           "type": "TextBlock",
-          "text": "✏️ SSoT Schema Write",
+          "text": "This is your adaptive card template",
           "weight": "bolder",
           "size": "medium"
         },
         {
-          "type": "TextBlock",
-          "text": "Schema modification request submitted for base: **${baseId}**",
-          "wrap": true,
-          "size": "default"
-        },
+          "type": "ColumnSet",
+          "columns": [
+            {
+              "type": "Column",
+              "width": "auto",
+              "items": [
+                {
+                  "type": "Image",
+                  "url": "https://github.com/microsoft/kiota/blob/main/vscode/microsoft-kiota/images/logo.png?raw=true",
+                  "altText": "Kiota logo",
+                  "size": "medium",
+                  "style": "person"
+                }
+              ]
+            },
+            {
+              "type": "Column",
+              "width": "auto",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": "Adaptive Card",
+                  "weight": "bolder",
+                  "wrap": true
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Container",
+      "items": [
         {
           "type": "TextBlock",
-          "text": "**Status:** ${if(msg, 'Success', 'Processing...')}",
-          "wrap": true,
-          "weight": "bolder",
-          "color": "${if(msg, 'good', 'warning')}"
+          "text": "Now that we have defined the adaptive card template, one can go to the plugin manifest file and edit it to create a card that displays the relevant information for their users.",
+          "wrap": true
+        }
+      ]
+    },
+    {
+      "type": "ColumnSet",
+      "columns": [
+        {
+          "type": "Column",
+          "width": "auto",
+          "items": [
+            {
+              "type": "TextBlock",
+              "horizontalAlignment": "center",
+              "text": "Learn about [Adaptive Cards](https://adaptivecards.io/)",
+              "wrap": true
+            }
+          ]
         },
         {
-          "type": "TextBlock",
-          "text": "${msg}",
-          "wrap": true,
-          "isSubtle": true
-        },
-        {
-          "type": "TextBlock",
-          "text": "💡 **Note:** Changes will be processed by the CLI and applied to your SSoT system automatically.",
-          "wrap": true,
-          "size": "small",
-          "isSubtle": true
+          "type": "Column",
+          "width": "auto",
+          "items": [
+            {
+              "type": "TextBlock",
+              "horizontalAlignment": "center",
+              "text": "Learn about [API Plugin for Microsoft 365 Copilot](https://learn.microsoft.com/en-us/microsoft-365-copilot/extensibility/overview-api-plugins)",
+              "wrap": true
+            }
+          ]
         }
       ]
     }
