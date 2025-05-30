@@ -15,7 +15,7 @@ const server = http.createServer(async (req, res) => {
 
     if (!baseId) {
         res.writeHead(400);
-        return res.end("Missing baseId=app123xyz321");
+        return res.end(JSON.stringify({'msg': "Missing baseId=app123xyz321"}));
     }
 
     if (req.method === "POST" && url.pathname === "/mark-base") {
@@ -32,18 +32,18 @@ const server = http.createServer(async (req, res) => {
                 content = data.content;
             } catch (e) {
                 res.writeHead(400);
-                return res.end("Invalid JSON");
+                return res.end(JSON.stringify({'msg': "Invalid JSON"}));
             }
             
             if (!content) {
                 res.writeHead(400);
-                return res.end("Missing required field 'content'");
+                return res.end(JSON.stringify({'msg': "Missing required field 'content'"}));
             }
             
             state.set(baseId, Date.now());
             stateContent.set(baseId, content);
-            res.writeHead(200);
-            return res.end(`Marked ${baseId} with content: ${JSON.stringify(content)}`);
+            res.writeHead(200, { "Content-Type": "application/json" });
+            return res.end(JSON.stringify({'msg': `Marked ${baseId} with content: ${JSON.stringify(content)}`}));
         });
         return;
     }
@@ -83,18 +83,18 @@ const server = http.createServer(async (req, res) => {
                 content = data.content;
             } catch (e) {
                 res.writeHead(400);
-                return res.end("Invalid JSON");
+                return res.end(JSON.stringify({'msg': "Invalid JSON"}));
             }
 
             if (!content) {
                 res.writeHead(400);
-                return res.end("Missing required field 'content'");
+                return res.end(JSON.stringify({'msg': "Missing required field 'content'"}));
             }
 
             readAvails.set(baseId, Date.now());
             readResponses.set(baseId, content);
-            res.writeHead(200);
-            return res.end(`Marked ${baseId} with content: ${JSON.stringify(content)}`);
+            res.writeHead(200, { "Content-Type": "application/json" });
+            return res.end(JSON.stringify({'msg': `Marked ${baseId} with content: ${JSON.stringify(content)}`}));
         });
         return;
     }
@@ -124,7 +124,7 @@ const server = http.createServer(async (req, res) => {
             if (waited > theTimeout)
             {
                 res.writeHead(500);
-                return res.end(`Timeout waiting for response from CLI! ${baseId}`);
+                return res.end(JSON.stringify({'msg': `Timeout waiting for response from CLI! ${baseId}`}));
             }
         }
 
@@ -132,7 +132,7 @@ const server = http.createServer(async (req, res) => {
         if (!response) {
             // if it doesnt exist but the cli changed the date... error
             res.writeHead(500);
-            return res.end(`Error reading response from CLI! ${baseId}`);
+            return res.end(JSON.stringify({'msg': `Error reading response from CLI! ${baseId}`}));
         }
 
         res.writeHead(200, { "Content-Type": "application/json" });
@@ -140,7 +140,7 @@ const server = http.createServer(async (req, res) => {
     }
 
     res.writeHead(404);
-    res.end("Not found");
+    res.end(JSON.stringify({'msg': "Not found"}));
 });
 
 server.listen(process.env.PORT || 8080);
