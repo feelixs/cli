@@ -54,7 +54,7 @@
         },
         {
           "type": "TextBlock", 
-          "text": "Debug: ${$root}",
+          "text": "Debug: ${metadata}",
           "wrap": true
         }
       ]
