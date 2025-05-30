@@ -19,7 +19,7 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (req.method === "POST" && url.pathname === "/mark-base") {
-        // mark this ID with the specified content
+        // mark this ID with the specified content (used by the copilot plugin to request changes to a base)
         // think of a pull request make via this endpoint which the CLI needs to merge into airtable/baserow/etc
         let body = '';
         req.on('data', chunk => {
@@ -48,7 +48,10 @@ const server = http.createServer(async (req, res) => {
         return;
     }
 
-    if (req.method === "GET" && url.pathname === "/check-base") {
+    if (req.method === "GET" && url.pathname === "/check-base")
+        // used by the CLI to register if the plugin has requested a change via /mark-base
+        // -> should poll this and then update the airtable/etc with the requested content
+    {
         const ts = state.get(baseId) || 0;
         const changed = (Date.now() - ts) < TTL_MS;
         const content = stateContent.get(baseId) || null;
@@ -70,7 +73,8 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (req.method === "POST" && url.pathname === "/put-read")
-        // this cli will post ssot reads here
+        // this cli will POST ssot reads here
+        // the plugin's rest API (this script) will be polling this before it returns anything to the plugin, or timeout
     {
         let body = '';
         req.on('data', chunk => {
@@ -100,7 +104,8 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (req.method === "GET" && url.pathname === "/request-read")
-        // copilot will request a ssot read, and wait until the cli responds
+        // copilot will request a ssot read here
+        // & this server will wait until the cli responds and return its response to the plugin (or timeout)
     {
         const reqDate = new Date(Date.now());
         readRequests.set(baseId, reqDate);
@@ -110,7 +115,7 @@ const server = http.createServer(async (req, res) => {
         // the cli will be polling check-read-req/ which returns readRequests[base]
         // then the cli should push to /put-read which will update readAvails[base]
 
-        // now wait for the cli to put something there
+        // now wait for the cli to call /put-read, which will put something there
         let ts = readAvails.get(baseId) || 0;
         let changed = (Date.now() - ts) < TTL_MS;
         while (!changed)
