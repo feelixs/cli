@@ -25,7 +25,7 @@
     "functions": [
         {
             "name": "readSsotBase",
-            "description": "Retrieves the current Single Source of Truth schema including all entities, fields, and metadata for the specified base ID. Use this to examine existing data models before making changes.",
+            "description": "Retrieves the current Single Source of Truth schema including all entities, fields, and metadata for the specified base ID.",
             "capabilities": {
                 "response_semantics": {
                     "data_path": "$",
@@ -37,7 +37,7 @@
         },
         {
             "name": "writeSsotBase",
-            "description": "Submits schema changes like adding fields, creating entities, or updating existing models. Changes are processed asynchronously by the CLI and applied to the SSoT system.",
+            "description": "Submits schema changes like adding fields, creating entities, or updating existing models.",
             "capabilities": {
                 "response_semantics": {
                     "data_path": "$",
