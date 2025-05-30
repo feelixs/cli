@@ -14,7 +14,7 @@
         },
         {
           "type": "TextBlock",
-          "text": "Current schema for base: **${baseId}**",
+          "text": "Current schema for base: **${metadata.base_id}**",
           "wrap": true,
           "size": "default"
         },
@@ -23,6 +23,13 @@
           "text": "**Entities Found:** ${entities.length}",
           "wrap": true,
           "weight": "bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "**Version:** ${metadata.version} | **Updated:** ${metadata.last_updated}",
+          "wrap": true,
+          "size": "small",
+          "isSubtle": true
         },
         {
           "type": "Container",
