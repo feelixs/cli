@@ -108,7 +108,7 @@ paths:
 
   /request-read:
     get:
-      summary: Read the current SSoT schema for a specified base
+      summary: Read the current SSoT schema for the specified base
       description: Retrieves the current Single Source of Truth schema including all entities, fields, and metadata for the specified base ID
       operationId: readSsotBase
       parameters:
