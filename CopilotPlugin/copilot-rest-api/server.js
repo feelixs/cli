@@ -45,8 +45,7 @@ const server = http.createServer(async (req, res) => {
             res.writeHead(200);
             return res.end(`Marked ${baseId} with content: ${content}`);
         });
-        res.writeHead(500);
-        return res.end(JSON.stringify({baseId: "error"}));
+        return;
     }
 
     if (req.method === "GET" && url.pathname === "/check-base") {
@@ -97,8 +96,7 @@ const server = http.createServer(async (req, res) => {
             res.writeHead(200);
             return res.end(`Marked ${baseId} with content: ${content}`);
         });
-        res.writeHead(500);
-        return res.end(JSON.stringify({baseId: "error"}));
+        return;
     }
 
     if (req.method === "GET" && url.pathname === "/request-read")
