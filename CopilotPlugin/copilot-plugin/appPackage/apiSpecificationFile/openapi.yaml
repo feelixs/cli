@@ -1,55 +1,84 @@
 openapi: "3.0.0"
 info:
-  title: Echo Plugin
+  title: SSoTme Agent
   version: "1.0"
-  description: Echo Plugin API that accepts POST requests to echo messages
+  description: Agent that uses the ssotme protocol to assist users in editing their projects' single source of truth
 servers:
-  - url: https://felixcreations.com/api/products/testplugin/
+  - url: http://134.209.173.56:8080/
     description: Development server
 paths:
-  /echo/:
+  /mark-base:
     post:
-      summary: Echoes a message via POST request
-      description: Revives a message to be echoed back.
-      operationId: echoMessage
+      summary: Submit schema modifications to a SSoT base
+      description: Submits schema changes like adding fields, creating entities, or updating existing models. Changes are processed asynchronously by the CLI and applied to the SSoT system.
+      operationId: writeSsotBase
+      parameters:
+        - name: baseId
+          in: query
+          required: true
+          description: The alphanumeric base/project ID to modify
+          schema:
+            type: string
+            example: "default"
       requestBody:
         required: true
-        description: Message to be echoed
+        description: The updated SSoT schema content to apply
         content:
           application/json:
             schema:
               type: object
               required:
-                - message
+                - content
               properties:
-                message:
-                  type: string
-                  description: The message to echo back
-                  example: "Hello, world!"
+                content:
+                  type: object
+                  description: The complete SSoT schema object with entities and metadata
+                  properties:
+                    entities:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                            example: "Customer"
+                          fields:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                name:
+                                  type: string
+                                  example: "email"
+                                type:
+                                  type: string
+                                  example: "email"
+                                required:
+                                  type: boolean
+                                  example: false
+                    metadata:
+                      type: object
+                      properties:
+                        version:
+                          type: string
+                          example: "1.0.0"
+                        last_updated:
+                          type: string
+                          example: "2025-05-30T10:30:00Z"
       responses:
         '200':
-          description: Successfully echoed the message
+          description: The content was successfully MARKED for changes
           content:
             application/json:
               schema:
                 type: object
                 required:
-                  - reply
-                  - description
-                  - code
+                  - msg
                 properties:
-                  reply:
+                  msg:
                     type: string
-                    description: The echoed message
-                    example: "Hello, world!"
-                  description:
-                    type: string
-                    description: Status description
-                    example: "Successfully echoed the message"
-                  code:
-                    type: integer
-                    description: Status code
-                    example: 200
+                    description: The server's text response
+                    example: "The operation was successful"
         '400':
           description: Bad request - missing or invalid input
           content:
@@ -57,14 +86,10 @@ paths:
               schema:
                 type: object
                 properties:
-                  error:
+                  msg:
                     type: string
                     description: Error message
                     example: "Missing 'a' field"
-                  code:
-                    type: integer
-                    description: Error code
-                    example: 400
         '500':
           description: Internal server error
           content:
@@ -72,58 +97,64 @@ paths:
               schema:
                 type: object
                 properties:
-                  error:
+                  msg:
                     type: string
                     description: Error message
                     example: "Internal server error"
-                  code:
-                    type: integer
-                    description: Error code
-                    example: 500
 
-  /add/:
-    post:
-      summary: Adds two numbers
-      description: REQUIRED for all addition operations. Takes two input numbers, a and b, and returns their sum. Always use this endpoint for any addition calculation.
-      operationId: add
-      requestBody:
-        required: true
-        description: The input numbers to add together
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - a
-                - b
-              properties:
-                a:
-                  type: number
-                  description: First input number
-                  example: 1
-                b:
-                  type: number
-                  description: Second input number
-                  example: 3
+  /request-read:
+    get:
+      summary: Read the current SSoT schema for a specified base
+      description: Retrieves the current Single Source of Truth schema including all entities, fields, and metadata for the specified base ID
+      operationId: readSsotBase
+      parameters:
+        - name: baseId
+          in: query
+          required: true
+          description: The alphanumeric base/project ID to read from
+          schema:
+            type: string
+            example: "default"
       responses:
         '200':
-          description: Numbers were successfully added
+          description: Successfully retrieved the SSoT schema data
           content:
             application/json:
               schema:
                 type: object
-                required:
-                  - result
-                  - code
                 properties:
-                  result:
-                    type: number
-                    description: The sum of the input numbers
-                    example: 4
-                  code:
-                    type: integer
-                    description: Status code
-                    example: 200
+                  entities:
+                    type: array
+                    description: List of entities in the schema
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          example: "Customer"
+                        fields:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              name:
+                                type: string
+                                example: "id"
+                              type:
+                                type: string
+                                example: "integer"
+                              required:
+                                type: boolean
+                                example: true
+                  metadata:
+                    type: object
+                    properties:
+                      version:
+                        type: string
+                        example: "1.0.0"
+                      last_updated:
+                        type: string
+                        example: "2025-05-30T10:30:00Z"
         '400':
           description: Bad request - missing or invalid input
           content:
@@ -131,14 +162,21 @@ paths:
               schema:
                 type: object
                 properties:
-                  error:
+                  msg:
                     type: string
                     description: Error message
                     example: "Missing 'a' field"
-                  code:
-                    type: integer
-                    description: Error code
-                    example: 400
+        '408':
+          description: Request timeout - the base doesnt exist or server is at too high load
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: Error message
+                    example: "Timeout waiting for server response!"
         '500':
           description: Internal server error
           content:
@@ -146,85 +184,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  error:
+                  msg:
                     type: string
                     description: Error message
                     example: "Internal server error"
-                  code:
-                    type: integer
-                    description: Error code
-                    example: 500
-
-  /subtract/:
-    post:
-      summary: Subtracts two numbers
-      description: REQUIRED for all subtraction operations. Takes two input numbers, a and b, and returns a - b. Always use this endpoint for any subtraction calculation.
-      operationId: subtract
-      requestBody:
-        required: true
-        description: The input numbers for the subtract operation
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - a
-                - b
-              properties:
-                a:
-                  type: number
-                  description: First input number
-                  example: 1
-                b:
-                  type: number
-                  description: Second input number, will be subtracted from `a`
-                  example: 3
-      responses:
-        '200':
-          description: The numbers were successfully subtracted
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - result
-                  - code
-                properties:
-                  result:
-                    type: number
-                    description: The result of the subtraction
-                    example: -2
-                  code:
-                    type: integer
-                    description: Status code
-                    example: 200
-        '400':
-          description: Bad request - missing or invalid input
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    description: Error message
-                    example: "Missing 'a' field"
-                  code:
-                    type: integer
-                    description: Error code
-                    example: 400
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    description: Error message
-                    example: "Internal server error"
-                  code:
-                    type: integer
-                    description: Error code
-                    example: 500

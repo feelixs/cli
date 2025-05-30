@@ -110,7 +110,7 @@ const server = http.createServer(async (req, res) => {
         const reqDate = new Date(Date.now());
         readRequests.set(baseId, reqDate);
 
-        const theTimeout = 60 * 1000; // 1 minute
+        const theTimeout = 30 * 1000;
         let waited = 0;
         // the cli will be polling check-read-req/ which returns readRequests[base]
         // then the cli should push to /put-read which will update readAvails[base]
@@ -128,7 +128,7 @@ const server = http.createServer(async (req, res) => {
 
             if (waited > theTimeout)
             {
-                res.writeHead(500);
+                res.writeHead(408);
                 return res.end(JSON.stringify({'msg': `Timeout waiting for response from CLI! ${baseId}`}));
             }
         }

@@ -1,0 +1,42 @@
+{
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "type": "AdaptiveCard",
+  "version": "1.0",
+  "body": [
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "text": "📖 SSoT Schema Read",
+          "weight": "bolder",
+          "size": "medium"
+        },
+        {
+          "type": "TextBlock",
+          "text": "Current schema for base: **${baseId}**",
+          "wrap": true,
+          "size": "default"
+        },
+        {
+          "type": "TextBlock",
+          "text": "**Entities Found:** ${entities.length}",
+          "wrap": true,
+          "weight": "bolder"
+        },
+        {
+          "type": "Container",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "```json\n${$root}\n```",
+              "wrap": true,
+              "fontType": "monospace",
+              "size": "small"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

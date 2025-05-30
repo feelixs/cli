@@ -1,38 +1,51 @@
 {
     "$schema": "https://developer.microsoft.com/json-schemas/copilot/plugin/v2.1/schema.json",
     "schema_version": "v2.1",
-    "name_for_human": "Echo Plugin",
-    "description_for_human": "Description for Echo Plugin",
-    "description_for_model": "Description for Echo Plugin",
-    "contact_email": "publisher-email@example.com",
-    "namespace": "testcopilotextension",
+    "name_for_human": "SSoTme Agent",
+    "description_for_human": "Assists you with reading and editing your project's Single Source of Truth (SSoT) schema, enabling seamless model management and automatic code generation.",
+    "description_for_model": "An intelligent agent that helps developers manage their Single Source of Truth (SSoT) schema. Use readSsotBase to examine current data models and entities in a base. Use writeSsotBase to submit schema modifications like adding fields, creating new entities, or updating existing models. All changes are automatically processed and reflected in the generated codebase.",
+    "contact_email": "michael@effortlessapi.com",
+    "namespace": "SsotmeCopilotAgent",
     "capabilities": {
         "conversation_starters": [
             {
-                "text": "Echoes a message"
+                "text": "Show me the current schema for my default base"
+            },
+            {
+                "text": "Add an email field to my Customer model"
+            },
+            {
+                "text": "Create a new Order entity with customer relationship"
+            },
+            {
+                "text": "What entities are currently defined in my schema?"
             }
         ]
     },
     "functions": [
         {
-            "name": "echoMessage",
-            "description": "Echoes a message by sending a POST request with the message in the request body",
+            "name": "readSsotBase",
+            "description": "Reads the current SSoT schema for a specified base, returning all entities, fields, and metadata. Use this to examine existing data models before making changes.",
             "capabilities": {
                 "response_semantics": {
                     "data_path": "$",
                     "static_template": {
-                        "file": "./adaptiveCards/echoMessage.json"
+                        "file": "./adaptiveCards/readSsotBase.json"
                     }
                 }
             }
         },
         {
-            "name": "add",
-            "description": "REQUIRED for all addition operations. Adds two numbers together using the API endpoint."
-        },
-        {
-            "name": "subtract", 
-            "description": "REQUIRED for all subtraction operations. Subtracts one number from another using the API endpoint."
+            "name": "writeSsotBase",
+            "description": "Submits schema modifications to a SSoT base. Use this to add fields, create entities, or update existing models. Changes are processed asynchronously by the CLI.",
+            "capabilities": {
+                "response_semantics": {
+                    "data_path": "$",
+                    "static_template": {
+                        "file": "./adaptiveCards/writeSsotBase.json"
+                    }
+                }
+            }
         }
     ],
     "runtimes": [
@@ -45,9 +58,8 @@
                 "url": "apiSpecificationFile/openapi.yaml"
             },
             "run_for_functions": [
-                "echoMessage",
-                "add",
-                "subtract"
+                "readSsotBase",
+                "writeSsotBase"
             ]
         }
     ]
