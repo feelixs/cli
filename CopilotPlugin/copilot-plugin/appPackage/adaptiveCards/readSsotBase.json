@@ -8,7 +8,7 @@
       "items": [
         {
           "type": "TextBlock",
-          "text": "This is your adaptive card template",
+          "text": "📖 SSoT Schema Data",
           "weight": "bolder",
           "size": "medium"
         },
@@ -49,7 +49,17 @@
       "items": [
         {
           "type": "TextBlock",
-          "text": "Now that we have defined the adaptive card template, one can go to the plugin manifest file and edit it to create a card that displays the relevant information for their users.",
+          "text": "Base ID: ${metadata.base_id}",
+          "wrap": true
+        },
+        {
+          "type": "TextBlock", 
+          "text": "Entities: ${entities.length}",
+          "wrap": true
+        },
+        {
+          "type": "TextBlock",
+          "text": "Version: ${metadata.version}",
           "wrap": true
         }
       ]
