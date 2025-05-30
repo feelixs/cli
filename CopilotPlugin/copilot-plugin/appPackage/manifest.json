@@ -1,29 +1,29 @@
 {
     "$schema": "https://developer.microsoft.com/json-schemas/teams/v1.19/MicrosoftTeams.schema.json",
     "manifestVersion": "1.19",
-    "version": "1.0.8",
+    "version": "1.0.0",
     "id": "${{TEAMS_APP_ID}}",
     "developer": {
-        "name": "EffortlessAPI",
-        "websiteUrl": "https://www.example.com",
-        "privacyUrl": "https://www.example.com/privacy",
-        "termsOfUseUrl": "https://www.example.com/termofuse"
+        "name": "An Abstract Level LLC",
+        "websiteUrl": "https://effortlessapi.com",
+        "privacyUrl": "https://effortlessapi.com/rulebook/privacy",
+        "termsOfUseUrl": "https://effortlessapi.com/rulebook/terms"
     },
     "icons": {
         "color": "color.png",
         "outline": "outline.png"
     },
     "name": {
-        "short": "test-copilot-extension${{APP_NAME_SUFFIX}}",
-        "full": "Full name for test-copilot-extension"
+        "short": "SSoTmeAgent${{APP_NAME_SUFFIX}}",
+        "full": "Full name for SSoTmeAgent"
     },
     "description": {
-        "short": "Short description for test-copilot-extension",
-        "full": "Full description for test-copilot-extension"
+        "short": "Short description for SSoTmeAgent",
+        "full": "Full description for SSoTmeAgent"
     },
     "accentColor": "#FFFFFF",
     "copilotAgents": {
-        "declarativeAgents": [            
+        "declarativeAgents": [
             {
                 "id": "declarativeAgent",
                 "file": "declarativeAgent.json"
