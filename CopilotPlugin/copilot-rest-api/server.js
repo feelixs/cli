@@ -45,7 +45,7 @@ const server = http.createServer(async (req, res) => {
             res.writeHead(200);
             return res.end(`Marked ${baseId} with content: ${content}`);
         });
-        req.writeHead(500);
+        res.writeHead(500);
         return res.end(JSON.stringify({baseId: "error"}));
     }
 
@@ -97,7 +97,7 @@ const server = http.createServer(async (req, res) => {
             res.writeHead(200);
             return res.end(`Marked ${baseId} with content: ${content}`);
         });
-        req.writeHead(500);
+        res.writeHead(500);
         return res.end(JSON.stringify({baseId: "error"}));
     }
 
