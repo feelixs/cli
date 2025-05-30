@@ -117,44 +117,19 @@ paths:
             example: "default"
       responses:
         '200':
-          description: Successfully retrieved the SSoT schema data
+          description: Successfully retrieved the SSoT schema data. Expected response contains "data" (json object with entities and metadata) and "baseId" (string).
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  entities:
-                    type: array
-                    description: List of entities in the schema
-                    items:
-                      type: object
-                      properties:
-                        name:
-                          type: string
-                          example: "Customer"
-                        fields:
-                          type: array
-                          items:
-                            type: object
-                            properties:
-                              name:
-                                type: string
-                                example: "id"
-                              type:
-                                type: string
-                                example: "integer"
-                              required:
-                                type: boolean
-                                example: true
-                  metadata:
+                  data:
                     type: object
-                    properties:
-                      version:
-                        type: string
-                        example: "1.0.0"
-                      last_updated:
-                        type: string
-                        example: "2025-05-30T10:30:00Z"
+                    description: Complete SSoT schema data including entities and metadata
+                  baseId:
+                    type: string
+                    description: The base/project ID that was requested
+                    example: "customer_base"
         '400':
           description: Bad request - missing or invalid input
           content:

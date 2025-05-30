@@ -51,7 +51,7 @@ const server = http.createServer(async (req, res) => {
             state.set(baseId, Date.now());
             stateContent.set(baseId, content);
             res.writeHead(200, { "Content-Type": "application/json" });
-            return res.end(JSON.stringify({'msg': `Marked ${baseId} with content: ${JSON.stringify(content)}`}));
+            return res.end(JSON.stringify({'msg': `Marked ${baseId} with content: ${JSON.stringify(content)}`, baseId: baseId}));
         });
         return;
     }
@@ -162,7 +162,7 @@ const server = http.createServer(async (req, res) => {
 
         log(`Sending successful response to Copilot for baseId: ${baseId}`);
         res.writeHead(200, { "Content-Type": "application/json" });
-        return res.end(JSON.stringify({ data: response }));
+        return res.end(JSON.stringify({ data: response, baseId: baseId }));
     }
 
     res.writeHead(404);

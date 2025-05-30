@@ -49,7 +49,7 @@
       "items": [
         {
           "type": "TextBlock",
-          "text": "Full Data: ${data}",
+          "text": "Base ID: ${baseId}",
           "wrap": true
         }
       ]
