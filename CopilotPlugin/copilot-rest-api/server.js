@@ -11,16 +11,22 @@ const TTL_MS = 60 * 1000;
 function log(message, data = null) {
     const timestamp = new Date().toISOString();
     console.log(`[${timestamp}] SERVER: ${message}`);
-    if (data) {
-        console.log(`[${timestamp}] DATA:`, JSON.stringify(data, null, 2));
-    }
+    //if (data) {
+    //    console.log(`[${timestamp}] DATA:`, JSON.stringify(data, null, 2));
+    //}
 }
 
 const server = http.createServer(async (req, res) => {
     const url = new URL(req.url, `http://${req.headers.host}`);
     const baseId = url.searchParams.get("baseId");
+    
+    // Log every request
+    if ((url.pathname !== '/check-base') && (url.pathname !== '/check-read-req')) {
+        log(`${req.method} ${url.pathname} - baseId: ${baseId || 'missing'} - IP: ${req.socket.remoteAddress}`);
+    }
 
     if (!baseId) {
+        log(`ERROR: Missing baseId parameter for ${req.method} ${url.pathname}`);
         res.writeHead(400);
         return res.end(JSON.stringify({'msg': "Missing baseId parameter", 'errorCode': 'MISSING_BASE_ID'}));
     }
@@ -37,23 +43,25 @@ const server = http.createServer(async (req, res) => {
             try {
                 const data = JSON.parse(body);
                 content = data.content;
+                log(`MARK-BASE: Valid JSON received for baseId: ${baseId}`);
             } catch (e) {
+                log(`ERROR: MARK-BASE invalid JSON for baseId: ${baseId}`);
                 res.writeHead(422);
                 return res.end(JSON.stringify({'msg': "Invalid JSON", baseId: baseId}));
             }
             
             if (!content) {
+                log(`ERROR: MARK-BASE missing content for baseId: ${baseId}`);
                 res.writeHead(422);
                 return res.end(JSON.stringify({'msg': "Missing required field 'content'", baseId: baseId}));
             }
             
             baseLastChanged.set(baseId, Date.now());
-
-            // make sure our in memory dict is updated to the new content
             baseContents.set(baseId, content);
+            log(`SUCCESS: MARK-BASE stored content for baseId: ${baseId}`);
 
             res.writeHead(200, { "Content-Type": "application/json" });
-            return res.end(JSON.stringify({'msg': `Marked ${baseId} with content: ${JSON.stringify(content)}`, baseId: baseId}));
+            return res.end(JSON.stringify({'msg': `Marked ${baseId} with content`, baseId: baseId}));
         });
         return;
     }
@@ -85,34 +93,33 @@ const server = http.createServer(async (req, res) => {
         // this cli will POST ssot reads here
         // the plugin's rest API (this script) will be polling this before it returns anything to the plugin, or timeout
     {
-        log(`PUT-READ request received for baseId: ${baseId}`);
         let body = '';
         req.on('data', chunk => {
             body += chunk.toString();
         });
         req.on('end', () => {
-            log(`PUT-READ body received for baseId: ${baseId}`, body);
             let content;
             try {
                 const data = JSON.parse(body);
                 content = data.content;
+                log(`PUT-READ: Content received for baseId: ${baseId}`);
             } catch (e) {
-                log(`PUT-READ JSON parse error for baseId: ${baseId}`, e.message);
+                log(`ERROR: PUT-READ invalid JSON for baseId: ${baseId}`);
                 res.writeHead(400);
                 return res.end(JSON.stringify({'msg': "Invalid JSON"}));
             }
 
             if (!content) {
-                log(`PUT-READ missing content for baseId: ${baseId}`);
+                log(`ERROR: PUT-READ missing content for baseId: ${baseId}`);
                 res.writeHead(400);
                 return res.end(JSON.stringify({'msg': "Missing required field 'content'"}));
             }
 
-            log(`PUT-READ storing response for baseId: ${baseId}`, content);
             readAvails.set(baseId, Date.now());
             baseContents.set(baseId, content);
+            log(`SUCCESS: PUT-READ stored content for baseId: ${baseId}`);
             res.writeHead(200, { "Content-Type": "application/json" });
-            return res.end(JSON.stringify({'msg': `Marked ${baseId} with content: ${JSON.stringify(content)}`}));
+            return res.end(JSON.stringify({'msg': `Marked ${baseId} with content`}));
         });
         return;
     }
@@ -153,7 +160,7 @@ const server = http.createServer(async (req, res) => {
         }
 
         const updatedContent = baseContents.get(baseId);
-        log(`CLI response received for baseId: ${baseId}`, updatedContent);
+        log(`CLI response received for baseId: ${baseId}`);
         
         if (!updatedContent) {
             // if it doesn't exist but the cli changed the date... error
