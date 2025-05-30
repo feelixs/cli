@@ -43,7 +43,7 @@ const server = http.createServer(async (req, res) => {
             state.set(baseId, Date.now());
             stateContent.set(baseId, content);
             res.writeHead(200);
-            return res.end(`Marked ${baseId} with content: ${content}`);
+            return res.end(`Marked ${baseId} with content: ${JSON.stringify(content)}`);
         });
         return;
     }
@@ -94,7 +94,7 @@ const server = http.createServer(async (req, res) => {
             readAvails.set(baseId, Date.now());
             readResponses.set(baseId, content);
             res.writeHead(200);
-            return res.end(`Marked ${baseId} with content: ${content}`);
+            return res.end(`Marked ${baseId} with content: ${JSON.stringify(content)}`);
         });
         return;
     }

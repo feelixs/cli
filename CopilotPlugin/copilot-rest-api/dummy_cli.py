@@ -10,7 +10,7 @@ import json
 import sys
 import os
 
-SERVER_URL = os.getenv('SERVER_URL', 'http://localhost:8080')
+SERVER_URL = os.getenv('SERVER_URL', 'http://134.209.173.56:8080/')
 POLL_INTERVAL = 2  # seconds
 
 # Dummy SSoT data for different bases
@@ -59,7 +59,7 @@ def check_read_requests():
             
             if response.status_code == 200:
                 data = response.json()
-                if data.get('changed', default=False):
+                if data.get('changed', False):
                     log(f"Read request detected for base: {base_id}")
                     provide_ssot_data(base_id)
             else:
