@@ -9,7 +9,7 @@ const readResponses = new Map(); // the read content of each base returned by th
 
 const TTL_MS = 60 * 1000;
 
-const server = http.createServer((req, res) => {
+const server = http.createServer(async (req, res) => {
     const url = new URL(req.url, `http://${req.headers.host}`);
     const baseId = url.searchParams.get("baseId");
 
@@ -117,7 +117,7 @@ const server = http.createServer((req, res) => {
         let changed = (Date.now() - ts) < TTL_MS;
         while (!changed)
         {
-            wait(500); // wait 5 seconds
+            await new Promise(resolve => setTimeout(resolve, 500)); // wait 500ms
             waited += 500;
 
             ts = readAvails.get(baseId) || 0;
@@ -130,14 +130,15 @@ const server = http.createServer((req, res) => {
             }
         }
 
-        if (readResponses.get(baseId) === null) {
+        const response = readResponses.get(baseId);
+        if (!response) {
             // if it doesnt exist but the cli changed the date... error
             res.writeHead(500);
             return res.end(`Error reading response from CLI! ${baseId}`);
         }
 
-        res.writeHead(200);
-        return res.end(JSON.stringify(readResponses.get(baseId)));
+        res.writeHead(200, { "Content-Type": "application/json" });
+        return res.end(JSON.stringify(response));
     }
 
     res.writeHead(404);
