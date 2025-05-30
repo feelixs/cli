@@ -67,7 +67,7 @@ const server = http.createServer(async (req, res) => {
         const content = baseContents.get(baseId) || null;
         res.writeHead(200, { "Content-Type": "application/json" });
         baseLastChanged.delete(baseId);  // the change has now been merged into our memory dict
-        return res.end(JSON.stringify({ changedRecently, content }));
+        return res.end(JSON.stringify({ "changed": changedRecently, content }));
     }
 
     if (req.method === "GET" && url.pathname === "/check-read-req")
@@ -77,7 +77,7 @@ const server = http.createServer(async (req, res) => {
         const isRecentReadRequest = (Date.now() - ts) < TTL_MS;
         res.writeHead(200, { "Content-Type": "application/json" });
         readRequests.delete(baseId);
-        return res.end(JSON.stringify({ isRecentReadRequest }));
+        return res.end(JSON.stringify({ "changed": isRecentReadRequest }));
         // now the cli should immediatelly post the base's content to /put-read
     }
 
