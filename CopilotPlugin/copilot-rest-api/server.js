@@ -4,6 +4,7 @@ const state = new Map();
 const stateContent = new Map();
 
 const readRequests = new Map();  // bools whether copilot wants to read each base
+const readAvails = new Map();  // bools whether the CLI responded for this base
 const readResponses = new Map(); // the read content of each base returned by the cli
 
 const TTL_MS = 60 * 1000;
@@ -58,6 +59,17 @@ const server = http.createServer((req, res) => {
         return res.end(JSON.stringify({ changed, content }));
     }
 
+    if (req.method === "GET" && url.pathname === "/check-read-req")
+        // the cli will check this endpoint to see which bases the plugin wants to read from
+    {
+        const ts = readRequests.get(baseId) || 0;
+        const changed = (Date.now() - ts) < TTL_MS;
+        res.writeHead(200, { "Content-Type": "application/json" });
+        readRequests.delete(baseId);
+        return res.end(JSON.stringify({ changed }));
+        // now the cli should immediatelly post the base's content to /put-read
+    }
+
     if (req.method === "POST" && url.pathname === "/put-read")
         // this cli will post ssot reads here
     {
@@ -80,7 +92,7 @@ const server = http.createServer((req, res) => {
                 return res.end("Missing required field 'content'");
             }
 
-            readRequests.set(baseId, Date.now());
+            readAvails.set(baseId, Date.now());
             readResponses.set(baseId, content);
             res.writeHead(200);
             return res.end(`Marked ${baseId} with content: ${content}`);
@@ -92,16 +104,24 @@ const server = http.createServer((req, res) => {
     if (req.method === "GET" && url.pathname === "/request-read")
         // copilot will request a ssot read, and wait until the cli responds
     {
-        const setDate = new Date(Date.now());
-        readRequests.set(baseId, setDate);
+        const reqDate = new Date(Date.now());
+        readRequests.set(baseId, reqDate);
+
         const theTimeout = 60 * 1000; // 1 minute
-        var waited = 0;
+        let waited = 0;
+        // the cli will be polling check-read-req/ which returns readRequests[base]
+        // then the cli should push to /put-read which will update readAvails[base]
 
         // now wait for the cli to put something there
-        while (readRequests.get(baseId) === setDate)
+        let ts = readAvails.get(baseId) || 0;
+        let changed = (Date.now() - ts) < TTL_MS;
+        while (!changed)
         {
             wait(500); // wait 5 seconds
             waited += 500;
+
+            ts = readAvails.get(baseId) || 0;
+            changed = (Date.now() - ts) < TTL_MS;
 
             if (waited > theTimeout)
             {
