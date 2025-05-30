@@ -54,12 +54,7 @@
         },
         {
           "type": "TextBlock", 
-          "text": "Entities: ${entities.length}",
-          "wrap": true
-        },
-        {
-          "type": "TextBlock",
-          "text": "Version: ${metadata.version}",
+          "text": "Debug: ${$root}",
           "wrap": true
         }
       ]
