@@ -79,6 +79,10 @@ paths:
                     type: string
                     description: The server's text response
                     example: "The operation was successful"
+                  baseId:
+                    type: string
+                    description: The base ID that was modified
+                    example: "CLI"
         '400':
           description: Bad request - missing or invalid input
           content:
