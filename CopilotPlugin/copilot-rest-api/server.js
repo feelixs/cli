@@ -1,11 +1,10 @@
 // server.js
 const http = require('http');
-const state = new Map();
-const stateContent = new Map();
+const baseLastChanged = new Map();
 
 const readRequests = new Map();  // bools whether copilot wants to read each base
 const readAvails = new Map();  // bools whether the CLI responded for this base
-const readResponses = new Map(); // the read content of each base returned by the cli
+const baseContents = new Map(); // the read content of each base returned by the cli
 
 const TTL_MS = 60 * 1000;
 
@@ -48,8 +47,11 @@ const server = http.createServer(async (req, res) => {
                 return res.end(JSON.stringify({'msg': "Missing required field 'content'"}));
             }
             
-            state.set(baseId, Date.now());
-            stateContent.set(baseId, content);
+            baseLastChanged.set(baseId, Date.now());
+
+            // make sure our in memory dict is updated to the new content
+            baseContents.set(baseId, content);
+
             res.writeHead(200, { "Content-Type": "application/json" });
             return res.end(JSON.stringify({'msg': `Marked ${baseId} with content: ${JSON.stringify(content)}`, baseId: baseId}));
         });
@@ -60,23 +62,22 @@ const server = http.createServer(async (req, res) => {
         // used by the CLI to register if the plugin has requested a change via /mark-base
         // -> should poll this and then update the airtable/etc with the requested content
     {
-        const ts = state.get(baseId) || 0;
-        const changed = (Date.now() - ts) < TTL_MS;
-        const content = stateContent.get(baseId) || null;
+        const ts = baseLastChanged.get(baseId) || 0;
+        const changedRecently = (Date.now() - ts) < TTL_MS;
+        const content = baseContents.get(baseId) || null;
         res.writeHead(200, { "Content-Type": "application/json" });
-        state.delete(baseId);
-        // stateContent.delete(baseId);
-        return res.end(JSON.stringify({ changed, content }));
+        baseLastChanged.delete(baseId);  // the change has now been merged into our memory dict
+        return res.end(JSON.stringify({ changedRecently, content }));
     }
 
     if (req.method === "GET" && url.pathname === "/check-read-req")
         // the cli will check this endpoint to see which bases the plugin wants to read from
     {
         const ts = readRequests.get(baseId) || 0;
-        const changed = (Date.now() - ts) < TTL_MS;
+        const isRecentReadRequest = (Date.now() - ts) < TTL_MS;
         res.writeHead(200, { "Content-Type": "application/json" });
         readRequests.delete(baseId);
-        return res.end(JSON.stringify({ changed }));
+        return res.end(JSON.stringify({ isRecentReadRequest }));
         // now the cli should immediatelly post the base's content to /put-read
     }
 
@@ -109,7 +110,7 @@ const server = http.createServer(async (req, res) => {
 
             log(`PUT-READ storing response for baseId: ${baseId}`, content);
             readAvails.set(baseId, Date.now());
-            readResponses.set(baseId, content);
+            baseContents.set(baseId, content);
             res.writeHead(200, { "Content-Type": "application/json" });
             return res.end(JSON.stringify({'msg': `Marked ${baseId} with content: ${JSON.stringify(content)}`}));
         });
@@ -126,21 +127,22 @@ const server = http.createServer(async (req, res) => {
 
         const theTimeout = 30 * 1000;
         let waited = 0;
-        // the cli will be polling check-read-req/ which returns readRequests[base]
-        // then the cli should push to /put-read which will update readAvails[base]
+        // the cli will be polling /check-read-req which returns readRequests[base]
+        // copilot calling this endpoint will make /check-read-req return true
 
-        // now wait for the cli to call /put-read, which will put something there
+        // then the cli will push to /put-read which updates readAvails[base] to now()
         let ts = readAvails.get(baseId) || 0;
-        let changed = (Date.now() - ts) < TTL_MS;
-        log(`Waiting for CLI response for baseId: ${baseId}, initial changed: ${changed}`);
+        let newContent = (Date.now() - ts) < TTL_MS;
+        log(`Waiting for CLI response on baseId: ${baseId}`);
         
-        while (!changed)
+        while (!newContent)
         {
             await new Promise(resolve => setTimeout(resolve, 500)); // wait 500ms
             waited += 500;
 
+            log(`Polling for CLI response on baseId: ${baseId}`);
             ts = readAvails.get(baseId) || 0;
-            changed = (Date.now() - ts) < TTL_MS;
+            newContent = (Date.now() - ts) < TTL_MS;
 
             if (waited > theTimeout)
             {
@@ -150,11 +152,11 @@ const server = http.createServer(async (req, res) => {
             }
         }
 
-        const response = readResponses.get(baseId);
-        log(`CLI response received for baseId: ${baseId}`, response);
+        const updatedContent = baseContents.get(baseId);
+        log(`CLI response received for baseId: ${baseId}`, updatedContent);
         
-        if (!response) {
-            // if it doesnt exist but the cli changed the date... error
+        if (!updatedContent) {
+            // if it doesn't exist but the cli changed the date... error
             log(`ERROR: No response data found for baseId: ${baseId}`);
             res.writeHead(500);
             return res.end(JSON.stringify({'msg': `Error reading response from CLI! ${baseId}`}));
@@ -162,7 +164,7 @@ const server = http.createServer(async (req, res) => {
 
         log(`Sending successful response to Copilot for baseId: ${baseId}`);
         res.writeHead(200, { "Content-Type": "application/json" });
-        return res.end(JSON.stringify({ data: response, baseId: baseId }));
+        return res.end(JSON.stringify({ data: updatedContent, baseId: baseId }));
     }
 
     res.writeHead(404);
