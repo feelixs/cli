@@ -9,6 +9,14 @@ const readResponses = new Map(); // the read content of each base returned by th
 
 const TTL_MS = 60 * 1000;
 
+function log(message, data = null) {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] SERVER: ${message}`);
+    if (data) {
+        console.log(`[${timestamp}] DATA:`, JSON.stringify(data, null, 2));
+    }
+}
+
 const server = http.createServer(async (req, res) => {
     const url = new URL(req.url, `http://${req.headers.host}`);
     const baseId = url.searchParams.get("baseId");
@@ -76,25 +84,30 @@ const server = http.createServer(async (req, res) => {
         // this cli will POST ssot reads here
         // the plugin's rest API (this script) will be polling this before it returns anything to the plugin, or timeout
     {
+        log(`PUT-READ request received for baseId: ${baseId}`);
         let body = '';
         req.on('data', chunk => {
             body += chunk.toString();
         });
         req.on('end', () => {
+            log(`PUT-READ body received for baseId: ${baseId}`, body);
             let content;
             try {
                 const data = JSON.parse(body);
                 content = data.content;
             } catch (e) {
+                log(`PUT-READ JSON parse error for baseId: ${baseId}`, e.message);
                 res.writeHead(400);
                 return res.end(JSON.stringify({'msg': "Invalid JSON"}));
             }
 
             if (!content) {
+                log(`PUT-READ missing content for baseId: ${baseId}`);
                 res.writeHead(400);
                 return res.end(JSON.stringify({'msg': "Missing required field 'content'"}));
             }
 
+            log(`PUT-READ storing response for baseId: ${baseId}`, content);
             readAvails.set(baseId, Date.now());
             readResponses.set(baseId, content);
             res.writeHead(200, { "Content-Type": "application/json" });
@@ -107,6 +120,7 @@ const server = http.createServer(async (req, res) => {
         // copilot will request a ssot read here
         // & this server will wait until the cli responds and return its response to the plugin (or timeout)
     {
+        log(`READ REQUEST started for baseId: ${baseId}`);
         const reqDate = new Date(Date.now());
         readRequests.set(baseId, reqDate);
 
@@ -118,6 +132,8 @@ const server = http.createServer(async (req, res) => {
         // now wait for the cli to call /put-read, which will put something there
         let ts = readAvails.get(baseId) || 0;
         let changed = (Date.now() - ts) < TTL_MS;
+        log(`Waiting for CLI response for baseId: ${baseId}, initial changed: ${changed}`);
+        
         while (!changed)
         {
             await new Promise(resolve => setTimeout(resolve, 500)); // wait 500ms
@@ -128,18 +144,23 @@ const server = http.createServer(async (req, res) => {
 
             if (waited > theTimeout)
             {
+                log(`TIMEOUT after ${waited}ms waiting for baseId: ${baseId}`);
                 res.writeHead(408);
                 return res.end(JSON.stringify({'msg': `Timeout waiting for response from CLI! ${baseId}`}));
             }
         }
 
         const response = readResponses.get(baseId);
+        log(`CLI response received for baseId: ${baseId}`, response);
+        
         if (!response) {
             // if it doesnt exist but the cli changed the date... error
+            log(`ERROR: No response data found for baseId: ${baseId}`);
             res.writeHead(500);
             return res.end(JSON.stringify({'msg': `Error reading response from CLI! ${baseId}`}));
         }
 
+        log(`Sending successful response to Copilot for baseId: ${baseId}`);
         res.writeHead(200, { "Content-Type": "application/json" });
         return res.end(JSON.stringify(response));
     }
