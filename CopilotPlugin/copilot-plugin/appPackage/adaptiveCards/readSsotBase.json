@@ -49,12 +49,7 @@
       "items": [
         {
           "type": "TextBlock",
-          "text": "Base ID: ${metadata.base_id}",
-          "wrap": true
-        },
-        {
-          "type": "TextBlock", 
-          "text": "Debug: ${metadata}",
+          "text": "Full Data: ${data}",
           "wrap": true
         }
       ]

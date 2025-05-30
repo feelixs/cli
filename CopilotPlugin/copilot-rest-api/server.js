@@ -162,7 +162,7 @@ const server = http.createServer(async (req, res) => {
 
         log(`Sending successful response to Copilot for baseId: ${baseId}`);
         res.writeHead(200, { "Content-Type": "application/json" });
-        return res.end(JSON.stringify(response));
+        return res.end(JSON.stringify({ data: response }));
     }
 
     res.writeHead(404);
