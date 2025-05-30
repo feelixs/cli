@@ -84,7 +84,7 @@ paths:
                     description: The base ID that was modified
                     example: "CLI"
         '400':
-          description: Bad request - missing or invalid input
+          description: Missing baseId parameter
           content:
             application/json:
               schema:
@@ -93,9 +93,9 @@ paths:
                   msg:
                     type: string
                     description: Error message
-                    example: "Missing 'a' field"
-        '500':
-          description: Internal server error
+                    example: "Missing baseId parameter"
+        '422':
+          description: Invalid JSON or missing content field
           content:
             application/json:
               schema:
@@ -104,7 +104,10 @@ paths:
                   msg:
                     type: string
                     description: Error message
-                    example: "Internal server error"
+                    example: "Invalid JSON in request body"
+                  baseId:
+                    type: string
+                    example: "CLI"
 
   /request-read:
     get:
@@ -135,7 +138,7 @@ paths:
                     description: The base/project ID that was requested
                     example: "customer_base"
         '400':
-          description: Bad request - missing or invalid input
+          description: Missing baseId parameter
           content:
             application/json:
               schema:
@@ -144,9 +147,9 @@ paths:
                   msg:
                     type: string
                     description: Error message
-                    example: "Missing 'a' field"
+                    example: "Missing baseId parameter"
         '408':
-          description: Request timeout - the base doesnt exist or server is at too high load
+          description: Request timeout - CLI did not respond within 30 seconds
           content:
             application/json:
               schema:
@@ -155,9 +158,9 @@ paths:
                   msg:
                     type: string
                     description: Error message
-                    example: "Timeout waiting for server response!"
-        '500':
-          description: Internal server error
+                    example: "Timeout waiting for response from CLI!"
+        '502':
+          description: Bad Gateway - CLI response was invalid or empty
           content:
             application/json:
               schema:
@@ -166,4 +169,4 @@ paths:
                   msg:
                     type: string
                     description: Error message
-                    example: "Internal server error"
+                    example: "Error reading response from CLI!"

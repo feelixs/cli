@@ -22,7 +22,7 @@ const server = http.createServer(async (req, res) => {
 
     if (!baseId) {
         res.writeHead(400);
-        return res.end(JSON.stringify({'msg': "Missing baseId=app123xyz321"}));
+        return res.end(JSON.stringify({'msg': "Missing baseId parameter", 'errorCode': 'MISSING_BASE_ID'}));
     }
 
     if (req.method === "POST" && url.pathname === "/mark-base") {
@@ -38,13 +38,13 @@ const server = http.createServer(async (req, res) => {
                 const data = JSON.parse(body);
                 content = data.content;
             } catch (e) {
-                res.writeHead(400);
-                return res.end(JSON.stringify({'msg': "Invalid JSON"}));
+                res.writeHead(422);
+                return res.end(JSON.stringify({'msg': "Invalid JSON", baseId: baseId}));
             }
             
             if (!content) {
-                res.writeHead(400);
-                return res.end(JSON.stringify({'msg': "Missing required field 'content'"}));
+                res.writeHead(422);
+                return res.end(JSON.stringify({'msg': "Missing required field 'content'", baseId: baseId}));
             }
             
             baseLastChanged.set(baseId, Date.now());
@@ -158,7 +158,7 @@ const server = http.createServer(async (req, res) => {
         if (!updatedContent) {
             // if it doesn't exist but the cli changed the date... error
             log(`ERROR: No response data found for baseId: ${baseId}`);
-            res.writeHead(500);
+            res.writeHead(502);
             return res.end(JSON.stringify({'msg': `Error reading response from CLI! ${baseId}`}));
         }
 
