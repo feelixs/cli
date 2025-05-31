@@ -1,0 +1,28 @@
+﻿<Project Sdk="WixToolset.Sdk/6.0.0">
+	<PropertyGroup>
+		<OutputType>Package</OutputType>
+		<OutputName>SSoTmeInstaller</OutputName>
+		<OutputPath>bin\$(Configuration)\</OutputPath>
+		<IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+		<TargetFramework>net6.0</TargetFramework>
+		<WixToolsetVersion>6.0.0</WixToolsetVersion>
+		<EnableDefaultItems>false</EnableDefaultItems>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Include="Product.wxs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="WixToolset.Util.wixext" Version="6.0.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="..\Assets\Icon.ico">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="..\Assets\LICENSE.rtf">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+</Project>
