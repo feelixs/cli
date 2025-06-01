@@ -8,6 +8,7 @@ const baseContents = new Map(); // the read content of each base returned by the
 
 const TTL_MS = 60 * 1000;
 
+// todo - add endpoint to reteive all available bases, that way copilot can resolve simple typos made by the user
 function log(message, data = null) {
     const timestamp = new Date().toISOString();
     console.log(`[${timestamp}] SERVER: ${message}`);
@@ -48,9 +49,12 @@ const server = http.createServer(async (req, res) => {
             try {
                 const data = JSON.parse(body);
                 content = data.content;
+                log(`MARK-BASE: Raw body received: ${body}`);
+                log(`MARK-BASE: Parsed data:`, data);
+                log(`MARK-BASE: Extracted content:`, content);
                 log(`MARK-BASE: Valid JSON received for baseId: ${baseId}`);
             } catch (e) {
-                log(`ERROR: MARK-BASE invalid JSON for baseId: ${baseId}`);
+                log(`ERROR: MARK-BASE invalid JSON for baseId: ${baseId}, raw body: ${body}`);
                 res.writeHead(422);
                 return res.end(JSON.stringify({'msg': "Invalid JSON", baseId: baseId}));
             }
