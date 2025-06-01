@@ -34,6 +34,7 @@ paths:
                   type: object
                   additionalProperties: true
                   description: Complete SSoT schema data including entities and metadata
+                  example: {"Object": {"property": "value"}}
       responses:
         '200':
           description: The content was successfully MARKED for changes
