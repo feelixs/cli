@@ -31,8 +31,9 @@ paths:
                 - content
               properties:
                 content:
-                  type: object
+                  type: string
                   description: Complete SSoT schema data including entities and metadata
+                  example: {"message": "success!"}
       responses:
         '200':
           description: The content was successfully MARKED for changes
