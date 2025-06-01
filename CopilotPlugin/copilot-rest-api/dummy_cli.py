@@ -84,10 +84,10 @@ class DummyCli:
                         content = data.get('content')
                         logger.info(f"Change request detected for base: {base_id}")
                         logger.info(f"Change content: {content}")
-                        logger.info(f"[SIMULATION] Applying changes to SSoT system for base: {base_id}")
+                        logger.info(f"Applying changes to SSoT system for base: {base_id}")
 
                         with open(f"{base_id}_DataSchema.json", 'w') as json_file:
-                            json_file.write(json.load(content))
+                            json_file.write(json.dumps(content))
 
                         logger.info(f"Change succeeded - file was overwritten: \"{base_id}_DataSchema.json\"")
                 else:

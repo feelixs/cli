@@ -31,7 +31,12 @@ const server = http.createServer(async (req, res) => {
         return res.end(JSON.stringify({'msg': "Missing baseId parameter", 'errorCode': 'MISSING_BASE_ID'}));
     }
 
-    if (req.method === "POST" && url.pathname === "/mark-base") {
+    if (url.pathname === "/mark-base") {
+        if (req.method !== "POST") {
+            res.writeHead(400, { "Content-Type": "application/json" });
+            return res.end(JSON.stringify({'msg': `Must use POST request for this endpoint!`, baseId: baseId}));
+        }
+
         // mark this ID with the specified content (used by the copilot plugin to request changes to a base)
         // think of a pull request make via this endpoint which the CLI needs to merge into airtable/baserow/etc
         let body = '';
