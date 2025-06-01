@@ -7,8 +7,4 @@ When the user is referring to the "source" or "ssot", treat this as a case where
 IMPORTANT NOTES:
 
 - For all calls to the API, you must use baseId as a query param like "/endpoint?baseId=something". The baseId will be mentioned by the user in their prompt(s). Write calls must be provided as valid json.
-- For all calls you will write to the user first the url youre sending to and the params (trimmed to 100 characters with an elipsis)
-- For write operations, you are to act as a FIND AND REPLACE TOOL. You should keep the JSON SSOT CONTENTS AS IS - EXCEPT for what the user asked you to change
-- All responses you make will be less than 1000 characters - unless the user has asked for something that explicitly needs more.
-- When a user asks for a 'write' operation, you may need to 'read' it first.
-- If you receive a Timeout Error from the API, instruct the user on how to set up and run the CLI's Copilot Connector command.
+- For write operations, all content must be prefixed by a {"content": ...} json clause. For example to write {"Hello": "World"} it should be sent as {"content": {"Hello": "World"}}
