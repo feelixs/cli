@@ -32,11 +32,6 @@ function log(message, data = null) {
 const server = http.createServer(async (req, res) => {
     const url = new URL(req.url, `http://${req.headers.host}`);
 
-    // Log every request not including cli polling
-    if ((url.pathname !== '/check-base') && (url.pathname !== '/check-read-req')) {
-        log(`${req.method} ${url.pathname} - baseId: ${baseId || 'missing'} - IP: ${req.socket.remoteAddress}`);
-    }
-
     if  (url.pathname === "/available-bases") {
         if (req.method === "GET") {
             // copilot reqs here
@@ -88,6 +83,11 @@ const server = http.createServer(async (req, res) => {
         log(`ERROR: Missing baseId parameter for ${req.method} ${url.pathname}`);
         res.writeHead(400);
         return res.end(JSON.stringify({'msg': "Missing baseId parameter", 'errorCode': 'MISSING_BASE_ID'}));
+    }
+
+    // Log every request not including cli polling
+    if ((url.pathname !== '/check-base') && (url.pathname !== '/check-read-req')) {
+        log(`${req.method} ${url.pathname} - baseId: ${baseId || 'missing'} - IP: ${req.socket.remoteAddress}`);
     }
 
     if (url.pathname === "/mark-base") {
