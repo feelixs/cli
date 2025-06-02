@@ -108,8 +108,9 @@ class DummyCli:
                             #
                             # the rest puts the stdout into the generated tmp file, and copies its contents back into the base's json file
 
+                            pattern = r"^tmp=\$\(mktemp\)\s+&&\s+jq\s+['\"].*['\"]\s+\S+\s+>\s+\"\$tmp\"\s+&&\s+mv\s+\"\$tmp\"\s+\S+$"
                             allowed_pattern = re.compile(
-                                r"^tmp=\$\(mktemp\)\s+&&\s+jq\s+['\"].*['\"]\s+\S+\s+>\s+\"\$tmp\"\s+&&\s+mv\s+\"\$tmp\"\s+\S+$"
+                                pattern
                             )
                             cmd = data['theCmd']
                             # validate the command
@@ -118,10 +119,44 @@ class DummyCli:
                                     logger.info(f"Executing command: {cmd}")
                                     result = subprocess.run(cmd, shell=True, check=True, capture_output=True, text=True)
                                     logger.info(f"Command executed successfully: {result.stdout}")
+                                    
+                                    # Send success response back to server
+                                    response = requests.post(
+                                        f"{SERVER_URL}/put-cmd-response",
+                                        params={'baseId': base_id},
+                                        json={'response': f"Command executed successfully: {result.stdout}"}
+                                    )
+                                    if response.status_code == 200:
+                                        logger.info(f"Successfully sent command response to server for base: {base_id}")
+                                    else:
+                                        logger.error(f"Failed to send command response: {response.status_code}")
+                                        
                                 except subprocess.CalledProcessError as e:
                                     logger.error(f"Command failed: {e.stderr}")
+                                    
+                                    # Send error response back to server
+                                    response = requests.post(
+                                        f"{SERVER_URL}/put-cmd-response",
+                                        params={'baseId': base_id},
+                                        json={'response': f"Command failed: {e.stderr}"}
+                                    )
+                                    if response.status_code == 200:
+                                        logger.info(f"Successfully sent command error to server for base: {base_id}")
+                                    else:
+                                        logger.error(f"Failed to send command error: {response.status_code}")
                             else:
                                 logger.warning(f"Rejected command: {cmd}")
+                                
+                                # Send rejection response back to server
+                                response = requests.post(
+                                    f"{SERVER_URL}/put-cmd-response",
+                                    params={'baseId': base_id},
+                                    json={'response': f"Command rejected: {cmd} - Reason: did not match pattern: {pattern}"}
+                                )
+                                if response.status_code == 200:
+                                    logger.info(f"Successfully sent command rejection to server for base: {base_id}")
+                                else:
+                                    logger.error(f"Failed to send command rejection: {response.status_code}")
                             return
                         elif data.get('content'):
                             content = data.get('content')

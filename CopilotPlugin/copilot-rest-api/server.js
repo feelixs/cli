@@ -10,6 +10,7 @@ const baseFileNames = new Map();
 
 const baseCmdReqs = new Map(); // copilot will request the cli machine run a command to edit the json file
 const baseCmdResps = new Map(); // cli responds to server with the command response, forwarded to copilot
+const baseCmdRespsTimestamps = new Map();
 
 const TTL_MS = 60 * 1000;
 
@@ -50,7 +51,7 @@ const server = http.createServer(async (req, res) => {
         req.on('data', chunk => {
             body += chunk.toString();
         });
-        req.on('end', () => {
+        req.on('end', async () => {
             let content;
             let command;
             try {
@@ -83,7 +84,7 @@ const server = http.createServer(async (req, res) => {
 
             let waited = 0;
             const theTimeout = 30 * 1000;
-            let ts = baseCmdResps.get(baseId) || 0;
+            let ts = baseCmdRespsTimestamps.get(baseId) || 0;
             let newResp = (Date.now() - ts) < TTL_MS;
             while ((!newResp) && (waited < theTimeout))
             {
@@ -91,7 +92,7 @@ const server = http.createServer(async (req, res) => {
                 waited += 500;
 
                 log(`Polling for CLI response on baseId: ${baseId}`);
-                ts = baseCmdResps.get(baseId) || 0;
+                ts = baseCmdRespsTimestamps.get(baseId) || 0;
                 newResp = (Date.now() - ts) < TTL_MS;
 
                 if (waited >= theTimeout) {
@@ -101,10 +102,35 @@ const server = http.createServer(async (req, res) => {
             if (baseCmdResps.has(baseId)) {
                 responseMessage = baseCmdResps.get(baseId);
                 baseCmdResps.delete(baseId);
+                baseCmdRespsTimestamps.delete(baseId);
             }
 
             res.writeHead(200, { "Content-Type": "application/json" });
             return res.end(JSON.stringify({'msg': responseMessage, baseId: baseId}));
+        });
+        return;
+    }
+
+    if (req.method === "POST" && url.pathname === "/put-cmd-response") {
+        // CLI posts command execution results here
+        let body = '';
+        req.on('data', chunk => {
+            body += chunk.toString();
+        });
+        req.on('end', () => {
+            try {
+                const data = JSON.parse(body);
+                const response = data.response;
+                baseCmdRespsTimestamps.set(baseId, Date.now()); // Store timestamp
+                baseCmdResps.set(baseId, responxse); // Store actual response message
+                log(`CMD-RESPONSE: Received for baseId: ${baseId}: ${response}`);
+                res.writeHead(200, { "Content-Type": "application/json" });
+                return res.end(JSON.stringify({'msg': "Command response received"}));
+            } catch (e) {
+                log(`ERROR: PUT-CMD-RESPONSE invalid JSON for baseId: ${baseId}`);
+                res.writeHead(400);
+                return res.end(JSON.stringify({'msg': "Invalid JSON"}));
+            }
         });
         return;
     }
