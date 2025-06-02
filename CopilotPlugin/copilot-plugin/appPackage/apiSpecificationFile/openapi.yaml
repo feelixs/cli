@@ -37,7 +37,7 @@ paths:
                 command:
                   type: string
                   description: The macOs/linux command to use to modify the JSON content of the base
-                  example: "sed -i '' 's/helloworld/hello world/' filename"
+                  example: "jq '.property = \"new value\"' filename"
       responses:
         '200':
           description: The content was successfully MARKED for changes

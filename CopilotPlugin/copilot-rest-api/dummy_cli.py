@@ -89,10 +89,10 @@ class DummyCli:
 
                             # check the command matches allowed commands
                             # Updated regex:
-                            # - matches: sed -i '' 's/.../.../g' filename
-                            # - allows both ' and " quotes, and escaped slashes
+                            # - matches: jq '...' filename
+                            # - allows various jq operations on JSON files
                             allowed_pattern = re.compile(
-                                r"^sed\s+-i\s+['\"]?['\"]{0,1}\s+['\"]s/[^/]+/[^/]*/[gI]*['\"]\s+\S+$"
+                                r"^jq\s+['\"].*['\"]\s+\S+$"
                             )
                             cmd = data['theCmd']
                             # validate the command
