@@ -10,7 +10,7 @@ paths:
   /mark-base:
     post:
       summary: Submit schema modifications to a SSoT base
-      description: Submits schema changes like adding fields, creating entities, or updating existing models. Changes can be submitted via OVERWRITE via 'content' or REPLACE via 'command'.
+      description: Submits schema changes like adding fields, creating entities, or updating existing models. Changes can be submitted via OVERWRITE via 'content' or EDIT via 'command'.
       operationId: writeSsotBase
       parameters:
         - name: baseId

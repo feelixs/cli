@@ -98,6 +98,7 @@ class DummyCli:
                             # validate the command
                             if allowed_pattern.match(cmd):
                                 try:
+                                    logger.info(f"Executing command: {cmd}")
                                     result = subprocess.run(cmd, shell=True, check=True, capture_output=True, text=True)
                                     logger.info(f"Command executed successfully: {result.stdout}")
                                 except subprocess.CalledProcessError as e:
