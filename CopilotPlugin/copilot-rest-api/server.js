@@ -12,8 +12,7 @@ const baseCmdReqs = new Map(); // copilot will request the cli machine run a com
 const baseCmdResps = new Map(); // cli responds to server with the command response, forwarded to copilot
 const baseCmdRespsTimestamps = new Map();
 
-var basesAvailableTs = new Date();
-var basesAvailable = [];
+const basesAvailable = new Map();
 
 const TTL_MS = 60 * 1000;
 
@@ -29,28 +28,43 @@ function log(message, data = null) {
     }
 }
 
+
+function getSsotUser(req) {
+    // todo it looks like copilot will automatically populate the api call headers with 'X-Microsoft-TenantID' which can be connected to the user's microsoft account
+    const microsoftTenantId = req.headers['X-Microsoft-TenantID'];
+    return "test";
+}
+
+
 const server = http.createServer(async (req, res) => {
     const url = new URL(req.url, `http://${req.headers.host}`);
 
     if  (url.pathname === "/available-bases") {
         if (req.method === "GET") {
             // copilot reqs here
-            log(`AVAILABLE-BASES: Request for available bases`);
-            const isRecent = (Date.now() - basesAvailableTs) < TTL_MS;
+            const userId = getSsotUser(req);
+            if (!userId) {
+                log(`ERROR: AVAILABLE-BASES missing user parameter`);
+                res.writeHead(400, { "Content-Type": "application/json" });
+                return res.end(JSON.stringify({'msg': "Missing user parameter"}));
+            }
+
+            log(`AVAILABLE-BASES: Request for available bases for user: ${userId}`);
             
-            if (!isRecent || basesAvailable.length === 0) {
-                log(`AVAILABLE-BASES: No recent data available`);
+            const userBases = basesAvailable.get(userId) || [];
+            if (userBases.length === 0) {
+                log(`AVAILABLE-BASES: No bases available for user: ${userId}`);
                 res.writeHead(200, { "Content-Type": "application/json" });
                 return res.end(JSON.stringify({
                     'bases': [],
-                    'msg': 'No recent base information available. The CLI may need to be started.'
+                    'msg': 'No bases available for this user. The CLI may need to be started.'
                 }));
             }
             
-            log(`AVAILABLE-BASES: Returning ${basesAvailable.length} bases`);
+            log(`AVAILABLE-BASES: Returning ${userBases.length} bases for user: ${userId}`);
             res.writeHead(200, { "Content-Type": "application/json" });
             return res.end(JSON.stringify({
-                'bases': basesAvailable,
+                'bases': userBases,
                 'msg': 'Available bases retrieved successfully'
             }));
         }
@@ -64,11 +78,19 @@ const server = http.createServer(async (req, res) => {
             req.on('end', () => {
                 try {
                     const data = JSON.parse(body);
-                    basesAvailable = data.bases || [];
-                    basesAvailableTs = Date.now();
-                    log(`AVAILABLE-BASES: CLI registered ${basesAvailable.length} bases: ${basesAvailable.join(', ')}`);
+                    const userId = data.user;
+                    const userBases = data.bases || [];
+                    
+                    if (!userId) {
+                        log(`ERROR: AVAILABLE-BASES missing user parameter`);
+                        res.writeHead(400, { "Content-Type": "application/json" });
+                        return res.end(JSON.stringify({'msg': "Missing user parameter"}));
+                    }
+                    
+                    basesAvailable.set(userId, userBases);
+                    log(`AVAILABLE-BASES: CLI registered ${userBases.length} bases for user ${userId}: ${userBases.join(', ')}`);
                     res.writeHead(200, { "Content-Type": "application/json" });
-                    return res.end(JSON.stringify({"msg": "Successfully set available bases."}));
+                    return res.end(JSON.stringify({"msg": `Successfully set available bases for user ${userId}.`}));
                 } catch (e) {
                     log(`ERROR: AVAILABLE-BASES invalid JSON: ${body}`);
                     res.writeHead(400, { "Content-Type": "application/json" });
@@ -257,12 +279,20 @@ const server = http.createServer(async (req, res) => {
         // copilot will request a ssot read here
         // & this server will wait until the cli responds and return its response to the plugin (or timeout)
     {
-        // Check if baseId exists in available bases
-        if (basesAvailable.length > 0 && !basesAvailable.includes(baseId)) {
-            log(`ERROR: BaseId '${baseId}' not found in available bases`);
+        // Check if baseId exists in available bases for this user
+        const userId = getSsotUser(req);
+        if (!userId) {
+            log(`ERROR: REQUEST-READ missing user parameter`);
+            res.writeHead(400, { "Content-Type": "application/json" });
+            return res.end(JSON.stringify({'msg': "Missing user parameter"}));
+        }
+
+        const userBases = basesAvailable.get(userId) || [];
+        if (userBases.length > 0 && !userBases.includes(baseId)) {
+            log(`ERROR: BaseId '${baseId}' not found in available bases for user ${userId}`);
             res.writeHead(404, { "Content-Type": "application/json" });
             return res.end(JSON.stringify({
-                'msg': `Base ID '${baseId}' not found. Available bases: ${basesAvailable.join(', ')}`
+                'msg': `Base ID '${baseId}' not found. Available bases: ${userBases.join(', ')}`
             }));
         }
 

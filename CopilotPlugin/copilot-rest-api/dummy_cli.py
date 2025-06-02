@@ -27,7 +27,7 @@ class DummyCli:
         try:
             response = requests.post(
                 f"{SERVER_URL}/available-bases",
-                json={'bases': self.BASE_IDS}
+                json={'user': 'test', 'bases': self.BASE_IDS}
             )
             if response.status_code == 200:
                 logger.info(f"Successfully registered available bases: {self.BASE_IDS}")
