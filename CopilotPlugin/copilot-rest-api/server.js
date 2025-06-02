@@ -12,9 +12,15 @@ const baseCmdReqs = new Map(); // copilot will request the cli machine run a com
 const baseCmdResps = new Map(); // cli responds to server with the command response, forwarded to copilot
 const baseCmdRespsTimestamps = new Map();
 
+var basesAvailableTs = new Date();
+var basesAvailable = [];
+
 const TTL_MS = 60 * 1000;
 
 // todo - add endpoint to reteive all available bases, that way copilot can resolve simple typos made by the user
+
+// todo connect the user's microsoft account to their ssotme account? To check all the available baseIds for this user
+// todo and to make sure they can access a specified baseId
 function log(message, data = null) {
     const timestamp = new Date().toISOString();
     console.log(`[${timestamp}] SERVER: ${message}`);
@@ -25,13 +31,59 @@ function log(message, data = null) {
 
 const server = http.createServer(async (req, res) => {
     const url = new URL(req.url, `http://${req.headers.host}`);
-    const baseId = url.searchParams.get("baseId");
-    
+
     // Log every request not including cli polling
     if ((url.pathname !== '/check-base') && (url.pathname !== '/check-read-req')) {
         log(`${req.method} ${url.pathname} - baseId: ${baseId || 'missing'} - IP: ${req.socket.remoteAddress}`);
     }
 
+    if  (url.pathname === "/available-bases") {
+        if (req.method === "GET") {
+            // copilot reqs here
+            log(`AVAILABLE-BASES: Request for available bases`);
+            const isRecent = (Date.now() - basesAvailableTs) < TTL_MS;
+            
+            if (!isRecent || basesAvailable.length === 0) {
+                log(`AVAILABLE-BASES: No recent data available`);
+                res.writeHead(200, { "Content-Type": "application/json" });
+                return res.end(JSON.stringify({
+                    'bases': [],
+                    'msg': 'No recent base information available. The CLI may need to be started.'
+                }));
+            }
+            
+            log(`AVAILABLE-BASES: Returning ${basesAvailable.length} bases`);
+            res.writeHead(200, { "Content-Type": "application/json" });
+            return res.end(JSON.stringify({
+                'bases': basesAvailable,
+                'msg': 'Available bases retrieved successfully'
+            }));
+        }
+        else if (req.method === "POST") {
+            // cli posts here
+            // cli could just call this when the process begins, or whatever works best
+            let body = '';
+            req.on('data', chunk => {
+                body += chunk.toString();
+            });
+            req.on('end', () => {
+                try {
+                    const data = JSON.parse(body);
+                    basesAvailable = data.bases || [];
+                    basesAvailableTs = Date.now();
+                    log(`AVAILABLE-BASES: CLI registered ${basesAvailable.length} bases: ${basesAvailable.join(', ')}`);
+                    res.writeHead(200, { "Content-Type": "application/json" });
+                    return res.end(JSON.stringify({"msg": "Successfully set available bases."}));
+                } catch (e) {
+                    log(`ERROR: AVAILABLE-BASES invalid JSON: ${body}`);
+                    res.writeHead(400, { "Content-Type": "application/json" });
+                    return res.end(JSON.stringify({'msg': "Invalid JSON in request body"}));
+                }
+            })
+        }
+    }
+
+    const baseId = url.searchParams.get("baseId");
     if (!baseId) {
         log(`ERROR: Missing baseId parameter for ${req.method} ${url.pathname}`);
         res.writeHead(400);

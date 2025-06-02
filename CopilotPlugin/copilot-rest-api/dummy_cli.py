@@ -22,6 +22,20 @@ class DummyCli:
     def __init__(self):
         self.BASE_IDS = ['CLI', 'OST']
 
+    def register_available_bases(self):
+        """Register available bases with the server"""
+        try:
+            response = requests.post(
+                f"{SERVER_URL}/available-bases",
+                json={'bases': self.BASE_IDS}
+            )
+            if response.status_code == 200:
+                logger.info(f"Successfully registered available bases: {self.BASE_IDS}")
+            else:
+                logger.error(f"Failed to register available bases: {response.status_code} - {response.text}")
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Error registering available bases: {e}")
+
     def run(self):
         while True:
             # Check for read requests (copilot wants to read SSoT data)
@@ -187,6 +201,8 @@ def main():
 
     dumy = DummyCli()
     try:
+        # Register available bases on startup
+        dumy.register_available_bases()
         dumy.run()
 
     except KeyboardInterrupt:
