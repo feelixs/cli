@@ -255,6 +255,15 @@ const server = http.createServer(async (req, res) => {
         // copilot will request a ssot read here
         // & this server will wait until the cli responds and return its response to the plugin (or timeout)
     {
+        // Check if baseId exists in available bases
+        if (basesAvailable.length > 0 && !basesAvailable.includes(baseId)) {
+            log(`ERROR: BaseId '${baseId}' not found in available bases`);
+            res.writeHead(404, { "Content-Type": "application/json" });
+            return res.end(JSON.stringify({
+                'msg': `Base ID '${baseId}' not found. Available bases: ${basesAvailable.join(', ')}`
+            }));
+        }
+
         log(`READ REQUEST started for baseId: ${baseId}`);
         const reqDate = new Date(Date.now());
         readRequests.set(baseId, reqDate);
