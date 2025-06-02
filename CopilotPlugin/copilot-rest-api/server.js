@@ -194,7 +194,9 @@ const server = http.createServer(async (req, res) => {
 
         log(`Sending successful response to Copilot for baseId: ${baseId}`);
         res.writeHead(200, { "Content-Type": "application/json" });
-        return res.end(JSON.stringify({ data: updatedContent, baseId: baseId }));
+
+        const filename = baseFileNames.get(theCmd) || null;
+        return res.end(JSON.stringify({ data: updatedContent, baseId: baseId, filename: filename }));
     }
 
     res.writeHead(404);
