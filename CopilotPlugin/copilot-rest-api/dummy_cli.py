@@ -91,6 +91,23 @@ class DummyCli:
                             # Updated regex:
                             # - matches: tmp=$(mktemp) && jq '...' filename > "$tmp" && mv "$tmp" filename
                             # - allows safe in-place jq operations on JSON files using temporary files
+                            #
+                            # copilot will generate a command of format:
+                            # tmp=$(mktemp) && jq '(.Ontology.OntologyGroups.OntologyGroup.ObjectDefs.ObjectDef[] | select(.Name == "AccountHolder").PropertyDefs.PropertyDef[] | select(.Name == "AccountHolderId")).Length = "50"' OST_DataSchema.json > "$tmp" && mv "$tmp" OST_DataSchema.json
+                            #
+                            # tmp=$(mktemp)
+                            #   - Creates a temporary file with a unique name
+                            #   - mktemp generates a secure temporary file (like /tmp/tmp.abc123)
+                            #   - Stores the path in the variable tmp
+                            #
+                            # jq '...' base_filename
+                            #
+                            #   - Runs the jq command on the input file
+                            #   - The '...' contains the actual jq filter/transformation
+                            #   - Outputs the modified JSON to stdout (doesn't modify the original file)
+                            #
+                            # the rest puts the stdout into the generated tmp file, and copies its contents back into the base's json file
+
                             allowed_pattern = re.compile(
                                 r"^tmp=\$\(mktemp\)\s+&&\s+jq\s+['\"].*['\"]\s+\S+\s+>\s+\"\$tmp\"\s+&&\s+mv\s+\"\$tmp\"\s+\S+$"
                             )
