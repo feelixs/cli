@@ -89,10 +89,10 @@ class DummyCli:
 
                             # check the command matches allowed commands
                             # Updated regex:
-                            # - matches: jq '...' filename
-                            # - allows various jq operations on JSON files
+                            # - matches: tmp=$(mktemp) && jq '...' filename > "$tmp" && mv "$tmp" filename
+                            # - allows safe in-place jq operations on JSON files using temporary files
                             allowed_pattern = re.compile(
-                                r"^jq\s+['\"].*['\"]\s+\S+$"
+                                r"^tmp=\$\(mktemp\)\s+&&\s+jq\s+['\"].*['\"]\s+\S+\s+>\s+\"\$tmp\"\s+&&\s+mv\s+\"\$tmp\"\s+\S+$"
                             )
                             cmd = data['theCmd']
                             # validate the command
