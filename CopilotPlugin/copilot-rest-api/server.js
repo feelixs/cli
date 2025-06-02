@@ -198,7 +198,7 @@ const server = http.createServer(async (req, res) => {
                 const data = JSON.parse(body);
                 const response = data.response;
                 baseCmdRespsTimestamps.set(baseId, Date.now()); // Store timestamp
-                baseCmdResps.set(baseId, responxse); // Store actual response message
+                baseCmdResps.set(baseId, response); // Store actual response message
                 log(`CMD-RESPONSE: Received for baseId: ${baseId}: ${response}`);
                 res.writeHead(200, { "Content-Type": "application/json" });
                 return res.end(JSON.stringify({'msg': "Command response received"}));
