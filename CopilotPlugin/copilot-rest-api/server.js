@@ -164,10 +164,10 @@ const server = http.createServer(async (req, res) => {
             let newResp = (Date.now() - ts) < TTL_MS;
             while ((!newResp) && (waited < theTimeout))
             {
-                await new Promise(resolve => setTimeout(resolve, 500)); // wait 500ms
-                waited += 500;
+                await new Promise(resolve => setTimeout(resolve, 1000)); // wait 1s
+                waited += 1000;
 
-                log(`Polling for CLI response on baseId: ${baseId}`);
+                log(`[MARK-BASE] Polling for CLI response on baseId: ${baseId}`);
                 ts = baseCmdRespsTimestamps.get(baseId) || 0;
                 newResp = (Date.now() - ts) < TTL_MS;
 
@@ -312,10 +312,10 @@ const server = http.createServer(async (req, res) => {
         
         while (!newContent)
         {
-            await new Promise(resolve => setTimeout(resolve, 500)); // wait 500ms
-            waited += 500;
+            await new Promise(resolve => setTimeout(resolve, 1000)); // wait 1s
+            waited += 1000;
 
-            log(`Polling for CLI response on baseId: ${baseId}`);
+            log(`[REQUEST-READ] Polling for CLI response on baseId: ${baseId}`);
             ts = readAvails.get(baseId) || 0;
             newContent = (Date.now() - ts) < TTL_MS;
 
