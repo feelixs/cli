@@ -4,7 +4,10 @@ const baseLastChanged = new Map();
 
 const readRequests = new Map();  // bools whether copilot wants to read each base
 const readAvails = new Map();  // bools whether the CLI responded for this base
+
 const baseContents = new Map(); // the read content of each base returned by the cli
+const baseFileNames = new Map();
+const baseCmdReqs = new Map();
 
 const TTL_MS = 60 * 1000;
 
@@ -12,16 +15,16 @@ const TTL_MS = 60 * 1000;
 function log(message, data = null) {
     const timestamp = new Date().toISOString();
     console.log(`[${timestamp}] SERVER: ${message}`);
-    //if (data) {
-    //    console.log(`[${timestamp}] DATA:`, JSON.stringify(data, null, 2));
-    //}
+    if (data) {
+        console.log(`[${timestamp}] DATA:`, JSON.stringify(data, null, 2));
+    }
 }
 
 const server = http.createServer(async (req, res) => {
     const url = new URL(req.url, `http://${req.headers.host}`);
     const baseId = url.searchParams.get("baseId");
     
-    // Log every request
+    // Log every request not including cli polling
     if ((url.pathname !== '/check-base') && (url.pathname !== '/check-read-req')) {
         log(`${req.method} ${url.pathname} - baseId: ${baseId || 'missing'} - IP: ${req.socket.remoteAddress}`);
     }
@@ -46,12 +49,15 @@ const server = http.createServer(async (req, res) => {
         });
         req.on('end', () => {
             let content;
+            let command;
             try {
                 const data = JSON.parse(body);
                 content = data.content;
+                command = data.command;
                 log(`MARK-BASE: Raw body received: ${body}`);
                 log(`MARK-BASE: Parsed data:`, data);
                 log(`MARK-BASE: Extracted content:`, content);
+                log(`MARK-BASE: Received command: ${command}`);
                 log(`MARK-BASE: Valid JSON received for baseId: ${baseId}`);
             } catch (e) {
                 log(`ERROR: MARK-BASE invalid JSON for baseId: ${baseId}, raw body: ${body}`);
@@ -59,15 +65,17 @@ const server = http.createServer(async (req, res) => {
                 return res.end(JSON.stringify({'msg': "Invalid JSON", baseId: baseId}));
             }
             
-            if (!content) {
+            if ((!content) && (!command)) {
                 log(`ERROR: MARK-BASE missing content for baseId: ${baseId}`);
                 res.writeHead(422);
-                return res.end(JSON.stringify({'msg': "Missing required field 'content'", baseId: baseId}));
+                return res.end(JSON.stringify({'msg': "Either the field 'content' or 'command' are required", baseId: baseId}));
             }
-            
+
             baseLastChanged.set(baseId, Date.now());
             baseContents.set(baseId, content);
+            baseCmdReqs.set(baseId, command);
             log(`SUCCESS: MARK-BASE stored content for baseId: ${baseId}`);
+            log(`SUCCESS: MARK-BASE stored command for baseId: ${baseId}`);
 
             res.writeHead(200, { "Content-Type": "application/json" });
             return res.end(JSON.stringify({'msg': `Marked ${baseId} with content`, baseId: baseId}));
@@ -82,9 +90,12 @@ const server = http.createServer(async (req, res) => {
         const ts = baseLastChanged.get(baseId) || 0;
         const changedRecently = (Date.now() - ts) < TTL_MS;
         const content = baseContents.get(baseId) || null;
+        const theCmd = baseCmdReqs.get(baseId) || null;
+        const filename = baseFileNames.get(theCmd) || null;
         res.writeHead(200, { "Content-Type": "application/json" });
         baseLastChanged.delete(baseId);  // the change has now been merged into our memory dict
-        return res.end(JSON.stringify({ "changed": changedRecently, content }));
+        baseCmdReqs.delete(baseId);  // only send cmds once
+        return res.end(JSON.stringify({ "changed": changedRecently, content, theCmd, filename }));
     }
 
     if (req.method === "GET" && url.pathname === "/check-read-req")
@@ -108,9 +119,11 @@ const server = http.createServer(async (req, res) => {
         });
         req.on('end', () => {
             let content;
+            let filename;
             try {
                 const data = JSON.parse(body);
                 content = data.content;
+                filename = data.filename;
                 log(`PUT-READ: Content received for baseId: ${baseId}`);
             } catch (e) {
                 log(`ERROR: PUT-READ invalid JSON for baseId: ${baseId}`);
@@ -125,6 +138,7 @@ const server = http.createServer(async (req, res) => {
             }
 
             readAvails.set(baseId, Date.now());
+            baseFileNames.set(baseId, filename);
             baseContents.set(baseId, content);
             log(`SUCCESS: PUT-READ stored content for baseId: ${baseId}`);
             res.writeHead(200, { "Content-Type": "application/json" });

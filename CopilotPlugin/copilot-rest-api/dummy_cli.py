@@ -1,8 +1,10 @@
+import subprocess
 import requests
 import logging
 import time
 import json
 import sys
+import re
 
 
 SERVER_URL = 'http://134.209.173.56:8080/'
@@ -35,14 +37,15 @@ class DummyCli:
             if base_id not in self.BASE_IDS:
                 raise Exception('Invalid base id')
 
-            with open(f"{base_id}_DataSchema.json", 'r') as json_file:
+            baseFile = f"{base_id}_DataSchema.json"
+            with open(baseFile, 'r') as json_file:
                 ssot_data = json.load(json_file)
 
             # Post the data to the server
             response = requests.post(
                 f"{SERVER_URL}/put-read",
                 params={'baseId': base_id},
-                json={'content': ssot_data}
+                json={'content': ssot_data, 'filename': baseFile}
             )
 
             if response.status_code == 200:
@@ -77,19 +80,42 @@ class DummyCli:
         try:
             for base_id in self.BASE_IDS:
                 response = requests.get(f"{SERVER_URL}/check-base", params={'baseId': base_id})
-
                 if response.status_code == 200:
                     data = response.json()
                     if data.get('changed'):
-                        content = data.get('content')
-                        logger.info(f"Change request detected for base: {base_id}")
-                        logger.info(f"Change content: {content}")
-                        logger.info(f"Applying changes to SSoT system for base: {base_id}")
+                        logger.info(f"{base_id} - {response.json()}")
+                        if data.get('theCmd'):  # a command has been requested instead of replacing all content
+                            logger.info(f"Marked request detected for base: {base_id}")
 
-                        with open(f"{base_id}_DataSchema.json", 'w') as json_file:
-                            json_file.write(json.dumps(content))
+                            # check the command matches allowed commands
+                            allowed_pattern = re.compile(
+                                r"^sed\s+-i\s+\"?\"?\s+s/[^/]+/[^/]*/[gI]*\s+\S+$"
+                            )
+                            cmd = data['theCmd']
+                            # validate the command
+                            if allowed_pattern.match(cmd):
+                                try:
+                                    result = subprocess.run(cmd, shell=True, check=True, capture_output=True, text=True)
+                                    logger.info(f"Command executed successfully: {result.stdout}")
+                                except subprocess.CalledProcessError as e:
+                                    logger.error(f"Command failed: {e.stderr}")
+                            else:
+                                logger.warning(f"Rejected command: {cmd}")
+                            return
+                        elif data.get('content'):
+                            content = data.get('content')
+                            logger.info(f"Change request detected for base: {base_id}")
+                            logger.info(f"Change content: {content}")
+                            logger.info(f"Applying changes to SSoT system for base: {base_id}")
 
-                        logger.info(f"Change succeeded - file was overwritten: \"{base_id}_DataSchema.json\"")
+                            try:
+                                with open(f"{base_id}_DataSchema.json", 'w') as json_file:
+                                    parsed_content = json.loads(content)
+                                    json.dump(parsed_content, json_file, indent=2)
+                            except Exception as e:
+                                logger.error(f"Error writing data for {base_id}: {e}")
+
+                            logger.info(f"Change succeeded - file was overwritten: \"{base_id}_DataSchema.json\"")
                 else:
                     logger.info(f"Error checking mark requests for {base_id}: {response.status_code}")
 
@@ -106,7 +132,7 @@ def main():
     dumy = DummyCli()
     try:
         dumy.run()
-            
+
     except KeyboardInterrupt:
         logger.info("Shutting down dummy CLI")
         sys.exit(0)
