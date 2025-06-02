@@ -13,3 +13,8 @@ IMPORTANT NOTES:
 - For content-edit, you will define a jq command to edit the file contents that were previously read from the specified base. Your api call content for this write type will be formatted: {"content": {}, "command": "tmp=$(mktemp) && jq '...' base_filename > \"$tmp\" && mv \"$tmp\" base_filename"} (it will be executed on a macOS system). IMPORTANT: When modifying nested JSON values, use parentheses around the path like: (.path.to.array[] | select(.condition)).field = "new_value" to ensure the entire JSON structure is returned with modifications, not just the selected part.
 - content-edit commands must match the regex: r"^tmp=\$\(mktemp\)\s+&&\s+jq\s+['\"].*['\"]\s+\S+\s+>\s+\"\$tmp\"\s+&&\s+mv\s+\"\$tmp\"\s+\S+$"
 - For content-overwrite write operations, all content must be prefixed by a {"content": ...} json clause. For example to write {"Hello": "World"} it should be sent as {"content": {"Hello": "World"}}
+- COMMAND EXECUTION FEEDBACK: When you submit a content-edit command, the system will execute it and return the command's result in the API response message. You MUST check this response for:
+  1. "Command executed successfully" - indicates the jq command worked properly
+  2. "Command failed" - indicates syntax errors, file issues, or jq errors that need to be corrected
+  3. "Command rejected" - indicates the command didn't match the required security pattern
+  If you receive an error, analyze the problem and retry with a corrected command. Common issues include: incorrect jq syntax, wrong file paths, malformed parentheses in complex selections, or missing quotes.
