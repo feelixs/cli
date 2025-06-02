@@ -75,6 +75,7 @@ const server = http.createServer(async (req, res) => {
                     return res.end(JSON.stringify({'msg': "Invalid JSON in request body"}));
                 }
             })
+            return;
         }
     }
 

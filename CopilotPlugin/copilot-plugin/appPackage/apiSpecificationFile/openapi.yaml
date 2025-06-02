@@ -125,6 +125,17 @@ paths:
                     type: string
                     description: Error message
                     example: "Missing baseId parameter"
+        '404':
+          description: Base ID not found in available bases
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: Error message indicating which base was not found and listing available bases
+                    example: "Base ID 'baseId' not found. Available bases: ..."
         '408':
           description: Request timeout - CLI did not respond within 30 seconds
           content:
