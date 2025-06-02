@@ -88,8 +88,11 @@ class DummyCli:
                             logger.info(f"Marked request detected for base: {base_id}")
 
                             # check the command matches allowed commands
+                            # Updated regex:
+                            # - matches: sed -i '' 's/.../.../g' filename
+                            # - allows both ' and " quotes, and escaped slashes
                             allowed_pattern = re.compile(
-                                r"^sed\s+-i\s+\"?\"?\s+s/[^/]+/[^/]*/[gI]*\s+\S+$"
+                                r"^sed\s+-i\s+['\"]?['\"]{0,1}\s+['\"]s/[^/]+/[^/]*/[gI]*['\"]\s+\S+$"
                             )
                             cmd = data['theCmd']
                             # validate the command

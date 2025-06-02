@@ -91,7 +91,7 @@ const server = http.createServer(async (req, res) => {
         const changedRecently = (Date.now() - ts) < TTL_MS;
         const content = baseContents.get(baseId) || null;
         const theCmd = baseCmdReqs.get(baseId) || null;
-        const filename = baseFileNames.get(theCmd) || null;
+        const filename = baseFileNames.get(baseId) || null;
         res.writeHead(200, { "Content-Type": "application/json" });
         baseLastChanged.delete(baseId);  // the change has now been merged into our memory dict
         baseCmdReqs.delete(baseId);  // only send cmds once
@@ -195,7 +195,7 @@ const server = http.createServer(async (req, res) => {
         log(`Sending successful response to Copilot for baseId: ${baseId}`);
         res.writeHead(200, { "Content-Type": "application/json" });
 
-        const filename = baseFileNames.get(theCmd) || null;
+        const filename = baseFileNames.get(baseId) || null;
         return res.end(JSON.stringify({ data: updatedContent, baseId: baseId, filename: filename }));
     }
 

@@ -37,7 +37,7 @@
         },
         {
             "name": "writeSsotBase",
-            "description": "Submits schema changes like adding fields, creating entities, or updating existing models.",
+            "description": "Submits schema changes like adding fields, creating entities, or updating existing models. Changes can be submitted by overwriting or replacing the current content.",
             "capabilities": {
                 "response_semantics": {
                     "data_path": "$",

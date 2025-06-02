@@ -10,7 +10,7 @@ paths:
   /mark-base:
     post:
       summary: Submit schema modifications to a SSoT base
-      description: Submits schema changes like adding fields, creating entities, or updating existing models. Changes are processed asynchronously by the CLI and applied to the SSoT system.
+      description: Submits schema changes like adding fields, creating entities, or updating existing models. Changes can be submitted via OVERWRITE via 'content' or REPLACE via 'command'.
       operationId: writeSsotBase
       parameters:
         - name: baseId
@@ -36,8 +36,8 @@ paths:
                   example: "{\"Object\": {\"property\": \"value\"}}"
                 command:
                   type: string
-                  description: The linux command to use to modify the JSON content of the base
-                  example: "sed -i \"\" \"s/helloworld/hello world/"
+                  description: The macOs/linux command to use to modify the JSON content of the base
+                  example: "sed -i '' 's/helloworld/hello world/' filename"
       responses:
         '200':
           description: The content was successfully MARKED for changes
@@ -110,6 +110,10 @@ paths:
                     type: string
                     description: The base/project ID that was requested
                     example: "customer_base"
+                  filename:
+                    type: string
+                    description: The name of the base file on the remote server
+                    example: "customer_base.json"
         '400':
           description: Missing baseId parameter
           content:
