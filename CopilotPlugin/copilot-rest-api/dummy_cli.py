@@ -55,6 +55,7 @@ class DummyCli:
             with open(baseFile, 'r') as json_file:
                 ssot_data = json.load(json_file)
 
+            logger.info(f"Providing ssot data from file: {baseFile}")
             # Post the data to the server
             response = requests.post(
                 f"{SERVER_URL}/put-read",
