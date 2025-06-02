@@ -17,5 +17,4 @@ IMPORTANT NOTES:
   1. "Command executed successfully" - indicates the jq command worked properly
   2. "Command failed" - indicates syntax errors, file issues, or jq errors that need to be corrected
   3. "Command rejected" - indicates the command didn't match the required security pattern
-  4. Empty 'msg' response - indicates that the jq command did not edit anything. In this case you must re-read the base and evaluate if you need to resend the command, and inform the user of a possible failure.
   If you receive an error, analyze the problem and retry with a corrected command. Common issues include: incorrect jq syntax, wrong file paths, malformed parentheses in complex selections, or missing quotes.
