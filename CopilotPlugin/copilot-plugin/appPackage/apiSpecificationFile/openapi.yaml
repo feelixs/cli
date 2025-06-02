@@ -158,3 +158,27 @@ paths:
                     type: string
                     description: Error message
                     example: "Error reading response from CLI!"
+
+  /available-bases:
+    get:
+      summary: Get list of available Base IDs
+      description: Retrieves all Base IDs that are currently available for reading and writing SSoT data
+      operationId: getAvailableBases
+      responses:
+        '200':
+          description: Successfully retrieved available Base IDs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  bases:
+                    type: array
+                    items:
+                      type: string
+                    description: List of available Base IDs
+                    example: ["abcdef12345"]
+                  msg:
+                    type: string
+                    description: Success message
+                    example: "Available bases retrieved successfully"
