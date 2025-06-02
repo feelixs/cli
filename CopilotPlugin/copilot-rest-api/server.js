@@ -7,7 +7,9 @@ const readAvails = new Map();  // bools whether the CLI responded for this base
 
 const baseContents = new Map(); // the read content of each base returned by the cli
 const baseFileNames = new Map();
-const baseCmdReqs = new Map();
+
+const baseCmdReqs = new Map(); // copilot will request the cli machine run a command to edit the json file
+const baseCmdResps = new Map(); // cli responds to server with the command response, forwarded to copilot
 
 const TTL_MS = 60 * 1000;
 
@@ -44,6 +46,7 @@ const server = http.createServer(async (req, res) => {
         // mark this ID with the specified content (used by the copilot plugin to request changes to a base)
         // think of a pull request make via this endpoint which the CLI needs to merge into airtable/baserow/etc
         let body = '';
+        let responseMessage = "Successfully marked base with new content"; // for overwrite requests from copilot
         req.on('data', chunk => {
             body += chunk.toString();
         });
@@ -76,9 +79,32 @@ const server = http.createServer(async (req, res) => {
             baseCmdReqs.set(baseId, command);
             log(`SUCCESS: MARK-BASE stored content for baseId: ${baseId}`);
             log(`SUCCESS: MARK-BASE stored command for baseId: ${baseId}`);
+            log(`Waiting for cli command response for baseId: ${baseId}`);
+
+            let waited = 0;
+            const theTimeout = 30 * 1000;
+            let ts = baseCmdResps.get(baseId) || 0;
+            let newResp = (Date.now() - ts) < TTL_MS;
+            while ((!newResp) && (waited < theTimeout))
+            {
+                await new Promise(resolve => setTimeout(resolve, 500)); // wait 500ms
+                waited += 500;
+
+                log(`Polling for CLI response on baseId: ${baseId}`);
+                ts = baseCmdResps.get(baseId) || 0;
+                newResp = (Date.now() - ts) < TTL_MS;
+
+                if (waited >= theTimeout) {
+                    log(`TIMEOUT (possible cmd failure) waiting for cmd response on baseId: ${baseId}`);
+                }
+            }
+            if (baseCmdResps.has(baseId)) {
+                responseMessage = baseCmdResps.get(baseId);
+                baseCmdResps.delete(baseId);
+            }
 
             res.writeHead(200, { "Content-Type": "application/json" });
-            return res.end(JSON.stringify({'msg': `Marked ${baseId} with content`, baseId: baseId}));
+            return res.end(JSON.stringify({'msg': responseMessage, baseId: baseId}));
         });
         return;
     }
