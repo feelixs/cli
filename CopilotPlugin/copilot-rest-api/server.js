@@ -79,7 +79,8 @@ const server = http.createServer(async (req, res) => {
     }
 
     const baseId = url.searchParams.get("baseId");
-    if (!baseId) {
+    // Only check for baseId if it's not the available-bases endpoint
+    if (!baseId && url.pathname !== "/available-bases") {
         log(`ERROR: Missing baseId parameter for ${req.method} ${url.pathname}`);
         res.writeHead(400);
         return res.end(JSON.stringify({'msg': "Missing baseId parameter", 'errorCode': 'MISSING_BASE_ID'}));
