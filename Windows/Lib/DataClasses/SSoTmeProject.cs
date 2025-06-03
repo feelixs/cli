@@ -668,9 +668,9 @@ namespace SSoTme.OST.Lib.DataClasses
             return relativePath.Replace("\\", "/");
         }
 
-        internal void RebuildAll(string rootPath, bool includeDisabled, string transpilerGroup, string buildOnTrigger, bool isLocalBuild)
+        internal void RebuildAll(string rootPath, bool includeDisabled, string transpilerGroup, string buildOnTrigger, bool copilotConnect, bool isLocalBuild)
         {
-            this.Rebuild(rootPath, includeDisabled, transpilerGroup, buildOnTrigger, isLocalBuild, true);
+            this.Rebuild(rootPath, includeDisabled, transpilerGroup, buildOnTrigger, copilotConnect, isLocalBuild, true);
         }
 
         internal void Rebuild(
@@ -678,13 +678,14 @@ namespace SSoTme.OST.Lib.DataClasses
             bool includeDisabled,
             string transpilerGroup,
             string buildOnTrigger,
+            bool copilotConnect,
             bool isBuildLocal,
             bool isBuildAll = false)
         {
             if (!string.IsNullOrEmpty(buildOnTrigger))
             {
                 this.LogMessage("Watching for Airtable changes using baseId: {0}...", buildOnTrigger);
-                this.ListenForChangesAndRebuild(buildPath, includeDisabled, transpilerGroup, isBuildLocal, isBuildAll, buildOnTrigger);
+                this.ListenForChangesAndRebuild(buildPath, includeDisabled, transpilerGroup, isBuildLocal, isBuildAll, buildOnTrigger, copilotConnect);
             }
             else
             {
@@ -692,13 +693,33 @@ namespace SSoTme.OST.Lib.DataClasses
             }
         }
 
+        private string GetLastCopilotRequestForBase(string baseId) {
+            string uri = $"https://ssotme-cli-airtable-bridge-ahrnz660db6k4.aws-us-east-1.controlplane.us/copilot/check?baseId={baseId}";
+            using (var httpClient = new HttpClient()) {
+                var response = httpClient.GetStringAsync(uri).Result;
+                var json = JsonDocument.Parse(response);
+                var changed = json.RootElement.GetProperty("changed").GetRawText();
+                if (changed == "true") {
+                    return json.RootElement.GetProperty("content").GetRawText();
+                }
+
+                return null;
+            }
+        }
+
+        private string ApplyCopilotChanges(string changeData, string baseId)
+        {
+            return null;
+        }
+        
         private void ListenForChangesAndRebuild(
     string buildPath,
     bool includeDisabled,
     string transpilerGroup,
     bool isBuildLocal,
     bool isBuildAll,
-    string baseId)
+    string baseId,
+    bool isCopilot = false)
         {
             DateTime? lastChangedTime = null;
             bool changeEverDetected = false;
@@ -708,6 +729,15 @@ namespace SSoTme.OST.Lib.DataClasses
 
             while (true)
             {
+                if (isCopilot)
+                {
+                    string lastCopilotRequest = GetLastCopilotRequestForBase(baseId);
+                    if (!string.IsNullOrEmpty(lastCopilotRequest))
+                    {
+                        ApplyCopilotChanges(lastCopilotRequest, baseId);
+                    }
+                }
+
                 if (CheckChanged(uri))
                 {
                     lastChangedTime = DateTime.UtcNow;

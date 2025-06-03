@@ -134,5 +134,7 @@ namespace SSoTme.OST.Lib.CLIOptions
         [CommandLineOption(Description = "Skips the build part of cloning a Seed repository", MinOccurs = 0, Aliases = "")]
         public bool skipBuild { get; set; }
         
+        [CommandLineOption(Description = "", MinOccurs = 0, Aliases = "cc")]
+        public bool copilotConnect { get; set; }
     }
 }
