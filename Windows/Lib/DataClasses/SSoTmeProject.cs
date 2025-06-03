@@ -725,10 +725,23 @@ namespace SSoTme.OST.Lib.DataClasses
 
                 // match copilot's requested action to the right baserow endpoint
                 string tableId = requestedChanges.tableId;
-                if (requestedChanges.action == "get_tables")
+                if (requestedChanges.action != "list_tables" && string.IsNullOrEmpty(tableId))
+                {
+                    return "Error applying changes: This endpoint requires the tableId field";
+                }
+                
+                if (requestedChanges.action == "list_tables")
                 {
                     // table ids are globally unique across all databases
-                    return baserowClient.FetchTablesForBase(baseId);
+                    var tablesData = baserowClient.FetchTablesForBase(baseId);
+                    this.LogMessage("Successfully fetched tables for base: {0} - {1}", baseId, tablesData);
+                    return tablesData;
+                }
+                else if (requestedChanges.action == "get_table")
+                {
+                    var shcema = baserowClient.GetTableSchema(tableId);
+                    this.LogMessage("Fetched table schema for tableId: {0}", tableId);
+                    return shcema;
                 }
                 else if (requestedChanges.action == "create_field")
                 {
