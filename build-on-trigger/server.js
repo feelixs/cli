@@ -8,7 +8,6 @@ const readRequests = new Map();  // bools whether copilot wants to read each bas
 const readAvails = new Map();  // bools whether the CLI responded for this base
 
 const baseContents = new Map(); // the read content of each base returned by the cli
-const baseFileNames = new Map();
 
 const baseCmdReqs = new Map(); // copilot will request the cli machine run a command to edit the json file
 const baseCmdResps = new Map(); // cli responds to server with the command response, forwarded to copilot
@@ -213,11 +212,10 @@ const server = http.createServer(async (req, res) => {
     const changedRecently = (Date.now() - ts) < TTL_MS;
     const content = baseContents.get(baseId) || null;
     const theCmd = baseCmdReqs.get(baseId) || null;
-    const filename = baseFileNames.get(baseId) || null;
     res.writeHead(200, { "Content-Type": "application/json" });
     baseLastChanged.delete(baseId);  // the change has now been merged into our memory dict
     baseCmdReqs.delete(baseId);  // only send cmds once
-    return res.end(JSON.stringify({ "changed": changedRecently, content, theCmd, filename }));
+    return res.end(JSON.stringify({ "changed": changedRecently, content, theCmd }));
   }
 
   if (req.method === "GET" && url.pathname === "/copilot/check-read-req")
@@ -241,11 +239,9 @@ const server = http.createServer(async (req, res) => {
     });
     req.on('end', () => {
       let content;
-      let filename;
       try {
         const data = JSON.parse(body);
         content = data.content;
-        filename = data.filename;
         log(`PUT-READ: Content received for baseId: ${baseId}`);
       } catch (e) {
         log(`ERROR: PUT-READ invalid JSON for baseId: ${baseId}`);
@@ -260,7 +256,6 @@ const server = http.createServer(async (req, res) => {
       }
 
       readAvails.set(baseId, Date.now());
-      baseFileNames.set(baseId, filename);
       baseContents.set(baseId, content);
       log(`SUCCESS: PUT-READ stored content for baseId: ${baseId}`);
       res.writeHead(200, { "Content-Type": "application/json" });
@@ -334,8 +329,7 @@ const server = http.createServer(async (req, res) => {
     log(`Sending successful response to Copilot for baseId: ${baseId}`);
     res.writeHead(200, { "Content-Type": "application/json" });
 
-    const filename = baseFileNames.get(baseId) || null;
-    return res.end(JSON.stringify({ data: updatedContent, baseId: baseId, filename: filename }));
+    return res.end(JSON.stringify({ data: updatedContent, baseId: baseId }));
   }
 
   res.writeHead(404);
