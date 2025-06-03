@@ -3,7 +3,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using SSoTme.OST.Lib.Auth;
+using SSoTme.OST.Lib.SassySDK.Derived;
 
 namespace SSoTme.OST.Core.Lib.External
 {
@@ -17,11 +17,11 @@ namespace SSoTme.OST.Core.Lib.External
 
         public BaserowBackend(string username, string password)
         {
-            _baseUrl = baseUrl?.TrimEnd('/') ?? "https://api.baserow.io/api/";
+            _baseUrl = "https://api.baserow.io/api/";
             _username = username;
             _password = password;
         }
-
+            
         public static BaserowBackend FromStoredCredentials(string runAs = "")
         {
             var key = SSOTMEKey.GetSSoTmeKey(runAs);
@@ -67,13 +67,39 @@ namespace SSoTme.OST.Core.Lib.External
             }
         }
 
-        public void UpdateTable(string databaseId, string tableId, object schemaChanges)
+        public string FetchTablesForBase(string baseId)
         {
-            var task = UpdateTableAsync(databaseId, tableId, schemaChanges);
+            var task = FetchTablesAsync(baseId);
+            task.Wait();
+            return task.Result;
+        }
+
+        private async Task<string> FetchTablesAsync(string baseid)
+        {
+            var token = await GetValidTokenAsync();
+            using (var httpClient = new HttpClient())
+            {
+                httpClient.DefaultRequestHeaders.Add("Authorization", $"JWT {token}");
+        
+                var response = await httpClient.GetAsync($"{_baseUrl}/database/tables/database/{baseid}");
+        
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    throw new Exception($"Failed to fetch Baserow tables: {response.StatusCode} - {errorContent}");
+                }
+
+                return await response.Content.ReadAsStringAsync(); // Return the response content
+            }
+        }
+        
+        public void UpdateTable(string tableId, object schemaChanges)
+        {
+            var task = UpdateTableAsync(tableId, schemaChanges);
             task.Wait();
         }
 
-        public async Task UpdateTableAsync(string databaseId, string tableId, object schemaChanges)
+        public async Task UpdateTableAsync(string tableId, object schemaChanges)
         {
             var token = await GetValidTokenAsync();
             

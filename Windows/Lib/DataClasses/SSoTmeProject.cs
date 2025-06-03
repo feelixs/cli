@@ -725,13 +725,18 @@ namespace SSoTme.OST.Lib.DataClasses
 
                 // match copilot's requested action to the right baserow endpoint
                 string tableId = requestedChanges.tableId;
-                if (requestedChanges.action == "create_field")
+                if (requestedChanges.action == "get_tables")
+                {
+                    // table ids are globally unique across all databases
+                    return baserowClient.FetchTablesForBase(baseId);
+                }
+                else if (requestedChanges.action == "create_field")
                 {
                     baserowClient.CreateField(tableId, requestedChanges.fieldName, requestedChanges.fieldType);
                 }
                 else if (requestedChanges.action == "update_table")
                 {
-                    baserowClient.UpdateTable(baseId, tableId, requestedChanges.tableData);
+                    baserowClient.UpdateTable(tableId, requestedChanges.tableData);
                 }
                 return string.Format("Successfully applied changes to Baserow for base: {0}", baseId);
             }
