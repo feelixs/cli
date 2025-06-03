@@ -692,14 +692,17 @@ namespace SSoTme.OST.Lib.DataClasses
                 this.DoRebuild(buildPath, includeDisabled, transpilerGroup, isBuildLocal, isBuildAll);
             }
         }
-
-        private string GetLastCopilotRequestForBase(string baseId) {
+        
+        private string GetLastCopilotRequestForBase(string baseId)
+        {
             string uri = $"https://ssotme-cli-airtable-bridge-ahrnz660db6k4.aws-us-east-1.controlplane.us/copilot/check?baseId={baseId}";
-            using (var httpClient = new HttpClient()) {
+            using (var httpClient = new HttpClient())
+            {
                 var response = httpClient.GetStringAsync(uri).Result;
                 var json = JsonDocument.Parse(response);
                 var changed = json.RootElement.GetProperty("changed").GetRawText();
-                if (changed == "true") {
+                if (changed == "true")
+                {
                     return json.RootElement.GetProperty("content").GetRawText();
                 }
 
@@ -709,7 +712,33 @@ namespace SSoTme.OST.Lib.DataClasses
 
         private string ApplyCopilotChanges(string changeData, string baseId)
         {
-            return null;
+            try
+            {
+                // get baserow client from ~/.ssotme/ssotme.key file -> "baserow" api
+                var baserowClient = SSoTme.OST.Core.Lib.External.BaserowBackend.FromStoredCredentials();
+
+                var requestedChanges = JsonConvert.DeserializeObject<dynamic>(changeData);
+                
+                if (requestedChanges.tableId == null) {
+                    return "Error applying changes: table ID was null!";
+                }
+
+                // match copilot's requested action to the right baserow endpoint
+                string tableId = requestedChanges.tableId;
+                if (requestedChanges.action == "create_field")
+                {
+                    baserowClient.CreateField(tableId, requestedChanges.fieldName, requestedChanges.fieldType);
+                }
+                else if (requestedChanges.action == "update_table")
+                {
+                    baserowClient.UpdateTable(baseId, tableId, requestedChanges.tableData);
+                }
+                return string.Format("Successfully applied changes to Baserow for base: {0}", baseId);
+            }
+            catch (Exception ex)
+            {
+                return string.Format("Error applying changes: {0}", ex.Message);
+            }
         }
         
         private void ListenForChangesAndRebuild(
