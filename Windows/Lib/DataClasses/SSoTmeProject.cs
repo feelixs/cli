@@ -693,30 +693,35 @@ namespace SSoTme.OST.Lib.DataClasses
             }
         }
         
-        private string GetLastCopilotRequestForBase(string baseId, string uri)
+        private bool hasCopilotRequestedRead(string readReqUri)
         {
             using (var httpClient = new HttpClient())
             {
-                var response = httpClient.GetStringAsync(uri).Result;
+                var response = httpClient.GetStringAsync(readReqUri).Result;
                 var json = JsonDocument.Parse(response);
                 var changed = json.RootElement.GetProperty("changed").GetRawText();
-                if (changed == "true")
-                {
-                    return json.RootElement.GetProperty("content").GetRawText();
-                }
-
-                return null;
+                return (changed == "true");
             }
         }
 
-        private string ApplyCopilotChanges(string changeData, string baseId)
+        private string PostDataToBridge(string data, string uri)
+        {
+            using (var httpClient = new HttpClient())
+            {
+                // post the data to the uri
+                var response = httpClient.GetStringAsync(uri).Result;
+                return // return the response from the server
+            }
+        }
+        
+        private string RunCopilotAction(string commandData, string baseId)
         {
             try
             {
                 // get baserow client from ~/.ssotme/ssotme.key file -> "baserow" api
                 var baserowClient = SSoTme.OST.Core.Lib.External.BaserowBackend.FromStoredCredentials();
 
-                var requestedChanges = JsonConvert.DeserializeObject<dynamic>(changeData);
+                var requestedChanges = JsonConvert.DeserializeObject<dynamic>(commandData);
                 
                 if (requestedChanges.tableId == null) {
                     return "Error applying changes: table ID was null!";
@@ -770,17 +775,29 @@ namespace SSoTme.OST.Lib.DataClasses
             DateTime? lastChangedTime = null;
             bool changeEverDetected = false;
             string uri = $"https://ssotme-cli-airtable-bridge-ahrnz660db6k4.aws-us-east-1.controlplane.us/check?baseId={baseId}";
-            string copilotUri = $"https://ssotme-cli-airtable-bridge-v2-ahrnz660db6k4.cpln.app/copilot/check-read-req?baseId={baseId}";
-            Console.WriteLine($"Polling {uri} for changes...");
-            if (isCopilot) Console.WriteLine($"Polling {copilotUri} for changes...");
+
+            string baseCopilotUri = "https://ssotme-cli-airtable-bridge-v2-ahrnz660db6k4.cpln.app/copilot";
+            string copilotReadUri = $"{baseCopilotUri}/check-read-req?baseId={baseId}";
+            Console.WriteLine($"Polling {uri} for changes to base: `{baseId}`...");
+            if (isCopilot) Console.WriteLine($"Polling {copilotReadUri} for read requests...");
             while (true)
             {
                 if (isCopilot)
                 {
-                    string lastCopilotRequest = GetLastCopilotRequestForBase(baseId, copilotUri);
-                    if (!string.IsNullOrEmpty(lastCopilotRequest))
+                    string copilotProvidedData = null;
+                    if (hasCopilotRequestedRead(copilotReadUri)) {
+                        Console.WriteLine("Copilot requested read");
+                        // todo change architecture to make copilot provide this
+                        copilotProvidedData = "{\"action\": \"list_tables\"}";
+                    }
+                    //else if (copilotRequestedWrite) {
+                    //    // todo post to put-response so copilot can see the feedback from its request to baserow
+                    //}
+
+                    if (!string.IsNullOrEmpty(copilotProvidedData))
                     {
-                        ApplyCopilotChanges(lastCopilotRequest, baseId);
+                        string response = RunCopilotAction(copilotProvidedData, baseId);
+                        PostDataToBridge(response, $"{baseCopilotUri}/put-read?baseId={baseId}");
                     }
                 }
 
