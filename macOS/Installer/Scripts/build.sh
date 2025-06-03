@@ -32,6 +32,7 @@ ASSETS_DIR="$INSTALLER_DIR/Assets"
 BUILD_DIR="$INSTALLER_DIR/build"
 DIST_DIR="$ROOT_DIR/dist"
 BIN_DIR="$INSTALLER_DIR/bin"
+RELEASE_FOLDER="$ROOT_DIR/release"
 SSOTME_DIR="$HOME/.ssotme"
 SSOTME_VERSION=$(grep -o '"version": "[^"]*"' "$ROOT_DIR/package.json" | cut -d'"' -f4)
 
@@ -43,9 +44,10 @@ sudo rm -rf "$DIST_DIR"
 sudo rm -rf "$BUILD_DIR"
 sudo rm -rf "$BIN_DIR"
 sudo rm -rf "$ROOT_DIR/build"
+sudo rm -f release/*.pkg
 
 echo "Creating necessary directories..."
-mkdir -p "$RESOURCES_DIR" "$BUILD_DIR" "$DIST_DIR" "$ASSETS_DIR" "$BIN_DIR"
+mkdir -p "$RESOURCES_DIR" "$BUILD_DIR" "$DIST_DIR" "$ASSETS_DIR" "$BIN_DIR" "$BIN_DIR/signed" "$BIN_DIR/unsigned"
 
 # Copy README into Resources
 README_SRC="$ROOT_DIR/README.md"
@@ -57,7 +59,7 @@ else
 fi
 
 echo "Building cli.py..."
-/bin/bash "$SOURCE_DIR/build-cli.sh" $PYTHON_VENVPATH
+/bin/bash "$SOURCE_DIR/build-cli.sh" "$PYTHON_VENVPATH"
 
 echo "Copy executable file ssotme into Resources under aliases: ssotme, aic, aicapture..."
 cp "$DIST_DIR/ssotme" "$RESOURCES_DIR/ssotme"
@@ -127,15 +129,16 @@ pkgbuild --root "$BUILD_DIR/payload" \
     --scripts "$BUILD_DIR/scripts" \
     --identifier "com.effortlessapi.ssotmecli" \
     --version "$SSOTME_VERSION" \
-    "$BIN_DIR/unsigned_$THE_INSTALLER_FILENAME"
+    "$BIN_DIR/unsigned/$THE_INSTALLER_FILENAME"
 
-echo "Signing package $BIN_DIR/unsigned_$THE_INSTALLER_FILENAME -> $BIN_DIR/$THE_INSTALLER_FILENAME"
-productsign --sign $DEV_INSTALLER_KEYCHAIN_ID "$BIN_DIR/unsigned_$THE_INSTALLER_FILENAME"  "$BIN_DIR/$THE_INSTALLER_FILENAME"
+echo "Signing package $BIN_DIR/unsigned/$THE_INSTALLER_FILENAME -> $BIN_DIR/signed/$THE_INSTALLER_FILENAME"
+productsign --sign $DEV_INSTALLER_KEYCHAIN_ID "$BIN_DIR/unsigned/$THE_INSTALLER_FILENAME"  "$BIN_DIR/signed/$THE_INSTALLER_FILENAME"
 
-echo "Build completed. Installer is at: $BIN_DIR/$THE_INSTALLER_FILENAME"
+echo "Build completed. Installer is at: $BIN_DIR/signed/$THE_INSTALLER_FILENAME"
 
 echo ""
-echo "$SCRIPT_DIR/notarize.sh" "$BIN_DIR/$THE_INSTALLER_FILENAME" $APPLE_EMAIL $NOTARYPASS
-/bin/bash "$SCRIPT_DIR/notarize.sh" "$BIN_DIR/$THE_INSTALLER_FILENAME" $APPLE_EMAIL $NOTARYPASS
+echo "$SCRIPT_DIR/notarize.sh" "$BIN_DIR/signed/$THE_INSTALLER_FILENAME" $APPLE_EMAIL $NOTARYPASS
+/bin/bash "$SCRIPT_DIR/notarize.sh" "$BIN_DIR/signed/$THE_INSTALLER_FILENAME" $APPLE_EMAIL $NOTARYPASS
 
-open $BIN_DIR -a Finder
+cp "$BIN_DIR/signed/$THE_INSTALLER_FILENAME" "$RELEASE_FOLDER/$THE_INSTALLER_FILENAME"
+open "$RELEASE_FOLDER" -a Finder
