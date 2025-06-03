@@ -1,0 +1,79 @@
+{
+    "$schema": "https://developer.microsoft.com/json-schemas/copilot/plugin/v2.1/schema.json",
+    "schema_version": "v2.1",
+    "name_for_human": "SSoTme Agent",
+    "description_for_human": "Assists you with reading and editing your project's Single Source of Truth (SSoT) schema, enabling seamless model management and automatic code generation.",
+    "description_for_model": "An intelligent agent that helps developers manage their Single Source of Truth (SSoT) schema. Use readSsotBase to examine current data models and entities in a base. Use writeSsotBase to submit schema modifications like adding fields, creating new entities, or updating existing models. All changes are automatically processed and reflected in the generated codebase.",
+    "contact_email": "michael@effortlessapi.com",
+    "namespace": "ssotmeagent",
+    "capabilities": {
+        "conversation_starters": [
+            {
+                "text": "Show me the current schema for my default base"
+            },
+            {
+                "text": "Add an email field to my Customer model"
+            },
+            {
+                "text": "Create a new Order entity with customer relationship"
+            },
+            {
+                "text": "What entities are currently defined in my schema?"
+            }
+        ]
+    },
+    "functions": [
+        {
+            "name": "readSsotBase",
+            "description": "Retrieves the current Single Source of Truth schema including all entities, fields, and metadata for the specified base ID.",
+            "capabilities": {
+                "response_semantics": {
+                    "data_path": "$",
+                    "static_template": {
+                        "file": "./adaptiveCards/readSsotBase.json"
+                    }
+                }
+            }
+        },
+        {
+            "name": "getAvailableBases",
+            "description": "Retrieves all Base IDs that are currently available for reading and writing SSoT data. Use this to discover what bases exist or debug base ID issues.",
+            "capabilities": {
+                "response_semantics": {
+                    "data_path": "$",
+                    "static_template": {
+                        "file": "./adaptiveCards/getAvailableBases.json"
+                    }
+                }
+            }
+        },
+        {
+            "name": "writeSsotBase",
+            "description": "Submits schema changes like adding fields, creating entities, or updating existing models. Changes can be submitted by overwriting or editing the current content.",
+            "capabilities": {
+                "response_semantics": {
+                    "data_path": "$",
+                    "static_template": {
+                        "file": "./adaptiveCards/writeSsotBase.json"
+                    }
+                }
+            }
+        }
+    ],
+    "runtimes": [
+        {
+            "type": "OpenApi",
+            "auth": {
+                "type": "None"
+            },
+            "spec": {
+                "url": "apiSpecificationFile/openapi.yaml"
+            },
+            "run_for_functions": [
+                "readSsotBase",
+                "writeSsotBase",
+                "getAvailableBases"
+            ]
+        }
+    ]
+}

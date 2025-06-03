@@ -668,9 +668,9 @@ namespace SSoTme.OST.Lib.DataClasses
             return relativePath.Replace("\\", "/");
         }
 
-        internal void RebuildAll(string rootPath, bool includeDisabled, string transpilerGroup, string buildOnTrigger, bool isLocalBuild)
+        internal void RebuildAll(string rootPath, bool includeDisabled, string transpilerGroup, string buildOnTrigger, bool copilotConnect, bool isLocalBuild)
         {
-            this.Rebuild(rootPath, includeDisabled, transpilerGroup, buildOnTrigger, isLocalBuild, true);
+            this.Rebuild(rootPath, includeDisabled, transpilerGroup, buildOnTrigger, copilotConnect, isLocalBuild, true);
         }
 
         internal void Rebuild(
@@ -678,36 +678,112 @@ namespace SSoTme.OST.Lib.DataClasses
             bool includeDisabled,
             string transpilerGroup,
             string buildOnTrigger,
+            bool copilotConnect,
             bool isBuildLocal,
             bool isBuildAll = false)
         {
             if (!string.IsNullOrEmpty(buildOnTrigger))
             {
                 this.LogMessage("Watching for Airtable changes using baseId: {0}...", buildOnTrigger);
-                this.ListenForChangesAndRebuild(buildPath, includeDisabled, transpilerGroup, isBuildLocal, isBuildAll, buildOnTrigger);
+                this.ListenForChangesAndRebuild(buildPath, includeDisabled, transpilerGroup, isBuildLocal, isBuildAll, buildOnTrigger, copilotConnect);
             }
             else
             {
                 this.DoRebuild(buildPath, includeDisabled, transpilerGroup, isBuildLocal, isBuildAll);
             }
         }
+        
+        private string GetLastCopilotRequestForBase(string baseId, string uri)
+        {
+            using (var httpClient = new HttpClient())
+            {
+                var response = httpClient.GetStringAsync(uri).Result;
+                var json = JsonDocument.Parse(response);
+                var changed = json.RootElement.GetProperty("changed").GetRawText();
+                if (changed == "true")
+                {
+                    return json.RootElement.GetProperty("content").GetRawText();
+                }
 
+                return null;
+            }
+        }
+
+        private string ApplyCopilotChanges(string changeData, string baseId)
+        {
+            try
+            {
+                // get baserow client from ~/.ssotme/ssotme.key file -> "baserow" api
+                var baserowClient = SSoTme.OST.Core.Lib.External.BaserowBackend.FromStoredCredentials();
+
+                var requestedChanges = JsonConvert.DeserializeObject<dynamic>(changeData);
+                
+                if (requestedChanges.tableId == null) {
+                    return "Error applying changes: table ID was null!";
+                }
+
+                // match copilot's requested action to the right baserow endpoint
+                string tableId = requestedChanges.tableId;
+                if (requestedChanges.action != "list_tables" && string.IsNullOrEmpty(tableId))
+                {
+                    return "Error applying changes: This endpoint requires the tableId field";
+                }
+                
+                if (requestedChanges.action == "list_tables")
+                {
+                    // table ids are globally unique across all databases
+                    var tablesData = baserowClient.FetchTablesForBase(baseId);
+                    this.LogMessage("Successfully fetched tables for base: {0} - {1}", baseId, tablesData);
+                    return tablesData;
+                }
+                else if (requestedChanges.action == "get_table")
+                {
+                    var shcema = baserowClient.GetTableSchema(tableId);
+                    this.LogMessage("Fetched table schema for tableId: {0}", tableId);
+                    return shcema;
+                }
+                else if (requestedChanges.action == "create_field")
+                {
+                    baserowClient.CreateField(tableId, requestedChanges.fieldName, requestedChanges.fieldType);
+                }
+                else if (requestedChanges.action == "update_table")
+                {
+                    baserowClient.UpdateTable(tableId, requestedChanges.tableData);
+                }
+                return string.Format("Successfully applied changes to Baserow for base: {0}", baseId);
+            }
+            catch (Exception ex)
+            {
+                return string.Format("Error applying changes: {0}", ex.Message);
+            }
+        }
+        
         private void ListenForChangesAndRebuild(
     string buildPath,
     bool includeDisabled,
     string transpilerGroup,
     bool isBuildLocal,
     bool isBuildAll,
-    string baseId)
+    string baseId,
+    bool isCopilot = false)
         {
             DateTime? lastChangedTime = null;
             bool changeEverDetected = false;
             string uri = $"https://ssotme-cli-airtable-bridge-ahrnz660db6k4.aws-us-east-1.controlplane.us/check?baseId={baseId}";
-
+            string copilotUri = $"https://ssotme-cli-airtable-bridge-v2-ahrnz660db6k4.cpln.app/copilot/check?baseId={baseId}";
             Console.WriteLine($"Polling {uri} for changes...");
-
+            if (isCopilot) Console.WriteLine($"Polling {copilotUri} for changes...");
             while (true)
             {
+                if (isCopilot)
+                {
+                    string lastCopilotRequest = GetLastCopilotRequestForBase(baseId, copilotUri);
+                    if (!string.IsNullOrEmpty(lastCopilotRequest))
+                    {
+                        ApplyCopilotChanges(lastCopilotRequest, baseId);
+                    }
+                }
+
                 if (CheckChanged(uri))
                 {
                     lastChangedTime = DateTime.UtcNow;

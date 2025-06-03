@@ -1,0 +1,183 @@
+openapi: "3.0.4"
+info:
+  title: SSoTme Agent
+  version: "1.0"
+  description: Agent that uses the ssotme protocol to assist users in editing their projects' single source of truth
+servers:
+  - url: https://ssotme-cli-airtable-bridge-ahrnz660db6k4.aws-us-east-1.controlplane.us/copilot
+    description: Development server
+paths:
+  /mark-base:
+    post:
+      summary: Submit schema modifications to a SSoT base
+      description: Submits schema changes like adding fields, creating entities, or updating existing models. Changes can be submitted via OVERWRITE via 'content' or EDIT via 'command'.
+      operationId: writeSsotBase
+      parameters:
+        - name: baseId
+          in: query
+          required: true
+          description: The alphanumeric base/project ID to modify
+          schema:
+            type: string
+            example: "default"
+      requestBody:
+        required: true
+        description: The updated SSoT schema content to apply
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - content
+              properties:
+                content:
+                  type: string
+                  description: Complete SSoT schema data including entities and metadata (Full JSON string)
+                  example: "{\"Object\": {\"property\": \"value\"}}"
+                command:
+                  type: string
+                  description: The macOs/linux command to use to modify the JSON content of the base
+                  example: "jq '.property = \"new value\"' filename"
+      responses:
+        '200':
+          description: The content was successfully MARKED for changes
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - msg
+                properties:
+                  msg:
+                    type: string
+                    description: The server's text response
+                    example: "The operation was successful"
+                  baseId:
+                    type: string
+                    description: The base ID that was modified
+                    example: "CLI"
+        '400':
+          description: Missing baseId parameter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: Error message
+                    example: "Missing baseId parameter"
+        '422':
+          description: Invalid JSON or missing content field
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: Error message
+                    example: "Invalid JSON in request body"
+                  baseId:
+                    type: string
+                    example: "CLI"
+
+  /read-actions:
+    get:
+      summary: Read all available actions which can be submitted via the write action.
+      description: Returns all actions that the agent can perform through the mark-base endpoint.
+      operationId: read
+      parameters:
+        - name: baseId
+          in: query
+          required: true
+          description: The alphanumeric base/project ID to read from
+          schema:
+            type: string
+            example: "default"
+      responses:
+        '200':
+          description: Successfully retrieved the available actions. Expected response contains "actions" and "baseId".
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  actions:
+                    type: object
+                    description: Available actions the agent can perform on this base.
+                    example: {"actions": {"name": "get_tables", "description": "View the list of tables in this base"}}
+                  baseId:
+                    type: string
+                    description: The base/project ID that was requested
+                    example: "customer_base"
+        '400':
+          description: Missing baseId parameter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: Error message
+                    example: "Missing baseId parameter"
+        '404':
+          description: Base ID not found in available bases
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: Error message indicating which base was not found and listing available bases
+                    example: "Base ID 'baseId' not found. Available bases: ..."
+        '408':
+          description: Request timeout - CLI did not respond within 30 seconds
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: Error message
+                    example: "Timeout waiting for response from CLI!"
+        '502':
+          description: Bad Gateway - CLI response was invalid or empty
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: Error message
+                    example: "Error reading response from CLI!"
+  # cli will need to post with {"microsoft_tenant_id": "...", "baserow_token": "..."}
+  # because copilot already sends the user's tenant_id in each api call
+  # so that tenant_id could be connected to which bases are available to that user
+  /available-bases:
+    get:
+      summary: Get list of available Base IDs and Table IDs
+      description: Retrieves all Base and Table IDs that are currently available to the user's cli process.
+      operationId: getAvailableBases
+      responses:
+        '200':
+          description: Successfully retrieved available Base/Table IDs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  bases:
+                    type: array
+                    items:
+                      type: object
+                    description: Set of available Base and Table IDs
+                    example: {"databases": {"id": "database_id", "tables": [{"id": "abcdef12345"}]}}
+                  msg:
+                    type: string
+                    description: Success message
+                    example: "Available bases retrieved successfully"
