@@ -39,7 +39,7 @@ function getSsotUser(req) {
 const server = http.createServer(async (req, res) => {
     const url = new URL(req.url, `http://${req.headers.host}`);
 
-    if  (url.pathname === "/available-bases") {
+    if  (url.pathname === "/copilot/available-bases") {
         if (req.method === "GET") {
             // copilot reqs here
             const userId = getSsotUser(req);
@@ -103,18 +103,34 @@ const server = http.createServer(async (req, res) => {
 
     const baseId = url.searchParams.get("baseId");
     // Only check for baseId if it's not the available-bases endpoint
-    if (!baseId && url.pathname !== "/available-bases") {
+    if (!baseId && url.pathname !== "/copilot/available-bases") {
         log(`ERROR: Missing baseId parameter for ${req.method} ${url.pathname}`);
         res.writeHead(400);
         return res.end(JSON.stringify({'msg': "Missing baseId parameter", 'errorCode': 'MISSING_BASE_ID'}));
     }
 
     // Log every request not including cli polling
-    if ((url.pathname !== '/check-base') && (url.pathname !== '/check-read-req')) {
+    if ((url.pathname !== "/check") && (url.pathname !== '/copilot/check-base') && (url.pathname !== '/copilot/check-read-req')) {
         log(`${req.method} ${url.pathname} - baseId: ${baseId || 'missing'} - IP: ${req.socket.remoteAddress}`);
     }
 
-    if (url.pathname === "/mark-base") {
+    // START original server
+    if (req.method === "GET" && url.pathname === "/mark") {
+        state.set(baseId, Date.now());
+        res.writeHead(200);
+        return res.end("Marked");
+    }
+
+    if (req.method === "GET" && url.pathname === "/check") {
+        const ts = state.get(baseId) || 0;
+        const changed = (Date.now() - ts) < TTL_MS;
+        res.writeHead(200, { "Content-Type": "application/json" });
+        state.delete(baseId);
+        return res.end(JSON.stringify({ changed }));
+    }
+    // END original server
+
+    if (url.pathname === "/copilot/mark-base") {
         if (req.method !== "POST") {
             res.writeHead(400, { "Content-Type": "application/json" });
             return res.end(JSON.stringify({'msg': `Must use POST request for this endpoint!`, baseId: baseId}));
@@ -187,7 +203,7 @@ const server = http.createServer(async (req, res) => {
         return;
     }
 
-    if (req.method === "POST" && url.pathname === "/put-cmd-response") {
+    if (req.method === "POST" && url.pathname === "/copilot/put-cmd-response") {
         // CLI posts command execution results here
         let body = '';
         req.on('data', chunk => {
@@ -211,7 +227,7 @@ const server = http.createServer(async (req, res) => {
         return;
     }
 
-    if (req.method === "GET" && url.pathname === "/check-base")
+    if (req.method === "GET" && url.pathname === "/copilot/check-base")
         // used by the CLI to register if the plugin has requested a change via /mark-base
         // -> should poll this and then update the airtable/etc with the requested content
     {
@@ -226,7 +242,7 @@ const server = http.createServer(async (req, res) => {
         return res.end(JSON.stringify({ "changed": changedRecently, content, theCmd, filename }));
     }
 
-    if (req.method === "GET" && url.pathname === "/check-read-req")
+    if (req.method === "GET" && url.pathname === "/copilot/check-read-req")
         // the cli will check this endpoint to see which bases the plugin wants to read from
     {
         const ts = readRequests.get(baseId) || 0;
@@ -237,7 +253,7 @@ const server = http.createServer(async (req, res) => {
         // now the cli should immediatelly post the base's content to /put-read
     }
 
-    if (req.method === "POST" && url.pathname === "/put-read")
+    if (req.method === "POST" && url.pathname === "/copilot/put-read")
         // this cli will POST ssot reads here
         // the plugin's rest API (this script) will be polling this before it returns anything to the plugin, or timeout
     {
@@ -275,7 +291,7 @@ const server = http.createServer(async (req, res) => {
         return;
     }
 
-    if (req.method === "GET" && url.pathname === "/request-read")
+    if (req.method === "GET" && url.pathname === "/copilot/request-read")
         // copilot will request a ssot read here
         // & this server will wait until the cli responds and return its response to the plugin (or timeout)
     {
