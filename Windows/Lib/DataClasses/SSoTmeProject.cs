@@ -693,9 +693,8 @@ namespace SSoTme.OST.Lib.DataClasses
             }
         }
         
-        private string GetLastCopilotRequestForBase(string baseId)
+        private string GetLastCopilotRequestForBase(string baseId, string uri)
         {
-            string uri = $"https://ssotme-cli-airtable-bridge-ahrnz660db6k4.aws-us-east-1.controlplane.us/copilot/check?baseId={baseId}";
             using (var httpClient = new HttpClient())
             {
                 var response = httpClient.GetStringAsync(uri).Result;
@@ -771,14 +770,14 @@ namespace SSoTme.OST.Lib.DataClasses
             DateTime? lastChangedTime = null;
             bool changeEverDetected = false;
             string uri = $"https://ssotme-cli-airtable-bridge-ahrnz660db6k4.aws-us-east-1.controlplane.us/check?baseId={baseId}";
-
+            string copilotUri = $"https://ssotme-cli-airtable-bridge-ahrnz660db6k4.aws-us-east-1.controlplane.us/copilot/check?baseId={baseId}";
             Console.WriteLine($"Polling {uri} for changes...");
-
+            if (isCopilot) Console.WriteLine($"Polling {copilotUri} for changes...");
             while (true)
             {
                 if (isCopilot)
                 {
-                    string lastCopilotRequest = GetLastCopilotRequestForBase(baseId);
+                    string lastCopilotRequest = GetLastCopilotRequestForBase(baseId, copilotUri);
                     if (!string.IsNullOrEmpty(lastCopilotRequest))
                     {
                         ApplyCopilotChanges(lastCopilotRequest, baseId);
