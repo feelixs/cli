@@ -770,7 +770,7 @@ namespace SSoTme.OST.Lib.DataClasses
             DateTime? lastChangedTime = null;
             bool changeEverDetected = false;
             string uri = $"https://ssotme-cli-airtable-bridge-ahrnz660db6k4.aws-us-east-1.controlplane.us/check?baseId={baseId}";
-            string copilotUri = $"https://ssotme-cli-airtable-bridge-v2-ahrnz660db6k4.cpln.app/copilot/check?baseId={baseId}";
+            string copilotUri = $"https://ssotme-cli-airtable-bridge-v2-ahrnz660db6k4.cpln.app/copilot/check-read-req?baseId={baseId}";
             Console.WriteLine($"Polling {uri} for changes...");
             if (isCopilot) Console.WriteLine($"Polling {copilotUri} for changes...");
             while (true)
