@@ -1,5 +1,7 @@
 // server.js
 const http = require('http');
+const state = new Map();
+
 const baseLastChanged = new Map();
 
 const readRequests = new Map();  // bools whether copilot wants to read each base
@@ -114,7 +116,7 @@ const server = http.createServer(async (req, res) => {
         log(`${req.method} ${url.pathname} - baseId: ${baseId || 'missing'} - IP: ${req.socket.remoteAddress}`);
     }
 
-    // START original server
+    // MARK START original server
     if (req.method === "GET" && url.pathname === "/mark") {
         state.set(baseId, Date.now());
         res.writeHead(200);
@@ -128,7 +130,7 @@ const server = http.createServer(async (req, res) => {
         state.delete(baseId);
         return res.end(JSON.stringify({ changed }));
     }
-    // END original server
+    // MARK END original server
 
     if (url.pathname === "/copilot/mark-base") {
         if (req.method !== "POST") {
