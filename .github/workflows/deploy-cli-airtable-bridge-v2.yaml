@@ -1,6 +1,8 @@
 name: Airtable Bridge v2 Workflow
 
 on:
+  push:
+    branches: [ "copilot-plugin" ]
   workflow_dispatch:
 
 env:
