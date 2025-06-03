@@ -1,4 +1,3 @@
-
 {
   "Ontology": {
     "Name": "SPECDB_SSOTME",
@@ -24,7 +23,7 @@
                     "Name": "AccountHolderId",
                     "Namespace": "com.anabstractlevel.SPECDB_SSOTME.dbo.AccountHolder",
                     "DataType": "GUID",
-                    "Length": "16",
+                    "Length": "50",
                     "IsPrimaryKey": "1",
                     "IsNullable": "0",
                     "DefaultValue": "(newid())"
@@ -1715,4 +1714,3 @@
     }
   }
 }
-                    
