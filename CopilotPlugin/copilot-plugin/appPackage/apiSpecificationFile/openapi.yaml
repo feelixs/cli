@@ -4,7 +4,7 @@ info:
   version: "1.0"
   description: Agent that uses the ssotme protocol to assist users in editing their projects' single source of truth
 servers:
-  - url: http://134.209.173.56:8080/
+  - url: https://ssotme-cli-airtable-bridge-ahrnz660db6k4.aws-us-east-1.controlplane.us/copilot
     description: Development server
 paths:
   /mark-base:
@@ -82,11 +82,11 @@ paths:
                     type: string
                     example: "CLI"
 
-  /request-read:
+  /read-actions:
     get:
-      summary: Read the current SSoT schema for the specified base
-      description: Retrieves the current Single Source of Truth schema including all entities, fields, and metadata for the specified base ID
-      operationId: readSsotBase
+      summary: Read all available actions which can be submitted via the write action.
+      description: Returns all actions that the agent can perform through the mark-base endpoint.
+      operationId: read
       parameters:
         - name: baseId
           in: query
@@ -97,23 +97,20 @@ paths:
             example: "default"
       responses:
         '200':
-          description: Successfully retrieved the SSoT schema data. Expected response contains "data" (json object with entities and metadata) and "baseId" (string).
+          description: Successfully retrieved the available actions. Expected response contains "actions" and "baseId".
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  data:
+                  actions:
                     type: object
-                    description: Complete SSoT schema data including entities and metadata
+                    description: Available actions the agent can perform on this base.
+                    example: {"actions": {"name": "get_tables", "description": "View the list of tables in this base"}}
                   baseId:
                     type: string
                     description: The base/project ID that was requested
                     example: "customer_base"
-                  filename:
-                    type: string
-                    description: The name of the base file on the remote server
-                    example: "customer_base.json"
         '400':
           description: Missing baseId parameter
           content:
@@ -158,15 +155,17 @@ paths:
                     type: string
                     description: Error message
                     example: "Error reading response from CLI!"
-
+  # cli will need to post with {"microsoft_tenant_id": "...", "baserow_token": "..."}
+  # because copilot already sends the user's tenant_id in each api call
+  # so that tenant_id could be connected to which bases are available to that user
   /available-bases:
     get:
-      summary: Get list of available Base IDs
-      description: Retrieves all Base IDs that are currently available for reading and writing SSoT data
+      summary: Get list of available Base IDs and Table IDs
+      description: Retrieves all Base and Table IDs that are currently available to the user's cli process.
       operationId: getAvailableBases
       responses:
         '200':
-          description: Successfully retrieved available Base IDs
+          description: Successfully retrieved available Base/Table IDs
           content:
             application/json:
               schema:
@@ -175,9 +174,9 @@ paths:
                   bases:
                     type: array
                     items:
-                      type: string
-                    description: List of available Base IDs
-                    example: ["abcdef12345"]
+                      type: object
+                    description: Set of available Base and Table IDs
+                    example: {"databases": {"id": "database_id", "tables": [{"id": "abcdef12345"}]}}
                   msg:
                     type: string
                     description: Success message

@@ -205,30 +205,6 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  if (req.method === "POST" && url.pathname === "/copilot/put-cmd-response") {
-    // CLI posts command execution results here
-    let body = '';
-    req.on('data', chunk => {
-      body += chunk.toString();
-    });
-    req.on('end', () => {
-      try {
-        const data = JSON.parse(body);
-        const response = data.response;
-        baseCmdRespsTimestamps.set(baseId, Date.now()); // Store timestamp
-        baseCmdResps.set(baseId, response); // Store actual response message
-        log(`CMD-RESPONSE: Received for baseId: ${baseId}: ${response}`);
-        res.writeHead(200, { "Content-Type": "application/json" });
-        return res.end(JSON.stringify({'msg': "Command response received"}));
-      } catch (e) {
-        log(`ERROR: PUT-CMD-RESPONSE invalid JSON for baseId: ${baseId}`);
-        res.writeHead(400);
-        return res.end(JSON.stringify({'msg': "Invalid JSON"}));
-      }
-    });
-    return;
-  }
-
   if (req.method === "GET" && url.pathname === "/copilot/check-base")
       // used by the CLI to register if the plugin has requested a change via /mark-base
       // -> should poll this and then update the airtable/etc with the requested content
