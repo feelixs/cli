@@ -154,9 +154,11 @@ const server = http.createServer(async (req, res) => {
     });
     req.on('end', () => {
       let content;
+      let message;
       try {
         const data = JSON.parse(body);
         content = data.content;
+        message = content.msg;
         log(`[PUT-ACTION-RESULT] Content received for baseId: ${baseId}`);
       } catch (e) {
         log(`[PUT-ACTION-RESULT] ERROR: invalid JSON for baseId: ${baseId}`);
@@ -166,7 +168,12 @@ const server = http.createServer(async (req, res) => {
 
       // responses
       actionsFinished.set(baseId, Date.now());
-      actionResponses.set(baseId, content);
+      if (content) {
+        actionResponses.set(baseId, content);
+      } else if (message) {
+        // fall back to the message we got from the cli
+        actionResponses.set(baseId, message);
+      }
 
       // cleanup
       actionContents.delete(baseId);
