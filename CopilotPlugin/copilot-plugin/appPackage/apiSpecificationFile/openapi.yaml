@@ -29,11 +29,16 @@ paths:
               type: object
               required:
                 - action
+                - tableId
               properties:
-                content:
+                action:
                   type: string
                   description: The name of the action as defined in the readActions endpoint
                   example: "list_tables"
+                tableId:
+                  type: string
+                  description: The ID of the table within the specified base, where the action will be run.
+                  example: "table10"
       responses:
         '200':
           description: The action was sucessfully submitted for processing
@@ -43,15 +48,16 @@ paths:
                 type: object
                 required:
                   - msg
+                  - target
                 properties:
                   msg:
                     type: string
                     description: The server's text response
                     example: "The operation was successful"
-                  base:
-                    type: string
-                    description: The base where the action was submitted
-                    example: "abcd123"
+                  target:
+                    type: object
+                    description: The base & table where the action was submitted
+                    example: {"tableId": "thetable", "baseId": "abcd123"}
         '400':
           description: Missing baseId parameter
           content:
