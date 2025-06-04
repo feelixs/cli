@@ -694,14 +694,14 @@ namespace SSoTme.OST.Lib.DataClasses
             }
         }
         
-        private bool hasCopilotRequestedRead(string readReqUri)
+        private (bool, string) GetLastCopilotRequestedRead(string readReqUri)
         {
             using (var httpClient = new HttpClient())
             {
-                var response = httpClient.GetStringAsync(readReqUri).Result;
+                string response = httpClient.GetStringAsync(readReqUri).Result;
                 var json = JsonDocument.Parse(response);
                 var changed = json.RootElement.GetProperty("changed").GetRawText();
-                return (changed == "true");
+                return (changed == "true", response);
             }
         }
 
@@ -714,7 +714,7 @@ namespace SSoTme.OST.Lib.DataClasses
                     JToken parsedData;
                     try
                     {
-                        parsedData = JToken.Parse(data); // works for both objects and arrays
+                        parsedData = JToken.Parse(data);
                     }
                     catch (JsonReaderException jex)
                     {
@@ -724,7 +724,7 @@ namespace SSoTme.OST.Lib.DataClasses
 
                     var wrapped = new JObject
                     {
-                        ["content"] = parsedData  // wrap array or object in {"content": ...}
+                        ["content"] = parsedData  // server requires wrapped in {"content": ...}
                     };
 
                     var wrappedData = wrapped.ToString();
@@ -753,7 +753,7 @@ namespace SSoTme.OST.Lib.DataClasses
         }
         
         private string RunCopilotAction(string commandData, string baseId)
-        {
+        { // todo return json on errors?
             try
             {
                 // get baserow client from ~/.ssotme/ssotme.key file -> "baserow" api
@@ -816,28 +816,24 @@ namespace SSoTme.OST.Lib.DataClasses
             string uri = $"https://ssotme-cli-airtable-bridge-ahrnz660db6k4.aws-us-east-1.controlplane.us/check?baseId={baseId}";
 
             string baseCopilotUri = "https://ssotme-cli-airtable-bridge-v2-ahrnz660db6k4.cpln.app/copilot";
-            string copilotReadUri = $"{baseCopilotUri}/check-read-req?baseId={baseId}";
+            string copilotReadUri = $"{baseCopilotUri}/check-req-actions?baseId={baseId}";
             Console.WriteLine($"Polling {uri} for changes to base: `{baseId}`...");
             if (isCopilot) Console.WriteLine($"Polling {copilotReadUri} for read requests...");
-            while (true)
-            {
-                if (isCopilot)
-                {
-                    string copilotProvidedData = null;
-                    if (hasCopilotRequestedRead(copilotReadUri)) {
-                        Console.WriteLine("Copilot requested read");
-                        // todo change architecture to make copilot provide this
-                        copilotProvidedData = "{\"action\": \"list_tables\"}";
+            while (true) {
+                if (isCopilot) {
+                    var (newCopilotActionRequest, copilotProvidedData) = GetLastCopilotRequestedRead(copilotReadUri);
+                    if (newCopilotActionRequest) {
+                        //copilotProvidedData = "{\"action\": \"list_tables\"}";
+                        Console.WriteLine($"Copilot requested action: {copilotProvidedData}");
+                        if (!string.IsNullOrEmpty(copilotProvidedData))
+                        {
+                            string response = RunCopilotAction(copilotProvidedData, baseId);
+                            PostDataToBridge(response, $"{baseCopilotUri}/put-action-result?baseId={baseId}");
+                        }
                     }
                     //else if (copilotRequestedWrite) {
                     //    // todo post to put-response so copilot can see the feedback from its request to baserow
                     //}
-
-                    if (!string.IsNullOrEmpty(copilotProvidedData))
-                    {
-                        string response = RunCopilotAction(copilotProvidedData, baseId);
-                        PostDataToBridge(response, $"{baseCopilotUri}/put-read?baseId={baseId}");
-                    }
                 }
 
                 if (CheckChanged(uri))

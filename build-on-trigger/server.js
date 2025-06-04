@@ -6,6 +6,7 @@ const baseLastChanged = new Map();
 
 const actionSubmissions = new Map();  // bools whether copilot submitted a new action to each base
 const requestedActions = new Map(); // strings of the most recent action copilot wants per base
+const requestedActionsTableIds = new Map(); // the table id where the action should be run
 const actionsFinished = new Map();  // bools whether the CLI responded for this base
 const actionResponses = new Map();
 
@@ -257,8 +258,14 @@ const server = http.createServer(async (req, res) => {
         return res.end(JSON.stringify({'msg': "Missing required field 'content'"}));
       }
 
+      // responses
       actionsFinished.set(baseId, Date.now());
       actionResponses.set(baseId, content);
+
+      // cleanup
+      requestedActions.delete(baseId);
+      requestedActionsTableIds.delete(baseId);
+
       log(`[PUT-ACTION-RESULT] SUCCESS: stored content for baseId: ${baseId}`);
       res.writeHead(200, { "Content-Type": "application/json" });
       return res.end(JSON.stringify({'msg': `Marked ${baseId} with content`}));
@@ -293,6 +300,7 @@ const server = http.createServer(async (req, res) => {
     });
     req.on('end', async () => {
       let theAction;
+      let tableid;
       try {
         log(`[ACTION SUBMIT] Raw body received: ${body}`);
         if (!body || body.trim() === '') {
@@ -302,8 +310,9 @@ const server = http.createServer(async (req, res) => {
         }
         const data = JSON.parse(body);
         theAction = data.action;
+        tableid = data.tableId;
         log(`[ACTION SUBMIT] Parsed data:`, data);
-        log(`[ACTION SUBMIT] Extracted content:`, theAction);
+        log(`[ACTION SUBMIT] Extracted content: {theAction: ${theAction}, tableId: ${tableid}}`);
       } catch (e) {
         log(`[ACTION SUBMIT] ERROR: invalid JSON for baseId: ${baseId}, raw body: ${body}`);
         res.writeHead(422);
@@ -315,6 +324,7 @@ const server = http.createServer(async (req, res) => {
       actionSubmissions.set(baseId, reqDate);
 
       requestedActions.set(baseId, theAction);
+      requestedActionsTableIds.set(baseId, tableid);
 
       const theTimeout = 30 * 1000;
       let waited = 0;
@@ -361,7 +371,7 @@ const server = http.createServer(async (req, res) => {
       log(`Sending successful response to Copilot for baseId: ${baseId}`);
       res.writeHead(200, { "Content-Type": "application/json" });
 
-      return res.end(JSON.stringify({ data: updatedContent, baseId: baseId }));
+      return res.end(JSON.stringify({ data: updatedContent, target: {tableId: tableid, baseId: baseId} }));
     });
     return;
   }
