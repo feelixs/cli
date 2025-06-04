@@ -1,0 +1,39 @@
+﻿<Project Sdk="WixToolset.Sdk/6.0.0">
+
+	<PropertyGroup>
+		<OutputName>CLI_Installer</OutputName>
+		<OutputType>Package</OutputType>
+		<Platform>x86</Platform>
+		<SSoTmeVersion>224.12.7</SSoTmeVersion>
+		<EnableDefaultItems>false</EnableDefaultItems>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+		<OutputPath>bin\cli-installer\Debug\</OutputPath>
+		<IntermediateOutputPath>obj\cli-installer\Debug\</IntermediateOutputPath>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
+		<OutputPath>bin\cli-installer\Release\</OutputPath>
+		<IntermediateOutputPath>obj\cli-installer\Release\</IntermediateOutputPath>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Include="Product.wxs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="Assets\LICENSE.rtf" />
+		<Content Include="Assets\Icon.ico" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="Scripts\CreateSsotmeHomedir.ps1" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="WixToolset.UI.wixext" Version="6.0.0" />
+		<PackageReference Include="WixToolset.Util.wixext" Version="6.0.0" />
+	</ItemGroup>
+
+</Project>

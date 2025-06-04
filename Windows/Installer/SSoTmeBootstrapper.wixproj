@@ -1,0 +1,35 @@
+<Project Sdk="WixToolset.Sdk/6.0.0">
+
+    <PropertyGroup>
+        <OutputName>SSoTmeInstaller</OutputName>
+        <OutputType>Bundle</OutputType>
+        <Platform>x86</Platform>
+        <SSoTmeVersion>224.12.7</SSoTmeVersion>
+        <EnableDefaultItems>false</EnableDefaultItems>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+        <OutputPath>bin\main\Debug\</OutputPath>
+        <IntermediateOutputPath>obj\main\Debug\</IntermediateOutputPath>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+        <OutputPath>bin\main\Release\</OutputPath>
+        <IntermediateOutputPath>obj\main\Release\</IntermediateOutputPath>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="Bootstrapper.wxs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Include="Assets\LICENSE.rtf" />
+        <Content Include="Assets\Icon.ico" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="WixToolset.Bal.wixext" Version="6.0.0" />
+        <PackageReference Include="WixToolset.NetFx.wixext" Version="6.0.0" />
+    </ItemGroup>
+
+</Project>
