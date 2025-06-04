@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SSoTme.OST.Lib.SassySDK.Derived;
+using System.Collections.Generic;
 
 namespace SSoTme.OST.Core.Lib.External
 {
@@ -187,11 +188,18 @@ namespace SSoTme.OST.Core.Lib.External
             }
         }
 
-        public JToken GetTableSchema(string tableId, bool userReadable = false)
+        public JToken GetTableSchema(string tableId)
         {
-            var task = GetTableSchemaAsync(tableId, userReadable);
-            task.Wait();
-            return task.Result;
+            var dataTask = GetTableSchemaAsync(tableId, false);
+            dataTask.Wait();
+            JToken tableData = dataTask.Result;
+            
+            var schemaTask = GetTableSchemaAsync(tableId, true);
+            schemaTask.Wait();
+            JToken tableSchema = schemaTask.Result;
+            
+            // Transform the data to include field objects with columnName, value, and id
+            return TransformTableDataWithFields(tableData, tableSchema);
         }
 
         public async Task<JToken> GetTableSchemaAsync(string tableId, bool userReadable)
@@ -212,6 +220,67 @@ namespace SSoTme.OST.Core.Lib.External
                 string strRes = await response.Content.ReadAsStringAsync();
                 return JToken.Parse(strRes);
             }
+        }
+        
+        private JToken TransformTableDataWithFields(JToken tableData, JToken tableSchema)
+        {
+            var transformedRows = new JArray();
+            
+            if (tableData != null && tableData["results"] != null)
+            {
+                var fields = tableSchema?["fields"]?.ToObject<JArray>();
+                var fieldMap = new Dictionary<string, (string name, int id)>();
+                
+                // Build field mapping from schema
+                if (fields != null)
+                {
+                    foreach (var field in fields)
+                    {
+                        var fieldId = field["id"]?.ToString();
+                        var fieldName = field["name"]?.ToString();
+                        if (!string.IsNullOrEmpty(fieldId) && !string.IsNullOrEmpty(fieldName))
+                        {
+                            fieldMap[$"field_{fieldId}"] = (fieldName, int.Parse(fieldId));
+                        }
+                    }
+                }
+                
+                foreach (var row in tableData["results"])
+                {
+                    var transformedRow = new JObject();
+                    
+                    // Copy basic properties
+                    if (row["id"] != null) transformedRow["id"] = row["id"];
+                    if (row["order"] != null) transformedRow["order"] = row["order"];
+                    
+                    // Transform field data
+                    foreach (var property in row.ToObject<JObject>().Properties())
+                    {
+                        if (property.Name.StartsWith("field_") && fieldMap.ContainsKey(property.Name))
+                        {
+                            var (columnName, fieldId) = fieldMap[property.Name];
+                            transformedRow[property.Name] = new JObject
+                            {
+                                ["columnName"] = columnName,
+                                ["value"] = property.Value,
+                                ["id"] = fieldId
+                            };
+                        }
+                        else if (!property.Name.Equals("id") && !property.Name.Equals("order"))
+                        {
+                            // Keep non-field properties as-is
+                            transformedRow[property.Name] = property.Value;
+                        }
+                    }
+                    
+                    transformedRows.Add(transformedRow);
+                }
+            }
+            
+            return new JObject
+            {
+                ["results"] = transformedRows
+            };
         }
     }
 }

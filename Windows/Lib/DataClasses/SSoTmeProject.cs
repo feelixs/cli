@@ -734,67 +734,6 @@ namespace SSoTme.OST.Lib.DataClasses
             }
         }
         
-        private JToken TransformTableDataWithFields(JToken tableData, JToken tableSchema)
-        {
-            var transformedRows = new JArray();
-            
-            if (tableData != null && tableData["results"] != null)
-            {
-                var fields = tableSchema?["fields"]?.ToObject<JArray>();
-                var fieldMap = new Dictionary<string, (string name, int id)>();
-                
-                // Build field mapping from schema
-                if (fields != null)
-                {
-                    foreach (var field in fields)
-                    {
-                        var fieldId = field["id"]?.ToString();
-                        var fieldName = field["name"]?.ToString();
-                        if (!string.IsNullOrEmpty(fieldId) && !string.IsNullOrEmpty(fieldName))
-                        {
-                            fieldMap[$"field_{fieldId}"] = (fieldName, int.Parse(fieldId));
-                        }
-                    }
-                }
-                
-                foreach (var row in tableData["results"])
-                {
-                    var transformedRow = new JObject();
-                    
-                    // Copy basic properties
-                    if (row["id"] != null) transformedRow["id"] = row["id"];
-                    if (row["order"] != null) transformedRow["order"] = row["order"];
-                    
-                    // Transform field data
-                    foreach (var property in row.ToObject<JObject>().Properties())
-                    {
-                        if (property.Name.StartsWith("field_") && fieldMap.ContainsKey(property.Name))
-                        {
-                            var (columnName, fieldId) = fieldMap[property.Name];
-                            transformedRow[property.Name] = new JObject
-                            {
-                                ["columnName"] = columnName,
-                                ["value"] = property.Value,
-                                ["id"] = fieldId
-                            };
-                        }
-                        else if (!property.Name.Equals("id") && !property.Name.Equals("order"))
-                        {
-                            // Keep non-field properties as-is
-                            transformedRow[property.Name] = property.Value;
-                        }
-                    }
-                    
-                    transformedRows.Add(transformedRow);
-                }
-            }
-            
-            return new JObject
-            {
-                ["results"] = transformedRows
-            };
-        }
-        
         private JToken RunCopilotAction(string commandData, string baseId)
         {  // todo you can make undo/redo actions using the baserow 'ClientSessionId' header
             
@@ -848,15 +787,10 @@ namespace SSoTme.OST.Lib.DataClasses
                 else if (requestedChanges.action == "get_table_fields")
                 {
                     this.LogMessage("Fetching table data with field mappings for tableId: {0}", tableId);
-                    JToken tableData = baserowClient.GetTableData(tableId);
                     JToken tableSchema = baserowClient.GetTableSchema(tableId);
-                    
-                    // Transform the data to include field objects with columnName, value, and id
-                    var transformedData = TransformTableDataWithFields(tableData, tableSchema);
-                    
                     return new JObject
                     {
-                        ["content"] = transformedData,
+                        ["content"] = tableSchema,
                         ["msg"] = $"Successfully retrieved table fields for: {tableId}"
                     };
                 }
@@ -866,16 +800,6 @@ namespace SSoTme.OST.Lib.DataClasses
                     string type = requestedChanges.content.fieldType;
                     Console.WriteLine($"Creating new field: name: {name}, type: {type}");
                     return baserowClient.CreateField(tableId, name, type);
-                }
-                else if (requestedChanges.action == "get_fields")
-                {
-                    this.LogMessage("Fetching user-readable table schema for tableId: {0}", tableId);
-                    JToken shcema = baserowClient.GetTableSchema(tableId, true);
-                    return new JObject
-                    {
-                        ["content"] = shcema,
-                        ["msg"] = $"Successfully retrieved table: {tableId}"
-                    };
                 }
                 else if (requestedChanges.action == "get_field")
                 {
