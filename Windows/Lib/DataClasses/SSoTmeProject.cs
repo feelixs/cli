@@ -5,6 +5,7 @@
  License:    Mozilla Public License 2.0
  *******************************************/
 using System;
+using System.Text;
 using System.ComponentModel;
 using SassyMQ.SSOTME.Lib.RMQActors;
 using System.IO;
@@ -710,10 +711,28 @@ namespace SSoTme.OST.Lib.DataClasses
             {
                 try
                 {
-                    var jsonContent =
-                    var content = new StringContent(data, System.Text.Encoding.UTF8, "application/json");
+                    JToken parsedData;
+                    try
+                    {
+                        parsedData = JToken.Parse(data); // works for both objects and arrays
+                    }
+                    catch (JsonReaderException jex)
+                    {
+                        this.LogMessage("Invalid JSON input: {0}", jex.Message);
+                        return null;
+                    }
+
+                    var wrapped = new JObject
+                    {
+                        ["content"] = parsedData  // wrap array or object in {"content": ...}
+                    };
+
+                    var wrappedData = wrapped.ToString();
+                    Console.WriteLine($"Posting to bridge: {uri} - {wrappedData}");
+
+                    var content = new StringContent(wrappedData, Encoding.UTF8, "application/json");
                     var response = httpClient.PostAsync(uri, content).Result;
-                    
+
                     if (response.IsSuccessStatusCode)
                     {
                         this.LogMessage("Successfully posted data to bridge: {0}", uri);
@@ -738,19 +757,19 @@ namespace SSoTme.OST.Lib.DataClasses
             try
             {
                 // get baserow client from ~/.ssotme/ssotme.key file -> "baserow" api
-                var baserowClient = SSoTme.OST.Core.Lib.External.BaserowBackend.FromStoredCredentials();
-
+                var baserowClient = new SSoTme.OST.Core.Lib.External.BaserowBackend();
                 var requestedChanges = JsonConvert.DeserializeObject<dynamic>(commandData);
                 
-                if (requestedChanges.tableId == null) {
-                    return "Error applying changes: table ID was null!";
-                }
-
+                Console.WriteLine($"Running Copilot Action: {commandData} on base: {baseId}");
+                
                 // match copilot's requested action to the right baserow endpoint
                 string tableId = requestedChanges.tableId;
                 if (requestedChanges.action != "list_tables" && string.IsNullOrEmpty(tableId))
                 {
                     return "Error applying changes: This endpoint requires the tableId field";
+                }
+                if (requestedChanges.action != "list_tables" && requestedChanges.tableId == null) {
+                    return "Error applying changes: table ID was null!";
                 }
                 
                 if (requestedChanges.action == "list_tables")
@@ -778,7 +797,8 @@ namespace SSoTme.OST.Lib.DataClasses
             }
             catch (Exception ex)
             {
-                return string.Format("Error applying changes: {0}", ex.Message);
+                this.LogMessage("Error running copilot action: {0}", ex.Message);
+                return string.Format("Error running copilot action: {0}", ex.Message);
             }
         }
         
