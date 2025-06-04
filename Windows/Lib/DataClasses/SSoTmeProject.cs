@@ -867,6 +867,26 @@ namespace SSoTme.OST.Lib.DataClasses
                     Console.WriteLine($"Creating new field: name: {name}, type: {type}");
                     return baserowClient.CreateField(tableId, name, type);
                 }
+                else if (requestedChanges.action == "get_fields")
+                {
+                    this.LogMessage("Fetching user-readable table schema for tableId: {0}", tableId);
+                    JToken shcema = baserowClient.GetTableSchema(tableId, true);
+                    return new JObject
+                    {
+                        ["content"] = shcema,
+                        ["msg"] = $"Successfully retrieved table: {tableId}"
+                    };
+                }
+                else if (requestedChanges.action == "get_field")
+                {
+                    this.LogMessage($"Fetching field data for id: {fieldId}");
+                    JToken fieldResp = baserowClient.GetField(fieldId);
+                    return new JObject
+                    {
+                        ["content"] = fieldResp,
+                        ["msg"] = $"Successfully retrieved field: {fieldId}"
+                    };
+                }
                 else if (requestedChanges.action == "update_field")
                 {
                     return baserowClient.UpdateField(fieldId, requestedChanges.content);

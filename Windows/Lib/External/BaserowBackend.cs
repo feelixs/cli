@@ -187,22 +187,21 @@ namespace SSoTme.OST.Core.Lib.External
             }
         }
 
-        public JToken GetTableSchema(string tableId)
+        public JToken GetTableSchema(string tableId, bool userReadable = false)
         {
-            var task = GetTableSchemaAsync(tableId);
+            var task = GetTableSchemaAsync(tableId, userReadable);
             task.Wait();
             return task.Result;
         }
 
-        public async Task<JToken> GetTableSchemaAsync(string tableId)
+        public async Task<JToken> GetTableSchemaAsync(string tableId, bool userReadable)
         {
             var token = await GetValidTokenAsync();
             
             using (var httpClient = new HttpClient())
             {
                 httpClient.DefaultRequestHeaders.Add("Authorization", $"JWT {token}");
-                
-                var response = await httpClient.GetAsync($"{_baseUrl}/database/rows/table/{tableId}/");
+                var response = await httpClient.GetAsync($"{_baseUrl}/database/rows/table/{tableId}/?user_field_names={userReadable}");
                 
                 if (!response.IsSuccessStatusCode)
                 {
