@@ -235,30 +235,41 @@ $packageJsonTxt = Get-Content (Join-Path $RootDir "package.json") -Raw | Convert
 $ssotmeVersion = $packageJsonTxt.version -replace "0", ""  #  Invalid product version '2024.08.23'. Product version must have a major version less than 256, a minor version less than 256
 Write-Host "Using version: $ssotmeVersion from package.json"
 
-# Update Bootstrapper.wxs with version
-$projConfig = Join-Path $InstallerDir "Bootstrapper.wxs"
-$projConfigTxt = Get-Content $projConfig -Raw
-# Use more specific regex to only match the Bundle element's Version attribute
-$newConfigTxt = $projConfigTxt -replace '<Bundle([^>]*?)Version="[^"]*"([^>]*?)>', "<Bundle`$1Version=`"$ssotmeVersion`"`$2>"
-
-Set-Content $projConfig $newConfigTxt -NoNewline
-Write-Host "Updated Bootstrapper.wxs with version $ssotmeVersion" -ForegroundColor Green
-
-# Update version in both .wixproj files
+# Update versions in all files if needed
 $installerProj = Join-Path $InstallerDir "SSoTmeInstaller.wixproj"
 $bootstrapperProj = Join-Path $InstallerDir "SSoTmeBootstrapper.wixproj"
+$bootstrapperWxs = Join-Path $InstallerDir "Bootstrapper.wxs"
 
-# Update SSoTmeInstaller.wixproj
-$installerContent = Get-Content $installerProj -Raw
-$installerContent = $installerContent -replace '<SSoTmeVersion>[^<]*</SSoTmeVersion>', "<SSoTmeVersion>$ssotmeVersion</SSoTmeVersion>"
-Set-Content $installerProj $installerContent -NoNewline
-Write-Host "Updated SSoTmeInstaller.wixproj with version $ssotmeVersion" -ForegroundColor Green
+# Helper function to update version if changed
+function Update-VersionIfChanged {
+    param (
+        [string]$FilePath,
+        [string]$NewVersion,
+        [string]$Pattern = '<SSoTmeVersion>([^<]*)</SSoTmeVersion>',
+        [string]$Replacement = "<SSoTmeVersion>$NewVersion</SSoTmeVersion>"
+    )
+    $content = Get-Content $FilePath -Raw
+    if ($content -match $Pattern) {
+        $currentVersion = $matches[1]
+        if ($currentVersion -ne $NewVersion) {
+            $content = $content -replace $Pattern, $Replacement
+            Set-Content $FilePath $content -NoNewline
+            Write-Host "Updated $($(Split-Path $FilePath -Leaf)) from $currentVersion to $NewVersion" -ForegroundColor Green
+            return $true
+        } else {
+            Write-Host "Version in $($(Split-Path $FilePath -Leaf)) already at $NewVersion" -ForegroundColor Cyan
+            return $false
+        }
+    }
+    return $false
+}
 
-# Update SSoTmeBootstrapper.wixproj
-$bootstrapperContent = Get-Content $bootstrapperProj -Raw
-$bootstrapperContent = $bootstrapperContent -replace '<SSoTmeVersion>[^<]*</SSoTmeVersion>', "<SSoTmeVersion>$ssotmeVersion</SSoTmeVersion>"
-Set-Content $bootstrapperProj $bootstrapperContent -NoNewline
-Write-Host "Updated SSoTmeBootstrapper.wixproj with version $ssotmeVersion" -ForegroundColor Green
+# Update versions in all files
+Update-VersionIfChanged -FilePath $installerProj -NewVersion $ssotmeVersion
+Update-VersionIfChanged -FilePath $bootstrapperProj -NewVersion $ssotmeVersion
+Update-VersionIfChanged -FilePath $bootstrapperWxs -NewVersion $ssotmeVersion `
+    -Pattern '<Bundle([^>]*?)Version="([^"]*)"([^>]*?)>' `
+    -Replacement "<Bundle`$1Version=`"$ssotmeVersion`"`$3>"
 
 # Build the WiX projects using dotnet build
 Write-Host "Building WiX installer projects..."

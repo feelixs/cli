@@ -1,10 +1,10 @@
-﻿<Project Sdk="WixToolset.Sdk/6.0.0">
+<Project Sdk="WixToolset.Sdk/6.0.0">
 
 	<PropertyGroup>
 		<OutputName>CLI_Installer</OutputName>
 		<OutputType>Package</OutputType>
 		<Platform>x86</Platform>
-		<SSoTmeVersion>224.12.7</SSoTmeVersion>
+		<SSoTmeVersion>225.5.28</SSoTmeVersion>
 		<EnableDefaultItems>false</EnableDefaultItems>
 	</PropertyGroup>
 
