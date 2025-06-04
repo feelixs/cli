@@ -5,7 +5,7 @@
  License:    Mozilla Public License 2.0
  *******************************************/
 using System;
-using System.Net.Http.Json;
+using System.Text;
 using System.ComponentModel;
 using SassyMQ.SSOTME.Lib.RMQActors;
 using System.IO;
@@ -712,7 +712,8 @@ namespace SSoTme.OST.Lib.DataClasses
                 try
                 {
                     Console.WriteLine($"Posting to bridge: {uri} - {data}");
-                    var content = JsonContent.Create(data);
+                    var jsonString = data.ToString(Newtonsoft.Json.Formatting.None);
+                    var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
                     var response = httpClient.PostAsync(uri, content).Result;
 
                     if (response.IsSuccessStatusCode)
@@ -818,7 +819,6 @@ namespace SSoTme.OST.Lib.DataClasses
             DateTime? lastChangedTime = null;
             bool changeEverDetected = false;
             string uri = $"https://ssotme-cli-airtable-bridge-ahrnz660db6k4.aws-us-east-1.controlplane.us/check?baseId={baseId}";
-
             string baseCopilotUri = "https://ssotme-cli-airtable-bridge-v2-ahrnz660db6k4.cpln.app/copilot";
             string copilotReadUri = $"{baseCopilotUri}/check-req-actions?baseId={baseId}";
             Console.WriteLine($"Polling {uri} for changes to base: `{baseId}`...");
