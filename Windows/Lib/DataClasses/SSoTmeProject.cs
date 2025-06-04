@@ -737,7 +737,7 @@ namespace SSoTme.OST.Lib.DataClasses
         private JToken RunCopilotAction(string commandData, string baseId)
         {  // todo you can make undo/redo actions using the baserow 'ClientSessionId' header
             
-            var validActions = new[] { "list_tables", "update_field", "get_table", "create_column", "get_field", "update_field"};
+            var validActions = new[] { "list_tables", "update_field", "get_table", "create_column", "get_fields", "get_field", "update_field"};
             try
             {
                 // get baserow client from ~/.ssotme/ssotme.key file -> "baserow" api
@@ -800,6 +800,16 @@ namespace SSoTme.OST.Lib.DataClasses
                     string type = requestedChanges.content.fieldType;
                     Console.WriteLine($"Creating new field: name: {name}, type: {type}");
                     return baserowClient.CreateField(tableId, name, type);
+                }
+                else if (requestedChanges.action == "get_fields")
+                {
+                    this.LogMessage("Fetching user-readable table schema for tableId: {0}", tableId);
+                    JToken shcema = baserowClient.GetTableSchema(tableId, true);
+                    return new JObject
+                    {
+                        ["content"] = shcema,
+                        ["msg"] = $"Successfully retrieved table: {tableId}"
+                    };
                 }
                 else if (requestedChanges.action == "get_field")
                 {
