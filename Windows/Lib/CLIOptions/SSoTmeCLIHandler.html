@@ -1,5 +1,5 @@
 <html><head><title>Command Line Arguments - summary</title></head><body><h1>Command Line Arguments</h1><p>
-    There are 39 command line arguments defined at this time.  They are:
+    There are 40 command line arguments defined at this time.  They are:
       
       <div style=""><h3>
         -help  or -h    [bool]
@@ -18,17 +18,21 @@
       </h3><div style="font-size: 0.8em; margin-top: -1em;">
       Removes the current command from the SSoT.me Project file
       </div></div><div style=""><h3>
-        -build  or -b,replay,rebuild    [bool]
+        -build  or -b,replay,rebuild,pull    [bool]
       </h3><div style="font-size: 0.8em; margin-top: -1em;">
       Build any transpilers in the current folder (or children).
       </div></div><div style=""><h3>
-        -buildAll  or -ba,replayall,rebuildAll    [bool]
+        -buildAll  or -ba,replayall,rebuildAll,pullAll    [bool]
       </h3><div style="font-size: 0.8em; margin-top: -1em;">
       Builds all transpilers in the project
       </div></div><div style=""><h3>
-        -buildLocal  or -bl,replaylocal,rebuildLocal    [bool]
+        -buildLocal  or -bl,replaylocal,rebuildLocal,pullLocal    [bool]
       </h3><div style="font-size: 0.8em; margin-top: -1em;">
       Builds only the root level transpilers, not the sub-directories.
+      </div></div><div style=""><h3>
+        -buildOnTrigger  or -bot    [string]
+      </h3><div style="font-size: 0.8em; margin-top: -1em;">
+      Builds whenever a trigger is invoked (see readme for URL)
       </div></div><div style=""><h3>
         -describe  or -d    [bool]
       </h3><div style="font-size: 0.8em; margin-top: -1em;">
@@ -66,7 +70,7 @@
       </h3><div style="font-size: 0.8em; margin-top: -1em;">
       Lists seeds available to be clones
       </div></div><div style=""><h3>
-        -cloneSeed  or -cs    [bool]
+        -cloneSeed  or -cs,clone    [bool]
       </h3><div style="font-size: 0.8em; margin-top: -1em;">
       Clones a specified seed
       </div></div><div style=""><h3>

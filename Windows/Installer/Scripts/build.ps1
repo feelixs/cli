@@ -36,6 +36,7 @@ $binFolder = Join-Path $InstallerDir "bin"
 $OutputDir = Join-Path $binFolder "cli-installer\$Configuration"
 $distDir = Join-Path $RootDir "dist"
 $ssotmeDir = Join-Path $HOME ".ssotme"
+$releaseDir = Join-Path $RootDir "release"
 
 Write-Host "=== SSoTme WiX v6 Build Script ===" -ForegroundColor Green
 Write-Host "Configuration: $Configuration" -ForegroundColor Cyan
@@ -57,8 +58,11 @@ $Directories = @(
     $ResourcesDir,
     $OutputDir,
     $distDir,
-    $AssetsDir
+    $AssetsDir,
+    $releaseDir
 )
+
+Remove-Item -Path "$releaseDir\*.exe" -Force -ErrorAction SilentlyContinue
 
 foreach ($Dir in $Directories) {
     if (-not (Test-Path $Dir)) {

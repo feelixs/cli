@@ -114,12 +114,12 @@ namespace SSoTme.OST.Lib.CLIOptions
                     Console.ReadKey();
                     this.SuppressTranspile = true;
                 }
-                else if (this.info)
-                {
-                    // handled by the python cli wrapper:
-                    // code execution will never get here since the python cli catches this case before running the cs cli
-                    // WHY? -> because if dotnet isn't found the python cli can still run and print debugging stuff
-                }
+                //else if (this.info)
+                //{
+                //    // handled by the python cli wrapper:
+                //    // code execution will never get here since the python cli catches this case before running the cs cli
+                //    // WHY? -> because if dotnet isn't found the python cli can still run and print debugging stuff
+                //}
                 else if (this.init)
                 {
                     if (String.IsNullOrEmpty(this.projectName))
@@ -157,17 +157,19 @@ namespace SSoTme.OST.Lib.CLIOptions
                     {
                         this.AICaptureProject = SSoTmeProject.LoadOrFail(new DirectoryInfo(Environment.CurrentDirectory), false, this.clean || this.cleanAll);
                         if (this.AICaptureProject is null) {
-                            ShowError("ERROR: project is null. Please make sure you're in a valid project directory, or initialize a new project with `ssotme -init -name=...`");
+                            // warn user for clarity
+                            ShowError("WARN: SSoTme project is null. Run `ssotme -init` to create a new one in this directory.", ConsoleColor.Yellow);
                         }
-                        else {
-                            foreach (var projectSetting in this.AICaptureProject?.ProjectSettings ?? new BindingList<ProjectSetting>())
+                        
+                        // still can continue with basic transpilers
+                        foreach (var projectSetting in this.AICaptureProject?.ProjectSettings ?? new BindingList<ProjectSetting>())
+                        {
+                            if (!this.parameters.Any(anyParam => anyParam.StartsWith(String.Format("{0}=", projectSetting.Name))))
                             {
-                                if (!this.parameters.Any(anyParam => anyParam.StartsWith(String.Format("{0}=", projectSetting.Name))))
-                                {
-                                    this.parameters.Add(String.Format("{0}={1}", projectSetting.Name, projectSetting.Value));
-                                }
+                                this.parameters.Add(String.Format("{0}={1}", projectSetting.Name, projectSetting.Value));
                             }
                         }
+                        
                     }
                     this.LoadInputFiles();
 
@@ -461,12 +463,15 @@ Seed Url: ");
                     break;
 
                 case "build":
+                case "buildLocal":
                 case "rebuild":
+                case "pull":
                     this.build = true;
                     break;
 
                 case "buildall":
                 case "rebuildall":
+                case "pullAll":
                     this.buildAll = true;
                     break;
 
@@ -572,16 +577,13 @@ Seed Url: ");
                         this.AICaptureProject.Install(result, this.transpilerGroup);
                     }
                 }
-                else if (this.build)
+                else if (this.build || this.buildLocal)
                 {
-                    this.AICaptureProject.Rebuild(Environment.CurrentDirectory, this.includeDisabled, this.transpilerGroup);
-                    this.AICaptureProject.CreateDocs(this.checkResults);
+                    this.AICaptureProject.Rebuild(Environment.CurrentDirectory, this.includeDisabled, this.transpilerGroup, this.buildOnTrigger, this.buildLocal);
                 }
                 else if (this.buildAll)
                 {
-                    this.AICaptureProject.RebuildAll(this.AICaptureProject.RootPath, this.includeDisabled, this.transpilerGroup);
-                    this.AICaptureProject.CreateDocs(this.checkResults);
-
+                    this.AICaptureProject.RebuildAll(this.AICaptureProject.RootPath, this.includeDisabled, this.transpilerGroup, this.buildOnTrigger, this.buildLocal);
                 }
                 else if (this.discuss)
                 {
@@ -801,10 +803,10 @@ Seed Url: ");
             }
         }
 
-        private static void ShowError(string msg)
+        private static void ShowError(string msg, ConsoleColor color = ConsoleColor.Red)
         {
             var curColor = Console.ForegroundColor;
-            Console.ForegroundColor = ConsoleColor.Red;
+            Console.ForegroundColor = color;
             Console.WriteLine(msg);
             Console.ForegroundColor = curColor;
         }

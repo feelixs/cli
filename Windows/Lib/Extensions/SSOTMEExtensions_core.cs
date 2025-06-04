@@ -143,7 +143,7 @@ namespace SSoTme.OST.Lib.Extensions
 
         public static String ToXml(this FileSet fileSet)
         {
-            var ser = new XmlSerializer(typeof(FileSet));
+            var ser = new XmlSerializer(typeof(FileSet), new XmlAttributeOverrides());
             var ms = new MemoryStream();
             ser.Serialize(ms, fileSet);
             ms.Position = 0;

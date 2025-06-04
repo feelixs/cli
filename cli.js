@@ -8,7 +8,7 @@ const fs = require('fs');
 
 const appDir = path.dirname(require.main.filename);
 const solutionPath = path.join(appDir, 'SSoTme-OST-CLI.sln');
-const outputPath = path.join(appDir, 'Windows', 'CLI', 'bin', 'Release', 'net7.0', 'SSoTme.OST.CLI.dll');
+const outputPath = path.join(appDir, 'Windows', 'CLI', 'bin', 'Release', 'net8.0', 'SSoTme.OST.CLI.dll');
 
 // Check if we need to build
 if (!fs.existsSync(outputPath)) {
