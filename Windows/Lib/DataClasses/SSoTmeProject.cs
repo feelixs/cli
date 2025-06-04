@@ -708,9 +708,28 @@ namespace SSoTme.OST.Lib.DataClasses
         {
             using (var httpClient = new HttpClient())
             {
-                // post the data to the uri
-                var response = httpClient.GetStringAsync(uri).Result;
-                return // return the response from the server
+                try
+                {
+                    var jsonContent =
+                    var content = new StringContent(data, System.Text.Encoding.UTF8, "application/json");
+                    var response = httpClient.PostAsync(uri, content).Result;
+                    
+                    if (response.IsSuccessStatusCode)
+                    {
+                        this.LogMessage("Successfully posted data to bridge: {0}", uri);
+                        return response.Content.ReadAsStringAsync().Result;
+                    }
+                    else
+                    {
+                        this.LogMessage("Error posting data to bridge: {0} - {1}", response.StatusCode, response.ReasonPhrase);
+                        return null;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    this.LogMessage("Exception posting data to bridge: {0}", ex.Message);
+                    return null;
+                }
             }
         }
         
