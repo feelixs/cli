@@ -734,10 +734,71 @@ namespace SSoTme.OST.Lib.DataClasses
             }
         }
         
+        private JToken TransformTableDataWithFields(JToken tableData, JToken tableSchema)
+        {
+            var transformedRows = new JArray();
+            
+            if (tableData != null && tableData["results"] != null)
+            {
+                var fields = tableSchema?["fields"]?.ToObject<JArray>();
+                var fieldMap = new Dictionary<string, (string name, int id)>();
+                
+                // Build field mapping from schema
+                if (fields != null)
+                {
+                    foreach (var field in fields)
+                    {
+                        var fieldId = field["id"]?.ToString();
+                        var fieldName = field["name"]?.ToString();
+                        if (!string.IsNullOrEmpty(fieldId) && !string.IsNullOrEmpty(fieldName))
+                        {
+                            fieldMap[$"field_{fieldId}"] = (fieldName, int.Parse(fieldId));
+                        }
+                    }
+                }
+                
+                foreach (var row in tableData["results"])
+                {
+                    var transformedRow = new JObject();
+                    
+                    // Copy basic properties
+                    if (row["id"] != null) transformedRow["id"] = row["id"];
+                    if (row["order"] != null) transformedRow["order"] = row["order"];
+                    
+                    // Transform field data
+                    foreach (var property in row.ToObject<JObject>().Properties())
+                    {
+                        if (property.Name.StartsWith("field_") && fieldMap.ContainsKey(property.Name))
+                        {
+                            var (columnName, fieldId) = fieldMap[property.Name];
+                            transformedRow[property.Name] = new JObject
+                            {
+                                ["columnName"] = columnName,
+                                ["value"] = property.Value,
+                                ["id"] = fieldId
+                            };
+                        }
+                        else if (!property.Name.Equals("id") && !property.Name.Equals("order"))
+                        {
+                            // Keep non-field properties as-is
+                            transformedRow[property.Name] = property.Value;
+                        }
+                    }
+                    
+                    transformedRows.Add(transformedRow);
+                }
+            }
+            
+            return new JObject
+            {
+                ["results"] = transformedRows
+            };
+        }
+        
         private JToken RunCopilotAction(string commandData, string baseId)
         {  // todo you can make undo/redo actions using the baserow 'ClientSessionId' header
             
-            var validActions = new[] { "list_tables", "update_field", "get_table", "create_column", "get_field", "update_field"};
+            var validActions = new[] { "list_tables", "update_field", "get_table_fields", "create_column", "update_field"};
             try
             {
                 // get baserow client from ~/.ssotme/ssotme.key file -> "baserow" api
@@ -764,7 +825,7 @@ namespace SSoTme.OST.Lib.DataClasses
                 }
                 
                 string fieldId = requestedChanges.fieldId;
-                if ((requestedChanges.action == "update_field" || requestedChanges.action == "get_field") && requestedChanges.fieldId == null) {
+                if (requestedChanges.action == "update_field" && requestedChanges.fieldId == null) {
                     return new JObject
                     {
                         ["content"] = null,
@@ -784,14 +845,19 @@ namespace SSoTme.OST.Lib.DataClasses
                         ["msg"] = $"Successfully retrieved tables for base: {baseId}"
                     };
                 }
-                else if (requestedChanges.action == "get_table")
+                else if (requestedChanges.action == "get_table_fields")
                 {
-                    this.LogMessage("Fetching table schema for tableId: {0}", tableId);
-                    JToken shcema = baserowClient.GetTableSchema(tableId);
+                    this.LogMessage("Fetching table data with field mappings for tableId: {0}", tableId);
+                    JToken tableData = baserowClient.GetTableData(tableId);
+                    JToken tableSchema = baserowClient.GetTableSchema(tableId);
+                    
+                    // Transform the data to include field objects with columnName, value, and id
+                    var transformedData = TransformTableDataWithFields(tableData, tableSchema);
+                    
                     return new JObject
                     {
-                        ["content"] = shcema,
-                        ["msg"] = $"Successfully retrieved table: {tableId}"
+                        ["content"] = transformedData,
+                        ["msg"] = $"Successfully retrieved table fields for: {tableId}"
                     };
                 }
                 else if (requestedChanges.action == "create_column")
@@ -800,16 +866,6 @@ namespace SSoTme.OST.Lib.DataClasses
                     string type = requestedChanges.content.fieldType;
                     Console.WriteLine($"Creating new field: name: {name}, type: {type}");
                     return baserowClient.CreateField(tableId, name, type);
-                }
-                else if (requestedChanges.action == "get_field")
-                {
-                    this.LogMessage($"Fetching field data for id: {fieldId}");
-                    JToken fieldResp = baserowClient.GetField(fieldId);
-                    return new JObject
-                    {
-                        ["content"] = fieldResp,
-                        ["msg"] = $"Successfully retrieved field: {fieldId}"
-                    };
                 }
                 else if (requestedChanges.action == "update_field")
                 {
