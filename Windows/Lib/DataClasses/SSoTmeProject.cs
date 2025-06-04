@@ -5,7 +5,7 @@
  License:    Mozilla Public License 2.0
  *******************************************/
 using System;
-using System.Text;
+using System.Net.Http.Json;
 using System.ComponentModel;
 using SassyMQ.SSOTME.Lib.RMQActors;
 using System.IO;
@@ -705,37 +705,18 @@ namespace SSoTme.OST.Lib.DataClasses
             }
         }
 
-        private string PostDataToBridge(string data, string uri)
+        private string PostDataToBridge(JToken data, string uri)
         {
             using (var httpClient = new HttpClient())
             {
                 try
                 {
-                    JToken parsedData;
-                    try
-                    {
-                        parsedData = JToken.Parse(data);
-                    }
-                    catch (JsonReaderException jex)
-                    {
-                        this.LogMessage("Invalid JSON input: {0}", jex.Message);
-                        return null;
-                    }
-
-                    var wrapped = new JObject
-                    {
-                        ["content"] = parsedData  // server requires wrapped in {"content": ...}
-                    };
-
-                    var wrappedData = wrapped.ToString();
-                    Console.WriteLine($"Posting to bridge: {uri} - {wrappedData}");
-
-                    var content = new StringContent(wrappedData, Encoding.UTF8, "application/json");
+                    Console.WriteLine($"Posting to bridge: {uri} - {data}");
+                    var content = JsonContent.Create(data);
                     var response = httpClient.PostAsync(uri, content).Result;
 
                     if (response.IsSuccessStatusCode)
                     {
-                        this.LogMessage("Successfully posted data to bridge: {0}", uri);
                         return response.Content.ReadAsStringAsync().Result;
                     }
                     else
@@ -752,8 +733,8 @@ namespace SSoTme.OST.Lib.DataClasses
             }
         }
         
-        private string RunCopilotAction(string commandData, string baseId)
-        { // todo return json on errors?
+        private JToken RunCopilotAction(string commandData, string baseId)
+        {
             try
             {
                 // get baserow client from ~/.ssotme/ssotme.key file -> "baserow" api
@@ -764,26 +745,41 @@ namespace SSoTme.OST.Lib.DataClasses
                 
                 // match copilot's requested action to the right baserow endpoint
                 string tableId = requestedChanges.tableId;
-                if (requestedChanges.action != "list_tables" && string.IsNullOrEmpty(tableId))
-                {
-                    return "Error applying changes: This endpoint requires the tableId field";
+                if (requestedChanges.action != "list_tables" && string.IsNullOrEmpty(tableId)) {
+                    return new JObject
+                    {
+                        ["content"] = null,
+                        ["msg"] = "Error applying changes: This endpoint requires the tableId field"
+                    };
                 }
                 if (requestedChanges.action != "list_tables" && requestedChanges.tableId == null) {
-                    return "Error applying changes: table ID was null!";
+                    return new JObject
+                    {
+                        ["content"] = null,
+                        ["msg"] = "Error applying changes: table ID was null!"
+                    };
                 }
                 
                 if (requestedChanges.action == "list_tables")
                 {
                     // table ids are globally unique across all databases
+                    this.LogMessage("Fetching tables for base: {0}", baseId);
                     var tablesData = baserowClient.FetchTablesForBase(baseId);
-                    this.LogMessage("Successfully fetched tables for base: {0} - {1}", baseId, tablesData);
-                    return tablesData;
+                    return new JObject
+                    {
+                        ["content"] = tablesData,
+                        ["msg"] = $"Successfully retrieved tables for base: {baseId}"
+                    };
                 }
                 else if (requestedChanges.action == "get_table")
                 {
+                    this.LogMessage("Fetching table schema for tableId: {0}", tableId);
                     var shcema = baserowClient.GetTableSchema(tableId);
-                    this.LogMessage("Fetched table schema for tableId: {0}", tableId);
-                    return shcema;
+                    return new JObject
+                    {
+                        ["content"] = shcema,
+                        ["msg"] = $"Successfully retrieved table: {tableId}"
+                    };
                 }
                 else if (requestedChanges.action == "create_field")
                 {
@@ -793,12 +789,20 @@ namespace SSoTme.OST.Lib.DataClasses
                 {
                     baserowClient.UpdateTable(tableId, requestedChanges.tableData);
                 }
-                return string.Format("Successfully applied changes to Baserow for base: {0}", baseId);
+                return new JObject
+                {
+                    ["content"] = null,
+                    ["msg"] = $"Successfully applied changes to Baserow for base: {baseId}"
+                };
             }
             catch (Exception ex)
             {
                 this.LogMessage("Error running copilot action: {0}", ex.Message);
-                return string.Format("Error running copilot action: {0}", ex.Message);
+                return new JObject
+                {
+                    ["content"] = null,
+                    ["msg"] = $"Error running copilot action: {ex.Message}"
+                };
             }
         }
         
@@ -827,13 +831,10 @@ namespace SSoTme.OST.Lib.DataClasses
                         Console.WriteLine($"Copilot requested action: {copilotProvidedData}");
                         if (!string.IsNullOrEmpty(copilotProvidedData))
                         {
-                            string response = RunCopilotAction(copilotProvidedData, baseId);
+                            JToken response = RunCopilotAction(copilotProvidedData, baseId);
                             PostDataToBridge(response, $"{baseCopilotUri}/put-action-result?baseId={baseId}");
                         }
                     }
-                    //else if (copilotRequestedWrite) {
-                    //    // todo post to put-response so copilot can see the feedback from its request to baserow
-                    //}
                 }
 
                 if (CheckChanged(uri))

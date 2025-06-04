@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SSoTme.OST.Lib.SassySDK.Derived;
 
 namespace SSoTme.OST.Core.Lib.External
@@ -36,7 +37,7 @@ namespace SSoTme.OST.Core.Lib.External
             _baseUrl = "https://api.baserow.io/api";
             _username = baserowConfig.username;
             _password = baserowConfig.password;
-            Console.WriteLine($"New baserowClient instance: {_username}: {_password}");
+            Console.WriteLine($"New baserowClient instance: {_username}");
         }
 
         private async Task<string> GetValidTokenAsync()
@@ -54,6 +55,7 @@ namespace SSoTme.OST.Core.Lib.External
                 var json = JsonConvert.SerializeObject(loginData);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
                 
+                Console.WriteLine($"Requesting new BaseRow JWT Auth token for {_username}");
                 var response = await httpClient.PostAsync($"{_baseUrl}/user/token-auth/", content);
                 var responseContent = await response.Content.ReadAsStringAsync();
                 
@@ -70,14 +72,14 @@ namespace SSoTme.OST.Core.Lib.External
             }
         }
 
-        public string FetchTablesForBase(string baseId)
+        public JToken FetchTablesForBase(string baseId)
         {
             var task = FetchTablesAsync(baseId);
             task.Wait();
             return task.Result;
         }
 
-        private async Task<string> FetchTablesAsync(string baseid)
+        private async Task<JToken> FetchTablesAsync(string baseid)
         {
             var token = await GetValidTokenAsync();
             using (var httpClient = new HttpClient())
@@ -92,7 +94,8 @@ namespace SSoTme.OST.Core.Lib.External
                     throw new Exception($"Failed to fetch Baserow tables: {response.StatusCode} - {errorContent}");
                 }
 
-                return await response.Content.ReadAsStringAsync(); // Return the response content
+                string strResp = await response.Content.ReadAsStringAsync();
+                return JToken.Parse(strResp);
             }
         }
         
