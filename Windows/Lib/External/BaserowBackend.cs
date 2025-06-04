@@ -98,14 +98,42 @@ namespace SSoTme.OST.Core.Lib.External
                 return JToken.Parse(strResp);
             }
         }
-        
-        public void UpdateTable(string tableId, object schemaChanges)
+
+        public JToken GetField(string fieldId)
         {
-            var task = UpdateTableAsync(tableId, schemaChanges);
+            var task = GetFieldAsync(fieldId);
             task.Wait();
+            return task.Result;
         }
 
-        public async Task UpdateTableAsync(string tableId, object schemaChanges)
+        public async Task<JToken> GetFieldAsync(string fieldId)
+        {
+            var token = await GetValidTokenAsync();
+            using (var httpClient = new HttpClient())
+            {
+                httpClient.DefaultRequestHeaders.Add("Authorization", $"JWT {token}");
+        
+                var response = await httpClient.GetAsync($"{_baseUrl}/database/fields/{fieldId}/");
+        
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    throw new Exception($"Failed to fetch Baserow field: {response.StatusCode} - {errorContent}");
+                }
+
+                string strResp = await response.Content.ReadAsStringAsync();
+                return JToken.Parse(strResp);
+            }
+        }
+        
+        public JObject UpdateField(string fieldId, object schemaChanges)
+        {
+            var task = UpdateFieldAsync(fieldId, schemaChanges);
+            task.Wait();
+            return task.Result;
+        }
+
+        public async Task<JObject> UpdateFieldAsync(string fieldId, object schemaChanges)
         {
             var token = await GetValidTokenAsync();
             
@@ -116,23 +144,26 @@ namespace SSoTme.OST.Core.Lib.External
                 var json = JsonConvert.SerializeObject(schemaChanges);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
                 
-                var response = await httpClient.PatchAsync($"{_baseUrl}/database/tables/{tableId}/", content);
+                var response = await httpClient.PatchAsync($"{_baseUrl}/database/fields/{fieldId}/", content);
                 
                 if (!response.IsSuccessStatusCode)
                 {
                     var errorContent = await response.Content.ReadAsStringAsync();
-                    throw new Exception($"Failed to update Baserow table: {response.StatusCode} - {errorContent}");
+                    throw new Exception($"Failed to update Baserow field: {response.StatusCode} - {errorContent}");
                 }
+                string strResp = await response.Content.ReadAsStringAsync();
+                return JObject.Parse(strResp);
             }
         }
 
-        public void CreateField(string tableId, string fieldName, string fieldType)
+        public JToken CreateField(string tableId, string fieldName, string fieldType)
         {
             var task = CreateFieldAsync(tableId, fieldName, fieldType);
             task.Wait();
+            return task.Result;
         }
 
-        public async Task CreateFieldAsync(string tableId, string fieldName, string fieldType)
+        public async Task<JToken> CreateFieldAsync(string tableId, string fieldName, string fieldType)
         {
             var token = await GetValidTokenAsync();
             
@@ -151,6 +182,8 @@ namespace SSoTme.OST.Core.Lib.External
                     var errorContent = await response.Content.ReadAsStringAsync();
                     throw new Exception($"Failed to create Baserow field: {response.StatusCode} - {errorContent}");
                 }
+                string strResp = await response.Content.ReadAsStringAsync();
+                return JToken.Parse(strResp);
             }
         }
 

@@ -736,6 +736,8 @@ namespace SSoTme.OST.Lib.DataClasses
         
         private JToken RunCopilotAction(string commandData, string baseId)
         {  // todo you can make undo/redo actions using the baserow 'ClientSessionId' header
+            
+            var validActions = new[] { "list_tables", "update_field", "get_table", "create_column", "get_field", "update_field"};
             try
             {
                 // get baserow client from ~/.ssotme/ssotme.key file -> "baserow" api
@@ -761,6 +763,16 @@ namespace SSoTme.OST.Lib.DataClasses
                     };
                 }
                 
+                string fieldId = requestedChanges.fieldId;
+                if ((requestedChanges.action == "update_field" || requestedChanges.action == "get_field") && requestedChanges.fieldId == null) {
+                    return new JObject
+                    {
+                        ["content"] = null,
+                        ["msg"] = "Error applying changes: this endpoint requires fieldID!"
+                    };
+                }
+
+                // MARK START action definitions
                 if (requestedChanges.action == "list_tables")
                 {
                     // table ids are globally unique across all databases
@@ -775,28 +787,48 @@ namespace SSoTme.OST.Lib.DataClasses
                 else if (requestedChanges.action == "get_table")
                 {
                     this.LogMessage("Fetching table schema for tableId: {0}", tableId);
-                    var shcema = baserowClient.GetTableSchema(tableId);
+                    JToken shcema = baserowClient.GetTableSchema(tableId);
                     return new JObject
                     {
                         ["content"] = shcema,
                         ["msg"] = $"Successfully retrieved table: {tableId}"
                     };
                 }
-                else if (requestedChanges.action == "create_field")
+                else if (requestedChanges.action == "create_column")
                 {
                     string name = requestedChanges.content.fieldName;
                     string type = requestedChanges.content.fieldType;
                     Console.WriteLine($"Creating new field: name: {name}, type: {type}");
                     baserowClient.CreateField(tableId, name, type);
                 }
-                else if (requestedChanges.action == "update_table")
+                else if (requestedChanges.action == "get_field")
                 {
-                    baserowClient.UpdateTable(tableId, requestedChanges.tableData);
+                    this.LogMessage($"Fetching field data for id: {fieldId}");
+                    JToken fieldResp = baserowClient.GetField(fieldId);
+                    return new JObject
+                    {
+                        ["content"] = fieldResp,
+                        ["msg"] = $"Successfully retrieved field: {fieldId}"
+                    };
                 }
+                else if (requestedChanges.action == "update_field")
+                {
+                    baserowClient.UpdateField(fieldId, requestedChanges.content);
+                }
+                else
+                {
+                    return new JObject
+                    {
+                        ["content"] = null,
+                        ["msg"] = $"Action was not matched to any of the following for base {baseId}: {string.Join(", ", validActions)}"
+                    };
+                }
+                
+                // the action method didn't return anything?
                 return new JObject
                 {
                     ["content"] = null,
-                    ["msg"] = $"Successfully applied changes to Baserow for base: {baseId}"
+                    ["msg"] = $"An unknown error occurred in your action for baseId: {baseId}"
                 };
             }
             catch (Exception ex)
