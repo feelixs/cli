@@ -799,7 +799,7 @@ namespace SSoTme.OST.Lib.DataClasses
                     string name = requestedChanges.content.fieldName;
                     string type = requestedChanges.content.fieldType;
                     Console.WriteLine($"Creating new field: name: {name}, type: {type}");
-                    baserowClient.CreateField(tableId, name, type);
+                    return baserowClient.CreateField(tableId, name, type);
                 }
                 else if (requestedChanges.action == "get_field")
                 {
@@ -813,7 +813,7 @@ namespace SSoTme.OST.Lib.DataClasses
                 }
                 else if (requestedChanges.action == "update_field")
                 {
-                    baserowClient.UpdateField(fieldId, requestedChanges.content);
+                    return baserowClient.UpdateField(fieldId, requestedChanges.content);
                 }
                 else
                 {
@@ -823,13 +823,6 @@ namespace SSoTme.OST.Lib.DataClasses
                         ["msg"] = $"Action was not matched to any of the following for base {baseId}: {string.Join(", ", validActions)}"
                     };
                 }
-                
-                // the action method didn't return anything?
-                return new JObject
-                {
-                    ["content"] = null,
-                    ["msg"] = $"An unknown error occurred in your action for baseId: {baseId}"
-                };
             }
             catch (Exception ex)
             {
