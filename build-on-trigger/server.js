@@ -9,6 +9,7 @@ const actionSubmissions = new Map();  // bools whether copilot submitted a new a
 const actionContents = new Map(); // if its a write action, copilot will populate this with the contents
 const requestedActions = new Map(); // strings of the most recent action copilot wants per base
 const requestedActionsTableIds = new Map(); // the table id where the action should be run
+const requestedActionsFieldIds = new Map(); // the field id where the action should be run
 
 const actionsFinished = new Map();  // bools whether the CLI responded for this base
 const actionResponses = new Map();
@@ -141,7 +142,8 @@ const server = http.createServer(async (req, res) => {
     return res.end(JSON.stringify({
       "changed": isRecent,
       "action": requestedActions.get(baseId),
-      "tableId": requestedActionsTableIds.get(baseId) ,
+      "tableId": requestedActionsTableIds.get(baseId),
+      "fieldId": requestedActionsFieldIds.get(baseId),
       "content": actionContents.get(baseId),
     }));
     // now the cli should immediatelly post the base's content to /put-action-result
@@ -183,6 +185,7 @@ const server = http.createServer(async (req, res) => {
       actionContents.delete(baseId);
       requestedActions.delete(baseId);
       requestedActionsTableIds.delete(baseId);
+      requestedActionsFieldIds.delete(baseId);
 
       log(`[PUT-ACTION-RESULT] SUCCESS: stored content for baseId: ${baseId}`);
       res.writeHead(200, { "Content-Type": "application/json" });
@@ -247,6 +250,7 @@ const server = http.createServer(async (req, res) => {
 
       requestedActions.set(baseId, theAction);
       requestedActionsTableIds.set(baseId, tableid);
+      requestedActionsFieldIds.set(baseId, fieldid);
       actionContents.set(baseId, theContent);
 
       const theTimeout = TIMEOUT_SECS * 1000;
