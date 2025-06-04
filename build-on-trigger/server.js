@@ -228,7 +228,7 @@ const server = http.createServer(async (req, res) => {
     const isRecent = (Date.now() - ts) < TTL_MS;
     res.writeHead(200, { "Content-Type": "application/json" });
     actionSubmissions.delete(baseId);
-    return res.end(JSON.stringify({ "changed": isRecent, "action": requestedActions.get(baseId) }));
+    return res.end(JSON.stringify({ "changed": isRecent, "action": requestedActions.get(baseId), "tableId": requestedActionsTableIds.get(baseId) }));
     // now the cli should immediatelly post the base's content to /put-action-result
   }
 
