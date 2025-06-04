@@ -2,19 +2,13 @@
 const http = require('http');
 const state = new Map();
 
-const baseLastChanged = new Map();
-
 const actionSubmissions = new Map();  // bools whether copilot submitted a new action to each base
+const actionContents = new Map(); // if its a write action, copilot will populate this with the contents
 const requestedActions = new Map(); // strings of the most recent action copilot wants per base
 const requestedActionsTableIds = new Map(); // the table id where the action should be run
+
 const actionsFinished = new Map();  // bools whether the CLI responded for this base
 const actionResponses = new Map();
-
-const baseContents = new Map(); // the read content of each base returned by the cli
-
-const baseCmdReqs = new Map(); // copilot will request the cli machine run a command to edit the json file
-const baseCmdResps = new Map(); // cli responds to server with the command response, forwarded to copilot
-const baseCmdRespsTimestamps = new Map();
 
 const basesAvailable = new Map();
 
@@ -134,93 +128,6 @@ const server = http.createServer(async (req, res) => {
   }
   // MARK END original server
 
-  if (url.pathname === "/copilot/mark-base") {
-    if (req.method !== "POST") {
-      res.writeHead(400, { "Content-Type": "application/json" });
-      return res.end(JSON.stringify({'msg': `Must use POST request for this endpoint!`, baseId: baseId}));
-    }
-
-    // mark this ID with the specified content (used by the copilot plugin to request changes to a base)
-    // think of a pull request make via this endpoint which the CLI needs to merge into airtable/baserow/etc
-    let body = '';
-    let responseMessage = "Successfully marked base with new content"; // for overwrite requests from copilot
-    req.on('data', chunk => {
-      body += chunk.toString();
-    });
-    req.on('end', async () => {
-      let content;
-      let command;
-      try {
-        const data = JSON.parse(body);
-        content = data.content;
-        command = data.command;
-        log(`MARK-BASE: Raw body received: ${body}`);
-        log(`MARK-BASE: Parsed data:`, data);
-        log(`MARK-BASE: Extracted content:`, content);
-        log(`MARK-BASE: Received command: ${command}`);
-        log(`MARK-BASE: Valid JSON received for baseId: ${baseId}`);
-      } catch (e) {
-        log(`ERROR: MARK-BASE invalid JSON for baseId: ${baseId}, raw body: ${body}`);
-        res.writeHead(422);
-        return res.end(JSON.stringify({'msg': "Invalid JSON", baseId: baseId}));
-      }
-
-      if ((!content) && (!command)) {
-        log(`ERROR: MARK-BASE missing content for baseId: ${baseId}`);
-        res.writeHead(422);
-        return res.end(JSON.stringify({'msg': "Either the field 'content' or 'command' are required", baseId: baseId}));
-      }
-
-      baseLastChanged.set(baseId, Date.now());
-      baseContents.set(baseId, content);
-      baseCmdReqs.set(baseId, command);
-      log(`SUCCESS: MARK-BASE stored content for baseId: ${baseId}`);
-      log(`SUCCESS: MARK-BASE stored command for baseId: ${baseId}`);
-      log(`Waiting for cli command response for baseId: ${baseId}`);
-
-      let waited = 0;
-      const theTimeout = 30 * 1000;
-      let ts = baseCmdRespsTimestamps.get(baseId) || 0;
-      let newResp = (Date.now() - ts) < TTL_MS;
-      while ((!newResp) && (waited < theTimeout))
-      {
-        await new Promise(resolve => setTimeout(resolve, 1000)); // wait 1s
-        waited += 1000;
-
-        log(`[MARK-BASE] Polling for CLI response on baseId: ${baseId}`);
-        ts = baseCmdRespsTimestamps.get(baseId) || 0;
-        newResp = (Date.now() - ts) < TTL_MS;
-
-        if (waited >= theTimeout) {
-          log(`TIMEOUT (possible cmd failure) waiting for cmd response on baseId: ${baseId}`);
-        }
-      }
-      if (baseCmdResps.has(baseId)) {
-        responseMessage = baseCmdResps.get(baseId);
-        baseCmdResps.delete(baseId);
-        baseCmdRespsTimestamps.delete(baseId);
-      }
-
-      res.writeHead(200, { "Content-Type": "application/json" });
-      return res.end(JSON.stringify({'msg': responseMessage, baseId: baseId}));
-    });
-    return;
-  }
-
-  if (req.method === "GET" && url.pathname === "/copilot/check-base")
-      // used by the CLI to register if the plugin has requested a change via /mark-base
-      // -> should poll this and then update the airtable/etc with the requested content
-  {
-    const ts = baseLastChanged.get(baseId) || 0;
-    const changedRecently = (Date.now() - ts) < TTL_MS;
-    const content = baseContents.get(baseId) || null;
-    const theCmd = baseCmdReqs.get(baseId) || null;
-    res.writeHead(200, { "Content-Type": "application/json" });
-    baseLastChanged.delete(baseId);  // the change has now been merged into our memory dict
-    baseCmdReqs.delete(baseId);  // only send cmds once
-    return res.end(JSON.stringify({ "changed": changedRecently, content, theCmd }));
-  }
-
   if (req.method === "GET" && url.pathname === "/copilot/check-req-actions")
       // the cli will check this endpoint to see which actions the plugin wants to do
   {
@@ -228,7 +135,12 @@ const server = http.createServer(async (req, res) => {
     const isRecent = (Date.now() - ts) < TTL_MS;
     res.writeHead(200, { "Content-Type": "application/json" });
     actionSubmissions.delete(baseId);
-    return res.end(JSON.stringify({ "changed": isRecent, "action": requestedActions.get(baseId), "tableId": requestedActionsTableIds.get(baseId) }));
+    return res.end(JSON.stringify({
+      "changed": isRecent,
+      "action": requestedActions.get(baseId),
+      "tableId": requestedActionsTableIds.get(baseId) ,
+      "content": actionContents.get(baseId),
+    }));
     // now the cli should immediatelly post the base's content to /put-action-result
   }
 
@@ -242,9 +154,11 @@ const server = http.createServer(async (req, res) => {
     });
     req.on('end', () => {
       let content;
+      let message;
       try {
         const data = JSON.parse(body);
         content = data.content;
+        message = content.msg;
         log(`[PUT-ACTION-RESULT] Content received for baseId: ${baseId}`);
       } catch (e) {
         log(`[PUT-ACTION-RESULT] ERROR: invalid JSON for baseId: ${baseId}`);
@@ -252,17 +166,17 @@ const server = http.createServer(async (req, res) => {
         return res.end(JSON.stringify({'msg': "Invalid JSON"}));
       }
 
-      if (!content) {
-        log(`[PUT-ACTION-RESULT] ERROR: missing content for baseId: ${baseId}`);
-        res.writeHead(400);
-        return res.end(JSON.stringify({'msg': "Missing required field 'content'"}));
-      }
-
       // responses
       actionsFinished.set(baseId, Date.now());
-      actionResponses.set(baseId, content);
+      if (content) {
+        actionResponses.set(baseId, content);
+      } else if (message) {
+        // fall back to the message we got from the cli
+        actionResponses.set(baseId, message);
+      }
 
       // cleanup
+      actionContents.delete(baseId);
       requestedActions.delete(baseId);
       requestedActionsTableIds.delete(baseId);
 
@@ -301,6 +215,7 @@ const server = http.createServer(async (req, res) => {
     req.on('end', async () => {
       let theAction;
       let tableid;
+      let theContent;
       try {
         log(`[ACTION SUBMIT] Raw body received: ${body}`);
         if (!body || body.trim() === '') {
@@ -311,6 +226,7 @@ const server = http.createServer(async (req, res) => {
         const data = JSON.parse(body);
         theAction = data.action;
         tableid = data.tableId;
+        theContent = data.content;
         log(`[ACTION SUBMIT] Parsed data:`, data);
         log(`[ACTION SUBMIT] Extracted content: {theAction: ${theAction}, tableId: ${tableid}}`);
       } catch (e) {
@@ -325,6 +241,7 @@ const server = http.createServer(async (req, res) => {
 
       requestedActions.set(baseId, theAction);
       requestedActionsTableIds.set(baseId, tableid);
+      actionContents.set(baseId, theContent);
 
       const theTimeout = 30 * 1000;
       let waited = 0;
