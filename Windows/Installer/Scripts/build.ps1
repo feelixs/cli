@@ -244,6 +244,22 @@ $newConfigTxt = $projConfigTxt -replace '<Bundle([^>]*?)Version="[^"]*"([^>]*?)>
 Set-Content $projConfig $newConfigTxt -NoNewline
 Write-Host "Updated Bootstrapper.wxs with version $ssotmeVersion" -ForegroundColor Green
 
+# Update version in both .wixproj files
+$installerProj = Join-Path $InstallerDir "SSoTmeInstaller.wixproj"
+$bootstrapperProj = Join-Path $InstallerDir "SSoTmeBootstrapper.wixproj"
+
+# Update SSoTmeInstaller.wixproj
+$installerContent = Get-Content $installerProj -Raw
+$installerContent = $installerContent -replace '<SSoTmeVersion>[^<]*</SSoTmeVersion>', "<SSoTmeVersion>$ssotmeVersion</SSoTmeVersion>"
+Set-Content $installerProj $installerContent -NoNewline
+Write-Host "Updated SSoTmeInstaller.wixproj with version $ssotmeVersion" -ForegroundColor Green
+
+# Update SSoTmeBootstrapper.wixproj
+$bootstrapperContent = Get-Content $bootstrapperProj -Raw
+$bootstrapperContent = $bootstrapperContent -replace '<SSoTmeVersion>[^<]*</SSoTmeVersion>', "<SSoTmeVersion>$ssotmeVersion</SSoTmeVersion>"
+Set-Content $bootstrapperProj $bootstrapperContent -NoNewline
+Write-Host "Updated SSoTmeBootstrapper.wixproj with version $ssotmeVersion" -ForegroundColor Green
+
 # Build the WiX projects using dotnet build
 Write-Host "Building WiX installer projects..."
 try {

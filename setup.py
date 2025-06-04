@@ -20,7 +20,9 @@ class DotNetInstallError(Exception):
 
 class Installer:
     def __init__(self):
-        self.BASE_VERSION = "2024.08.23"  # fallback if package.json is not found
+        self.BASE_VERSION = (
+            "2024.08.23"  # fallback if package.json is not found
+        )
         self.BASE_SUPPORTED_DOTNET = BASE_SUPPORTED_DOTNET
         self._dotnet_executable_path = None
         self.home_dir, self.ssotme_dir = get_home_ssotme_dir()
@@ -46,7 +48,9 @@ class Installer:
     def get_dotnet_executable_path(self):
         """Get the absolute path to the dotnet executable."""
         dotnet_path = os.path.join(self.home_dir, ".dotnet", "dotnet")
-        dotnet_windows_path = os.path.join(self.home_dir, ".dotnet", "dotnet.exe")
+        dotnet_windows_path = os.path.join(
+            self.home_dir, ".dotnet", "dotnet.exe"
+        )
 
         # Check if the dotnet executable exists
         if os.path.isfile(dotnet_path) and os.access(dotnet_path, os.X_OK):
@@ -72,7 +76,6 @@ class Installer:
             sdk_versions = result.stdout.decode().splitlines()
             for line in sdk_versions:
                 version = line.split(" ")[0]
-                # we can just check if the base versions are the same (dont need to be too picky)
                 if get_base_version_str(version) == get_base_version_str(
                     required_version
                 ):
@@ -132,7 +135,9 @@ class Installer:
         os.chdir(base_dir)
 
         # Build the project
-        print(f"Run {self.dotnet_executable_path} build SSoTme-OST-CLI.sln -c Release")
+        print(
+            f"Run {self.dotnet_executable_path} build SSoTme-OST-CLI.sln -c Release"
+        )
         try:
             result = subprocess.run(
                 [
@@ -148,7 +153,9 @@ class Installer:
             )
 
             if result.returncode != 0:
-                print(f"Error building .NET project:\n{result.stderr}\n{result.stdout}")
+                print(
+                    f"Error building .NET project:\n{result.stderr}\n{result.stdout}"
+                )
                 return False
 
             print("Build completed successfully.")
@@ -179,13 +186,13 @@ class Installer:
         elif self.is_linux:
             wget_path = shutil.which("wget")
             if not wget_path:
-                cmd = f"apt-get update && apt-get install -y wget"
+                cmd = "apt-get update && apt-get install -y wget"
                 try:
                     # try without sudo
                     print(f"Attempting to install wget: {cmd}")
                     subprocess.run(cmd, shell=True, check=True)
                 except Exception:
-                    cmd = f"sudo apt-get update && sudo apt-get install -y wget"
+                    cmd = "sudo apt-get update && sudo apt-get install -y wget"
                     print(f"Attempting with sudo: {cmd}")
                     try:
                         subprocess.run(cmd, shell=True, check=True)
@@ -203,7 +210,9 @@ class Installer:
                 )
             else:
                 print(f"Unsupported platform: {platform.system()}")
-                raise DotNetInstallError(f"Unsupported platform: {platform.system()}")
+                raise DotNetInstallError(
+                    f"Unsupported platform: {platform.system()}"
+                )
 
         # download the .sh script provided my microsoft that downloads dotnet
         script_path = os.path.join(home_dir, "dotnet-install.sh")
@@ -244,7 +253,12 @@ class Installer:
             try:
                 print("Downloading dotnet-install.sh with wget...")
                 subprocess.run(
-                    ["wget", "https://dot.net/v1/dotnet-install.sh", "-P", base_dir],
+                    [
+                        "wget",
+                        "https://dot.net/v1/dotnet-install.sh",
+                        "-P",
+                        base_dir,
+                    ],
                     check=True,
                 )
                 return script_path
@@ -278,11 +292,13 @@ class Installer:
             if self.is_macos or self.is_linux:
                 script_path = self._install_dotnet_sh_script(self.ssotme_dir)
                 try:
-                    os.chmod(script_path, 0o755)  # make the sh script executable
+                    os.chmod(script_path, 0o755)
                 except Exception:
                     # try again with sudo
                     try:
-                        subprocess.run(["sudo", "chmod", "+x", script_path], check=True)
+                        subprocess.run(
+                            ["sudo", "chmod", "+x", script_path], check=True
+                        )
                     except Exception as e:
                         raise DotNetInstallError(
                             f"Failed to make install script executable: {e}"
@@ -290,13 +306,20 @@ class Installer:
 
                 # run the install script
                 try:
-                    print(f"Running dotnet-install.sh for version {version}...")
-                    subprocess.run([script_path, "--version", version], check=True)
+                    print(
+                        f"Running dotnet-install.sh for version {version}..."
+                    )
+                    subprocess.run(
+                        [script_path, "--version", version], check=True
+                    )
                 except Exception as e:
                     try:
-                        print(f"Install without sudo failed ({e}), trying with sudo...")
+                        print(
+                            f"Install without sudo failed ({e}), trying with sudo..."
+                        )
                         subprocess.run(
-                            ["sudo", script_path, "--version", version], check=True
+                            ["sudo", script_path, "--version", version],
+                            check=True,
                         )
                     except Exception as sudo_e:
                         raise DotNetInstallError(
@@ -305,7 +328,9 @@ class Installer:
 
             elif self.is_windows:
                 try:
-                    install_script = os.path.join(self.ssotme_dir, "dotnet-install.ps1")
+                    install_script = os.path.join(
+                        self.ssotme_dir, "dotnet-install.ps1"
+                    )
                     dotnet_install_dir = os.path.join(self.home_dir, ".dotnet")
 
                     # download install script - ensure directory exists
@@ -334,9 +359,13 @@ class Installer:
                         check=True,
                     )
                 except Exception as e:
-                    raise DotNetInstallError(f"Failed to install .NET SDK: {e}")
+                    raise DotNetInstallError(
+                        f"Failed to install .NET SDK: {e}"
+                    )
             else:
-                raise DotNetInstallError(f"Unsupported platform: {platform.system()}")
+                raise DotNetInstallError(
+                    f"Unsupported platform: {platform.system()}"
+                )
 
         except DotNetInstallError as e:
             print(f"ERROR: {str(e)}")
@@ -345,7 +374,7 @@ class Installer:
                 f"1. Download .NET SDK v{version} from: https://dotnet.microsoft.com/download/dotnet/{get_base_version_str(version)}"
             )
             print("2. Follow the installation instructions for your platform")
-            print(f"3. Re-run this installation after .NET is installed")
+            print("3. Re-run this installation after .NET is installed")
             print("=============================================\n")
             raise RuntimeError(f"DotNet installation failed: {e}")
         except Exception as e:
@@ -390,7 +419,7 @@ class Installer:
         }
         with open(os.path.join(self.ssotme_dir, "dotnet_info.json"), "w") as f:
             json.dump(info, f, indent=2)
-        print(f"Saved .NET SDK information to dotnet_info.json")
+        print("Saved .NET SDK information to dotnet_info.json")
 
     def run_installer(self):
         """Run the installation process before setup package"""
@@ -404,7 +433,9 @@ class Installer:
                 or not self.is_dotnet_version_installed(supported_version)
             ):
                 # dotnet isn't installed, or the wrong version is installed
-                print(f"DotNet v{supported_version} not installed - installing it now")
+                print(
+                    f"DotNet v{supported_version} not installed - installing it now"
+                )
                 self.install_dotnet(supported_version)
 
                 # verify dotnet installed
@@ -415,7 +446,9 @@ class Installer:
                     )
 
                 if self.is_dotnet_version_installed(supported_version):
-                    print(f"DotNet v{supported_version} successfully installed")
+                    print(
+                        f"DotNet v{supported_version} successfully installed"
+                    )
                 else:
                     raise RuntimeError(
                         f"The dotnet version specified in the package.json ({supported_version}) was not detected "
@@ -423,12 +456,15 @@ class Installer:
                         f"https://dotnet.microsoft.com/en-us/download/dotnet/{get_base_version_str(supported_version)}"
                     )
             else:
-                print(f"Found existing dotnet v{supported_version} installation")
+                print(
+                    f"Found existing dotnet v{supported_version} installation"
+                )
 
             # save dotnet info json
             self.save_dotnet_info(supported_version)
 
-            # create global.json, which tells dotnet commands ran in this dir to use the specific sdk version
+            # create global.json, which tells dotnet commands ran in this dir
+            # to use the specific sdk version
 
             # build dotnet project
             build_result = self.build_dotnet_project()
@@ -446,7 +482,8 @@ class Installer:
             except FileNotFoundError as e:
                 raise RuntimeError(f"Could not find build output: {e}")
 
-            # we need to copy it into cli/ssotme/lib/Windows/Release so that it's part of the
+            # we need to copy it into cli/ssotme/lib/Windows/Release so that
+            # it's part of the
             # ssotme pip package and is copied to site-packages later
             if not os.path.exists(built_proj):
                 raise RuntimeError(
@@ -454,7 +491,8 @@ class Installer:
                     "This may indicate a problem with the .NET build process."
                 )
 
-            # create the cli/ssotme/lib/Windows/CLI/bin/Release/net7.0 dir structure
+            # create the cli/ssotme/lib/Windows/CLI/bin/Release/net* dir
+            # structure
             base_dir = os.path.dirname(os.path.abspath(__file__))
             cli_dir = os.path.join(base_dir, "ssotme")
             os.makedirs(cli_dir, exist_ok=True)
@@ -470,12 +508,16 @@ class Installer:
             try:
                 os.makedirs(windows_dir, exist_ok=True)
             except Exception as e:
-                raise RuntimeError(f"Failed to create directory for build output: {e}")
+                raise RuntimeError(
+                    f"Failed to create directory for build output: {e}"
+                )
 
             # copy
             try:
                 shutil.copytree(built_proj, windows_dir, dirs_exist_ok=True)
-                print(f"Copied build output from {built_proj} to {windows_dir}")
+                print(
+                    f"Copied build output from {built_proj} to {windows_dir}"
+                )
             except Exception as e:
                 raise RuntimeError(f"Failed to copy build output: {e}")
 
@@ -490,8 +532,12 @@ class Installer:
             print("=" * 60)
             print(f"Error: {str(e)}")
             print("\nTroubleshooting steps:")
-            print("1. Ensure you have the correct permissions to install packages")
-            print("2. Try running the installation with administrative privileges")
+            print(
+                "1. Ensure you have the correct permissions to install packages"
+            )
+            print(
+                "2. Try running the installation with administrative privileges"
+            )
             print(
                 "3. Check that your system meets the requirements (.NET SDK compatibility)"
             )
