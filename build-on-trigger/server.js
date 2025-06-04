@@ -9,6 +9,7 @@ const actionSubmissions = new Map();  // bools whether copilot submitted a new a
 const actionContents = new Map(); // if its a write action, copilot will populate this with the contents
 const requestedActions = new Map(); // strings of the most recent action copilot wants per base
 const requestedActionsTableIds = new Map(); // the table id where the action should be run
+const requestedActionsFieldIds = new Map(); // the field id where the action should be run
 
 const actionsFinished = new Map();  // bools whether the CLI responded for this base
 const actionResponses = new Map();
@@ -17,7 +18,6 @@ const basesAvailable = new Map();
 
 const TTL_MS = 60 * 1000;
 
-// todo - add endpoint to reteive all available bases, that way copilot can resolve simple typos made by the user
 
 // todo connect the user's microsoft account to their ssotme account? To check all the available baseIds for this user
 // todo and to make sure they can access a specified baseId
@@ -141,7 +141,8 @@ const server = http.createServer(async (req, res) => {
     return res.end(JSON.stringify({
       "changed": isRecent,
       "action": requestedActions.get(baseId),
-      "tableId": requestedActionsTableIds.get(baseId) ,
+      "tableId": requestedActionsTableIds.get(baseId),
+      "fieldId": requestedActionsFieldIds.get(baseId),
       "content": actionContents.get(baseId),
     }));
     // now the cli should immediatelly post the base's content to /put-action-result
@@ -183,6 +184,7 @@ const server = http.createServer(async (req, res) => {
       actionContents.delete(baseId);
       requestedActions.delete(baseId);
       requestedActionsTableIds.delete(baseId);
+      requestedActionsFieldIds.delete(baseId);
 
       log(`[PUT-ACTION-RESULT] SUCCESS: stored content for baseId: ${baseId}`);
       res.writeHead(200, { "Content-Type": "application/json" });
@@ -219,6 +221,7 @@ const server = http.createServer(async (req, res) => {
     req.on('end', async () => {
       let theAction;
       let tableid;
+      let fieldid;
       let theContent;
       try {
         log(`[ACTION SUBMIT] Raw body received: ${body}`);
@@ -230,6 +233,7 @@ const server = http.createServer(async (req, res) => {
         const data = JSON.parse(body);
         theAction = data.action;
         tableid = data.tableId;
+        fieldid = data.fieldId;
         theContent = data.content;
         log(`[ACTION SUBMIT] Parsed data:`, data);
         log(`[ACTION SUBMIT] Extracted content: {theAction: ${theAction}, tableId: ${tableid}}`);
@@ -245,7 +249,10 @@ const server = http.createServer(async (req, res) => {
 
       requestedActions.set(baseId, theAction);
       requestedActionsTableIds.set(baseId, tableid);
+      requestedActionsFieldIds.set(baseId, fieldid);
       actionContents.set(baseId, theContent);
+
+      actionsFinished.delete(baseId);  // clear the last action's result state
 
       const theTimeout = TIMEOUT_SECS * 1000;
       let waited = 0;
@@ -292,7 +299,7 @@ const server = http.createServer(async (req, res) => {
       log(`Sending successful response to Copilot for baseId: ${baseId}`);
       res.writeHead(200, { "Content-Type": "application/json" });
 
-      return res.end(JSON.stringify({ data: updatedContent, target: {tableId: tableid, baseId: baseId} }));
+      return res.end(JSON.stringify({ data: updatedContent, target: {tableId: tableid, baseId: baseId, fieldId: fieldid} }));
     });
     return;
   }
