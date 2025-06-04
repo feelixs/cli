@@ -30,6 +30,7 @@ paths:
               required:
                 - action
                 - tableId
+                - content
               properties:
                 action:
                   type: string
@@ -39,6 +40,10 @@ paths:
                   type: string
                   description: The ID of the table within the specified base, where the action will be run.
                   example: "table10"
+                content:
+                  type: string
+                  description: Json string of the updated content, based on the content read from the corresponding table. This will be different for each action as described in the instructions
+                  example: "{\"name\": \"table name\", \"order\": 2, \"text\": \"new field text\"}"
       responses:
         '200':
           description: The action was sucessfully submitted for processing
