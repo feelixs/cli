@@ -1,51 +1,26 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
-     xmlns:util="http://schemas.microsoft.com/wix/UtilExtension"
-     xmlns:bal="http://schemas.microsoft.com/wix/BalExtension">
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+    xmlns:bal="http://wixtoolset.org/schemas/v4/wxs/bal"
+    xmlns:netfx="http://wixtoolset.org/schemas/v4/wxs/netfx">
+    <Bundle Name="SSoTme CLI Installer" Version="225.5.28" Manufacturer="EffortlessAPI" UpgradeCode="EB59dEFF-B979-464F-B36A-57F272E872A1">
+        <BootstrapperApplication>
+            <bal:WixStandardBootstrapperApplication Theme="rtfLicense" LicenseFile="Assets\LICENSE.rtf" LogoFile="Assets\Icon.ico" />
+        </BootstrapperApplication>
 
-  <Bundle Name="SSoTme CLI Installer" Version="224.12.7"
-          Manufacturer="EffortlessAPI"
-          UpgradeCode="EB59dEFF-B979-464F-B36A-57F272E872A1">
-    <BootstrapperApplicationRef Id="WixStandardBootstrapperApplication.RtfLicense">
-      <bal:WixStandardBootstrapperApplication
-        LicenseFile="Assets\LICENSE.rtf"
-        LogoFile="Assets\Icon.ico"
-        ShowVersion="yes"
-        SuppressOptionsUI="no" />
-    </BootstrapperApplicationRef>
 
-    <util:RegistrySearch
-      Root="HKLM"
-      Key="SOFTWARE\dotnet\Setup\InstalledVersions\x64\sdk"
-      Value="7.0.410"
-      Variable="DOTNETSDK_INSTALLED" />
+        <netfx:DotNetCoreSearch Id="DotNetCore8" Variable="DotNetCore8" RuntimeType="core" Platform="x64" MajorVersion="8" />
 
-    <Chain>
-      <ExePackage
-        Id="DotNetSdk"
-        DisplayName=".NET SDK 7.0.410"
-        Cache="no"
-        Compressed="no"
-        PerMachine="yes"
-        Vital="yes"
-        InstallCommand="/install /quiet /norestart"
-        UninstallCommand="/uninstall /quiet /norestart"
-        DownloadUrl="https://builds.dotnet.microsoft.com/dotnet/Sdk/7.0.410/dotnet-sdk-7.0.410-win-x64.exe"
-        DetectCondition="DOTNETSDK_INSTALLED"
-        Name="dotnet-sdk-7.0.410-win-x64">
-        <RemotePayload
-          Description="Microsoft .NET SDK 7.0.410"
-          ProductName=".NET SDK 7.0.410"
-          Size="229368400"
-          Version="7.0.410.0"
-          Hash="90BE446AD6E42B57A25E0CD2F7572764C4E161EB" />
-      </ExePackage>
+        <WixVariable Id="DotNetCore8DetectCondition" Value="DotNetCore8" Overridable="yes" />
+        <WixVariable Id="DotNetCore8InstallCondition" Value="" Overridable="yes" />
 
-      <MsiPackage
-        Id="MainInstaller"
-        SourceFile="bin\cli-installer\Release\CLI_Installer.msi"
-        DisplayInternalUI="yes"
-        Vital="yes" />
-    </Chain>
-  </Bundle>
+
+        <Chain>
+            <!-- Install .NET Runtime 7.0.20 if .NET Core 7.x is not installed -->
+            <ExePackage Id="DotNetRuntime" DisplayName=".NET Runtime 8.0.16" Cache="remove" Protocol="burn" Permanent="yes" PerMachine="yes" Vital="yes" InstallArguments="/install /quiet /norestart /install-dir &quot;C:\Program Files\dotnet&quot;" UninstallArguments="/uninstall /quiet /norestart" DetectCondition="!(wix.DotNetCore8DetectCondition)" InstallCondition="!(wix.DotNetCore8InstallCondition)">
+                <ExePackagePayload Name="dotnet-runtime-8.0.16-win-x64.exe" Size="28531120" DownloadUrl="https://builds.dotnet.microsoft.com/dotnet/Runtime/8.0.16/dotnet-runtime-8.0.16-win-x64.exe" Hash="8c61220263b0d5640cb5c5499652fff5a99bbe9930d95d42943eb336cff80ecc7e00a7f6304d992da8016f5e8bacaac5323ecab92aa2e2cdf214c4e8425aef4f" />
+            </ExePackage>
+
+            <MsiPackage Id="MainInstaller" SourceFile="bin\cli-installer\Release\CLI_Installer.msi" ForcePerMachine="yes" Vital="yes" bal:DisplayInternalUICondition="WixBundleAction &lt;&gt; 4" />
+
+        </Chain>
+    </Bundle>
 </Wix>
