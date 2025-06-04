@@ -7,40 +7,36 @@ servers:
   - url: https://ssotme-cli-airtable-bridge-ahrnz660db6k4.aws-us-east-1.controlplane.us/copilot
     description: Development server
 paths:
-  /mark-base:
+  /do-action:
     post:
-      summary: Submit schema modifications to a SSoT base
-      description: Submits schema changes like adding fields, creating entities, or updating existing models. Changes can be submitted via OVERWRITE via 'content' or EDIT via 'command'.
-      operationId: writeSsotBase
+      summary: Submit an action for processing on the server
+      description: Submit an action to be executed through the bridge server and see its result in real time
+      operationId: submitAction
       parameters:
         - name: baseId
           in: query
           required: true
-          description: The alphanumeric base/project ID to modify
+          description: The corresponding base/project ID
           schema:
             type: string
-            example: "default"
+            example: "abcdef123"
       requestBody:
         required: true
-        description: The updated SSoT schema content to apply
+        description: The desired action to submit to the bridge server
         content:
           application/json:
             schema:
               type: object
               required:
-                - content
+                - action
               properties:
                 content:
                   type: string
-                  description: Complete SSoT schema data including entities and metadata (Full JSON string)
-                  example: "{\"Object\": {\"property\": \"value\"}}"
-                command:
-                  type: string
-                  description: The macOs/linux command to use to modify the JSON content of the base
-                  example: "jq '.property = \"new value\"' filename"
+                  description: The name of the action as defined in the readActions endpoint
+                  example: "list_tables"
       responses:
         '200':
-          description: The content was successfully MARKED for changes
+          description: The action was sucessfully submitted for processing
           content:
             application/json:
               schema:
@@ -52,10 +48,10 @@ paths:
                     type: string
                     description: The server's text response
                     example: "The operation was successful"
-                  baseId:
+                  base:
                     type: string
-                    description: The base ID that was modified
-                    example: "CLI"
+                    description: The base where the action was submitted
+                    example: "abcd123"
         '400':
           description: Missing baseId parameter
           content:
@@ -67,6 +63,20 @@ paths:
                     type: string
                     description: Error message
                     example: "Missing baseId parameter"
+        '408':
+          description: Timed out waiting for CLI response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: Error message
+                    example: "Timed out"
+                  baseId:
+                    type: string
+                    example: "abcd123"
         '422':
           description: Invalid JSON or missing content field
           content:
@@ -80,13 +90,13 @@ paths:
                     example: "Invalid JSON in request body"
                   baseId:
                     type: string
-                    example: "CLI"
+                    example: "abcd123"
 
   /read-actions:
     get:
       summary: Read all available actions which can be submitted via the write action.
       description: Returns all actions that the agent can perform through the mark-base endpoint.
-      operationId: read
+      operationId: readActions
       parameters:
         - name: baseId
           in: query

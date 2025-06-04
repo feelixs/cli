@@ -4,8 +4,10 @@ const state = new Map();
 
 const baseLastChanged = new Map();
 
-const readRequests = new Map();  // bools whether copilot wants to read each base
-const readAvails = new Map();  // bools whether the CLI responded for this base
+const actionSubmissions = new Map();  // bools whether copilot submitted a new action to each base
+const requestedActions = new Map(); // strings of the most recent action copilot wants per base
+const actionsFinished = new Map();  // bools whether the CLI responded for this base
+const actionResponses = new Map();
 
 const baseContents = new Map(); // the read content of each base returned by the cli
 
@@ -111,7 +113,7 @@ const server = http.createServer(async (req, res) => {
   }
 
   // Log every request not including cli polling
-  if ((url.pathname !== "/check") && (url.pathname !== '/copilot/check-base') && (url.pathname !== '/copilot/check-read-req')) {
+  if ((url.pathname !== "/check") && (url.pathname !== '/copilot/check-base') && (url.pathname !== '/copilot/check-req-actions')) {
     log(`${req.method} ${url.pathname} - baseId: ${baseId || 'missing'} - IP: ${req.socket.remoteAddress}`);
   }
 
@@ -218,20 +220,20 @@ const server = http.createServer(async (req, res) => {
     return res.end(JSON.stringify({ "changed": changedRecently, content, theCmd }));
   }
 
-  if (req.method === "GET" && url.pathname === "/copilot/check-read-req")
-      // the cli will check this endpoint to see which bases the plugin wants to read from
+  if (req.method === "GET" && url.pathname === "/copilot/check-req-actions")
+      // the cli will check this endpoint to see which actions the plugin wants to do
   {
-    const ts = readRequests.get(baseId) || 0;
-    const isRecentReadRequest = (Date.now() - ts) < TTL_MS;
+    const ts = actionSubmissions.get(baseId) || 0;
+    const isRecent = (Date.now() - ts) < TTL_MS;
     res.writeHead(200, { "Content-Type": "application/json" });
-    readRequests.delete(baseId);
-    return res.end(JSON.stringify({ "changed": isRecentReadRequest }));
-    // now the cli should immediatelly post the base's content to /put-read
+    actionSubmissions.delete(baseId);
+    return res.end(JSON.stringify({ "changed": isRecent, "action": requestedActions.get(baseId) }));
+    // now the cli should immediatelly post the base's content to /put-action-result
   }
 
-  if (req.method === "POST" && url.pathname === "/copilot/put-read")
-      // this cli will POST ssot reads here
-      // the plugin's rest API (this script) will be polling this before it returns anything to the plugin, or timeout
+  if (req.method === "POST" && url.pathname === "/copilot/put-action-result")
+      // this cli will POST the results of actions here
+      // the plugin's rest API (this script) will be polling `actionsFinished` before it returns anything to the plugin, or timeout
   {
     let body = '';
     req.on('data', chunk => {
@@ -242,30 +244,30 @@ const server = http.createServer(async (req, res) => {
       try {
         const data = JSON.parse(body);
         content = data.content;
-        log(`PUT-READ: Content received for baseId: ${baseId}`);
+        log(`[PUT-ACTION-RESULT] Content received for baseId: ${baseId}`);
       } catch (e) {
-        log(`ERROR: PUT-READ invalid JSON for baseId: ${baseId}`);
+        log(`[PUT-ACTION-RESULT] ERROR: invalid JSON for baseId: ${baseId}`);
         res.writeHead(400);
         return res.end(JSON.stringify({'msg': "Invalid JSON"}));
       }
 
       if (!content) {
-        log(`ERROR: PUT-READ missing content for baseId: ${baseId}`);
+        log(`[PUT-ACTION-RESULT] ERROR: missing content for baseId: ${baseId}`);
         res.writeHead(400);
         return res.end(JSON.stringify({'msg': "Missing required field 'content'"}));
       }
 
-      readAvails.set(baseId, Date.now());
-      baseContents.set(baseId, content);
-      log(`SUCCESS: PUT-READ stored content for baseId: ${baseId}`);
+      actionsFinished.set(baseId, Date.now());
+      actionResponses.set(baseId, content);
+      log(`[PUT-ACTION-RESULT] SUCCESS: stored content for baseId: ${baseId}`);
       res.writeHead(200, { "Content-Type": "application/json" });
       return res.end(JSON.stringify({'msg': `Marked ${baseId} with content`}));
     });
     return;
   }
 
-  if (req.method === "GET" && url.pathname === "/copilot/request-read")
-      // copilot will request a ssot read here
+  if (req.method === "POST" && url.pathname === "/copilot/do-action")
+      // copilot will submit an action here
       // & this server will wait until the cli responds and return its response to the plugin (or timeout)
   {
     // Check if baseId exists in available bases for this user
@@ -285,51 +287,83 @@ const server = http.createServer(async (req, res) => {
       }));
     }
 
-    log(`READ REQUEST started for baseId: ${baseId}`);
-    const reqDate = new Date(Date.now());
-    readRequests.set(baseId, reqDate);
-
-    const theTimeout = 30 * 1000;
-    let waited = 0;
-    // the cli will be polling /check-read-req which returns readRequests[base]
-    // copilot calling this endpoint will make /check-read-req return true
-
-    // then the cli will push to /put-read which updates readAvails[base] to now()
-    let ts = readAvails.get(baseId) || 0;
-    let newContent = (Date.now() - ts) < TTL_MS;
-    log(`Waiting for CLI response on baseId: ${baseId}`);
-
-    while (!newContent)
-    {
-      await new Promise(resolve => setTimeout(resolve, 1000)); // wait 1s
-      waited += 1000;
-
-      log(`[REQUEST-READ] Polling for CLI response on baseId: ${baseId}`);
-      ts = readAvails.get(baseId) || 0;
-      newContent = (Date.now() - ts) < TTL_MS;
-
-      if (waited > theTimeout)
-      {
-        log(`TIMEOUT after ${waited}ms waiting for baseId: ${baseId}`);
-        res.writeHead(408);
-        return res.end(JSON.stringify({'msg': `Timeout waiting for response from CLI! ${baseId}`}));
+    let body = '';
+    req.on('data', chunk => {
+      body += chunk.toString();
+    });
+    req.on('end', async () => {
+      let theAction;
+      try {
+        log(`[ACTION SUBMIT] Raw body received: ${body}`);
+        if (!body || body.trim() === '') {
+          log(`[ACTION SUBMIT] ERROR: empty body for baseId: ${baseId}`);
+          res.writeHead(400);
+          return res.end(JSON.stringify({'msg': "Request body is empty", baseId: baseId}));
+        }
+        const data = JSON.parse(body);
+        theAction = data.action;
+        log(`[ACTION SUBMIT] Parsed data:`, data);
+        log(`[ACTION SUBMIT] Extracted content:`, theAction);
+      } catch (e) {
+        log(`[ACTION SUBMIT] ERROR: invalid JSON for baseId: ${baseId}, raw body: ${body}`);
+        res.writeHead(422);
+        return res.end(JSON.stringify({'msg': "Invalid JSON", baseId: baseId}));
       }
-    }
 
-    const updatedContent = baseContents.get(baseId);
-    log(`CLI response received for baseId: ${baseId}`);
+      log(`[ACTION SUBMIT] started for baseId: ${baseId}`);
+      const reqDate = new Date(Date.now());
+      actionSubmissions.set(baseId, reqDate);
 
-    if (!updatedContent) {
-      // if it doesn't exist but the cli changed the date... error
-      log(`ERROR: No response data found for baseId: ${baseId}`);
-      res.writeHead(502);
-      return res.end(JSON.stringify({'msg': `Error reading response from CLI! ${baseId}`}));
-    }
+      requestedActions.set(baseId, theAction);
 
-    log(`Sending successful response to Copilot for baseId: ${baseId}`);
-    res.writeHead(200, { "Content-Type": "application/json" });
+      const theTimeout = 30 * 1000;
+      let waited = 0;
+      // the cli will be polling /check-req-actions which returns actionSubmissions[base]
+      // copilot calling this endpoint will make /check-req-actions return true
 
-    return res.end(JSON.stringify({ data: updatedContent, baseId: baseId }));
+      // then the cli will push to /put-action-result which updates actionsFinished[base] to now()
+      let ts = actionsFinished.get(baseId) || 0;
+      let newContent = (Date.now() - ts) < TTL_MS;
+      log(`Waiting for CLI response on baseId: ${baseId}`);
+
+      try {
+        while (!newContent && waited <= theTimeout)
+        {
+          await new Promise(resolve => setTimeout(resolve, 1000)); // wait 1s
+          waited += 1000;
+
+          log(`[ACTION SUBMIT] Polling for CLI response on baseId: ${baseId}`);
+          ts = actionsFinished.get(baseId) || 0;
+          newContent = (Date.now() - ts) < TTL_MS;
+        }
+
+        if (waited > theTimeout) {
+          log(`[ACTION SUBMIT] TIMEOUT after ${waited}ms waiting for baseId: ${baseId}`);
+          res.writeHead(408);
+          return res.end(JSON.stringify({'msg': `Timeout waiting for response from CLI!`, 'baseId': baseId}));
+        }
+      } catch (error) {
+        log(`[ACTION SUBMIT] ERROR in polling loop: ${error.message}`);
+        res.writeHead(500);
+        return res.end(JSON.stringify({'msg': 'Internal server error', 'baseId': baseId}));
+      }
+
+      const updatedContent = actionResponses.get(baseId);
+      log(`CLI response received for baseId: ${baseId}`);
+
+      if (!updatedContent) {
+        // if it doesn't exist but the cli changed the date... error
+        log(`ERROR: No response data found for baseId: ${baseId}`);
+        res.writeHead(502);
+        return res.end(JSON.stringify({'msg': `Error reading response from CLI! ${baseId}`}));
+      }
+
+      log(`Sending successful response to Copilot for baseId: ${baseId}`);
+      res.writeHead(200, { "Content-Type": "application/json" });
+
+      return res.end(JSON.stringify({ data: updatedContent, baseId: baseId }));
+    });
+    return;
   }
 
   res.writeHead(404);
