@@ -159,9 +159,7 @@ const server = http.createServer(async (req, res) => {
         content = data.content;
         log(`[PUT-ACTION-RESULT] Content received for baseId: ${baseId}`);
       } catch (e) {
-        log(`[PUT-ACTION-RESULT] ERROR: invalid JSON for baseId: ${baseId}`);
-        res.writeHead(400);
-        return res.end(JSON.stringify({'msg': "Invalid JSON"}));
+        log(`[PUT-ACTION-RESULT] Content was not supplied (non-required field): ${baseId}`);
       }
 
       if (!content) {
