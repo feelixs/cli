@@ -145,7 +145,7 @@ namespace SSoTme.OST.Core.Lib.External
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
                 
                 var response = await httpClient.PostAsync($"{_baseUrl}/database/fields/table/{tableId}/", content);
-                
+                Console.WriteLine($"Response: {response.StatusCode} - {response.ReasonPhrase}");
                 if (!response.IsSuccessStatusCode)
                 {
                     var errorContent = await response.Content.ReadAsStringAsync();
@@ -154,14 +154,14 @@ namespace SSoTme.OST.Core.Lib.External
             }
         }
 
-        public string GetTableSchema(string tableId)
+        public JToken GetTableSchema(string tableId)
         {
             var task = GetTableSchemaAsync(tableId);
             task.Wait();
             return task.Result;
         }
 
-        public async Task<string> GetTableSchemaAsync(string tableId)
+        public async Task<JToken> GetTableSchemaAsync(string tableId)
         {
             var token = await GetValidTokenAsync();
             
@@ -169,7 +169,7 @@ namespace SSoTme.OST.Core.Lib.External
             {
                 httpClient.DefaultRequestHeaders.Add("Authorization", $"JWT {token}");
                 
-                var response = await httpClient.GetAsync($"{_baseUrl}/database/tables/{tableId}/");
+                var response = await httpClient.GetAsync($"{_baseUrl}/database/rows/table/{tableId}/");
                 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -177,7 +177,8 @@ namespace SSoTme.OST.Core.Lib.External
                     throw new Exception($"Failed to get Baserow table schema: {response.StatusCode} - {errorContent}");
                 }
                 
-                return await response.Content.ReadAsStringAsync();
+                string strRes = await response.Content.ReadAsStringAsync();
+                return JToken.Parse(strRes);
             }
         }
     }
