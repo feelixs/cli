@@ -18,7 +18,6 @@ const basesAvailable = new Map();
 
 const TTL_MS = 60 * 1000;
 
-// todo - add endpoint to reteive all available bases, that way copilot can resolve simple typos made by the user
 
 // todo connect the user's microsoft account to their ssotme account? To check all the available baseIds for this user
 // todo and to make sure they can access a specified baseId
@@ -252,6 +251,8 @@ const server = http.createServer(async (req, res) => {
       requestedActionsTableIds.set(baseId, tableid);
       requestedActionsFieldIds.set(baseId, fieldid);
       actionContents.set(baseId, theContent);
+
+      actionsFinished.delete(baseId);  // clear the last action's result state
 
       const theTimeout = TIMEOUT_SECS * 1000;
       let waited = 0;
