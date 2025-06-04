@@ -222,54 +222,61 @@ namespace SSoTme.OST.Core.Lib.External
             }
         }
         
-        private JToken TransformTableDataWithFields(JToken tableData, JToken tableSchema)
+        private JToken TransformTableDataWithFields(JToken rawData, JToken readableData)
         {
             var transformedRows = new JArray();
             
-            if (tableData != null && tableData["results"] != null)
+            if (rawData != null && rawData["results"] != null && 
+                readableData != null && readableData["results"] != null)
             {
-                var fields = tableSchema?["fields"]?.ToObject<JArray>();
-                var fieldMap = new Dictionary<string, (string name, int id)>();
+                var rawRows = rawData["results"].ToObject<JArray>();
+                var readableRows = readableData["results"].ToObject<JArray>();
                 
-                // Build field mapping from schema
-                if (fields != null)
+                // Create a dictionary of readable rows indexed by ID for quick lookup
+                var readableRowsById = new Dictionary<string, JToken>();
+                foreach (var readableRow in readableRows)
                 {
-                    foreach (var field in fields)
+                    var id = readableRow["id"]?.ToString();
+                    if (!string.IsNullOrEmpty(id))
                     {
-                        var fieldId = field["id"]?.ToString();
-                        var fieldName = field["name"]?.ToString();
-                        if (!string.IsNullOrEmpty(fieldId) && !string.IsNullOrEmpty(fieldName))
-                        {
-                            fieldMap[$"field_{fieldId}"] = (fieldName, int.Parse(fieldId));
-                        }
+                        readableRowsById[id] = readableRow;
                     }
                 }
                 
-                foreach (var row in tableData["results"])
+                foreach (var rawRow in rawRows)
                 {
                     var transformedRow = new JObject();
+                    var rowId = rawRow["id"]?.ToString();
                     
                     // Copy basic properties
-                    if (row["id"] != null) transformedRow["id"] = row["id"];
-                    if (row["order"] != null) transformedRow["order"] = row["order"];
+                    if (rawRow["id"] != null) transformedRow["id"] = rawRow["id"];
+                    if (rawRow["order"] != null) transformedRow["order"] = rawRow["order"];
                     
-                    // Transform field data
-                    foreach (var property in row.ToObject<JObject>().Properties())
+                    // Get corresponding readable row
+                    if (!string.IsNullOrEmpty(rowId) && readableRowsById.ContainsKey(rowId))
                     {
-                        if (property.Name.StartsWith("field_") && fieldMap.ContainsKey(property.Name))
+                        var readableRow = readableRowsById[rowId];
+                        
+                        // Map field IDs to readable names and create field objects
+                        foreach (var property in rawRow.ToObject<JObject>().Properties())
                         {
-                            var (columnName, fieldId) = fieldMap[property.Name];
-                            transformedRow[property.Name] = new JObject
+                            if (property.Name.StartsWith("field_"))
                             {
-                                ["columnName"] = columnName,
-                                ["value"] = property.Value,
-                                ["id"] = fieldId
-                            };
-                        }
-                        else if (!property.Name.Equals("id") && !property.Name.Equals("order"))
-                        {
-                            // Keep non-field properties as-is
-                            transformedRow[property.Name] = property.Value;
+                                // Extract field ID from property name (e.g., "field_4501110" -> "4501110")
+                                var fieldIdStr = property.Name.Substring(6);
+                                if (int.TryParse(fieldIdStr, out int fieldId))
+                                {
+                                    // Find the corresponding column name from readable data
+                                    var columnName = FindColumnNameForField(readableRow, property.Value?.ToString());
+                                    
+                                    transformedRow[property.Name] = new JObject
+                                    {
+                                        ["columnName"] = columnName ?? "Unknown",
+                                        ["value"] = property.Value,
+                                        ["id"] = fieldId
+                                    };
+                                }
+                            }
                         }
                     }
                     
@@ -281,6 +288,20 @@ namespace SSoTme.OST.Core.Lib.External
             {
                 ["results"] = transformedRows
             };
+        }
+        
+        private string FindColumnNameForField(JToken readableRow, string fieldValue)
+        {
+            // Find which column in the readable row has the same value as the field
+            foreach (var property in readableRow.ToObject<JObject>().Properties())
+            {
+                if (property.Name != "id" && property.Name != "order" && 
+                    string.Equals(property.Value?.ToString(), fieldValue, StringComparison.OrdinalIgnoreCase))
+                {
+                    return property.Name;
+                }
+            }
+            return null;
         }
     }
 }
