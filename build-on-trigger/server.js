@@ -219,6 +219,7 @@ const server = http.createServer(async (req, res) => {
     req.on('end', async () => {
       let theAction;
       let tableid;
+      let fieldid;
       let theContent;
       try {
         log(`[ACTION SUBMIT] Raw body received: ${body}`);
@@ -230,6 +231,7 @@ const server = http.createServer(async (req, res) => {
         const data = JSON.parse(body);
         theAction = data.action;
         tableid = data.tableId;
+        fieldid = data.fieldId;
         theContent = data.content;
         log(`[ACTION SUBMIT] Parsed data:`, data);
         log(`[ACTION SUBMIT] Extracted content: {theAction: ${theAction}, tableId: ${tableid}}`);
@@ -292,7 +294,7 @@ const server = http.createServer(async (req, res) => {
       log(`Sending successful response to Copilot for baseId: ${baseId}`);
       res.writeHead(200, { "Content-Type": "application/json" });
 
-      return res.end(JSON.stringify({ data: updatedContent, target: {tableId: tableid, baseId: baseId} }));
+      return res.end(JSON.stringify({ data: updatedContent, target: {tableId: tableid, baseId: baseId, fieldId: fieldid} }));
     });
     return;
   }
