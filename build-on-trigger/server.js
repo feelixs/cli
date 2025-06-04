@@ -1,4 +1,7 @@
 // server.js
+
+const TIMEOUT_SECS = 20;
+
 const http = require('http');
 const state = new Map();
 
@@ -157,8 +160,9 @@ const server = http.createServer(async (req, res) => {
       let message;
       try {
         const data = JSON.parse(body);
-        content = data.content;
-        message = content.msg;
+        log(`[PUT-ACTION-RESULT] Raw body received: ${body}`);
+        content = data.content || null;
+        message = data.msg || null;
         log(`[PUT-ACTION-RESULT] Content received for baseId: ${baseId}`);
       } catch (e) {
         log(`[PUT-ACTION-RESULT] ERROR: invalid JSON for baseId: ${baseId}`);
@@ -243,7 +247,7 @@ const server = http.createServer(async (req, res) => {
       requestedActionsTableIds.set(baseId, tableid);
       actionContents.set(baseId, theContent);
 
-      const theTimeout = 30 * 1000;
+      const theTimeout = TIMEOUT_SECS * 1000;
       let waited = 0;
       // the cli will be polling /check-req-actions which returns actionSubmissions[base]
       // copilot calling this endpoint will make /check-req-actions return true

@@ -711,8 +711,8 @@ namespace SSoTme.OST.Lib.DataClasses
             {
                 try
                 {
-                    Console.WriteLine($"Posting to bridge: {uri} - {data}");
                     var jsonString = data.ToString(Newtonsoft.Json.Formatting.None);
+                    Console.WriteLine($"Posting to bridge: {uri} - {data}");
                     var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
                     var response = httpClient.PostAsync(uri, content).Result;
 
@@ -735,7 +735,7 @@ namespace SSoTme.OST.Lib.DataClasses
         }
         
         private JToken RunCopilotAction(string commandData, string baseId)
-        {
+        {  // todo you can make undo/redo actions using the baserow 'ClientSessionId' header
             try
             {
                 // get baserow client from ~/.ssotme/ssotme.key file -> "baserow" api
@@ -784,7 +784,10 @@ namespace SSoTme.OST.Lib.DataClasses
                 }
                 else if (requestedChanges.action == "create_field")
                 {
-                    baserowClient.CreateField(tableId, requestedChanges.fieldName, requestedChanges.fieldType);
+                    string name = requestedChanges.content.fieldName;
+                    string type = requestedChanges.content.fieldType;
+                    Console.WriteLine($"Creating new field: name: {name}, type: {type}");
+                    baserowClient.CreateField(tableId, name, type);
                 }
                 else if (requestedChanges.action == "update_table")
                 {
@@ -827,7 +830,6 @@ namespace SSoTme.OST.Lib.DataClasses
                 if (isCopilot) {
                     var (newCopilotActionRequest, copilotProvidedData) = GetLastCopilotRequestedRead(copilotReadUri);
                     if (newCopilotActionRequest) {
-                        //copilotProvidedData = "{\"action\": \"list_tables\"}";
                         Console.WriteLine($"Copilot requested action: {copilotProvidedData}");
                         if (!string.IsNullOrEmpty(copilotProvidedData))
                         {
