@@ -5,6 +5,7 @@
  License:    Mozilla Public License 2.0
  *******************************************/
 using System;
+using System.Text;
 using System.ComponentModel;
 using SassyMQ.SSOTME.Lib.RMQActors;
 using System.IO;
@@ -693,40 +694,82 @@ namespace SSoTme.OST.Lib.DataClasses
             }
         }
         
-        private string GetLastCopilotRequestForBase(string baseId, string uri)
+        private bool hasCopilotRequestedRead(string readReqUri)
         {
             using (var httpClient = new HttpClient())
             {
-                var response = httpClient.GetStringAsync(uri).Result;
+                var response = httpClient.GetStringAsync(readReqUri).Result;
                 var json = JsonDocument.Parse(response);
                 var changed = json.RootElement.GetProperty("changed").GetRawText();
-                if (changed == "true")
-                {
-                    return json.RootElement.GetProperty("content").GetRawText();
-                }
-
-                return null;
+                return (changed == "true");
             }
         }
 
-        private string ApplyCopilotChanges(string changeData, string baseId)
+        private string PostDataToBridge(string data, string uri)
+        {
+            using (var httpClient = new HttpClient())
+            {
+                try
+                {
+                    JToken parsedData;
+                    try
+                    {
+                        parsedData = JToken.Parse(data); // works for both objects and arrays
+                    }
+                    catch (JsonReaderException jex)
+                    {
+                        this.LogMessage("Invalid JSON input: {0}", jex.Message);
+                        return null;
+                    }
+
+                    var wrapped = new JObject
+                    {
+                        ["content"] = parsedData  // wrap array or object in {"content": ...}
+                    };
+
+                    var wrappedData = wrapped.ToString();
+                    Console.WriteLine($"Posting to bridge: {uri} - {wrappedData}");
+
+                    var content = new StringContent(wrappedData, Encoding.UTF8, "application/json");
+                    var response = httpClient.PostAsync(uri, content).Result;
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        this.LogMessage("Successfully posted data to bridge: {0}", uri);
+                        return response.Content.ReadAsStringAsync().Result;
+                    }
+                    else
+                    {
+                        this.LogMessage("Error posting data to bridge: {0} - {1}", response.StatusCode, response.ReasonPhrase);
+                        return null;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    this.LogMessage("Exception posting data to bridge: {0}", ex.Message);
+                    return null;
+                }
+            }
+        }
+        
+        private string RunCopilotAction(string commandData, string baseId)
         {
             try
             {
                 // get baserow client from ~/.ssotme/ssotme.key file -> "baserow" api
-                var baserowClient = SSoTme.OST.Core.Lib.External.BaserowBackend.FromStoredCredentials();
-
-                var requestedChanges = JsonConvert.DeserializeObject<dynamic>(changeData);
+                var baserowClient = new SSoTme.OST.Core.Lib.External.BaserowBackend();
+                var requestedChanges = JsonConvert.DeserializeObject<dynamic>(commandData);
                 
-                if (requestedChanges.tableId == null) {
-                    return "Error applying changes: table ID was null!";
-                }
-
+                Console.WriteLine($"Running Copilot Action: {commandData} on base: {baseId}");
+                
                 // match copilot's requested action to the right baserow endpoint
                 string tableId = requestedChanges.tableId;
                 if (requestedChanges.action != "list_tables" && string.IsNullOrEmpty(tableId))
                 {
                     return "Error applying changes: This endpoint requires the tableId field";
+                }
+                if (requestedChanges.action != "list_tables" && requestedChanges.tableId == null) {
+                    return "Error applying changes: table ID was null!";
                 }
                 
                 if (requestedChanges.action == "list_tables")
@@ -754,7 +797,8 @@ namespace SSoTme.OST.Lib.DataClasses
             }
             catch (Exception ex)
             {
-                return string.Format("Error applying changes: {0}", ex.Message);
+                this.LogMessage("Error running copilot action: {0}", ex.Message);
+                return string.Format("Error running copilot action: {0}", ex.Message);
             }
         }
         
@@ -770,17 +814,29 @@ namespace SSoTme.OST.Lib.DataClasses
             DateTime? lastChangedTime = null;
             bool changeEverDetected = false;
             string uri = $"https://ssotme-cli-airtable-bridge-ahrnz660db6k4.aws-us-east-1.controlplane.us/check?baseId={baseId}";
-            string copilotUri = $"https://ssotme-cli-airtable-bridge-v2-ahrnz660db6k4.cpln.app/copilot/check?baseId={baseId}";
-            Console.WriteLine($"Polling {uri} for changes...");
-            if (isCopilot) Console.WriteLine($"Polling {copilotUri} for changes...");
+
+            string baseCopilotUri = "https://ssotme-cli-airtable-bridge-v2-ahrnz660db6k4.cpln.app/copilot";
+            string copilotReadUri = $"{baseCopilotUri}/check-read-req?baseId={baseId}";
+            Console.WriteLine($"Polling {uri} for changes to base: `{baseId}`...");
+            if (isCopilot) Console.WriteLine($"Polling {copilotReadUri} for read requests...");
             while (true)
             {
                 if (isCopilot)
                 {
-                    string lastCopilotRequest = GetLastCopilotRequestForBase(baseId, copilotUri);
-                    if (!string.IsNullOrEmpty(lastCopilotRequest))
+                    string copilotProvidedData = null;
+                    if (hasCopilotRequestedRead(copilotReadUri)) {
+                        Console.WriteLine("Copilot requested read");
+                        // todo change architecture to make copilot provide this
+                        copilotProvidedData = "{\"action\": \"list_tables\"}";
+                    }
+                    //else if (copilotRequestedWrite) {
+                    //    // todo post to put-response so copilot can see the feedback from its request to baserow
+                    //}
+
+                    if (!string.IsNullOrEmpty(copilotProvidedData))
                     {
-                        ApplyCopilotChanges(lastCopilotRequest, baseId);
+                        string response = RunCopilotAction(copilotProvidedData, baseId);
+                        PostDataToBridge(response, $"{baseCopilotUri}/put-read?baseId={baseId}");
                     }
                 }
 

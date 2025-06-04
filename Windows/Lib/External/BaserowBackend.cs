@@ -17,12 +17,12 @@ namespace SSoTme.OST.Core.Lib.External
 
         public BaserowBackend(string username, string password)
         {
-            _baseUrl = "https://api.baserow.io/api/";
+            _baseUrl = "https://api.baserow.io/api";
             _username = username;
             _password = password;
         }
             
-        public static BaserowBackend FromStoredCredentials(string runAs = "")
+        public BaserowBackend(string runAs = "")
         {
             var key = SSOTMEKey.GetSSoTmeKey(runAs);
             if (!key.APIKeys.ContainsKey("baserow"))
@@ -33,7 +33,10 @@ namespace SSoTme.OST.Core.Lib.External
             var baserowConfigJson = key.APIKeys["baserow"];
             var baserowConfig = JsonConvert.DeserializeObject<dynamic>(baserowConfigJson);
             
-            return new BaserowBackend(baserowConfig.username, baserowConfig.password);
+            _baseUrl = "https://api.baserow.io/api";
+            _username = baserowConfig.username;
+            _password = baserowConfig.password;
+            Console.WriteLine($"New baserowClient instance: {_username}: {_password}");
         }
 
         private async Task<string> GetValidTokenAsync()
@@ -81,7 +84,7 @@ namespace SSoTme.OST.Core.Lib.External
             {
                 httpClient.DefaultRequestHeaders.Add("Authorization", $"JWT {token}");
         
-                var response = await httpClient.GetAsync($"{_baseUrl}/database/tables/database/{baseid}");
+                var response = await httpClient.GetAsync($"{_baseUrl}/database/tables/database/{baseid}/");
         
                 if (!response.IsSuccessStatusCode)
                 {
