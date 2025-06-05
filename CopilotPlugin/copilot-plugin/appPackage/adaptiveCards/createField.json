@@ -1,0 +1,65 @@
+{
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "type": "AdaptiveCard",
+  "version": "1.0",
+  "body": [
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "text": "➕ Field Created",
+          "weight": "bolder",
+          "size": "medium"
+        },
+        {
+          "type": "TextBlock",
+          "text": "New field has been successfully created in the table",
+          "wrap": true
+        }
+      ]
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "FactSet",
+          "facts": [
+            {
+              "title": "Base ID:",
+              "value": "${target.baseId}"
+            },
+            {
+              "title": "Table ID:",
+              "value": "${target.tableId}"
+            },
+            {
+              "title": "New Field ID:",
+              "value": "${data.id}"
+            },
+            {
+              "title": "Field Order:",
+              "value": "${data.order}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "text": "**Field Details:**",
+          "weight": "bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "The new field is now available for use in table operations.",
+          "wrap": true,
+          "style": "emphasis"
+        }
+      ]
+    }
+  ]
+}
