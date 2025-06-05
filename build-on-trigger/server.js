@@ -90,7 +90,10 @@ const server = http.createServer(async (req, res) => {
       req.on('end', () => {
         try {
           const data = JSON.parse(body);
-          const userBases = data.bases || []
+
+          // convert the received {'bases': [{'id': 1}, ...]} to a list of base id strings
+          const basesData = data.bases || []
+          const userBases = basesData.map(base => base.id.toString());
 
           basesAvailable.set(userId, userBases);
           log(`AVAILABLE-BASES: CLI registered ${userBases.length} bases for user ${userId}: ${userBases.join(', ')}`);
