@@ -11,9 +11,9 @@ namespace SSoTme.OST.Core.Lib.External
 {
     public class BaserowBackend
     {
-        private readonly string _baseUrl;
-        private readonly string _username;
-        private readonly string _password;
+        private string _baseUrl;
+        private string _username;
+        private string _password;
         private string _authToken;
         private DateTime _tokenExpiry;
 
@@ -24,7 +24,13 @@ namespace SSoTme.OST.Core.Lib.External
             _password = password;
         }
             
-        public BaserowBackend(string runAs = "")
+        public BaserowBackend()
+        {
+            // base init -> return null client -> must manually run InitFromHomeFile()
+            return;
+        }
+
+        public void InitFromHomeFile(string runAs = "")
         {
             var key = SSOTMEKey.GetSSoTmeKey(runAs);
             if (!key.APIKeys.ContainsKey("baserow"))
@@ -40,7 +46,7 @@ namespace SSoTme.OST.Core.Lib.External
             _password = baserowConfig.password;
             Console.WriteLine($"New baserowClient instance: {_username}");
         }
-
+        
         private async Task<string> GetValidTokenAsync()
         {
             // Check if we have a valid token (expires after 60 minutes)
@@ -73,6 +79,44 @@ namespace SSoTme.OST.Core.Lib.External
             }
         }
 
+        public JToken GetAvailableBases()
+        {
+            var task = GetAvailableBasesAsync();
+            task.Wait();
+            return task.Result;
+        }
+
+        public async Task<JToken> GetAvailableBasesAsync()
+        {
+            var token = await GetValidTokenAsync();
+
+            using (var httpClient = new HttpClient())
+            {
+                httpClient.DefaultRequestHeaders.Add("Authorization", $"JWT {token}");
+
+                var response = await httpClient.GetAsync($"{_baseUrl}/database/databases/");
+
+                var responseContent = await response.Content.ReadAsStringAsync();
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new Exception($"Failed to fetch available Baserow bases: {response.StatusCode} - {responseContent}");
+                }
+
+                try
+                {
+                    return JToken.Parse(responseContent);
+                }
+                catch (JsonReaderException ex)
+                {
+                    Console.WriteLine($"Error parsing JSON from GetAvailableBasesAsync: {ex.Message}");
+                    Console.WriteLine($"Raw response: {responseContent.Substring(0, Math.Min(200, responseContent.Length))}");
+                    throw;
+                }
+            }
+        }
+
+        
         public JToken FetchTablesForBase(string baseId)
         {
             var task = FetchTablesAsync(baseId);
