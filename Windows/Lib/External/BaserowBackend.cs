@@ -100,14 +100,14 @@ namespace SSoTme.OST.Core.Lib.External
             }
         }
 
-        public JToken GetField(string fieldId)
+        public JToken GetField(string tableId, string rowId, string fieldId)
         {
-            var task = GetFieldAsync(fieldId);
+            var task = GetFieldAsync(tableId, rowId, fieldId);
             task.Wait();
             return task.Result;
         }
 
-        public async Task<JToken> GetFieldAsync(string fieldId)
+        public async Task<JToken> GetFieldAsync(string tableId, string rowId, string fieldId)
         {
             var token = await GetValidTokenAsync();
             using (var httpClient = new HttpClient())
@@ -127,14 +127,14 @@ namespace SSoTme.OST.Core.Lib.External
             }
         }
         
-        public JObject UpdateField(string fieldId, object schemaChanges)
+        public JObject UpdateField(string tableId, string rowId, string fieldId, object schemaChanges)
         {
-            var task = UpdateFieldAsync(fieldId, schemaChanges);
+            var task = UpdateFieldAsync(tableId, rowId, fieldId, schemaChanges);
             task.Wait();
             return task.Result;
         }
 
-        public async Task<JObject> UpdateFieldAsync(string fieldId, object schemaChanges)
+        public async Task<JObject> UpdateFieldAsync(string tableId, string rowId, string fieldId, object schemaChanges)
         {
             var token = await GetValidTokenAsync();
             
@@ -142,10 +142,11 @@ namespace SSoTme.OST.Core.Lib.External
             {
                 httpClient.DefaultRequestHeaders.Add("Authorization", $"JWT {token}");
                 
+                Console.WriteLine($"Updating field: {fieldId} with schema changes: {schemaChanges}");
                 var json = JsonConvert.SerializeObject(schemaChanges);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
                 
-                var response = await httpClient.PatchAsync($"{_baseUrl}/database/fields/{fieldId}/", content);
+                var response = await httpClient.PatchAsync($"{_baseUrl}/database/rows/table/{tableId}/{rowId}", content);
                 
                 if (!response.IsSuccessStatusCode)
                 {

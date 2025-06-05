@@ -737,7 +737,7 @@ namespace SSoTme.OST.Lib.DataClasses
         private JToken RunCopilotAction(string commandData, string baseId)
         {  // todo you can make undo/redo actions using the baserow 'ClientSessionId' header
             
-            var validActions = new[] { "list_tables", "update_field", "get_table_fields", "create_column"};
+            var validActions = new[] { "list_tables", "update_field", "get_field", "get_table_fields", "create_column"};
             try
             {
                 // get baserow client from ~/.ssotme/ssotme.key file -> "baserow" api
@@ -763,12 +763,15 @@ namespace SSoTme.OST.Lib.DataClasses
                     };
                 }
                 
+                string rowId = requestedChanges.rowId;
                 string fieldId = requestedChanges.fieldId;
-                if (requestedChanges.action == "update_field" && requestedChanges.fieldId == null) {
+                if ((requestedChanges.action == "update_field" || requestedChanges.action == "get_field") && 
+                    (requestedChanges.rowId == null || requestedChanges.fieldId == null)) 
+                {
                     return new JObject
                     {
                         ["content"] = null,
-                        ["msg"] = "Error applying changes: this endpoint requires fieldID!"
+                        ["msg"] = "Error applying changes: this endpoint requires rowId and fieldId!"
                     };
                 }
 
@@ -804,7 +807,7 @@ namespace SSoTme.OST.Lib.DataClasses
                 else if (requestedChanges.action == "get_field")
                 {
                     this.LogMessage($"Fetching field data for id: {fieldId}");
-                    JToken fieldResp = baserowClient.GetField(fieldId);
+                    JToken fieldResp = baserowClient.GetField(tableId, rowId, fieldId);
                     return new JObject
                     {
                         ["content"] = fieldResp,
@@ -813,7 +816,8 @@ namespace SSoTme.OST.Lib.DataClasses
                 }
                 else if (requestedChanges.action == "update_field")
                 {
-                    return baserowClient.UpdateField(fieldId, requestedChanges.content);
+                    this.LogMessage($"Updating field data for id: {fieldId} to {requestedChanges.content}");
+                    return baserowClient.UpdateField(tableId, rowId, fieldId, requestedChanges.content);
                 }
                 else
                 {
