@@ -744,7 +744,7 @@ namespace SSoTme.OST.Lib.DataClasses
                 var baserowClient = new SSoTme.OST.Core.Lib.External.BaserowBackend();
                 var requestedChanges = JsonConvert.DeserializeObject<dynamic>(commandData);
                 
-                Console.WriteLine($"Running Copilot Action: {commandData} on base: {baseId}");
+                Console.WriteLine($"Running Copilot Action: {requestedChanges} on base: {baseId}");
                 
                 // match copilot's requested action to the right baserow endpoint
                 string tableId = requestedChanges.tableId;
