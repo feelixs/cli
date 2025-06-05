@@ -4,7 +4,7 @@ info:
   version: "1.0"
   description: Agent that uses the ssotme protocol to assist users in editing their projects' single source of truth
 servers:
-  - url: https://ssotme-cli-airtable-bridge-ahrnz660db6k4.aws-us-east-1.controlplane.us/copilot
+  - url: https://ssotme-cli-airtable-bridge-v2-ahrnz660db6k4.cpln.app/copilot
     description: Development server
 paths:
   /do-action/list_tables:
