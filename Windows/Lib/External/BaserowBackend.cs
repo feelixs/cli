@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SSoTme.OST.Lib.SassySDK.Derived;
+using System.Collections.Generic;
 
 namespace SSoTme.OST.Core.Lib.External
 {
@@ -98,14 +99,42 @@ namespace SSoTme.OST.Core.Lib.External
                 return JToken.Parse(strResp);
             }
         }
-        
-        public void UpdateTable(string tableId, object schemaChanges)
+
+        public JToken GetField(string fieldId)
         {
-            var task = UpdateTableAsync(tableId, schemaChanges);
+            var task = GetFieldAsync(fieldId);
             task.Wait();
+            return task.Result;
         }
 
-        public async Task UpdateTableAsync(string tableId, object schemaChanges)
+        public async Task<JToken> GetFieldAsync(string fieldId)
+        {
+            var token = await GetValidTokenAsync();
+            using (var httpClient = new HttpClient())
+            {
+                httpClient.DefaultRequestHeaders.Add("Authorization", $"JWT {token}");
+        
+                var response = await httpClient.GetAsync($"{_baseUrl}/database/fields/{fieldId}/");
+        
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    throw new Exception($"Failed to fetch Baserow field: {response.StatusCode} - {errorContent}");
+                }
+
+                string strResp = await response.Content.ReadAsStringAsync();
+                return JToken.Parse(strResp);
+            }
+        }
+        
+        public JObject UpdateField(string fieldId, object schemaChanges)
+        {
+            var task = UpdateFieldAsync(fieldId, schemaChanges);
+            task.Wait();
+            return task.Result;
+        }
+
+        public async Task<JObject> UpdateFieldAsync(string fieldId, object schemaChanges)
         {
             var token = await GetValidTokenAsync();
             
@@ -116,23 +145,26 @@ namespace SSoTme.OST.Core.Lib.External
                 var json = JsonConvert.SerializeObject(schemaChanges);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
                 
-                var response = await httpClient.PatchAsync($"{_baseUrl}/database/tables/{tableId}/", content);
+                var response = await httpClient.PatchAsync($"{_baseUrl}/database/fields/{fieldId}/", content);
                 
                 if (!response.IsSuccessStatusCode)
                 {
                     var errorContent = await response.Content.ReadAsStringAsync();
-                    throw new Exception($"Failed to update Baserow table: {response.StatusCode} - {errorContent}");
+                    throw new Exception($"Failed to update Baserow field: {response.StatusCode} - {errorContent}");
                 }
+                string strResp = await response.Content.ReadAsStringAsync();
+                return JObject.Parse(strResp);
             }
         }
 
-        public void CreateField(string tableId, string fieldName, string fieldType)
+        public JToken CreateField(string tableId, string fieldName, string fieldType)
         {
             var task = CreateFieldAsync(tableId, fieldName, fieldType);
             task.Wait();
+            return task.Result;
         }
 
-        public async Task CreateFieldAsync(string tableId, string fieldName, string fieldType)
+        public async Task<JToken> CreateFieldAsync(string tableId, string fieldName, string fieldType)
         {
             var token = await GetValidTokenAsync();
             
@@ -151,25 +183,33 @@ namespace SSoTme.OST.Core.Lib.External
                     var errorContent = await response.Content.ReadAsStringAsync();
                     throw new Exception($"Failed to create Baserow field: {response.StatusCode} - {errorContent}");
                 }
+                string strResp = await response.Content.ReadAsStringAsync();
+                return JToken.Parse(strResp);
             }
         }
 
         public JToken GetTableSchema(string tableId)
         {
-            var task = GetTableSchemaAsync(tableId);
-            task.Wait();
-            return task.Result;
+            var dataTask = GetTableSchemaAsync(tableId, false);
+            dataTask.Wait();
+            JToken tableData = dataTask.Result;
+            
+            var readableTask = GetTableSchemaAsync(tableId, true);
+            readableTask.Wait();
+            JToken readableData = readableTask.Result;
+            
+            // Transform the data to include field objects with columnName, value, and id
+            return TransformTableDataWithFields(tableData, readableData);
         }
 
-        public async Task<JToken> GetTableSchemaAsync(string tableId)
+        public async Task<JToken> GetTableSchemaAsync(string tableId, bool userReadable)
         {
             var token = await GetValidTokenAsync();
             
             using (var httpClient = new HttpClient())
             {
                 httpClient.DefaultRequestHeaders.Add("Authorization", $"JWT {token}");
-                
-                var response = await httpClient.GetAsync($"{_baseUrl}/database/rows/table/{tableId}/");
+                var response = await httpClient.GetAsync($"{_baseUrl}/database/rows/table/{tableId}/?user_field_names={userReadable}");
                 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -180,6 +220,88 @@ namespace SSoTme.OST.Core.Lib.External
                 string strRes = await response.Content.ReadAsStringAsync();
                 return JToken.Parse(strRes);
             }
+        }
+        
+        private JToken TransformTableDataWithFields(JToken rawData, JToken readableData)
+        {
+            var transformedRows = new JArray();
+            
+            if (rawData != null && rawData["results"] != null && 
+                readableData != null && readableData["results"] != null)
+            {
+                var rawRows = rawData["results"].ToObject<JArray>();
+                var readableRows = readableData["results"].ToObject<JArray>();
+                
+                // Create a dictionary of readable rows indexed by ID for quick lookup
+                var readableRowsById = new Dictionary<string, JToken>();
+                foreach (var readableRow in readableRows)
+                {
+                    var id = readableRow["id"]?.ToString();
+                    if (!string.IsNullOrEmpty(id))
+                    {
+                        readableRowsById[id] = readableRow;
+                    }
+                }
+                
+                foreach (var rawRow in rawRows)
+                {
+                    var transformedRow = new JObject();
+                    var rowId = rawRow["id"]?.ToString();
+                    
+                    // Copy basic properties
+                    if (rawRow["id"] != null) transformedRow["id"] = rawRow["id"];
+                    if (rawRow["order"] != null) transformedRow["order"] = rawRow["order"];
+                    
+                    // Get corresponding readable row
+                    if (!string.IsNullOrEmpty(rowId) && readableRowsById.ContainsKey(rowId))
+                    {
+                        var readableRow = readableRowsById[rowId];
+                        
+                        // Map field IDs to readable names and create field objects
+                        foreach (var property in rawRow.ToObject<JObject>().Properties())
+                        {
+                            if (property.Name.StartsWith("field_"))
+                            {
+                                // Extract field ID from property name (e.g., "field_4501110" -> "4501110")
+                                var fieldIdStr = property.Name.Substring(6);
+                                if (int.TryParse(fieldIdStr, out int fieldId))
+                                {
+                                    // Find the corresponding column name from readable data
+                                    var columnName = FindColumnNameForField(readableRow, property.Value?.ToString());
+                                    
+                                    transformedRow[property.Name] = new JObject
+                                    {
+                                        ["columnName"] = columnName ?? "Unknown",
+                                        ["value"] = property.Value,
+                                        ["id"] = fieldId
+                                    };
+                                }
+                            }
+                        }
+                    }
+                    
+                    transformedRows.Add(transformedRow);
+                }
+            }
+            
+            return new JObject
+            {
+                ["results"] = transformedRows
+            };
+        }
+        
+        private string FindColumnNameForField(JToken readableRow, string fieldValue)
+        {
+            // Find which column in the readable row has the same value as the field
+            foreach (var property in readableRow.ToObject<JObject>().Properties())
+            {
+                if (property.Name != "id" && property.Name != "order" && 
+                    string.Equals(property.Value?.ToString(), fieldValue, StringComparison.OrdinalIgnoreCase))
+                {
+                    return property.Name;
+                }
+            }
+            return null;
         }
     }
 }

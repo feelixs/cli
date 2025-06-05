@@ -18,6 +18,7 @@ const basesAvailable = new Map();
 
 const TTL_MS = 60 * 1000;
 
+const validActionEndpoints = ['list-tables', 'update-field', 'get-table-fields', 'create-column'];
 
 // todo connect the user's microsoft account to their ssotme account? To check all the available baseIds for this user
 // todo and to make sure they can access a specified baseId
@@ -29,6 +30,10 @@ function log(message, data = null) {
   }
 }
 
+function getActionCliFormat(action) {
+  // convert action str to format understandable by cli
+  return action.replace("-", "_");
+}
 
 function getSsotUser(req) {
   // todo it looks like copilot will automatically populate the api call headers with 'X-Microsoft-TenantID' which can be connected to the user's microsoft account
@@ -193,7 +198,8 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  if (req.method === "POST" && url.pathname === "/copilot/do-action")
+  if (req.method === "POST" && url.pathname.startsWith("/copilot/do-action/"))
+    // valid url mappings: /do-action/list-tables, /do-action/update-field, ... anything in validActionEndpoints
       // copilot will submit an action here
       // & this server will wait until the cli responds and return its response to the plugin (or timeout)
   {
@@ -203,6 +209,12 @@ const server = http.createServer(async (req, res) => {
       log(`ERROR: REQUEST-READ missing user parameter`);
       res.writeHead(400, { "Content-Type": "application/json" });
       return res.end(JSON.stringify({'msg': "Missing user parameter"}));
+    }
+
+    const desiredAction = url.pathname.split("/").pop();
+    if (!validActionEndpoints.has(desiredAction)) {
+      res.writeHead(404, { "Content-Type": "application/json" });
+      return res.end(JSON.stringify({'msg': `Action endpoint: '${desiredAction}' not found in ${validActionEndpoints.join(', ')}`}));
     }
 
     const userBases = basesAvailable.get(userId) || [];
@@ -219,7 +231,6 @@ const server = http.createServer(async (req, res) => {
       body += chunk.toString();
     });
     req.on('end', async () => {
-      let theAction;
       let tableid;
       let fieldid;
       let theContent;
@@ -231,12 +242,10 @@ const server = http.createServer(async (req, res) => {
           return res.end(JSON.stringify({'msg': "Request body is empty", baseId: baseId}));
         }
         const data = JSON.parse(body);
-        theAction = data.action;
         tableid = data.tableId;
         fieldid = data.fieldId;
         theContent = data.content;
         log(`[ACTION SUBMIT] Parsed data:`, data);
-        log(`[ACTION SUBMIT] Extracted content: {theAction: ${theAction}, tableId: ${tableid}}`);
       } catch (e) {
         log(`[ACTION SUBMIT] ERROR: invalid JSON for baseId: ${baseId}, raw body: ${body}`);
         res.writeHead(422);
@@ -247,7 +256,7 @@ const server = http.createServer(async (req, res) => {
       const reqDate = new Date(Date.now());
       actionSubmissions.set(baseId, reqDate);
 
-      requestedActions.set(baseId, theAction);
+      requestedActions.set(baseId, getActionCliFormat(desiredAction));
       requestedActionsTableIds.set(baseId, tableid);
       requestedActionsFieldIds.set(baseId, fieldid);
       actionContents.set(baseId, theContent);
