@@ -19,7 +19,7 @@ const basesAvailable = new Map();
 const TTL_MS = 60 * 1000;
 
 // should match the list defined in the cli
-const validActionEndpoints = ['list_tables', 'update_field', 'get_table_fields', 'create_column'];
+const validActionEndpoints = ['list_tables', 'update_field', 'get_field', 'get_table_fields', 'create_column'];
 
 // todo connect the user's microsoft account to their ssotme account? To check all the available baseIds for this user
 // todo and to make sure they can access a specified baseId
