@@ -138,7 +138,7 @@ namespace SSoTme.OST.Core.Lib.External
                     {
                         throw new Exception($"Field '{field_key}' not found in row data.");
                     }
-                    return new JObject{ ["value"] = json[field_key]}; // return only the requested field's value
+                    return new JObject{ ["content"] = json[field_key]}; // return only the requested field's value
 
                 }
                 catch (JsonReaderException ex)

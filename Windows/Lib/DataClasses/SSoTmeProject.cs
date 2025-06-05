@@ -821,7 +821,7 @@ namespace SSoTme.OST.Lib.DataClasses
                 }
                 else if (requestedChanges.action == "update_cell")
                 {
-                    string newValue = requestedChanges.content.value;
+                    string newValue = requestedChanges.content;
                     Console.WriteLine($"Updating cell data for field x row: {fieldId}x{rowId} to {newValue}");
                     JToken resp = baserowClient.UpdateField(tableId, rowId, fieldId, newValue);
                     return (new JObject
