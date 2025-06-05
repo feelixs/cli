@@ -1,0 +1,51 @@
+{
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "type": "AdaptiveCard",
+  "version": "1.0",
+  "body": [
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "text": "📊 Table Data",
+          "weight": "bolder",
+          "size": "medium"
+        },
+        {
+          "type": "TextBlock",
+          "text": "Base ID: ${target.baseId}",
+          "wrap": true,
+          "weight": "lighter"
+        },
+        {
+          "type": "TextBlock",
+          "text": "Table ID: ${target.tableId}",
+          "wrap": true,
+          "weight": "lighter"
+        },
+        {
+          "type": "TextBlock",
+          "text": "Retrieved table fields and data successfully",
+          "wrap": true
+        }
+      ]
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "text": "**Results:**",
+          "weight": "bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "${data.results}",
+          "wrap": true,
+          "fontType": "monospace"
+        }
+      ]
+    }
+  ]
+}

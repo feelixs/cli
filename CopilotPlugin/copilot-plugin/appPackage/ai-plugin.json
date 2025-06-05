@@ -28,7 +28,10 @@
             "description": "View the spreadsheet tables that exist in the specified base.",
             "capabilities": {
                 "response_semantics": {
-                    "data_path": "$"
+                    "data_path": "$",
+                    "static_template": {
+                        "file": "./adaptiveCards/listTables.json"
+                    }
                 }
             }
         },
@@ -37,7 +40,10 @@
             "description": "View the content of the specified spreadsheet table.",
             "capabilities": {
                 "response_semantics": {
-                    "data_path": "$"
+                    "data_path": "$",
+                    "static_template": {
+                        "file": "./adaptiveCards/getTableFields.json"
+                    }
                 }
             }
         },
@@ -48,7 +54,7 @@
                 "response_semantics": {
                     "data_path": "$",
                     "static_template": {
-                        "file": "./adaptiveCards/readSsotBase.json"
+                        "file": "./adaptiveCards/getCell.json"
                     }
                 }
             }
@@ -60,7 +66,7 @@
                 "response_semantics": {
                     "data_path": "$",
                     "static_template": {
-                        "file": "./adaptiveCards/writeSsotBase.json"
+                        "file": "./adaptiveCards/updateCell.json"
                     }
                 }
             }
@@ -70,7 +76,10 @@
             "description": "Create a new column field in the specified spreadsheet table",
             "capabilities": {
                 "response_semantics": {
-                    "data_path": "$"
+                    "data_path": "$",
+                    "static_template": {
+                        "file": "./adaptiveCards/createField.json"
+                    }
                 }
             }
         },

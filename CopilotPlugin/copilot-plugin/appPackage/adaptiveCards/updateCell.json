@@ -1,0 +1,65 @@
+{
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "type": "AdaptiveCard",
+  "version": "1.0",
+  "body": [
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "text": "✏️ Cell Updated",
+          "weight": "bolder",
+          "size": "medium"
+        },
+        {
+          "type": "TextBlock",
+          "text": "Cell content has been successfully updated",
+          "wrap": true
+        }
+      ]
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "FactSet",
+          "facts": [
+            {
+              "title": "Base ID:",
+              "value": "${target.baseId}"
+            },
+            {
+              "title": "Table ID:",
+              "value": "${target.tableId}"
+            },
+            {
+              "title": "Row ID:",
+              "value": "${target.rowId}"
+            },
+            {
+              "title": "Field ID:",
+              "value": "${target.fieldId}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "text": "**Updated Row Data:**",
+          "weight": "bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "${data}",
+          "wrap": true,
+          "fontType": "monospace"
+        }
+      ]
+    }
+  ]
+}
