@@ -52,7 +52,7 @@ const server = http.createServer(async (req, res) => {
 
   const userId = getSsotUser(req);
   if (!userId) {
-    log(`ERROR: AVAILABLE-BASES missing user parameter`);
+    log(`ERROR: missing user parameter`);
     res.writeHead(400, { "Content-Type": "application/json" });
     return res.end(JSON.stringify({'msg': "Missing 'X-Microsoft-TenantID' parameter in headers"}));
   }
@@ -196,14 +196,6 @@ const server = http.createServer(async (req, res) => {
       // copilot will submit an action here
       // & this server will wait until the cli responds and return its response to the plugin (or timeout)
   {
-    // Check if baseId exists in available bases for this user
-    const userId = getSsotUser(req);
-    if (!userId) {
-      log(`ERROR: REQUEST-READ missing user parameter`);
-      res.writeHead(400, { "Content-Type": "application/json" });
-      return res.end(JSON.stringify({'msg': "Missing user parameter"}));
-    }
-
     const desiredAction = url.pathname.split("/").pop();
     if (!validActionEndpoints.includes(desiredAction)) {
       res.writeHead(404, { "Content-Type": "application/json" });
