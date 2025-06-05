@@ -237,16 +237,15 @@ const server = http.createServer(async (req, res) => {
       try {
         log(`[ACTION SUBMIT] Raw body received: ${body}`);
         if (!body || body.trim() === '') {
-          log(`[ACTION SUBMIT] ERROR: empty body for baseId: ${baseId}`);
-          res.writeHead(400);
-          return res.end(JSON.stringify({'msg': "Request body is empty", baseId: baseId}));
+          log(`[ACTION SUBMIT] WARN: empty body for baseId: ${baseId}`);
+        } else {
+          const data = JSON.parse(body);
+          tableid = data.tableId || null;
+          rowid = data.rowId || null;
+          fieldid = data.fieldId || null;
+          theContent = data.content || null;
+          log(`[ACTION SUBMIT] Parsed data:`, data);
         }
-        const data = JSON.parse(body);
-        tableid = data.tableId;
-        rowid = data.rowId;
-        fieldid = data.fieldId;
-        theContent = data.content;
-        log(`[ACTION SUBMIT] Parsed data:`, data);
       } catch (e) {
         log(`[ACTION SUBMIT] ERROR: invalid JSON for baseId: ${baseId}, raw body: ${body}`);
         res.writeHead(422);
@@ -258,10 +257,18 @@ const server = http.createServer(async (req, res) => {
       actionSubmissions.set(baseId, reqDate);
 
       requestedActions.set(baseId, desiredAction);
-      requestedActionsTableIds.set(baseId, tableid);
-      requestedActionsRowIds.set(baseId, rowid);
-      requestedActionsFieldIds.set(baseId, fieldid);
-      actionContents.set(baseId, theContent);
+      if (tableid) {
+        requestedActionsTableIds.set(baseId, tableid);
+      }
+      if (rowid) {
+        requestedActionsRowIds.set(baseId, rowid);
+      }
+      if (fieldid) {
+        requestedActionsFieldIds.set(baseId, fieldid);
+      }
+      if (theContent) {
+        actionContents.set(baseId, theContent);
+      }
 
       actionsFinished.delete(baseId);  // clear the last action's result state
 

@@ -122,9 +122,7 @@ namespace SSoTme.OST.Core.Lib.External
             using (var httpClient = new HttpClient())
             {
                 httpClient.DefaultRequestHeaders.Add("Authorization", $"JWT {token}");
-        
-                var response = await httpClient.GetAsync($"{_baseUrl}/database/fields/{fieldId}/");
-        
+                var response = await httpClient.GetAsync($"{_baseUrl}/database/rows/table/{tableId}/{rowId}/");
                 if (!response.IsSuccessStatusCode)
                 {
                     var errorContent = await response.Content.ReadAsStringAsync();
@@ -134,7 +132,14 @@ namespace SSoTme.OST.Core.Lib.External
                 string strResp = await response.Content.ReadAsStringAsync();
                 try 
                 {
-                    return JToken.Parse(strResp);
+                    var json = JToken.Parse(strResp);
+                    string field_key = $"field_{fieldId}";
+                    if (!json.HasValues || json[field_key] == null)
+                    {
+                        throw new Exception($"Field '{field_key}' not found in row data.");
+                    }
+                    return new JObject{ ["value"] = json[field_key]}; // return only the requested field's value
+
                 }
                 catch (JsonReaderException ex)
                 {
@@ -145,14 +150,14 @@ namespace SSoTme.OST.Core.Lib.External
             }
         }
         
-        public JObject UpdateField(string tableId, string rowId, string fieldId, object schemaChanges)
+        public JObject UpdateField(string tableId, string rowId, string fieldId, string newValue)
         {
-            var task = UpdateFieldAsync(tableId, rowId, fieldId, schemaChanges);
+            var task = UpdateFieldAsync(tableId, rowId, fieldId, newValue);
             task.Wait();
             return task.Result;
         }
 
-        public async Task<JObject> UpdateFieldAsync(string tableId, string rowId, string fieldId, object schemaChanges)
+        public async Task<JObject> UpdateFieldAsync(string tableId, string rowId, string fieldId, string newValue)
         {
             var token = await GetValidTokenAsync();
             
@@ -160,11 +165,18 @@ namespace SSoTme.OST.Core.Lib.External
             {
                 httpClient.DefaultRequestHeaders.Add("Authorization", $"JWT {token}");
                 
-                Console.WriteLine($"Updating field: {fieldId} with schema changes: {schemaChanges}");
-                var json = JsonConvert.SerializeObject(schemaChanges);
+                Console.WriteLine($"Updating field: {fieldId} to: \"{newValue}\"");
+
+                JObject valueJson = new JObject
+                {
+                    [$"field_{fieldId}"] = newValue
+                };
+                
+                var json = JsonConvert.SerializeObject(valueJson);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
                 
-                var response = await httpClient.PatchAsync($"{_baseUrl}/database/rows/table/{tableId}/{rowId}", content);
+                Console.WriteLine($"PATCH: {json}");
+                var response = await httpClient.PatchAsync($"{_baseUrl}/database/rows/table/{tableId}/{rowId}/", content);
                 
                 if (!response.IsSuccessStatusCode)
                 {
