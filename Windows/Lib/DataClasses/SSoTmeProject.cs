@@ -846,6 +846,36 @@ namespace SSoTme.OST.Lib.DataClasses
                 }, false);
             }
         }
+
+        private bool BaseIsIn(string baseId, JToken userBases)
+        {
+            if (string.IsNullOrEmpty(baseId) || userBases == null)
+            {
+                return false;
+            }
+
+            // userBases is expected to be a JArray or a JToken containing a "results" array
+            JArray basesArray = userBases.Type == JTokenType.Array
+                ? (JArray)userBases
+                : userBases["results"] as JArray;
+
+            if (basesArray == null)
+            {
+                Console.WriteLine("Could not find a list of bases in provided JToken.");
+                return false;
+            }
+
+            foreach (var baseToken in basesArray)
+            {
+                var id = baseToken["id"]?.ToString();
+                if (!string.IsNullOrEmpty(id) && id == baseId)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
         
         private void ListenForChangesAndRebuild(
     string buildPath,
@@ -869,7 +899,11 @@ namespace SSoTme.OST.Lib.DataClasses
                 Console.WriteLine($"Polling {copilotReadUri} for read requests...");
                 // get baserow client from ~/.ssotme/ssotme.key file -> "baserow" api
                 baserowClient.InitFromHomeFile();
-                PostAvailableBases($"{baseCopilotUri}/available-bases", baserowClient);
+                JToken UserBaserowBases = PostAvailableBases($"{baseCopilotUri}/available-bases", baserowClient);
+                if (!BaseIsIn(baseId, UserBaserowBases))
+                {
+                    throw new Exception($"You don't have access to any baserow database with ID: {baseId}");
+                }
             }
             while (true) {
                 if (isCopilot) {
@@ -961,7 +995,7 @@ namespace SSoTme.OST.Lib.DataClasses
             }
         }
 
-        private bool PostAvailableBases(string uri, BaserowBackend baserowClient)
+        private JToken PostAvailableBases(string uri, BaserowBackend baserowClient)
         {
             string microsoftTenantUserId = "test"; 
             JToken availableBases = baserowClient.GetAvailableBases();
@@ -987,20 +1021,19 @@ namespace SSoTme.OST.Lib.DataClasses
                     {
                         var errorContent = response.Content.ReadAsStringAsync().Result;
                         Console.WriteLine($"Failed to post bases. Status: {response.StatusCode}, Error: {errorContent}");
-                        return false;
+                        return null;
                     }
                     else
                     {
                         var result = response.Content.ReadAsStringAsync().Result;
-                        Console.WriteLine($"Available user bases posted successfully: {result}");
-                        return true;
+                        return availableBases;
                     }
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error posting available user bases to Bridge API: {ex.Message}");
-                return false;
+                return null;
             }
         }
         
