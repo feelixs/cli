@@ -212,7 +212,7 @@ const server = http.createServer(async (req, res) => {
     }
 
     const desiredAction = url.pathname.split("/").pop();
-    if (!validActionEndpoints.has(desiredAction)) {
+    if (!validActionEndpoints.includes(desiredAction)) {
       res.writeHead(404, { "Content-Type": "application/json" });
       return res.end(JSON.stringify({'msg': `Action endpoint: '${desiredAction}' not found in ${validActionEndpoints.join(', ')}`}));
     }
