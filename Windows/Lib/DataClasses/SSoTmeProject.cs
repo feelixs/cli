@@ -856,10 +856,10 @@ namespace SSoTme.OST.Lib.DataClasses
         {
             DateTime? lastChangedTime = null;
             bool changeEverDetected = false;
-            string uri = $"https://ssotme-cli-airtable-bridge-ahrnz660db6k4.aws-us-east-1.controlplane.us/check?baseId={baseId}";
+            string baseUri = $"https://ssotme-cli-airtable-bridge-ahrnz660db6k4.aws-us-east-1.controlplane.us";
             string baseCopilotUri = "https://ssotme-cli-airtable-bridge-v2-ahrnz660db6k4.cpln.app/copilot";
             string copilotReadUri = $"{baseCopilotUri}/check-req-actions?baseId={baseId}";
-            Console.WriteLine($"Polling {uri} for changes to base: `{baseId}`...");
+            Console.WriteLine($"Polling {baseUri}/check?baseId={baseId} for changes to base: `{baseId}`...");
             if (isCopilot) Console.WriteLine($"Polling {copilotReadUri} for read requests...");
             while (true) {
                 if (isCopilot) {
@@ -870,11 +870,12 @@ namespace SSoTme.OST.Lib.DataClasses
                         {
                             JToken response = RunCopilotAction(copilotProvidedData, baseId);
                             PostDataToBridge(response, $"{baseCopilotUri}/put-action-result?baseId={baseId}");
+                            //PostChange(baseUri, baseId);  // signal a rebuild is necessary
                         }
                     }
                 }
 
-                if (CheckChanged(uri))
+                if (CheckChanged(baseUri, baseId))
                 {
                     lastChangedTime = DateTime.UtcNow;
                     changeEverDetected = true;
@@ -905,13 +906,13 @@ namespace SSoTme.OST.Lib.DataClasses
             }
         }
 
-        private bool CheckChanged(string uri)
+        private bool CheckChanged(string uri, string baseId)
         {
             try
             {
                 using (var httpClient = new HttpClient())
                 {
-                    var response = httpClient.GetStringAsync(uri).Result;
+                    var response = httpClient.GetStringAsync($"{uri}/check?baseId={baseId}").Result;
                     var json = JsonDocument.Parse(response);
                     var changed = json.RootElement.GetProperty("changed").GetRawText();
                     return changed == "true";
@@ -924,6 +925,31 @@ namespace SSoTme.OST.Lib.DataClasses
             }
         }
 
+        private void PostChange(string uri, string baseId)
+        {
+            try
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    var response = httpClient.GetAsync($"{uri}/mark?baseId={baseId}").Result;
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        var errorContent = response.Content.ReadAsStringAsync().Result;
+                        Console.WriteLine($"Failed to post change. Status: {response.StatusCode}, Error: {errorContent}");
+                    }
+                    else
+                    {
+                        var result = response.Content.ReadAsStringAsync().Result;
+                        Console.WriteLine($"Change posted successfully: {result}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error posting change to listener API: {ex.Message}");
+            }
+        }
 
         internal void DoRebuild(string buildPath, bool includeDisabled, string transpilerGroup, bool isBuildLocal, bool isBuildAll = false)
         {
