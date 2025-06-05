@@ -259,7 +259,7 @@ const server = http.createServer(async (req, res) => {
 
       requestedActions.set(baseId, desiredAction);
       requestedActionsTableIds.set(baseId, tableid);
-      requestedActionsRowIds.set(baseId, tableid);
+      requestedActionsRowIds.set(baseId, rowid);
       requestedActionsFieldIds.set(baseId, fieldid);
       actionContents.set(baseId, theContent);
 

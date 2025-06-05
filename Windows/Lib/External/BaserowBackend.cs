@@ -96,7 +96,16 @@ namespace SSoTme.OST.Core.Lib.External
                 }
 
                 string strResp = await response.Content.ReadAsStringAsync();
-                return JToken.Parse(strResp);
+                try 
+                {
+                    return JToken.Parse(strResp);
+                }
+                catch (JsonReaderException ex)
+                {
+                    Console.WriteLine($"JSON parsing error in FetchTablesAsync: {ex.Message}");
+                    Console.WriteLine($"Response content (first 200 chars): {strResp.Substring(0, Math.Min(200, strResp.Length))}");
+                    throw new Exception($"Failed to parse JSON response from Baserow: {ex.Message}");
+                }
             }
         }
 
@@ -123,7 +132,16 @@ namespace SSoTme.OST.Core.Lib.External
                 }
 
                 string strResp = await response.Content.ReadAsStringAsync();
-                return JToken.Parse(strResp);
+                try 
+                {
+                    return JToken.Parse(strResp);
+                }
+                catch (JsonReaderException ex)
+                {
+                    Console.WriteLine($"JSON parsing error in GetFieldAsync: {ex.Message}");
+                    Console.WriteLine($"Response content (first 200 chars): {strResp.Substring(0, Math.Min(200, strResp.Length))}");
+                    throw new Exception($"Failed to parse JSON response from Baserow: {ex.Message}");
+                }
             }
         }
         
@@ -154,7 +172,16 @@ namespace SSoTme.OST.Core.Lib.External
                     throw new Exception($"Failed to update Baserow field: {response.StatusCode} - {errorContent}");
                 }
                 string strResp = await response.Content.ReadAsStringAsync();
-                return JObject.Parse(strResp);
+                try 
+                {
+                    return JObject.Parse(strResp);
+                }
+                catch (JsonReaderException ex)
+                {
+                    Console.WriteLine($"JSON parsing error in UpdateFieldAsync: {ex.Message}");
+                    Console.WriteLine($"Response content (first 200 chars): {strResp.Substring(0, Math.Min(200, strResp.Length))}");
+                    throw new Exception($"Failed to parse JSON response from Baserow: {ex.Message}");
+                }
             }
         }
 
@@ -185,7 +212,16 @@ namespace SSoTme.OST.Core.Lib.External
                     throw new Exception($"Failed to create Baserow field: {response.StatusCode} - {errorContent}");
                 }
                 string strResp = await response.Content.ReadAsStringAsync();
-                return JToken.Parse(strResp);
+                try 
+                {
+                    return JToken.Parse(strResp);
+                }
+                catch (JsonReaderException ex)
+                {
+                    Console.WriteLine($"JSON parsing error in CreateFieldAsync: {ex.Message}");
+                    Console.WriteLine($"Response content (first 200 chars): {strResp.Substring(0, Math.Min(200, strResp.Length))}");
+                    throw new Exception($"Failed to parse JSON response from Baserow: {ex.Message}");
+                }
             }
         }
 
@@ -219,7 +255,16 @@ namespace SSoTme.OST.Core.Lib.External
                 }
                 
                 string strRes = await response.Content.ReadAsStringAsync();
-                return JToken.Parse(strRes);
+                try 
+                {
+                    return JToken.Parse(strRes);
+                }
+                catch (JsonReaderException ex)
+                {
+                    Console.WriteLine($"JSON parsing error in GetTableSchemaAsync: {ex.Message}");
+                    Console.WriteLine($"Response content (first 200 chars): {strRes.Substring(0, Math.Min(200, strRes.Length))}");
+                    throw new Exception($"Failed to parse JSON response from Baserow: {ex.Message}");
+                }
             }
         }
         
@@ -275,6 +320,18 @@ namespace SSoTme.OST.Core.Lib.External
                                         ["columnName"] = columnName ?? "Unknown",
                                         ["value"] = property.Value,
                                         ["id"] = fieldId
+                                    };
+                                }
+                                else
+                                {
+                                    // Log the problematic field name for debugging
+                                    Console.WriteLine($"Warning: Could not parse field ID from property name: '{property.Name}', field ID string: '{fieldIdStr}'");
+                                    // Still include the field but without the ID
+                                    transformedRow[property.Name] = new JObject
+                                    {
+                                        ["columnName"] = "Unknown",
+                                        ["value"] = property.Value,
+                                        ["id"] = -1 // Invalid ID indicator
                                     };
                                 }
                             }
