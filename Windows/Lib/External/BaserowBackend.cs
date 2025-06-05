@@ -283,13 +283,13 @@ namespace SSoTme.OST.Core.Lib.External
         private JToken TransformTableDataWithFields(JToken rawData, JToken readableData)
         {
             var transformedRows = new JArray();
-            
-            if (rawData != null && rawData["results"] != null && 
+
+            if (rawData != null && rawData["results"] != null &&
                 readableData != null && readableData["results"] != null)
             {
                 var rawRows = rawData["results"].ToObject<JArray>();
                 var readableRows = readableData["results"].ToObject<JArray>();
-                
+
                 // Create a dictionary of readable rows indexed by ID for quick lookup
                 var readableRowsById = new Dictionary<string, JToken>();
                 foreach (var readableRow in readableRows)
@@ -300,65 +300,72 @@ namespace SSoTme.OST.Core.Lib.External
                         readableRowsById[id] = readableRow;
                     }
                 }
-                
+
                 foreach (var rawRow in rawRows)
                 {
                     var transformedRow = new JObject();
                     var rowId = rawRow["id"]?.ToString();
-                    
-                    // Copy basic properties
-                    if (rawRow["id"] != null) transformedRow["id"] = rawRow["id"];
-                    if (rawRow["order"] != null) transformedRow["order"] = rawRow["order"];
-                    
+
+                    if (!string.IsNullOrEmpty(rowId))
+                    {
+                        transformedRow["rowId"] = rowId;
+                    }
+
                     // Get corresponding readable row
                     if (!string.IsNullOrEmpty(rowId) && readableRowsById.ContainsKey(rowId))
                     {
                         var readableRow = readableRowsById[rowId];
-                        
-                        // Map field IDs to readable names and create field objects
-                        foreach (var property in rawRow.ToObject<JObject>().Properties())
+                        var rawProperties = rawRow.ToObject<JObject>().Properties();
+
+                        int cellIndex = 0;
+                        foreach (var property in rawProperties)
                         {
                             if (property.Name.StartsWith("field_"))
                             {
-                                // Extract field ID from property name (e.g., "field_4501110" -> "4501110")
-                                var fieldIdStr = property.Name.Substring(6);
+                                string fieldIdStr = property.Name.Substring(6);
                                 if (int.TryParse(fieldIdStr, out int fieldId))
                                 {
-                                    // Find the corresponding column name from readable data
-                                    var columnName = FindColumnNameForField(readableRow, property.Value?.ToString());
-                                    
-                                    transformedRow[property.Name] = new JObject
+                                    var fieldValue = property.Value;
+                                    var fieldName = FindColumnNameForField(readableRow, fieldValue?.ToString());
+
+                                    var cell = new JObject
                                     {
-                                        ["columnName"] = columnName ?? "Unknown",
-                                        ["value"] = property.Value,
-                                        ["id"] = fieldId
+                                        ["fieldName"] = fieldName ?? "Unknown",
+                                        ["fieldId"] = fieldId,
+                                        ["value"] = fieldValue
                                     };
+
+                                    transformedRow[$"cell{cellIndex}"] = cell;
+                                    cellIndex++;
                                 }
                                 else
                                 {
-                                    // Log the problematic field name for debugging
                                     Console.WriteLine($"Warning: Could not parse field ID from property name: '{property.Name}', field ID string: '{fieldIdStr}'");
-                                    // Still include the field but without the ID
-                                    transformedRow[property.Name] = new JObject
+
+                                    var cell = new JObject
                                     {
-                                        ["columnName"] = "Unknown",
-                                        ["value"] = property.Value,
-                                        ["id"] = -1 // Invalid ID indicator
+                                        ["fieldName"] = "Unknown",
+                                        ["fieldId"] = -1,
+                                        ["value"] = property.Value
                                     };
+
+                                    transformedRow[$"cell{cellIndex}"] = cell;
+                                    cellIndex++;
                                 }
                             }
                         }
                     }
-                    
+
                     transformedRows.Add(transformedRow);
                 }
             }
-            
+
             return new JObject
             {
                 ["results"] = transformedRows
             };
         }
+
         
         private string FindColumnNameForField(JToken readableRow, string fieldValue)
         {
