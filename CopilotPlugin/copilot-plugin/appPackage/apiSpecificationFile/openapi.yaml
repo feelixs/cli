@@ -1,4 +1,4 @@
-openapi: "3.0.4"
+openapi: "3.1.0"
 info:
   title: SSoTme Agent
   version: "1.0"
@@ -108,25 +108,32 @@ paths:
                     properties:
                       results:
                         type: array
-                        description: The full contents of the table spreadsheet, organized by row ID
-                        example:
-                          [{
-                            "rowId": "1",
-                            "cell0": {
-                              "fieldName": "Name",
-                              "fieldId": 4501110,
-                              "value": "help"
-                            },
-                            "cell1": {
-                              "fieldName": "Description",
-                              "fieldId": 4501111,
-                              "value": "Show help about how to use the SSoT.me CLI"
-                            },
-                            {
-                              "rowId": 2,
-                               ...
-                            }
-                          }]
+                        description: The full contents of the table spreadsheet, organized by row
+                        items:
+                          type: object
+                          properties:
+                            rowId:
+                              type: string
+                          additionalProperties:
+                            type: object
+                            properties:
+                              fieldName:
+                                type: string
+                              fieldId:
+                                type: integer
+                              value:
+                                type: string
+                          example:
+                            rowId: "1"
+                            cell0:
+                              fieldName: "Name"
+                              fieldId: 4501110
+                              value: "help"
+                            cell1:
+                              fieldName: "Description"
+                              fieldId: 4501111
+                              value: "Show help about how to use the SSoT.me CLI"
+                  
                   target:
                     type: object
                     description: The base & table where the action was submitted
