@@ -737,7 +737,7 @@ namespace SSoTme.OST.Lib.DataClasses
         private (JToken, bool) RunCopilotAction(string commandData, string baseId)
         {  // todo you can make undo/redo actions using the baserow 'ClientSessionId' header
             
-            var validActions = new[] { "list_tables", "update_field", "get_field", "get_table_fields", "create_column"};
+            var validActions = new[] { "list_tables", "update_cell", "get_cell", "get_table_fields", "create_field" };
             try
             {
                 // get baserow client from ~/.ssotme/ssotme.key file -> "baserow" api
@@ -765,7 +765,7 @@ namespace SSoTme.OST.Lib.DataClasses
                 
                 string rowId = requestedChanges.rowId;
                 string fieldId = requestedChanges.fieldId;
-                if ((requestedChanges.action == "update_field" || requestedChanges.action == "get_field") && 
+                if ((requestedChanges.action == "update_cell" || requestedChanges.action == "get_cell") &&
                     (requestedChanges.rowId == null || requestedChanges.fieldId == null)) 
                 {
                     return (new JObject
@@ -797,7 +797,7 @@ namespace SSoTme.OST.Lib.DataClasses
                         ["msg"] = $"Successfully retrieved table fields for: {tableId}"
                     }, false);
                 }
-                else if (requestedChanges.action == "create_column")
+                else if (requestedChanges.action == "create_field")
                 {
                     string name = requestedChanges.content.fieldName;
                     string type = requestedChanges.content.fieldType;
@@ -806,28 +806,28 @@ namespace SSoTme.OST.Lib.DataClasses
                     return (new JObject
                     {
                         ["content"] = resp,
-                        ["msg"] = $"Successfully created table: {tableId}"
+                        ["msg"] = $"Successfully created field on tableId: {tableId}"
                     }, true);
                 }
-                else if (requestedChanges.action == "get_field")
+                else if (requestedChanges.action == "get_cell")
                 {
-                    Console.WriteLine($"Fetching field data for id: {fieldId}");
+                    Console.WriteLine($"Fetching cell data for field x row: {fieldId}x{rowId}");
                     JToken fieldResp = baserowClient.GetField(tableId, rowId, fieldId);
                     return (new JObject
                     {
                         ["content"] = fieldResp,
-                        ["msg"] = $"Successfully retrieved field: {fieldId}"
+                        ["msg"] = $"Successfully retrieved cell: {fieldId}x{rowId}"
                     }, false);
                 }
-                else if (requestedChanges.action == "update_field")
+                else if (requestedChanges.action == "update_cell")
                 {
                     string newValue = requestedChanges.content.value;
-                    Console.WriteLine($"Updating field data for id: {fieldId} to {newValue}");
+                    Console.WriteLine($"Updating cell data for field x row: {fieldId}x{rowId} to {newValue}");
                     JToken resp = baserowClient.UpdateField(tableId, rowId, fieldId, newValue);
                     return (new JObject
                     {
                         ["content"] = resp,
-                        ["msg"] = $"Successfully updated field: {fieldId}"
+                        ["msg"] = $"Successfully updated cell contents: {fieldId}x{rowId}"
                     }, true);
                 }
                 
