@@ -194,12 +194,12 @@ namespace SSoTme.OST.Core.Lib.External
             dataTask.Wait();
             JToken tableData = dataTask.Result;
             
-            var schemaTask = GetTableSchemaAsync(tableId, true);
-            schemaTask.Wait();
-            JToken tableSchema = schemaTask.Result;
+            var readableTask = GetTableSchemaAsync(tableId, true);
+            readableTask.Wait();
+            JToken readableData = readableTask.Result;
             
             // Transform the data to include field objects with columnName, value, and id
-            return TransformTableDataWithFields(tableData, tableSchema);
+            return TransformTableDataWithFields(tableData, readableData);
         }
 
         public async Task<JToken> GetTableSchemaAsync(string tableId, bool userReadable)
