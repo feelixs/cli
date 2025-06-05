@@ -816,8 +816,14 @@ namespace SSoTme.OST.Lib.DataClasses
                 }
                 else if (requestedChanges.action == "update_field")
                 {
-                    this.LogMessage($"Updating field data for id: {fieldId} to {requestedChanges.content}");
-                    return baserowClient.UpdateField(tableId, rowId, fieldId, requestedChanges.content);
+                    string newValue = requestedChanges.content.value;
+                    Console.WriteLine($"Updating field data for id: {fieldId} to {newValue}");
+                    JToken resp = baserowClient.UpdateField(tableId, rowId, fieldId, newValue);
+                    return new JObject
+                    {
+                        ["content"] = resp,
+                        ["msg"] = $"Successfully updated field: {fieldId}"
+                    };
                 }
                 else
                 {
