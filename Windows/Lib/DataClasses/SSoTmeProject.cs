@@ -737,7 +737,7 @@ namespace SSoTme.OST.Lib.DataClasses
         private JToken RunCopilotAction(string commandData, string baseId)
         {  // todo you can make undo/redo actions using the baserow 'ClientSessionId' header
             
-            var validActions = new[] { "list_tables", "update_field", "get_table_fields", "create_column", "update_field"};
+            var validActions = new[] { "list_tables", "update_field", "get_table_fields", "create_column"};
             try
             {
                 // get baserow client from ~/.ssotme/ssotme.key file -> "baserow" api
