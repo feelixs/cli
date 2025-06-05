@@ -7,69 +7,40 @@ servers:
   - url: https://ssotme-cli-airtable-bridge-ahrnz660db6k4.aws-us-east-1.controlplane.us/copilot
     description: Development server
 paths:
-  /do-action:
+  /do-action/list_tables:
     post:
-      summary: Submit an action for processing on the server
-      description: Submit an action to be executed through the bridge server and see its result in real time
-      operationId: submitAction
+      summary: View a list of tables in the given base
+      description: View the list of spreadsheet tables that exist in the provided database ID
+      operationId: listTables
       parameters:
         - name: baseId
           in: query
           required: true
-          description: The corresponding base/project ID
+          description: The corresponding base/database ID
           schema:
             type: string
             example: "abcdef123"
-      requestBody:
-        required: true
-        description: The desired action to submit to the bridge server
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - action
-                - tableId
-                - fieldId
-                - content
-              properties:
-                action:
-                  type: string
-                  description: The name of the action as defined in the readActions endpoint
-                  example: "list_tables"
-                tableId:
-                  type: string
-                  description: The ID of the table within the specified base, where the action will be run.
-                  example: "table10"
-                fieldId:
-                  type: string
-                  description: The ID of the field to edit or retrieve data from, if applicable.
-                  example: "field101"
-                content:
-                  type: object
-                  description: Json string of the updated content, based on the content read from the corresponding table. This will be different for each action as described in the instructions
-                  example: {"fieldName": "new table name", "fieldOrder": 2, "fieldType": "text"}
       responses:
         '200':
-          description: The action was sucessfully submitted for processing
+          description: The table data was successfully returned
           content:
             application/json:
               schema:
                 type: object
                 required:
-                  - msg
+                  - data
                   - target
                 properties:
-                  msg:
-                    type: string
-                    description: The server's text response
-                    example: "The operation was successful"
+                  data:
+                    type: array
+                    description: The list of returned tables
+                    example: [{"id": "table_id", "name": "table_name", "database_id": "baseId"}]
                   target:
                     type: object
-                    description: The base & table where the action was submitted
-                    example: {"tableId": "thetable", "baseId": "abcd123"}
+                    description: The base where the action was submitted
+                    example: {"baseId": "abcd123"}
         '400':
-          description: Missing baseId parameter
+          description: Bad request - the bridge server didn't understand your request
           content:
             application/json:
               schema:
@@ -93,52 +64,75 @@ paths:
                   baseId:
                     type: string
                     example: "abcd123"
-        '422':
-          description: Invalid JSON or missing content field
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  msg:
-                    type: string
-                    description: Error message
-                    example: "Invalid JSON in request body"
-                  baseId:
-                    type: string
-                    example: "abcd123"
-
-  /read-actions:
-    get:
-      summary: Read all available actions which can be submitted via the write action.
-      description: Returns all actions that the agent can perform through the mark-base endpoint.
-      operationId: readActions
+  /do-action/get_table_fields:
+    post:
+      summary: View all fields in the given table.
+      description: View the raw json of the contents of the given spreadsheet/table.
+      operationId: viewTable
       parameters:
         - name: baseId
           in: query
           required: true
-          description: The alphanumeric base/project ID to read from
+          description: The corresponding base/database ID
           schema:
             type: string
-            example: "default"
+            example: "abcdef123"
+      requestBody:
+        required: true
+        description: Include the table ID and other parameters here
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - tableId
+              properties:
+                tableId:
+                  type: string
+                  description: The ID of the table within the specified base
+                  example: "table10"
       responses:
         '200':
-          description: Successfully retrieved the available actions. Expected response contains "actions" and "baseId".
+          description: The table data was successfully retrieved
           content:
             application/json:
               schema:
                 type: object
+                required:
+                  - data
+                  - target
                 properties:
-                  actions:
+                  data:
                     type: object
-                    description: Available actions the agent can perform on this base.
-                    example: {"actions": {"name": "get_tables", "description": "View the list of tables in this base"}}
-                  baseId:
-                    type: string
-                    description: The base/project ID that was requested
-                    example: "customer_base"
+                    description: The server's full response
+                    properties:
+                      results:
+                        type: array
+                        description: The full contents of the table spreadsheet, organized by row ID
+                        example:
+                          [{
+                            "rowId": "1",
+                            "cell0": {
+                              "fieldName": "Name",
+                              "fieldId": 4501110,
+                              "value": "help"
+                            },
+                            "cell1": {
+                              "fieldName": "Description",
+                              "fieldId": 4501111,
+                              "value": "Show help about how to use the SSoT.me CLI"
+                            },
+                            {
+                              "rowId": 2,
+                               ...
+                            }
+                          }]
+                  target:
+                    type: object
+                    description: The base & table where the action was submitted
+                    example: { "baseId": "abcd123", "tableId": "thetable" }
         '400':
-          description: Missing baseId parameter
+          description: Bad request - the bridge server didn't understand your request
           content:
             application/json:
               schema:
@@ -148,19 +142,8 @@ paths:
                     type: string
                     description: Error message
                     example: "Missing baseId parameter"
-        '404':
-          description: Base ID not found in available bases
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  msg:
-                    type: string
-                    description: Error message indicating which base was not found and listing available bases
-                    example: "Base ID 'baseId' not found. Available bases: ..."
         '408':
-          description: Request timeout - CLI did not respond within 30 seconds
+          description: Timed out waiting for CLI response
           content:
             application/json:
               schema:
@@ -169,9 +152,77 @@ paths:
                   msg:
                     type: string
                     description: Error message
-                    example: "Timeout waiting for response from CLI!"
-        '502':
-          description: Bad Gateway - CLI response was invalid or empty
+                    example: "Timed out"
+                  baseId:
+                    type: string
+                    example: "abcd123"
+  /do-action/get_cell:
+    post:
+      summary: Get the text contents of a specific cell from a table spreadsheet
+      description: View a cell's contents given table ID, row ID, and field (column) ID
+      operationId: readCell
+      parameters:
+        - name: baseId
+          in: query
+          required: true
+          description: The corresponding base/database ID
+          schema:
+            type: string
+            example: "abcdef123"
+      requestBody:
+        required: true
+        description: Include the table ID and other parameters here
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - tableId
+                - fieldId
+                - rowId
+              properties:
+                tableId:
+                  type: string
+                  description: The ID of the table within the specified base
+                  example: "table10"
+                fieldId:
+                  type: string
+                  description: The ID of the field/column where the cell is
+                rowId:
+                  type: string
+                  description: The ID of the row where the cell is
+      responses:
+        '200':
+          description: The cell data was successfully retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                  - target
+                properties:
+                  data:
+                    type: object
+                    description: The server's response including the cell's text
+                    properties:
+                      content:
+                        type: string
+                        description: The text contents of the cell
+                  target:
+                    type: object
+                    description: The full location information of the content
+                    properties:
+                      baseId:
+                        type: string
+                      tableId:
+                        type: string
+                      rowId:
+                        type: string
+                      fieldId:
+                        type: string
+        '400':
+          description: Bad request - the bridge server didn't understand your request
           content:
             application/json:
               schema:
@@ -180,7 +231,207 @@ paths:
                   msg:
                     type: string
                     description: Error message
-                    example: "Error reading response from CLI!"
+                    example: "Missing baseId parameter"
+        '408':
+          description: Timed out waiting for CLI response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: Error message
+                    example: "Timed out"
+                  baseId:
+                    type: string
+                    example: "abcd123"
+  /do-action/update_cell:
+    post:
+      summary: Update the specified cell to have new text content
+      description: Replace the cell's text content with the specified string
+      operationId: writeCell
+      parameters:
+        - name: baseId
+          in: query
+          required: true
+          description: The corresponding base/database ID
+          schema:
+            type: string
+            example: "abcdef123"
+      requestBody:
+        required: true
+        description: Include the table ID and other parameters here
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - tableId
+                - fieldId
+                - rowId
+                - content
+              properties:
+                tableId:
+                  type: string
+                  description: The ID of the table within the specified base
+                  example: "table10"
+                fieldId:
+                  type: string
+                  description: The ID of the field/column where the cell is
+                rowId:
+                  type: string
+                  description: The ID of the row where the cell is
+                content:
+                  type: string
+                  description: The new text value to replace with
+      responses:
+        '200':
+          description: The cell data was successfully updated
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                  - target
+                properties:
+                  data:
+                    type: object
+                    description: The updated contents of the row containing the cell
+                  target:
+                    type: object
+                    description: The full location information of the content
+                    properties:
+                      baseId:
+                        type: string
+                      tableId:
+                        type: string
+                      rowId:
+                        type: string
+                      fieldId:
+                        type: string
+        '400':
+          description: Bad request - the bridge server didn't understand your request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: Error message
+                    example: "Missing baseId parameter"
+        '408':
+          description: Timed out waiting for CLI response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: Error message
+                    example: "Timed out"
+                  baseId:
+                    type: string
+                    example: "abcd123"
+  /do-action/create_field:
+    post:
+      summary: Creates a new field (column)
+      description: Create a new column in the table spreadsheet
+      operationId: writeField
+      parameters:
+        - name: baseId
+          in: query
+          required: true
+          description: The corresponding base/database ID
+          schema:
+            type: string
+            example: "abcdef123"
+      requestBody:
+        required: true
+        description: Include the table ID and other parameters here
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - tableId
+                - content
+              properties:
+                tableId:
+                  type: string
+                  description: The ID of the table within the specified base
+                  example: "table10"
+                content:
+                  type: object
+                  description: The table metadata
+                  properties:
+                    fieldName:
+                      type: string
+                      description: the name of the new field
+                    fieldType:
+                      type: string
+                      description: the datatype of the new field - options are - 'text', 'long_text', 'number', 'boolean', 'date'
+      responses:
+        '200':
+          description: The field was successfully created
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                  - target
+                properties:
+                  data:
+                    type: object
+                    description: The new field's metadata
+                    properties:
+                      id:
+                        type: number
+                        description: the new field's ID
+                      table_id:
+                        type: string
+                        description: the field's table ID
+                      order:
+                        type: string
+                        description: the new field's order in the table
+                  target:
+                    type: object
+                    description: The base location information of the new field
+                    properties:
+                      baseId:
+                        type: string
+                      tableId:
+                        type: string
+        '400':
+          description: Bad request - the bridge server didn't understand your request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: Error message
+                    example: "Missing baseId parameter"
+        '408':
+          description: Timed out waiting for CLI response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    description: Error message
+                    example: "Timed out"
+                  baseId:
+                    type: string
+                    example: "abcd123"
+
   # cli will need to post with {"microsoft_tenant_id": "...", "baserow_token": "..."}
   # because copilot already sends the user's tenant_id in each api call
   # so that tenant_id could be connected to which bases are available to that user

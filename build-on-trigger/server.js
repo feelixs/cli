@@ -41,16 +41,25 @@ function getSsotUser(req) {
 
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
+  
+  const baseId = url.searchParams.get("baseId");
+  // Only check for baseId if it's not the available-bases endpoint
+  if (!baseId && url.pathname !== "/copilot/available-bases") {
+    log(`ERROR: Missing baseId parameter for ${req.method} ${url.pathname}`);
+    res.writeHead(400);
+    return res.end(JSON.stringify({'msg': "Missing baseId parameter", 'errorCode': 'MISSING_BASE_ID'}));
+  }
 
+  const userId = getSsotUser(req);
+  if (!userId) {
+    log(`ERROR: AVAILABLE-BASES missing user parameter`);
+    res.writeHead(400, { "Content-Type": "application/json" });
+    return res.end(JSON.stringify({'msg': "Missing 'X-Microsoft-TenantID' parameter in headers"}));
+  }
+  
   if  (url.pathname === "/copilot/available-bases") {
     if (req.method === "GET") {
       // copilot reqs here
-      const userId = getSsotUser(req);
-      if (!userId) {
-        log(`ERROR: AVAILABLE-BASES missing user parameter`);
-        res.writeHead(400, { "Content-Type": "application/json" });
-        return res.end(JSON.stringify({'msg': "Missing user parameter"}));
-      }
 
       log(`AVAILABLE-BASES: Request for available bases for user: ${userId}`);
 
@@ -81,14 +90,7 @@ const server = http.createServer(async (req, res) => {
       req.on('end', () => {
         try {
           const data = JSON.parse(body);
-          const userId = data.user;
-          const userBases = data.bases || [];
-
-          if (!userId) {
-            log(`ERROR: AVAILABLE-BASES missing user parameter`);
-            res.writeHead(400, { "Content-Type": "application/json" });
-            return res.end(JSON.stringify({'msg': "Missing user parameter"}));
-          }
+          const userBases = data.bases || []
 
           basesAvailable.set(userId, userBases);
           log(`AVAILABLE-BASES: CLI registered ${userBases.length} bases for user ${userId}: ${userBases.join(', ')}`);
@@ -102,14 +104,6 @@ const server = http.createServer(async (req, res) => {
       })
       return;
     }
-  }
-
-  const baseId = url.searchParams.get("baseId");
-  // Only check for baseId if it's not the available-bases endpoint
-  if (!baseId && url.pathname !== "/copilot/available-bases") {
-    log(`ERROR: Missing baseId parameter for ${req.method} ${url.pathname}`);
-    res.writeHead(400);
-    return res.end(JSON.stringify({'msg': "Missing baseId parameter", 'errorCode': 'MISSING_BASE_ID'}));
   }
 
   // Log every request not including cli polling

@@ -25,6 +25,7 @@ using System.Runtime.CompilerServices;
 using SSoTme.OST.Core.Lib.Extensions;
 using System.Net.Http;
 using System.Text.Json;
+using SSoTme.OST.Core.Lib.External;
 
 namespace SSoTme.OST.Lib.DataClasses
 {
@@ -734,14 +735,12 @@ namespace SSoTme.OST.Lib.DataClasses
             }
         }
         
-        private (JToken, bool) RunCopilotAction(string commandData, string baseId)
+        private (JToken, bool) RunCopilotAction(string commandData, string baseId, BaserowBackend baserowClient)
         {  // todo you can make undo/redo actions using the baserow 'ClientSessionId' header
             
             var validActions = new[] { "list_tables", "update_cell", "get_cell", "get_table_fields", "create_field" };
             try
             {
-                // get baserow client from ~/.ssotme/ssotme.key file -> "baserow" api
-                var baserowClient = new SSoTme.OST.Core.Lib.External.BaserowBackend();
                 var requestedChanges = JsonConvert.DeserializeObject<dynamic>(commandData);
                 
                 Console.WriteLine($"Running Copilot Action: {requestedChanges} on base: {baseId}");
@@ -821,7 +820,7 @@ namespace SSoTme.OST.Lib.DataClasses
                 }
                 else if (requestedChanges.action == "update_cell")
                 {
-                    string newValue = requestedChanges.content.value;
+                    string newValue = requestedChanges.content;
                     Console.WriteLine($"Updating cell data for field x row: {fieldId}x{rowId} to {newValue}");
                     JToken resp = baserowClient.UpdateField(tableId, rowId, fieldId, newValue);
                     return (new JObject
@@ -863,7 +862,15 @@ namespace SSoTme.OST.Lib.DataClasses
             string baseCopilotUri = "https://ssotme-cli-airtable-bridge-v2-ahrnz660db6k4.cpln.app/copilot";
             string copilotReadUri = $"{baseCopilotUri}/check-req-actions?baseId={baseId}";
             Console.WriteLine($"Polling {baseUri}/check?baseId={baseId} for changes to base: `{baseId}`...");
-            if (isCopilot) Console.WriteLine($"Polling {copilotReadUri} for read requests...");
+
+            BaserowBackend baserowClient = new SSoTme.OST.Core.Lib.External.BaserowBackend();
+            if (isCopilot)
+            {
+                Console.WriteLine($"Polling {copilotReadUri} for read requests...");
+                // get baserow client from ~/.ssotme/ssotme.key file -> "baserow" api
+                baserowClient.InitFromHomeFile();
+                PostAvailableBases($"{baseCopilotUri}/available-bases", baserowClient);
+            }
             while (true) {
                 if (isCopilot) {
                     var (newCopilotActionRequest, copilotProvidedData) = GetLastCopilotRequestedRead(copilotReadUri);
@@ -871,7 +878,7 @@ namespace SSoTme.OST.Lib.DataClasses
                         Console.WriteLine($"Copilot requested action: {copilotProvidedData}");
                         if (!string.IsNullOrEmpty(copilotProvidedData))
                         {
-                            var (response, contentWasUpdated) = RunCopilotAction(copilotProvidedData, baseId);
+                            var (response, contentWasUpdated) = RunCopilotAction(copilotProvidedData, baseId, baserowClient);
                             PostDataToBridge(response, $"{baseCopilotUri}/put-action-result?baseId={baseId}");
                             if (contentWasUpdated) PostChange(baseUri, baseId);  // signal a rebuild is necessary
                         }
@@ -954,6 +961,49 @@ namespace SSoTme.OST.Lib.DataClasses
             }
         }
 
+        private bool PostAvailableBases(string uri, BaserowBackend baserowClient)
+        {
+            string microsoftTenantUserId = "test"; 
+            JToken availableBases = baserowClient.GetAvailableBases();
+
+            try
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    // Add the user ID to the request headers
+                    httpClient.DefaultRequestHeaders.Add("microsoftTenantUserId", microsoftTenantUserId);
+
+                    var payload = new JObject
+                    {
+                        ["bases"] = availableBases
+                    };
+
+                    var json = JsonConvert.SerializeObject(payload);
+                    var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                    var response = httpClient.PostAsync(uri, content).Result;
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        var errorContent = response.Content.ReadAsStringAsync().Result;
+                        Console.WriteLine($"Failed to post bases. Status: {response.StatusCode}, Error: {errorContent}");
+                        return false;
+                    }
+                    else
+                    {
+                        var result = response.Content.ReadAsStringAsync().Result;
+                        Console.WriteLine($"Available user bases posted successfully: {result}");
+                        return true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error posting available user bases to Bridge API: {ex.Message}");
+                return false;
+            }
+        }
+        
         internal void DoRebuild(string buildPath, bool includeDisabled, string transpilerGroup, bool isBuildLocal, bool isBuildAll = false)
         {
             if (!isBuildLocal) this.CheckIfParentIsRootSeed();
