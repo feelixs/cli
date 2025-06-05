@@ -44,7 +44,6 @@ namespace SSoTme.OST.Core.Lib.External
             _baseUrl = "https://api.baserow.io/api";
             _username = baserowConfig.username;
             _password = baserowConfig.password;
-            Console.WriteLine($"New baserowClient instance: {_username}");
         }
         
         private async Task<string> GetValidTokenAsync()
@@ -89,33 +88,43 @@ namespace SSoTme.OST.Core.Lib.External
         public async Task<JToken> GetAvailableBasesAsync()
         {
             var token = await GetValidTokenAsync();
+            using var httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.Add("Authorization", $"JWT {token}");
 
-            using (var httpClient = new HttpClient())
+            // 1. List workspaces
+            var wsResponse = await httpClient.GetAsync($"{_baseUrl}/workspaces/");
+            wsResponse.EnsureSuccessStatusCode();
+            var wsJson = JToken.Parse(await wsResponse.Content.ReadAsStringAsync());
+            var workspaces = wsJson as JArray;
+
+            var allBases = new JArray();
+
+            if (workspaces == null)
             {
-                httpClient.DefaultRequestHeaders.Add("Authorization", $"JWT {token}");
-
-                var response = await httpClient.GetAsync($"{_baseUrl}/database/databases/");
-
-                var responseContent = await response.Content.ReadAsStringAsync();
-
-                if (!response.IsSuccessStatusCode)
+                throw new Exception("You don't have any baserow workspaces! Please create one at https://baserow.io");
+            }
+            
+            // 2. For each workspace, list bases
+            foreach (var ws in workspaces)
+            {
+                var wsId = ws["id"]?.ToString();
+                if (string.IsNullOrEmpty(wsId)) continue;
+                var dbResponse = await httpClient.GetAsync($"{_baseUrl}/applications/workspace/{wsId}/");
+                if (!dbResponse.IsSuccessStatusCode)
                 {
-                    throw new Exception($"Failed to fetch available Baserow bases: {response.StatusCode} - {responseContent}");
+                    Console.WriteLine($"Failed to list bases for workspace {wsId}: {dbResponse.StatusCode}");
+                    continue;
                 }
-
-                try
+                var wsResp = await dbResponse.Content.ReadAsStringAsync();
+                var allApps = JToken.Parse(wsResp);
+                foreach (var app in allApps)
                 {
-                    return JToken.Parse(responseContent);
-                }
-                catch (JsonReaderException ex)
-                {
-                    Console.WriteLine($"Error parsing JSON from GetAvailableBasesAsync: {ex.Message}");
-                    Console.WriteLine($"Raw response: {responseContent.Substring(0, Math.Min(200, responseContent.Length))}");
-                    throw;
+                    if (app["type"]?.ToString() == "database") allBases.Add(app);
                 }
             }
+    
+            return allBases;
         }
-
         
         public JToken FetchTablesForBase(string baseId)
         {
