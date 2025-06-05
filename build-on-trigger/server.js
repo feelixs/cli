@@ -18,7 +18,8 @@ const basesAvailable = new Map();
 
 const TTL_MS = 60 * 1000;
 
-const validActionEndpoints = ['list-tables', 'update-field', 'get-table-fields', 'create-column'];
+// should match the list defined in the cli
+const validActionEndpoints = ['list_tables', 'update_field', 'get_table_fields', 'create_column'];
 
 // todo connect the user's microsoft account to their ssotme account? To check all the available baseIds for this user
 // todo and to make sure they can access a specified baseId
@@ -28,11 +29,6 @@ function log(message, data = null) {
   if (data) {
     console.log(`[${timestamp}] DATA:`, JSON.stringify(data, null, 2));
   }
-}
-
-function getActionCliFormat(action) {
-  // convert action str to format understandable by cli
-  return action.replace("-", "_");
 }
 
 function getSsotUser(req) {
@@ -256,7 +252,7 @@ const server = http.createServer(async (req, res) => {
       const reqDate = new Date(Date.now());
       actionSubmissions.set(baseId, reqDate);
 
-      requestedActions.set(baseId, getActionCliFormat(desiredAction));
+      requestedActions.set(baseId, desiredAction);
       requestedActionsTableIds.set(baseId, tableid);
       requestedActionsFieldIds.set(baseId, fieldid);
       actionContents.set(baseId, theContent);
