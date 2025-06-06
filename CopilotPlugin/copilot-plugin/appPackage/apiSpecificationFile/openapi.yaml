@@ -88,9 +88,9 @@ paths:
                 - tableId
               properties:
                 tableId:
-                  type: string
+                  type: integer
                   description: The ID of the table within the specified base
-                  example: "table10"
+                  example: 1043
       responses:
         '200':
           description: The table data was successfully retrieved
@@ -124,7 +124,7 @@ paths:
                               value:
                                 type: string
                           example:
-                            rowId: "1"
+                            rowId: 1
                             cell0:
                               fieldName: "Name"
                               fieldId: 4501110
@@ -189,14 +189,14 @@ paths:
                 - rowId
               properties:
                 tableId:
-                  type: string
+                  type: integer
                   description: The ID of the table within the specified base
-                  example: "table10"
+                  example: 1024
                 fieldId:
-                  type: string
+                  type: integer
                   description: The ID of the field/column where the cell is
                 rowId:
-                  type: string
+                  type: integer
                   description: The ID of the row where the cell is
       responses:
         '200':
@@ -280,14 +280,14 @@ paths:
                 - content
               properties:
                 tableId:
-                  type: string
+                  type: integer
                   description: The ID of the table within the specified base
-                  example: "table10"
+                  example: 1024
                 fieldId:
-                  type: string
+                  type: integer
                   description: The ID of the field/column where the cell is
                 rowId:
-                  type: string
+                  type: integer
                   description: The ID of the row where the cell is
                 content:
                   type: string
@@ -368,9 +368,9 @@ paths:
                 - content
               properties:
                 tableId:
-                  type: string
+                  type: integer
                   description: The ID of the table within the specified base
-                  example: "table10"
+                  example: 1024
                 content:
                   type: object
                   description: The table metadata

@@ -227,8 +227,7 @@ namespace SSoTme.OST.Core.Lib.External
                 
                 var json = JsonConvert.SerializeObject(valueJson);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
-                
-                Console.WriteLine($"PATCH: {json}");
+
                 var response = await httpClient.PatchAsync($"{_baseUrl}/database/rows/table/{tableId}/{rowId}/", content);
                 
                 if (!response.IsSuccessStatusCode)
