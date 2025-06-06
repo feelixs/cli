@@ -1,24 +1,81 @@
 // server.js
+
+const TIMEOUT_SECS = 20;
+
 const http = require('http');
-const state = new Map();
+const baseMap = new Map();
 
-const baseLastChanged = new Map();
 
-const readRequests = new Map();  // bools whether copilot wants to read each base
-const readAvails = new Map();  // bools whether the CLI responded for this base
+/*
 
-const baseContents = new Map(); // the read content of each base returned by the cli
-const baseFileNames = new Map();
+  one action will be like:
+  {
+      action: "list_tables",
+      content: "",
+      tableId: "",
+      rowId: "",
+      fieldId: ""
+  }
 
-const baseCmdReqs = new Map(); // copilot will request the cli machine run a command to edit the json file
-const baseCmdResps = new Map(); // cli responds to server with the command response, forwarded to copilot
-const baseCmdRespsTimestamps = new Map();
+ */
+class BaseState {
+    // a bunch of these classes will populate a map: {'baseid1': BaseState(), 'baseid2': BaseState(), ...}
+    constructor() {
+        this.actionQueue = []; // unified FIFO queue for each base
+        this.actionsFinished = 0;  // last response timestamp
+        this.actionResponsesQueue = [];
+    }
+
+    // Add an action to the FIFO queue
+    enqueueAction(action, maxSize = 20) {
+        this.actionQueue.push(action);
+        if (this.actionQueue.length > maxSize) {
+            this.actionQueue.shift(); // keep it trimmed
+        }
+    }
+
+    // Get the first action without removing it
+    peekAction(defaultValue = null) {
+        if (!Array.isArray(this.actionQueue) || this.actionQueue.length === 0) {
+            return defaultValue;
+        }
+        return this.actionQueue[0];
+    }
+
+    // Remove and return the first action
+    dequeueAction() {
+        if (!Array.isArray(this.actionQueue) || this.actionQueue.length === 0) {
+            return null;
+        }
+        return this.actionQueue.shift();
+    }
+
+    enqueueResponse(response) {
+        this.actionResponsesQueue.push(response);
+    }
+
+    dequeueResponse() {
+        return this.actionResponsesQueue.shift() || null;
+    }
+
+    peekResponse() {
+        return this.actionResponsesQueue[0] || null;
+    }
+}
+
+function getOrInitBase(baseId) {
+    if (!baseMap.has(baseId)) {
+        baseMap.set(baseId, new BaseState());
+    }
+    return baseMap.get(baseId);
+}
 
 const basesAvailable = new Map();
 
 const TTL_MS = 60 * 1000;
 
-// todo - add endpoint to reteive all available bases, that way copilot can resolve simple typos made by the user
+// should match the list defined in the cli
+const validActionEndpoints = ['list_tables', 'update_cell', 'get_cell', 'get_table_fields', 'create_field'];
 
 // todo connect the user's microsoft account to their ssotme account? To check all the available baseIds for this user
 // todo and to make sure they can access a specified baseId
@@ -30,7 +87,6 @@ function log(message, data = null) {
     }
 }
 
-
 function getSsotUser(req) {
     // todo it looks like copilot will automatically populate the api call headers with 'X-Microsoft-TenantID' which can be connected to the user's microsoft account
     const microsoftTenantId = req.headers['X-Microsoft-TenantID'];
@@ -41,18 +97,27 @@ function getSsotUser(req) {
 const server = http.createServer(async (req, res) => {
     const url = new URL(req.url, `http://${req.headers.host}`);
 
+    const baseId = url.searchParams.get("baseId");
+    // Only check for baseId if it's not the available-bases endpoint
+    if (!baseId && url.pathname !== "/copilot/available-bases") {
+        log(`ERROR: Missing baseId parameter for ${req.method} ${url.pathname}`);
+        res.writeHead(400);
+        return res.end(JSON.stringify({'msg': "Missing baseId parameter", 'errorCode': 'MISSING_BASE_ID'}));
+    }
+
+    const userId = getSsotUser(req);
+    if (!userId) {
+        log(`ERROR: missing user parameter`);
+        res.writeHead(400, { "Content-Type": "application/json" });
+        return res.end(JSON.stringify({'msg': "Missing 'X-Microsoft-TenantID' parameter in headers"}));
+    }
+
     if  (url.pathname === "/copilot/available-bases") {
         if (req.method === "GET") {
             // copilot reqs here
-            const userId = getSsotUser(req);
-            if (!userId) {
-                log(`ERROR: AVAILABLE-BASES missing user parameter`);
-                res.writeHead(400, { "Content-Type": "application/json" });
-                return res.end(JSON.stringify({'msg': "Missing user parameter"}));
-            }
 
             log(`AVAILABLE-BASES: Request for available bases for user: ${userId}`);
-            
+
             const userBases = basesAvailable.get(userId) || [];
             if (userBases.length === 0) {
                 log(`AVAILABLE-BASES: No bases available for user: ${userId}`);
@@ -62,7 +127,7 @@ const server = http.createServer(async (req, res) => {
                     'msg': 'No bases available for this user. The CLI may need to be started.'
                 }));
             }
-            
+
             log(`AVAILABLE-BASES: Returning ${userBases.length} bases for user: ${userId}`);
             res.writeHead(200, { "Content-Type": "application/json" });
             return res.end(JSON.stringify({
@@ -80,15 +145,11 @@ const server = http.createServer(async (req, res) => {
             req.on('end', () => {
                 try {
                     const data = JSON.parse(body);
-                    const userId = data.user;
-                    const userBases = data.bases || [];
-                    
-                    if (!userId) {
-                        log(`ERROR: AVAILABLE-BASES missing user parameter`);
-                        res.writeHead(400, { "Content-Type": "application/json" });
-                        return res.end(JSON.stringify({'msg': "Missing user parameter"}));
-                    }
-                    
+
+                    // convert the received {'bases': [{'id': 1}, ...]} to a list of base id strings
+                    const basesData = data.bases || []
+                    const userBases = basesData.map(base => base.id.toString());
+
                     basesAvailable.set(userId, userBases);
                     log(`AVAILABLE-BASES: CLI registered ${userBases.length} bases for user ${userId}: ${userBases.join(', ')}`);
                     res.writeHead(200, { "Content-Type": "application/json" });
@@ -103,161 +164,34 @@ const server = http.createServer(async (req, res) => {
         }
     }
 
-    const baseId = url.searchParams.get("baseId");
-    // Only check for baseId if it's not the available-bases endpoint
-    if (!baseId && url.pathname !== "/copilot/available-bases") {
-        log(`ERROR: Missing baseId parameter for ${req.method} ${url.pathname}`);
-        res.writeHead(400);
-        return res.end(JSON.stringify({'msg': "Missing baseId parameter", 'errorCode': 'MISSING_BASE_ID'}));
-    }
-
     // Log every request not including cli polling
-    if ((url.pathname !== "/check") && (url.pathname !== '/copilot/check-base') && (url.pathname !== '/copilot/check-read-req')) {
+    if ((url.pathname !== "/check") && (url.pathname !== '/copilot/check-base') && (url.pathname !== '/copilot/check-req-actions')) {
         log(`${req.method} ${url.pathname} - baseId: ${baseId || 'missing'} - IP: ${req.socket.remoteAddress}`);
     }
 
-    // MARK START original server
-    if (req.method === "GET" && url.pathname === "/mark") {
-        state.set(baseId, Date.now());
-        res.writeHead(200);
-        return res.end("Marked");
-    }
-
-    if (req.method === "GET" && url.pathname === "/check") {
-        const ts = state.get(baseId) || 0;
-        const changed = (Date.now() - ts) < TTL_MS;
-        res.writeHead(200, { "Content-Type": "application/json" });
-        state.delete(baseId);
-        return res.end(JSON.stringify({ changed }));
-    }
-    // MARK END original server
-
-    if (url.pathname === "/copilot/mark-base") {
-        if (req.method !== "POST") {
-            res.writeHead(400, { "Content-Type": "application/json" });
-            return res.end(JSON.stringify({'msg': `Must use POST request for this endpoint!`, baseId: baseId}));
+    if (req.method === "GET" && url.pathname === "/copilot/check-req-actions") {
+        const state = getOrInitBase(baseId);
+        const next = state.peekAction();
+        const isRecent = next && (Date.now() - next.timestamp < TTL_MS);
+        if (isRecent) {
+            // Remove the action now that CLI has fetched it
+            state.dequeueAction();
         }
 
-        // mark this ID with the specified content (used by the copilot plugin to request changes to a base)
-        // think of a pull request make via this endpoint which the CLI needs to merge into airtable/baserow/etc
-        let body = '';
-        let responseMessage = "Successfully marked base with new content"; // for overwrite requests from copilot
-        req.on('data', chunk => {
-            body += chunk.toString();
-        });
-        req.on('end', async () => {
-            let content;
-            let command;
-            try {
-                const data = JSON.parse(body);
-                content = data.content;
-                command = data.command;
-                log(`MARK-BASE: Raw body received: ${body}`);
-                log(`MARK-BASE: Parsed data:`, data);
-                log(`MARK-BASE: Extracted content:`, content);
-                log(`MARK-BASE: Received command: ${command}`);
-                log(`MARK-BASE: Valid JSON received for baseId: ${baseId}`);
-            } catch (e) {
-                log(`ERROR: MARK-BASE invalid JSON for baseId: ${baseId}, raw body: ${body}`);
-                res.writeHead(422);
-                return res.end(JSON.stringify({'msg': "Invalid JSON", baseId: baseId}));
-            }
-            
-            if ((!content) && (!command)) {
-                log(`ERROR: MARK-BASE missing content for baseId: ${baseId}`);
-                res.writeHead(422);
-                return res.end(JSON.stringify({'msg': "Either the field 'content' or 'command' are required", baseId: baseId}));
-            }
-
-            baseLastChanged.set(baseId, Date.now());
-            baseContents.set(baseId, content);
-            baseCmdReqs.set(baseId, command);
-            log(`SUCCESS: MARK-BASE stored content for baseId: ${baseId}`);
-            log(`SUCCESS: MARK-BASE stored command for baseId: ${baseId}`);
-            log(`Waiting for cli command response for baseId: ${baseId}`);
-
-            let waited = 0;
-            const theTimeout = 30 * 1000;
-            let ts = baseCmdRespsTimestamps.get(baseId) || 0;
-            let newResp = (Date.now() - ts) < TTL_MS;
-            while ((!newResp) && (waited < theTimeout))
-            {
-                await new Promise(resolve => setTimeout(resolve, 1000)); // wait 1s
-                waited += 1000;
-
-                log(`[MARK-BASE] Polling for CLI response on baseId: ${baseId}`);
-                ts = baseCmdRespsTimestamps.get(baseId) || 0;
-                newResp = (Date.now() - ts) < TTL_MS;
-
-                if (waited >= theTimeout) {
-                    log(`TIMEOUT (possible cmd failure) waiting for cmd response on baseId: ${baseId}`);
-                }
-            }
-            if (baseCmdResps.has(baseId)) {
-                responseMessage = baseCmdResps.get(baseId);
-                baseCmdResps.delete(baseId);
-                baseCmdRespsTimestamps.delete(baseId);
-            }
-
-            res.writeHead(200, { "Content-Type": "application/json" });
-            return res.end(JSON.stringify({'msg': responseMessage, baseId: baseId}));
-        });
-        return;
-    }
-
-    if (req.method === "POST" && url.pathname === "/copilot/put-cmd-response") {
-        // CLI posts command execution results here
-        let body = '';
-        req.on('data', chunk => {
-            body += chunk.toString();
-        });
-        req.on('end', () => {
-            try {
-                const data = JSON.parse(body);
-                const response = data.response;
-                baseCmdRespsTimestamps.set(baseId, Date.now()); // Store timestamp
-                baseCmdResps.set(baseId, response); // Store actual response message
-                log(`CMD-RESPONSE: Received for baseId: ${baseId}: ${response}`);
-                res.writeHead(200, { "Content-Type": "application/json" });
-                return res.end(JSON.stringify({'msg': "Command response received"}));
-            } catch (e) {
-                log(`ERROR: PUT-CMD-RESPONSE invalid JSON for baseId: ${baseId}`);
-                res.writeHead(400);
-                return res.end(JSON.stringify({'msg': "Invalid JSON"}));
-            }
-        });
-        return;
-    }
-
-    if (req.method === "GET" && url.pathname === "/copilot/check-base")
-        // used by the CLI to register if the plugin has requested a change via /mark-base
-        // -> should poll this and then update the airtable/etc with the requested content
-    {
-        const ts = baseLastChanged.get(baseId) || 0;
-        const changedRecently = (Date.now() - ts) < TTL_MS;
-        const content = baseContents.get(baseId) || null;
-        const theCmd = baseCmdReqs.get(baseId) || null;
-        const filename = baseFileNames.get(baseId) || null;
         res.writeHead(200, { "Content-Type": "application/json" });
-        baseLastChanged.delete(baseId);  // the change has now been merged into our memory dict
-        baseCmdReqs.delete(baseId);  // only send cmds once
-        return res.end(JSON.stringify({ "changed": changedRecently, content, theCmd, filename }));
+        return res.end(JSON.stringify({
+            changed: isRecent,
+            action: next?.action || null,
+            tableId: next?.tableId || null,
+            rowId: next?.rowId || null,
+            fieldId: next?.fieldId || null,
+            content: next?.content || null
+        }));
     }
 
-    if (req.method === "GET" && url.pathname === "/copilot/check-read-req")
-        // the cli will check this endpoint to see which bases the plugin wants to read from
-    {
-        const ts = readRequests.get(baseId) || 0;
-        const isRecentReadRequest = (Date.now() - ts) < TTL_MS;
-        res.writeHead(200, { "Content-Type": "application/json" });
-        readRequests.delete(baseId);
-        return res.end(JSON.stringify({ "changed": isRecentReadRequest }));
-        // now the cli should immediatelly post the base's content to /put-read
-    }
-
-    if (req.method === "POST" && url.pathname === "/copilot/put-read")
-        // this cli will POST ssot reads here
-        // the plugin's rest API (this script) will be polling this before it returns anything to the plugin, or timeout
+    if (req.method === "POST" && url.pathname === "/copilot/put-action-result")
+        // this cli will POST the results of actions here
+        // the plugin's rest API (this script) will be polling finished action before it returns anything to the plugin, or timeout
     {
         let body = '';
         req.on('data', chunk => {
@@ -265,44 +199,41 @@ const server = http.createServer(async (req, res) => {
         });
         req.on('end', () => {
             let content;
-            let filename;
+            let message;
             try {
                 const data = JSON.parse(body);
-                content = data.content;
-                filename = data.filename;
-                log(`PUT-READ: Content received for baseId: ${baseId}`);
+                log(`[PUT-ACTION-RESULT] Raw body received: ${body}`);
+                content = data.content || null;
+                message = data.msg || null;
+                log(`[PUT-ACTION-RESULT] Content received for baseId: ${baseId}`);
             } catch (e) {
-                log(`ERROR: PUT-READ invalid JSON for baseId: ${baseId}`);
-                res.writeHead(400);
-                return res.end(JSON.stringify({'msg': "Invalid JSON"}));
+                log(`[PUT-ACTION-RESULT] ERROR: invalid JSON for baseId: ${baseId}`);
+                res.writeHead(400, { "Content-Type": "application/json" });
+                return res.end(JSON.stringify({ msg: "Invalid JSON" }));
             }
+            const base = getOrInitBase(baseId);
+            // store result in base state
+            base.actionsFinished = Date.now();
+            base.enqueueResponse(content ?? message ?? null);  // even if its null we should append
 
-            if (!content) {
-                log(`ERROR: PUT-READ missing content for baseId: ${baseId}`);
-                res.writeHead(400);
-                return res.end(JSON.stringify({'msg': "Missing required field 'content'"}));
-            }
-
-            readAvails.set(baseId, Date.now());
-            baseFileNames.set(baseId, filename);
-            baseContents.set(baseId, content);
-            log(`SUCCESS: PUT-READ stored content for baseId: ${baseId}`);
+            log(`[PUT-ACTION-RESULT] SUCCESS: stored content for baseId: ${baseId}`);
             res.writeHead(200, { "Content-Type": "application/json" });
-            return res.end(JSON.stringify({'msg': `Marked ${baseId} with content`}));
+            return res.end(JSON.stringify({ msg: `Marked ${baseId} with content` }));
         });
         return;
     }
 
-    if (req.method === "GET" && url.pathname === "/copilot/request-read")
-        // copilot will request a ssot read here
+    if (req.method === "POST" && url.pathname.startsWith("/copilot/do-action/"))
+        // valid url mappings: /do-action/list-tables, /do-action/update-field, ... anything in validActionEndpoints
+        // copilot will submit an action here
         // & this server will wait until the cli responds and return its response to the plugin (or timeout)
     {
-        // Check if baseId exists in available bases for this user
-        const userId = getSsotUser(req);
-        if (!userId) {
-            log(`ERROR: REQUEST-READ missing user parameter`);
-            res.writeHead(400, { "Content-Type": "application/json" });
-            return res.end(JSON.stringify({'msg': "Missing user parameter"}));
+        const desiredAction = url.pathname.split("/").pop();
+        if (!validActionEndpoints.includes(desiredAction)) {
+            res.writeHead(404, { "Content-Type": "application/json" });
+            return res.end(JSON.stringify({
+                msg: `Action endpoint '${desiredAction}' not found. Valid: ${validActionEndpoints.join(', ')}`
+            }));
         }
 
         const userBases = basesAvailable.get(userId) || [];
@@ -310,56 +241,108 @@ const server = http.createServer(async (req, res) => {
             log(`ERROR: BaseId '${baseId}' not found in available bases for user ${userId}`);
             res.writeHead(404, { "Content-Type": "application/json" });
             return res.end(JSON.stringify({
-                'msg': `Base ID '${baseId}' not found. Available bases: ${userBases.join(', ')}`
+                msg: `Base ID '${baseId}' not found for the user: '${userId}'. Available bases: ${userBases.join(', ')}`
             }));
         }
 
-        log(`READ REQUEST started for baseId: ${baseId}`);
-        const reqDate = new Date(Date.now());
-        readRequests.set(baseId, reqDate);
-
-        const theTimeout = 30 * 1000;
-        let waited = 0;
-        // the cli will be polling /check-read-req which returns readRequests[base]
-        // copilot calling this endpoint will make /check-read-req return true
-
-        // then the cli will push to /put-read which updates readAvails[base] to now()
-        let ts = readAvails.get(baseId) || 0;
-        let newContent = (Date.now() - ts) < TTL_MS;
-        log(`Waiting for CLI response on baseId: ${baseId}`);
-        
-        while (!newContent)
-        {
-            await new Promise(resolve => setTimeout(resolve, 1000)); // wait 1s
-            waited += 1000;
-
-            log(`[REQUEST-READ] Polling for CLI response on baseId: ${baseId}`);
-            ts = readAvails.get(baseId) || 0;
-            newContent = (Date.now() - ts) < TTL_MS;
-
-            if (waited > theTimeout)
-            {
-                log(`TIMEOUT after ${waited}ms waiting for baseId: ${baseId}`);
-                res.writeHead(408);
-                return res.end(JSON.stringify({'msg': `Timeout waiting for response from CLI! ${baseId}`}));
+        let body = '';
+        req.on('data', chunk => {
+            body += chunk.toString();
+        });
+        req.on('end', async () => {
+            let tableId, rowId, fieldId, content;
+            try {
+                log(`[ACTION SUBMIT] Raw body received: ${body}`);
+                const data = body.trim() === '' ? {} : JSON.parse(body);
+                tableId = data.tableId || null;
+                rowId = data.rowId || null;
+                fieldId = data.fieldId || null;
+                content = data.content || null;
+                log(`[ACTION SUBMIT] Parsed data:`, data);
+            } catch (e) {
+                log(`[ACTION SUBMIT] ERROR: invalid JSON for baseId: ${baseId}, raw body: ${body}`);
+                res.writeHead(422);
+                return res.end(JSON.stringify({ msg: "Invalid JSON", baseId }));
             }
-        }
 
-        const updatedContent = baseContents.get(baseId);
-        log(`CLI response received for baseId: ${baseId}`);
-        
-        if (!updatedContent) {
-            // if it doesn't exist but the cli changed the date... error
-            log(`ERROR: No response data found for baseId: ${baseId}`);
-            res.writeHead(502);
-            return res.end(JSON.stringify({'msg': `Error reading response from CLI! ${baseId}`}));
-        }
+            const base = getOrInitBase(baseId);
+            const reqDate = Date.now();
 
-        log(`Sending successful response to Copilot for baseId: ${baseId}`);
-        res.writeHead(200, { "Content-Type": "application/json" });
+            log(`[ACTION SUBMIT] Queued '${desiredAction}' for baseId: ${baseId}`);
 
-        const filename = baseFileNames.get(baseId) || null;
-        return res.end(JSON.stringify({ data: updatedContent, baseId: baseId, filename: filename }));
+            // Enqueue the full action object
+            base.enqueueAction({
+                action: desiredAction,
+                content: content,
+                tableId: tableId,
+                rowId: rowId,
+                fieldId: fieldId,
+                timestamp: reqDate
+            });
+
+            // clear the last action's result state
+            base.actionsFinished = 0;
+
+            // Wait for CLI to respond
+            const theTimeout = TIMEOUT_SECS * 1000;
+            let waited = 0;
+
+            let ts = base.actionsFinished || 0;
+            let newContent = (Date.now() - ts) < TTL_MS;
+            log(`Waiting for CLI response on baseId: ${baseId}`);
+
+            try {
+                while (!newContent && waited <= theTimeout)
+                {
+                    await new Promise(resolve => setTimeout(resolve, 1000)); // wait 1s
+                    waited += 1000;
+                    log(`[ACTION SUBMIT] Polling for CLI response on baseId: ${baseId}`);
+                    ts = base.actionsFinished || 0;
+                    newContent = (Date.now() - ts) < TTL_MS;
+                }
+
+                if (waited > theTimeout) {
+                    log(`[ACTION SUBMIT] TIMEOUT after ${waited}ms waiting for baseId: ${baseId}`);
+                    res.writeHead(408);
+                    return res.end(JSON.stringify({
+                        msg: `Timeout waiting for response from CLI!`,
+                        baseId
+                    }));
+                }
+            } catch (error) {
+                log(`[ACTION SUBMIT] ERROR in polling loop: ${error.message}`);
+                res.writeHead(500);
+                return res.end(JSON.stringify({
+                    msg: 'Internal server error',
+                    baseId
+                }));
+            }
+
+            const updatedContent = base.dequeueResponse();
+            log(`CLI response received for baseId: ${baseId}`);
+
+            if (!updatedContent) {
+                log(`ERROR: No response data found for baseId: ${baseId}`);
+                res.writeHead(502);
+                return res.end(JSON.stringify({
+                    msg: `Error reading response from CLI! ${baseId}`
+                }));
+            }
+
+            log(`Sending successful response to Copilot for baseId: ${baseId}`);
+            res.writeHead(200, { "Content-Type": "application/json" });
+
+            return res.end(JSON.stringify({
+                data: updatedContent,
+                target: {
+                    baseId,
+                    tableId,
+                    rowId,
+                    fieldId
+                }
+            }));
+        });
+        return;
     }
 
     res.writeHead(404);
