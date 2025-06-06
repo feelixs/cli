@@ -22,8 +22,8 @@ class BaseState {
   // a bunch of these classes will populate a map: {'baseid1': BaseState(), 'baseid2': BaseState(), ...}
   constructor() {
     this.actionQueue = []; // unified FIFO queue for each base
-    this.actionsFinished = 0;  // timestamp
-    this.actionResponses = null;
+    this.actionsFinished = 0;  // last response timestamp
+    this.actionResponsesQueue = [];
   }
 
   // Add an action to the FIFO queue
@@ -48,6 +48,18 @@ class BaseState {
       return null;
     }
     return this.actionQueue.shift();
+  }
+
+  enqueueResponse(response) {
+    this.actionResponsesQueue.push(response);
+  }
+
+  dequeueResponse() {
+    return this.actionResponsesQueue.shift() || null;
+  }
+
+  peekResponse() {
+    return this.actionResponsesQueue[0] || null;
   }
 }
 
@@ -202,7 +214,7 @@ const server = http.createServer(async (req, res) => {
       const base = getOrInitBase(baseId);
       // store result in base state
       base.actionsFinished = Date.now();
-      base.actionResponses = content ?? message ?? null;
+      base.enqueueResponse(content ?? message ?? null);  // even if its null we should append
 
       log(`[PUT-ACTION-RESULT] SUCCESS: stored content for baseId: ${baseId}`);
       res.writeHead(200, { "Content-Type": "application/json" });
@@ -270,7 +282,6 @@ const server = http.createServer(async (req, res) => {
 
       // clear the last action's result state
       base.actionsFinished = 0;
-      base.actionResponses = null;
 
       // Wait for CLI to respond
       const theTimeout = TIMEOUT_SECS * 1000;
@@ -307,7 +318,7 @@ const server = http.createServer(async (req, res) => {
         }));
       }
 
-      const updatedContent = base.actionResponses;
+      const updatedContent = base.dequeueResponse();
       log(`CLI response received for baseId: ${baseId}`);
 
       if (!updatedContent) {
