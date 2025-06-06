@@ -695,25 +695,30 @@ namespace SSoTme.OST.Lib.DataClasses
             }
         }
         
-        private (bool, string) GetLastCopilotRequestedRead(string readReqUri)
+        private (bool, string, long) GetLastCopilotRequestedRead(string readReqUri)
         {
             using (var httpClient = new HttpClient())
             {
                 string response = httpClient.GetStringAsync(readReqUri).Result;
                 var json = JsonDocument.Parse(response);
                 var changed = json.RootElement.GetProperty("changed").GetRawText();
-                return (changed == "true", response);
+                long timestamp = json.RootElement.GetProperty("timestamp").GetInt64();
+                return (changed == "true", response, timestamp);
             }
         }
 
-        private string PostDataToBridge(JToken data, string uri)
+        private string PostDataToBridge(JToken data, string uri, long dataTimestamp)
         {
             using (var httpClient = new HttpClient())
             {
                 try
                 {
-                    var jsonString = data.ToString(Newtonsoft.Json.Formatting.None);
-                    Console.WriteLine($"Posting to bridge: {uri} - {data}");
+                    // Add timestamp to the data
+                    var dataWithTimestamp = new JObject(data);
+                    dataWithTimestamp["timestamp"] = dataTimestamp;
+                    
+                    var jsonString = dataWithTimestamp.ToString(Newtonsoft.Json.Formatting.None);
+                    Console.WriteLine($"Posting to bridge: {uri} - {dataWithTimestamp}");
                     var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
                     var response = httpClient.PostAsync(uri, content).Result;
 
@@ -907,13 +912,13 @@ namespace SSoTme.OST.Lib.DataClasses
             }
             while (true) {
                 if (isCopilot) {
-                    var (newCopilotActionRequest, copilotProvidedData) = GetLastCopilotRequestedRead(copilotReadUri);
+                    var (newCopilotActionRequest, copilotProvidedData, timestamp) = GetLastCopilotRequestedRead(copilotReadUri);
                     if (newCopilotActionRequest) {
                         Console.WriteLine($"Copilot requested action: {copilotProvidedData}");
                         if (!string.IsNullOrEmpty(copilotProvidedData))
                         {
                             var (response, contentWasUpdated) = RunCopilotAction(copilotProvidedData, baseId, baserowClient);
-                            PostDataToBridge(response, $"{baseCopilotUri}/put-action-result?baseId={baseId}");
+                            PostDataToBridge(response, $"{baseCopilotUri}/put-action-result?baseId={baseId}", timestamp);
                             // todo if copilot requests multiple actions in a row for the same base, we need a way to queue them on the server
                             // to be sent to the cli after the cli finishes processing the current one
                             if (contentWasUpdated) PostChange(baseUri, baseId);  // signal a rebuild is necessary
