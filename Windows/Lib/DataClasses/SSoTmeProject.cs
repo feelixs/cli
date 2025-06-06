@@ -714,11 +714,10 @@ namespace SSoTme.OST.Lib.DataClasses
                 try
                 {
                     // Add timestamp to the data
-                    var dataWithTimestamp = new JObject(data);
-                    dataWithTimestamp["timestamp"] = dataTimestamp;
+                    data["timestamp"] = dataTimestamp;
                     
-                    var jsonString = dataWithTimestamp.ToString(Newtonsoft.Json.Formatting.None);
-                    Console.WriteLine($"Posting to bridge: {uri} - {dataWithTimestamp}");
+                    var jsonString = data.ToString(Newtonsoft.Json.Formatting.None);
+                    Console.WriteLine($"Posting to bridge: {uri} - {data}");
                     var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
                     var response = httpClient.PostAsync(uri, content).Result;
 
@@ -894,7 +893,7 @@ namespace SSoTme.OST.Lib.DataClasses
             DateTime? lastChangedTime = null;
             bool changeEverDetected = false;
             string baseUri = $"https://ssotme-cli-airtable-bridge-ahrnz660db6k4.aws-us-east-1.controlplane.us";
-            string baseCopilotUri = "https://ssotme-cli-airtable-bridge-v2-ahrnz660db6k4.cpln.app/copilot";
+            string baseCopilotUri = "http://localhost:8080/copilot";
             string copilotReadUri = $"{baseCopilotUri}/check-req-actions?baseId={baseId}";
             Console.WriteLine($"Polling {baseUri}/check?baseId={baseId} for changes to base: `{baseId}`...");
 
