@@ -85,7 +85,7 @@ namespace SSoTme.OST.Core.Lib.External
             return task.Result;
         }
 
-        public async Task<JToken> GetAvailableBasesAsync()
+        private async Task<JToken> GetAvailableBasesAsync()
         {
             var token = await GetValidTokenAsync();
             using var httpClient = new HttpClient();
@@ -162,14 +162,14 @@ namespace SSoTme.OST.Core.Lib.External
             }
         }
 
-        public JToken GetField(string tableId, string rowId, string fieldId)
+        public JToken GetCell(string tableId, string rowId, string fieldId)
         {
-            var task = GetFieldAsync(tableId, rowId, fieldId);
+            var task = GetCellAsync(tableId, rowId, fieldId);
             task.Wait();
             return task.Result;
         }
 
-        public async Task<JToken> GetFieldAsync(string tableId, string rowId, string fieldId)
+        private async Task<JToken> GetCellAsync(string tableId, string rowId, string fieldId)
         {
             var token = await GetValidTokenAsync();
             using (var httpClient = new HttpClient())
@@ -202,15 +202,144 @@ namespace SSoTme.OST.Core.Lib.External
                 }
             }
         }
-        
-        public JObject UpdateField(string tableId, string rowId, string fieldId, string newValue)
+
+        public JToken CreateRow(string tableId)
         {
-            var task = UpdateFieldAsync(tableId, rowId, fieldId, newValue);
+            var task = CreateRowAsync(tableId);
             task.Wait();
             return task.Result;
         }
 
-        public async Task<JObject> UpdateFieldAsync(string tableId, string rowId, string fieldId, string newValue)
+        private async Task<JToken> CreateRowAsync(string tableId)
+        {
+            var token = await GetValidTokenAsync(); // assume this gives you a valid JWT
+            using (var httpClient = new HttpClient())
+            {
+                httpClient.DefaultRequestHeaders.Add("Authorization", $"JWT {token}");
+
+                var url = $"{_baseUrl}/database/rows/table/{tableId}/";
+                var emptyPayload = new StringContent("{}", Encoding.UTF8, "application/json");
+
+                var response = await httpClient.PostAsync(url, emptyPayload);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var error = await response.Content.ReadAsStringAsync();
+                    throw new Exception($"Failed to create row: {response.StatusCode} - {error}");
+                }
+
+                var content = await response.Content.ReadAsStringAsync();
+                return JToken.Parse(content);
+            }
+        }
+
+        public JToken MoveRow(string tableId, string rowId, string relRow = null)
+        {
+            var task = MoveRowAsync(tableId, rowId, relRow);
+            task.Wait();
+            return task.Result;
+        }
+
+        private async Task<JToken> MoveRowAsync(string tableId, string rowId, string relativeRowId)
+        {
+            var token = await GetValidTokenAsync();
+
+            using (var httpClient = new HttpClient())
+            {
+                httpClient.DefaultRequestHeaders.Add("Authorization", $"JWT {token}");
+                
+                JObject payload = new JObject
+                {
+                    ["table_id"] = tableId,
+                    ["row_id"] = relativeRowId
+                };
+
+                var json = JsonConvert.SerializeObject(payload);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                var url = $"{_baseUrl}/database/rows/table/{tableId}/{rowId}/move/";
+                var response = await httpClient.PatchAsync(url, content);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    throw new Exception($"Failed to move Baserow row: {response.StatusCode} - {errorContent}");
+                }
+
+                string strResp = await response.Content.ReadAsStringAsync();
+                try
+                {
+                    return JObject.Parse(strResp);
+                }
+                catch (JsonReaderException ex)
+                {
+                    Console.WriteLine($"JSON parsing error in MoveRowAsync: {ex.Message}");
+                    Console.WriteLine($"Response content (first 200 chars): {strResp.Substring(0, Math.Min(200, strResp.Length))}");
+                    throw new Exception($"Failed to parse JSON response from Baserow: {ex.Message}");
+                }
+            }
+        }
+
+        
+        public JToken UpdateField(string tableId, string fieldId, string newName, string newType)
+        {
+            var task = UpdateFieldAsync(tableId, fieldId, newName, newType);
+            task.Wait();
+            return task.Result;
+        }
+
+        private async Task<JToken> UpdateFieldAsync(string tableId, string fieldId, string newName = null, string newType = null)
+        {
+            var token = await GetValidTokenAsync();
+
+            using (var httpClient = new HttpClient())
+            {
+                httpClient.DefaultRequestHeaders.Add("Authorization", $"JWT {token}");
+
+                var fieldData = new JObject();
+                if (!string.IsNullOrEmpty(newName)) fieldData["name"] = newName;
+                if (!string.IsNullOrEmpty(newType)) fieldData["type"] = newType;
+
+                if (!fieldData.HasValues)
+                {
+                    throw new ArgumentException("You must provide at least one field property to update.");
+                }
+
+                var json = JsonConvert.SerializeObject(fieldData);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                var url = $"{_baseUrl}/database/fields/table/{tableId}/{fieldId}/";
+                var response = await httpClient.PatchAsync(url, content);
+
+                Console.WriteLine($"Response: {response.StatusCode} - {response.ReasonPhrase}");
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    throw new Exception($"Failed to update Baserow field: {response.StatusCode} - {errorContent}");
+                }
+
+                string strResp = await response.Content.ReadAsStringAsync();
+                try
+                {
+                    return JToken.Parse(strResp);
+                }
+                catch (JsonReaderException ex)
+                {
+                    Console.WriteLine($"JSON parsing error in UpdateFieldAsync: {ex.Message}");
+                    Console.WriteLine($"Response content (first 200 chars): {strResp.Substring(0, Math.Min(200, strResp.Length))}");
+                    throw new Exception($"Failed to parse JSON response from Baserow: {ex.Message}");
+                }
+            }
+        }
+        
+        public JToken UpdateCell(string tableId, string rowId, string fieldId, string newValue)
+        {
+            var task = UpdateCellAsync(tableId, rowId, fieldId, newValue);
+            task.Wait();
+            return task.Result;
+        }
+
+        private async Task<JToken> UpdateCellAsync(string tableId, string rowId, string fieldId, string newValue)
         {
             var token = await GetValidTokenAsync();
             
@@ -256,7 +385,7 @@ namespace SSoTme.OST.Core.Lib.External
             return task.Result;
         }
 
-        public async Task<JToken> CreateFieldAsync(string tableId, string fieldName, string fieldType)
+        private async Task<JToken> CreateFieldAsync(string tableId, string fieldName, string fieldType)
         {
             var token = await GetValidTokenAsync();
             
@@ -303,7 +432,7 @@ namespace SSoTme.OST.Core.Lib.External
             return TransformTableDataWithFields(tableData, readableData);
         }
 
-        public async Task<JToken> GetTableSchemaAsync(string tableId, bool userReadable)
+        private async Task<JToken> GetTableSchemaAsync(string tableId, bool userReadable)
         {
             var token = await GetValidTokenAsync();
             

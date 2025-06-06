@@ -748,7 +748,7 @@ namespace SSoTme.OST.Lib.DataClasses
         private (JToken, bool) RunCopilotAction(string commandData, string baseId, BaserowBackend baserowClient)
         {  // todo you can make undo/redo actions using the baserow 'ClientSessionId' header
             
-            var validActions = new[] { "list_tables", "update_cell", "get_cell", "get_table_fields", "create_field" };
+            var validActions = new[] { "list_tables", "update_cell", "get_cell", "get_table_fields", "create_row", "create_field", "update_field" };
             try
             {
                 var requestedChanges = JsonConvert.DeserializeObject<dynamic>(commandData);
@@ -772,9 +772,26 @@ namespace SSoTme.OST.Lib.DataClasses
                     }, false);
                 }
                 
-                string rowId = requestedChanges.rowId;
                 string fieldId = requestedChanges.fieldId;
-                if ((requestedChanges.action == "update_cell" || requestedChanges.action == "get_cell") &&
+                if ((requestedChanges.action == "update_field" || requestedChanges.action == "create_field") && requestedChanges.fieldId == null)
+                {
+                    return (new JObject
+                    {
+                        ["content"] = null,
+                        ["msg"] = "Error applying changes: this endpoint requires fieldId!"
+                    }, false);
+                }
+                
+                string rowId = requestedChanges.rowId;
+                if (requestedChanges.action == "move_row" && requestedChanges.rowId == null)
+                {
+                    return (new JObject
+                    {
+                        ["content"] = null,
+                        ["msg"] = "Error applying changes: this endpoint requires rowId!"
+                    }, false);
+                }
+                else if ((requestedChanges.action == "update_cell" || requestedChanges.action == "get_cell") &&
                     (requestedChanges.rowId == null || requestedChanges.fieldId == null)) 
                 {
                     return (new JObject
@@ -818,10 +835,53 @@ namespace SSoTme.OST.Lib.DataClasses
                         ["msg"] = $"Successfully created field on tableId: {tableId}"
                     }, true);
                 }
+                else if (requestedChanges.action == "update_field")
+                {
+                    string name = requestedChanges.content.fieldName;
+                    string type = requestedChanges.content.fieldType;
+                    Console.WriteLine($"Updating field: id: {fieldId}, to type: {type}, name: {name}");
+                    JToken resp = baserowClient.UpdateField(tableId, fieldId, name, type);
+                    return (new JObject
+                    {
+                        ["content"] = resp,
+                        ["msg"] = $"Successfully updated field: {fieldId}"
+                    }, true);
+                }
+                else if (requestedChanges.action == "create_row")
+                {
+                    Console.WriteLine($"Creating new row");
+                    JToken resp = baserowClient.CreateRow(tableId);
+                    return (new JObject
+                    {
+                        ["content"] = resp,
+                        ["msg"] = $"Successfully created row"
+                    }, true);
+                }
+                else if (requestedChanges.action == "move_row")
+                {
+                    JToken resp;
+                    if (requestedChanges.ContainsKey("relativeRowId"))
+                    {
+                        resp = baserowClient.MoveRow(tableId, rowId, requestedChanges.relativeRowId);
+                        Console.WriteLine($"Moved row {rowId} to position before {requestedChanges.relativeRowId}");
+                        return (new JObject
+                        {
+                            ["content"] = resp,
+                            ["msg"] = $"Successfully moved row {rowId} to position before {requestedChanges.relativeRowId}"
+                        }, true);
+                    }
+                    resp = baserowClient.MoveRow(tableId, rowId);
+                    Console.WriteLine($"Moved row {rowId} to the end of the table");
+                    return (new JObject
+                    {
+                        ["content"] = resp,
+                        ["msg"] = $"Successfully moved row {rowId} to the end of the table"
+                    }, true);
+                }
                 else if (requestedChanges.action == "get_cell")
                 {
                     Console.WriteLine($"Fetching cell data for field x row: {fieldId}x{rowId}");
-                    JToken fieldResp = baserowClient.GetField(tableId, rowId, fieldId);
+                    JToken fieldResp = baserowClient.GetCell(tableId, rowId, fieldId);
                     return (new JObject
                     {
                         ["content"] = fieldResp,
@@ -832,7 +892,7 @@ namespace SSoTme.OST.Lib.DataClasses
                 {
                     string newValue = requestedChanges.content;
                     Console.WriteLine($"Updating cell data for field x row: {fieldId}x{rowId} to {newValue}");
-                    JToken resp = baserowClient.UpdateField(tableId, rowId, fieldId, newValue);
+                    JToken resp = baserowClient.UpdateCell(tableId, rowId, fieldId, newValue);
                     return (new JObject
                     {
                         ["content"] = resp,
@@ -928,8 +988,6 @@ namespace SSoTme.OST.Lib.DataClasses
                         {
                             var (response, contentWasUpdated) = RunCopilotAction(copilotProvidedData, baseId, baserowClient);
                             PostDataToBridge(response, $"{baseCopilotUri}/put-action-result?baseId={baseId}", timestamp);
-                            // todo if copilot requests multiple actions in a row for the same base, we need a way to queue them on the server
-                            // to be sent to the cli after the cli finishes processing the current one
                             if (contentWasUpdated) PostChange(baseUri, baseId);  // signal a rebuild is necessary
                         }
                     }
