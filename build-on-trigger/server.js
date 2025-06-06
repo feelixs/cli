@@ -3,17 +3,72 @@
 const TIMEOUT_SECS = 20;
 
 const http = require('http');
-const state = new Map();
+const baseMap = new Map();
 
-const actionSubmissions = new Map();  // bools whether copilot submitted a new action to each base
-const actionContents = new Map(); // if its a write action, copilot will populate this with the contents
-const requestedActions = new Map(); // strings of the most recent action copilot wants per base
-const requestedActionsTableIds = new Map(); // the table id where the action should be run
-const requestedActionsRowIds = new Map();
-const requestedActionsFieldIds = new Map(); // the field id where the action should be run
 
-const actionsFinished = new Map();  // bools whether the CLI responded for this base
-const actionResponses = new Map();
+/*
+
+  one action will be like:
+  {
+      action: "list_tables",
+      content: "",
+      tableId: "",
+      rowId: "",
+      fieldId: ""
+  }
+
+ */
+class BaseState {
+  // a bunch of these classes will populate a map: {'baseid1': BaseState(), 'baseid2': BaseState(), ...}
+  constructor() {
+    this.actionQueue = []; // unified FIFO queue for each base
+    this.actionsFinished = 0;  // last response timestamp
+    this.actionResponsesQueue = [];
+  }
+
+  // Add an action to the FIFO queue
+  enqueueAction(action, maxSize = 20) {
+    this.actionQueue.push(action);
+    if (this.actionQueue.length > maxSize) {
+      this.actionQueue.shift(); // keep it trimmed
+    }
+  }
+
+  // Get the first action without removing it
+  peekAction(defaultValue = null) {
+    if (!Array.isArray(this.actionQueue) || this.actionQueue.length === 0) {
+      return defaultValue;
+    }
+    return this.actionQueue[0];
+  }
+
+  // Remove and return the first action
+  dequeueAction() {
+    if (!Array.isArray(this.actionQueue) || this.actionQueue.length === 0) {
+      return null;
+    }
+    return this.actionQueue.shift();
+  }
+
+  enqueueResponse(response) {
+    this.actionResponsesQueue.push(response);
+  }
+
+  dequeueResponse() {
+    return this.actionResponsesQueue.shift() || null;
+  }
+
+  peekResponse() {
+    return this.actionResponsesQueue[0] || null;
+  }
+}
+
+function getOrInitBase(baseId) {
+  if (!baseMap.has(baseId)) {
+    baseMap.set(baseId, new BaseState());
+  }
+  return baseMap.get(baseId);
+}
 
 const basesAvailable = new Map();
 
@@ -90,6 +145,8 @@ const server = http.createServer(async (req, res) => {
       req.on('end', () => {
         try {
           const data = JSON.parse(body);
+
+          // convert the received {'bases': [{'id': 1}, ...]} to a list of base id strings
           const basesData = data.bases || []
           const userBases = basesData.map(base => base.id.toString());
 
@@ -112,43 +169,29 @@ const server = http.createServer(async (req, res) => {
     log(`${req.method} ${url.pathname} - baseId: ${baseId || 'missing'} - IP: ${req.socket.remoteAddress}`);
   }
 
-  // MARK START original server
-  if (req.method === "GET" && url.pathname === "/mark") {
-    state.set(baseId, Date.now());
-    res.writeHead(200);
-    return res.end("Marked");
-  }
+  if (req.method === "GET" && url.pathname === "/copilot/check-req-actions") {
+    const state = getOrInitBase(baseId);
+    const next = state.peekAction();
+    const isRecent = next && (Date.now() - next.timestamp < TTL_MS);
+    if (isRecent) {
+      // Remove the action now that CLI has fetched it
+      state.dequeueAction();
+    }
 
-  if (req.method === "GET" && url.pathname === "/check") {
-    const ts = state.get(baseId) || 0;
-    const changed = (Date.now() - ts) < TTL_MS;
     res.writeHead(200, { "Content-Type": "application/json" });
-    state.delete(baseId);
-    return res.end(JSON.stringify({ changed }));
-  }
-  // MARK END original server
-
-  if (req.method === "GET" && url.pathname === "/copilot/check-req-actions")
-      // the cli will check this endpoint to see which actions the plugin wants to do
-  {
-    const ts = actionSubmissions.get(baseId) || 0;
-    const isRecent = (Date.now() - ts) < TTL_MS;
-    res.writeHead(200, { "Content-Type": "application/json" });
-    actionSubmissions.delete(baseId);
     return res.end(JSON.stringify({
-      "changed": isRecent,
-      "action": requestedActions.get(baseId),
-      "tableId": requestedActionsTableIds.get(baseId),
-      "rowId": requestedActionsRowIds.get(baseId),
-      "fieldId": requestedActionsFieldIds.get(baseId),
-      "content": actionContents.get(baseId),
+      changed: isRecent,
+      action: next?.action || null,
+      tableId: next?.tableId || null,
+      rowId: next?.rowId || null,
+      fieldId: next?.fieldId || null,
+      content: next?.content || null
     }));
-    // now the cli should immediatelly post the base's content to /put-action-result
   }
 
   if (req.method === "POST" && url.pathname === "/copilot/put-action-result")
       // this cli will POST the results of actions here
-      // the plugin's rest API (this script) will be polling `actionsFinished` before it returns anything to the plugin, or timeout
+      // the plugin's rest API (this script) will be polling finished action before it returns anything to the plugin, or timeout
   {
     let body = '';
     req.on('data', chunk => {
@@ -165,29 +208,17 @@ const server = http.createServer(async (req, res) => {
         log(`[PUT-ACTION-RESULT] Content received for baseId: ${baseId}`);
       } catch (e) {
         log(`[PUT-ACTION-RESULT] ERROR: invalid JSON for baseId: ${baseId}`);
-        res.writeHead(400);
-        return res.end(JSON.stringify({'msg': "Invalid JSON"}));
+        res.writeHead(400, { "Content-Type": "application/json" });
+        return res.end(JSON.stringify({ msg: "Invalid JSON" }));
       }
-
-      // responses
-      actionsFinished.set(baseId, Date.now());
-      if (content) {
-        actionResponses.set(baseId, content);
-      } else if (message) {
-        // fall back to the message we got from the cli
-        actionResponses.set(baseId, message);
-      }
-
-      // cleanup
-      actionContents.delete(baseId);
-      requestedActions.delete(baseId);
-      requestedActionsTableIds.delete(baseId);
-      requestedActionsRowIds.delete(baseId);
-      requestedActionsFieldIds.delete(baseId);
+      const base = getOrInitBase(baseId);
+      // store result in base state
+      base.actionsFinished = Date.now();
+      base.enqueueResponse(content ?? message ?? null);  // even if its null we should append
 
       log(`[PUT-ACTION-RESULT] SUCCESS: stored content for baseId: ${baseId}`);
       res.writeHead(200, { "Content-Type": "application/json" });
-      return res.end(JSON.stringify({'msg': `Marked ${baseId} with content`}));
+      return res.end(JSON.stringify({ msg: `Marked ${baseId} with content` }));
     });
     return;
   }
@@ -200,7 +231,9 @@ const server = http.createServer(async (req, res) => {
     const desiredAction = url.pathname.split("/").pop();
     if (!validActionEndpoints.includes(desiredAction)) {
       res.writeHead(404, { "Content-Type": "application/json" });
-      return res.end(JSON.stringify({'msg': `Action endpoint: '${desiredAction}' not found in ${validActionEndpoints.join(', ')}`}));
+      return res.end(JSON.stringify({
+        msg: `Action endpoint '${desiredAction}' not found. Valid: ${validActionEndpoints.join(', ')}`
+      }));
     }
 
     const userBases = basesAvailable.get(userId) || [];
@@ -208,7 +241,7 @@ const server = http.createServer(async (req, res) => {
       log(`ERROR: BaseId '${baseId}' not found in available bases for user ${userId}`);
       res.writeHead(404, { "Content-Type": "application/json" });
       return res.end(JSON.stringify({
-        'msg': `Base ID '${baseId}' not found. Available bases: ${userBases.join(', ')}`
+        msg: `Base ID '${baseId}' not found for the user: '${userId}'. Available bases: ${userBases.join(', ')}`
       }));
     }
 
@@ -217,55 +250,44 @@ const server = http.createServer(async (req, res) => {
       body += chunk.toString();
     });
     req.on('end', async () => {
-      let tableid;
-      let rowid;
-      let fieldid;
-      let theContent;
+      let tableId, rowId, fieldId, content;
       try {
         log(`[ACTION SUBMIT] Raw body received: ${body}`);
-        if (!body || body.trim() === '') {
-          log(`[ACTION SUBMIT] WARN: empty body for baseId: ${baseId}`);
-        } else {
-          const data = JSON.parse(body);
-          tableid = data.tableId || null;
-          rowid = data.rowId || null;
-          fieldid = data.fieldId || null;
-          theContent = data.content || null;
-          log(`[ACTION SUBMIT] Parsed data:`, data);
-        }
+        const data = body.trim() === '' ? {} : JSON.parse(body);
+        tableId = data.tableId || null;
+        rowId = data.rowId || null;
+        fieldId = data.fieldId || null;
+        content = data.content || null;
+        log(`[ACTION SUBMIT] Parsed data:`, data);
       } catch (e) {
         log(`[ACTION SUBMIT] ERROR: invalid JSON for baseId: ${baseId}, raw body: ${body}`);
         res.writeHead(422);
-        return res.end(JSON.stringify({'msg': "Invalid JSON", baseId: baseId}));
+        return res.end(JSON.stringify({ msg: "Invalid JSON", baseId }));
       }
 
-      log(`[ACTION SUBMIT] started for baseId: ${baseId}`);
-      const reqDate = new Date(Date.now());
-      actionSubmissions.set(baseId, reqDate);
+      const base = getOrInitBase(baseId);
+      const reqDate = Date.now();
 
-      requestedActions.set(baseId, desiredAction);
-      if (tableid) {
-        requestedActionsTableIds.set(baseId, tableid);
-      }
-      if (rowid) {
-        requestedActionsRowIds.set(baseId, rowid);
-      }
-      if (fieldid) {
-        requestedActionsFieldIds.set(baseId, fieldid);
-      }
-      if (theContent) {
-        actionContents.set(baseId, theContent);
-      }
+      log(`[ACTION SUBMIT] Queued '${desiredAction}' for baseId: ${baseId}`);
 
-      actionsFinished.delete(baseId);  // clear the last action's result state
+      // Enqueue the full action object
+      base.enqueueAction({
+        action: desiredAction,
+        content: content,
+        tableId: tableId,
+        rowId: rowId,
+        fieldId: fieldId,
+        timestamp: reqDate
+      });
 
+      // clear the last action's result state
+      base.actionsFinished = 0;
+
+      // Wait for CLI to respond
       const theTimeout = TIMEOUT_SECS * 1000;
       let waited = 0;
-      // the cli will be polling /check-req-actions which returns actionSubmissions[base]
-      // copilot calling this endpoint will make /check-req-actions return true
 
-      // then the cli will push to /put-action-result which updates actionsFinished[base] to now()
-      let ts = actionsFinished.get(baseId) || 0;
+      let ts = base.actionsFinished || 0;
       let newContent = (Date.now() - ts) < TTL_MS;
       log(`Waiting for CLI response on baseId: ${baseId}`);
 
@@ -274,37 +296,51 @@ const server = http.createServer(async (req, res) => {
         {
           await new Promise(resolve => setTimeout(resolve, 1000)); // wait 1s
           waited += 1000;
-
           log(`[ACTION SUBMIT] Polling for CLI response on baseId: ${baseId}`);
-          ts = actionsFinished.get(baseId) || 0;
+          ts = base.actionsFinished || 0;
           newContent = (Date.now() - ts) < TTL_MS;
         }
 
         if (waited > theTimeout) {
           log(`[ACTION SUBMIT] TIMEOUT after ${waited}ms waiting for baseId: ${baseId}`);
           res.writeHead(408);
-          return res.end(JSON.stringify({'msg': `Timeout waiting for response from CLI!`, 'baseId': baseId}));
+          return res.end(JSON.stringify({
+            msg: `Timeout waiting for response from CLI!`,
+            baseId
+          }));
         }
       } catch (error) {
         log(`[ACTION SUBMIT] ERROR in polling loop: ${error.message}`);
         res.writeHead(500);
-        return res.end(JSON.stringify({'msg': 'Internal server error', 'baseId': baseId}));
+        return res.end(JSON.stringify({
+          msg: 'Internal server error',
+          baseId
+        }));
       }
 
-      const updatedContent = actionResponses.get(baseId);
+      const updatedContent = base.dequeueResponse();
       log(`CLI response received for baseId: ${baseId}`);
 
       if (!updatedContent) {
-        // if it doesn't exist but the cli changed the date... error
         log(`ERROR: No response data found for baseId: ${baseId}`);
         res.writeHead(502);
-        return res.end(JSON.stringify({'msg': `Error reading response from CLI! ${baseId}`}));
+        return res.end(JSON.stringify({
+          msg: `Error reading response from CLI! ${baseId}`
+        }));
       }
 
       log(`Sending successful response to Copilot for baseId: ${baseId}`);
       res.writeHead(200, { "Content-Type": "application/json" });
 
-      return res.end(JSON.stringify({ data: updatedContent, target: {baseId: baseId, tableId: tableid, rowId: rowid, fieldId: fieldid} }));
+      return res.end(JSON.stringify({
+        data: updatedContent,
+        target: {
+          baseId,
+          tableId,
+          rowId,
+          fieldId
+        }
+      }));
     });
     return;
   }

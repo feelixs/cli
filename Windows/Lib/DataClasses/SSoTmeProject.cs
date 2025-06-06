@@ -914,6 +914,8 @@ namespace SSoTme.OST.Lib.DataClasses
                         {
                             var (response, contentWasUpdated) = RunCopilotAction(copilotProvidedData, baseId, baserowClient);
                             PostDataToBridge(response, $"{baseCopilotUri}/put-action-result?baseId={baseId}");
+                            // todo if copilot requests multiple actions in a row for the same base, we need a way to queue them on the server
+                            // to be sent to the cli after the cli finishes processing the current one
                             if (contentWasUpdated) PostChange(baseUri, baseId);  // signal a rebuild is necessary
                         }
                     }
