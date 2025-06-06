@@ -695,23 +695,33 @@ namespace SSoTme.OST.Lib.DataClasses
             }
         }
         
-        private (bool, string) GetLastCopilotRequestedRead(string readReqUri)
+        private (bool, string, string) GetLastCopilotRequestedRead(string readReqUri)
         {
             using (var httpClient = new HttpClient())
             {
                 string response = httpClient.GetStringAsync(readReqUri).Result;
                 var json = JsonDocument.Parse(response);
-                var changed = json.RootElement.GetProperty("changed").GetRawText();
-                return (changed == "true", response);
+                var changedVal = json.RootElement.GetProperty("changed").GetRawText();
+                bool changed = changedVal == "true";
+                
+                string timestamp = "0";
+                if (changed) {
+                    timestamp = json.RootElement.GetProperty("timestamp").GetString();
+                    if (string.IsNullOrEmpty(timestamp)) { Console.WriteLine($"WARN: Received null timestamp in response: {response}"); }
+                }
+                return (changed, response, timestamp);
             }
         }
 
-        private string PostDataToBridge(JToken data, string uri)
+        private string PostDataToBridge(JToken data, string uri, string dataTimestamp)
         {
             using (var httpClient = new HttpClient())
             {
                 try
                 {
+                    // Add timestamp to the data
+                    data["timestamp"] = dataTimestamp;
+                    
                     var jsonString = data.ToString(Newtonsoft.Json.Formatting.None);
                     Console.WriteLine($"Posting to bridge: {uri} - {data}");
                     var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
@@ -738,7 +748,7 @@ namespace SSoTme.OST.Lib.DataClasses
         private (JToken, bool) RunCopilotAction(string commandData, string baseId, BaserowBackend baserowClient)
         {  // todo you can make undo/redo actions using the baserow 'ClientSessionId' header
             
-            var validActions = new[] { "list_tables", "update_cell", "get_cell", "get_table_fields", "create_field" };
+            var validActions = new[] { "list_tables", "update_cell", "get_cell", "get_table_fields", "create_row", "create_field", "update_field" };
             try
             {
                 var requestedChanges = JsonConvert.DeserializeObject<dynamic>(commandData);
@@ -762,9 +772,26 @@ namespace SSoTme.OST.Lib.DataClasses
                     }, false);
                 }
                 
-                string rowId = requestedChanges.rowId;
                 string fieldId = requestedChanges.fieldId;
-                if ((requestedChanges.action == "update_cell" || requestedChanges.action == "get_cell") &&
+                if ((requestedChanges.action == "update_field" || requestedChanges.action == "create_field") && requestedChanges.fieldId == null)
+                {
+                    return (new JObject
+                    {
+                        ["content"] = null,
+                        ["msg"] = "Error applying changes: this endpoint requires fieldId!"
+                    }, false);
+                }
+                
+                string rowId = requestedChanges.rowId;
+                if (requestedChanges.action == "move_row" && requestedChanges.rowId == null)
+                {
+                    return (new JObject
+                    {
+                        ["content"] = null,
+                        ["msg"] = "Error applying changes: this endpoint requires rowId!"
+                    }, false);
+                }
+                else if ((requestedChanges.action == "update_cell" || requestedChanges.action == "get_cell") &&
                     (requestedChanges.rowId == null || requestedChanges.fieldId == null)) 
                 {
                     return (new JObject
@@ -808,10 +835,53 @@ namespace SSoTme.OST.Lib.DataClasses
                         ["msg"] = $"Successfully created field on tableId: {tableId}"
                     }, true);
                 }
+                else if (requestedChanges.action == "update_field")
+                {
+                    string name = requestedChanges.content.fieldName;
+                    string type = requestedChanges.content.fieldType;
+                    Console.WriteLine($"Updating field: id: {fieldId}, to type: {type}, name: {name}");
+                    JToken resp = baserowClient.UpdateField(tableId, fieldId, name, type);
+                    return (new JObject
+                    {
+                        ["content"] = resp,
+                        ["msg"] = $"Successfully updated field: {fieldId}"
+                    }, true);
+                }
+                else if (requestedChanges.action == "create_row")
+                {
+                    Console.WriteLine($"Creating new row");
+                    JToken resp = baserowClient.CreateRow(tableId);
+                    return (new JObject
+                    {
+                        ["content"] = resp,
+                        ["msg"] = $"Successfully created row"
+                    }, true);
+                }
+                else if (requestedChanges.action == "move_row")
+                {
+                    JToken resp;
+                    if (requestedChanges.ContainsKey("relativeRowId"))
+                    {
+                        resp = baserowClient.MoveRow(tableId, rowId, requestedChanges.relativeRowId);
+                        Console.WriteLine($"Moved row {rowId} to position before {requestedChanges.relativeRowId}");
+                        return (new JObject
+                        {
+                            ["content"] = resp,
+                            ["msg"] = $"Successfully moved row {rowId} to position before {requestedChanges.relativeRowId}"
+                        }, true);
+                    }
+                    resp = baserowClient.MoveRow(tableId, rowId);
+                    Console.WriteLine($"Moved row {rowId} to the end of the table");
+                    return (new JObject
+                    {
+                        ["content"] = resp,
+                        ["msg"] = $"Successfully moved row {rowId} to the end of the table"
+                    }, true);
+                }
                 else if (requestedChanges.action == "get_cell")
                 {
                     Console.WriteLine($"Fetching cell data for field x row: {fieldId}x{rowId}");
-                    JToken fieldResp = baserowClient.GetField(tableId, rowId, fieldId);
+                    JToken fieldResp = baserowClient.GetCell(tableId, rowId, fieldId);
                     return (new JObject
                     {
                         ["content"] = fieldResp,
@@ -822,7 +892,7 @@ namespace SSoTme.OST.Lib.DataClasses
                 {
                     string newValue = requestedChanges.content;
                     Console.WriteLine($"Updating cell data for field x row: {fieldId}x{rowId} to {newValue}");
-                    JToken resp = baserowClient.UpdateField(tableId, rowId, fieldId, newValue);
+                    JToken resp = baserowClient.UpdateCell(tableId, rowId, fieldId, newValue);
                     return (new JObject
                     {
                         ["content"] = resp,
@@ -889,7 +959,7 @@ namespace SSoTme.OST.Lib.DataClasses
             DateTime? lastChangedTime = null;
             bool changeEverDetected = false;
             string baseUri = $"https://ssotme-cli-airtable-bridge-ahrnz660db6k4.aws-us-east-1.controlplane.us";
-            string baseCopilotUri = "https://ssotme-cli-airtable-bridge-v2-ahrnz660db6k4.cpln.app/copilot";
+            string baseCopilotUri = "http://localhost:8080/copilot";
             string copilotReadUri = $"{baseCopilotUri}/check-req-actions?baseId={baseId}";
             Console.WriteLine($"Polling {baseUri}/check?baseId={baseId} for changes to base: `{baseId}`...");
 
@@ -899,23 +969,25 @@ namespace SSoTme.OST.Lib.DataClasses
                 Console.WriteLine($"Polling {copilotReadUri} for read requests...");
                 // get baserow client from ~/.ssotme/ssotme.key file -> "baserow" api
                 baserowClient.InitFromHomeFile();
-                JToken UserBaserowBases = PostAvailableBases($"{baseCopilotUri}/available-bases", baserowClient);
-                if (!BaseIsIn(baseId, UserBaserowBases))
+                JToken userBaserowBases = PostAvailableBases($"{baseCopilotUri}/available-bases", baserowClient);
+                if (userBaserowBases == null)
+                {
+                    throw new Exception("Couldn't post to the remote server");
+                }
+                else if (!BaseIsIn(baseId, userBaserowBases))
                 {
                     throw new Exception($"You don't have access to any baserow database with ID: {baseId}");
                 }
             }
             while (true) {
                 if (isCopilot) {
-                    var (newCopilotActionRequest, copilotProvidedData) = GetLastCopilotRequestedRead(copilotReadUri);
+                    var (newCopilotActionRequest, copilotProvidedData, timestamp) = GetLastCopilotRequestedRead(copilotReadUri);
                     if (newCopilotActionRequest) {
                         Console.WriteLine($"Copilot requested action: {copilotProvidedData}");
                         if (!string.IsNullOrEmpty(copilotProvidedData))
                         {
                             var (response, contentWasUpdated) = RunCopilotAction(copilotProvidedData, baseId, baserowClient);
-                            PostDataToBridge(response, $"{baseCopilotUri}/put-action-result?baseId={baseId}");
-                            // todo if copilot requests multiple actions in a row for the same base, we need a way to queue them on the server
-                            // to be sent to the cli after the cli finishes processing the current one
+                            PostDataToBridge(response, $"{baseCopilotUri}/put-action-result?baseId={baseId}", timestamp);
                             if (contentWasUpdated) PostChange(baseUri, baseId);  // signal a rebuild is necessary
                         }
                     }
