@@ -695,19 +695,25 @@ namespace SSoTme.OST.Lib.DataClasses
             }
         }
         
-        private (bool, string, long) GetLastCopilotRequestedRead(string readReqUri)
+        private (bool, string, string) GetLastCopilotRequestedRead(string readReqUri)
         {
             using (var httpClient = new HttpClient())
             {
                 string response = httpClient.GetStringAsync(readReqUri).Result;
                 var json = JsonDocument.Parse(response);
-                var changed = json.RootElement.GetProperty("changed").GetRawText();
-                long timestamp = json.RootElement.GetProperty("timestamp").GetInt64();
-                return (changed == "true", response, timestamp);
+                var changedVal = json.RootElement.GetProperty("changed").GetRawText();
+                bool changed = changedVal == "true";
+                
+                string timestamp = "0";
+                if (changed) {
+                    timestamp = json.RootElement.GetProperty("timestamp").GetRawText();
+                    if (string.IsNullOrEmpty(timestamp)) { Console.WriteLine($"WARN: Received null timestamp in response: {response}"); }
+                }
+                return (changed, response, timestamp);
             }
         }
 
-        private string PostDataToBridge(JToken data, string uri, long dataTimestamp)
+        private string PostDataToBridge(JToken data, string uri, string dataTimestamp)
         {
             using (var httpClient = new HttpClient())
             {
@@ -903,8 +909,12 @@ namespace SSoTme.OST.Lib.DataClasses
                 Console.WriteLine($"Polling {copilotReadUri} for read requests...");
                 // get baserow client from ~/.ssotme/ssotme.key file -> "baserow" api
                 baserowClient.InitFromHomeFile();
-                JToken UserBaserowBases = PostAvailableBases($"{baseCopilotUri}/available-bases", baserowClient);
-                if (!BaseIsIn(baseId, UserBaserowBases))
+                JToken userBaserowBases = PostAvailableBases($"{baseCopilotUri}/available-bases", baserowClient);
+                if (userBaserowBases == null)
+                {
+                    throw new Exception("Couldn't post to the remote server");
+                }
+                else if (!BaseIsIn(baseId, userBaserowBases))
                 {
                     throw new Exception($"You don't have access to any baserow database with ID: {baseId}");
                 }
