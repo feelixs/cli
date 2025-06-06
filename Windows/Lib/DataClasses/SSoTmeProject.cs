@@ -706,7 +706,7 @@ namespace SSoTme.OST.Lib.DataClasses
                 
                 string timestamp = "0";
                 if (changed) {
-                    timestamp = json.RootElement.GetProperty("timestamp").GetRawText();
+                    timestamp = json.RootElement.GetProperty("timestamp").GetString();
                     if (string.IsNullOrEmpty(timestamp)) { Console.WriteLine($"WARN: Received null timestamp in response: {response}"); }
                 }
                 return (changed, response, timestamp);
@@ -959,7 +959,7 @@ namespace SSoTme.OST.Lib.DataClasses
             DateTime? lastChangedTime = null;
             bool changeEverDetected = false;
             string baseUri = $"https://ssotme-cli-airtable-bridge-ahrnz660db6k4.aws-us-east-1.controlplane.us";
-            string baseCopilotUri = "https://ssotme-cli-airtable-bridge-v2-ahrnz660db6k4.cpln.app/copilot";
+            string baseCopilotUri = "http://localhost:8080/copilot";
             string copilotReadUri = $"{baseCopilotUri}/check-req-actions?baseId={baseId}";
             Console.WriteLine($"Polling {baseUri}/check?baseId={baseId} for changes to base: `{baseId}`...");
 
