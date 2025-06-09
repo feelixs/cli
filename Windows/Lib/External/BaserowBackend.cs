@@ -319,14 +319,14 @@ namespace SSoTme.OST.Core.Lib.External
             }
         }
         
-        public JToken UpdateField(string tableId, string fieldId, string newName, string newType)
+        public JToken UpdateField(string fieldId, string newName, string newType)
         {
-            var task = UpdateFieldAsync(tableId, fieldId, newName, newType);
+            var task = UpdateFieldAsync(fieldId, newName, newType);
             task.Wait();
             return task.Result;
         }
 
-        private async Task<JToken> UpdateFieldAsync(string tableId, string fieldId, string newName = null, string newType = null)
+        private async Task<JToken> UpdateFieldAsync(string fieldId, string newName = null, string newType = null)
         {
             var token = await GetValidTokenAsync();
 
@@ -346,7 +346,7 @@ namespace SSoTme.OST.Core.Lib.External
                 var json = JsonConvert.SerializeObject(fieldData);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                var url = $"{_baseUrl}/database/fields/table/{tableId}/{fieldId}/";
+                var url = $"{_baseUrl}/database/fields/{fieldId}/";
                 var response = await httpClient.PatchAsync(url, content);
 
                 Console.WriteLine($"Response: {response.StatusCode} - {response.ReasonPhrase}");
