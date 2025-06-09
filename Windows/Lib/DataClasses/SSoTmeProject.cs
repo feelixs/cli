@@ -696,10 +696,11 @@ namespace SSoTme.OST.Lib.DataClasses
             }
         }
         
-        private (bool, string, string) GetLastCopilotRequestedRead(string readReqUri)
+        private (bool, string, string) GetLastCopilotRequestedRead(string readReqUri, string userid)
         {
             using (var httpClient = new HttpClient())
             {
+                httpClient.DefaultRequestHeaders.Add("X-Microsoft-TenantID", userid);
                 string response = httpClient.GetStringAsync(readReqUri).Result;
                 var json = JsonDocument.Parse(response);
                 var changedVal = json.RootElement.GetProperty("changed").GetRawText();
@@ -714,7 +715,7 @@ namespace SSoTme.OST.Lib.DataClasses
             }
         }
 
-        private string PostDataToBridge(JToken data, string uri, string dataTimestamp)
+        private string PostDataToBridge(JToken data, string uri, string dataTimestamp, string userid)
         {
             using (var httpClient = new HttpClient())
             {
@@ -968,12 +969,14 @@ namespace SSoTme.OST.Lib.DataClasses
             Console.WriteLine($"Polling {baseUri}/check?baseId={baseId} for changes to base: `{baseId}`...");
 
             BaserowBackend baserowClient = new SSoTme.OST.Core.Lib.External.BaserowBackend();
+            string microsoftTenantUserId = String.Empty;
             if (isCopilot)
             {
+                microsoftTenantUserId = "test";  // todo actually use the user's microsoft account tenant id somehow
                 Console.WriteLine($"Polling {copilotReadUri} for read requests...");
                 // get baserow client from ~/.ssotme/ssotme.key file -> "baserow" api
                 baserowClient.InitFromHomeFile();
-                JToken userBaserowBases = PostAvailableBases($"{baseCopilotUri}/available-bases", baserowClient);
+                JToken userBaserowBases = PostAvailableBases($"{baseCopilotUri}/available-bases", baserowClient, microsoftTenantUserId);
                 if (userBaserowBases == null)
                 {
                     throw new Exception("Couldn't post to the remote server");
@@ -985,13 +988,13 @@ namespace SSoTme.OST.Lib.DataClasses
             }
             while (true) {
                 if (isCopilot) {
-                    var (newCopilotActionRequest, copilotProvidedData, timestamp) = GetLastCopilotRequestedRead(copilotReadUri);
+                    var (newCopilotActionRequest, copilotProvidedData, timestamp) = GetLastCopilotRequestedRead(copilotReadUri, microsoftTenantUserId);
                     if (newCopilotActionRequest) {
                         Console.WriteLine($"Copilot requested action: {copilotProvidedData}");
                         if (!string.IsNullOrEmpty(copilotProvidedData))
                         {
                             var (response, contentWasUpdated) = RunCopilotAction(copilotProvidedData, baseId, baserowClient);
-                            PostDataToBridge(response, $"{baseCopilotUri}/put-action-result?baseId={baseId}", timestamp);
+                            PostDataToBridge(response, $"{baseCopilotUri}/put-action-result?baseId={baseId}", timestamp, microsoftTenantUserId);
                             if (contentWasUpdated) PostChange(baseUri, baseId);  // signal a rebuild is necessary
                         }
                     }
@@ -1073,18 +1076,15 @@ namespace SSoTme.OST.Lib.DataClasses
             }
         }
 
-        private JToken PostAvailableBases(string uri, BaserowBackend baserowClient)
+        private JToken PostAvailableBases(string uri, BaserowBackend baserowClient, string userid)
         {
-            string microsoftTenantUserId = "test";  // todo actually use the user's microsoft account tenant id somehow
             JToken availableBases = baserowClient.GetAvailableBases();
 
             try
             {
                 using (var httpClient = new HttpClient())
                 {
-                    // Add the user ID to the request headers
-                    httpClient.DefaultRequestHeaders.Add("X-Microsoft-TenantID", microsoftTenantUserId);
-
+                    httpClient.DefaultRequestHeaders.Add("X-Microsoft-TenantID", userid);
                     var payload = new JObject
                     {
                         ["bases"] = availableBases
