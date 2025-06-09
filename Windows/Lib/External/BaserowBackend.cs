@@ -280,6 +280,44 @@ namespace SSoTme.OST.Core.Lib.External
             }
         }
 
+        public JToken DeleteField(string fieldId)
+        {
+            var task = DeleteFieldAsync(fieldId);
+            task.Wait();
+            return task.Result;
+        }
+        
+        private async Task<JToken> DeleteFieldAsync(string fieldId)
+        {
+            var token = await GetValidTokenAsync();
+            
+            using (var httpClient = new HttpClient())
+            {
+                httpClient.DefaultRequestHeaders.Add("Authorization", $"JWT {token}");
+                
+                var url = $"{_baseUrl}/database/fields/{fieldId}/";
+                var response = await httpClient.DeleteAsync(url);
+                
+                Console.WriteLine($"Response: {response.StatusCode} - {response.ReasonPhrase}");
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    throw new Exception($"Failed to delete Baserow field: {response.StatusCode} - {errorContent}");
+                }
+                
+                string strResp = await response.Content.ReadAsStringAsync();
+                try
+                {
+                    return JToken.Parse(strResp);
+                }
+                catch (JsonReaderException ex)
+                {
+                    Console.WriteLine($"JSON parsing error in DeleteFieldAsync: {ex.Message}");
+                    Console.WriteLine($"Response content (first 200 chars): {strResp.Substring(0, Math.Min(200, strResp.Length))}");
+                    throw new Exception($"Failed to parse JSON response from Baserow: {ex.Message}");
+                }
+            }
+        }
         
         public JToken UpdateField(string tableId, string fieldId, string newName, string newType)
         {
