@@ -8,6 +8,7 @@ using System.Threading;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 public static class DirectoryExtensions
 {
@@ -83,7 +84,16 @@ public static class DirectoryExtensions
         }
 
         Console.WriteLine($"Executing 'ssotme -buildLocal' in {di.FullName}");
-        var p = Process.Start(new ProcessStartInfo("cmd.exe", $"/c ssotme -buildLocal") { WorkingDirectory = di.FullName });
+        ProcessStartInfo psi;
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            psi = new ProcessStartInfo("cmd.exe", $"/c ssotme -buildLocal") { WorkingDirectory = di.FullName };
+        }
+        else
+        {
+            psi = new ProcessStartInfo("/bin/bash", $"-c \"ssotme -buildLocal\"") { WorkingDirectory = di.FullName };
+        }
+        var p = Process.Start(psi);
         p.WaitForExit(300000);
     }
 
@@ -176,7 +186,16 @@ public static class DirectoryExtensions
         }
 
         Console.WriteLine($"Executing 'ssotme -clean' in {di.FullName}");
-        var p = Process.Start(new ProcessStartInfo("cmd.exe", $"/c ssotme -clean") { WorkingDirectory = di.FullName });
+        ProcessStartInfo psi;
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            psi = new ProcessStartInfo("cmd.exe", $"/c ssotme -clean") { WorkingDirectory = di.FullName };
+        }
+        else
+        {
+            psi = new ProcessStartInfo("/bin/bash", $"-c \"ssotme -clean\"") { WorkingDirectory = di.FullName };
+        }
+        var p = Process.Start(psi);
         p.WaitForExit(300000);
     }
 
