@@ -1075,7 +1075,7 @@ namespace SSoTme.OST.Lib.DataClasses
 
         private JToken PostAvailableBases(string uri, BaserowBackend baserowClient)
         {
-            string microsoftTenantUserId = "test"; 
+            string microsoftTenantUserId = "test";  // todo actually use the user's microsoft account tenant id somehow
             JToken availableBases = baserowClient.GetAvailableBases();
 
             try
@@ -1083,7 +1083,7 @@ namespace SSoTme.OST.Lib.DataClasses
                 using (var httpClient = new HttpClient())
                 {
                     // Add the user ID to the request headers
-                    httpClient.DefaultRequestHeaders.Add("microsoftTenantUserId", microsoftTenantUserId);
+                    httpClient.DefaultRequestHeaders.Add("X-Microsoft-TenantID", microsoftTenantUserId);
 
                     var payload = new JObject
                     {
