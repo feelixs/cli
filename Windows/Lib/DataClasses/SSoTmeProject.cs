@@ -723,7 +723,7 @@ namespace SSoTme.OST.Lib.DataClasses
                     data["timestamp"] = dataTimestamp;
                     
                     var jsonString = data.ToString(Newtonsoft.Json.Formatting.None);
-                    Console.WriteLine($"Posting to bridge: {uri} - {data}");
+                    // Console.WriteLine($"Posting to bridge: {uri} - {data}");
                     var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
                     var response = httpClient.PostAsync(uri, content).Result;
 
@@ -753,27 +753,20 @@ namespace SSoTme.OST.Lib.DataClasses
             {
                 var requestedChanges = JsonConvert.DeserializeObject<dynamic>(commandData);
                 
-                Console.WriteLine($"Running Copilot Action: {requestedChanges} on base: {baseId}");
+                // Console.WriteLine($"Running Copilot Action: {requestedChanges} on base: {baseId}");
                 
                 // match copilot's requested action to the right baserow endpoint
                 string tableId = requestedChanges.tableId;
-                if (requestedChanges.action != "list_tables" && string.IsNullOrEmpty(tableId)) {
+                if ((requestedChanges.action != "list_tables" && requestedChanges.action != "update_field" && requestedChanges.action != "delete_field") && requestedChanges.tableId == null) {
                     return (new JObject
                     {
                         ["content"] = null,
-                        ["msg"] = "Error applying changes: This endpoint requires the tableId field"
-                    }, false);
-                }
-                if (requestedChanges.action != "list_tables" && requestedChanges.tableId == null) {
-                    return (new JObject
-                    {
-                        ["content"] = null,
-                        ["msg"] = "Error applying changes: table ID was null!"
+                        ["msg"] = "Error applying changes: This endpoint requires tableId!"
                     }, false);
                 }
                 
                 string fieldId = requestedChanges.fieldId;
-                if (requestedChanges.fieldId == null && (requestedChanges.action == "update_field" || requestedChanges.action == "create_field" || requestedChanges.action == "delete_field"))
+                if (requestedChanges.fieldId == null && (requestedChanges.action == "update_field" || requestedChanges.action == "delete_field"))
                 {
                     return (new JObject
                     {
@@ -840,7 +833,7 @@ namespace SSoTme.OST.Lib.DataClasses
                     string name = requestedChanges.content.fieldName;
                     string type = requestedChanges.content.fieldType;
                     Console.WriteLine($"Updating field: id: {fieldId}, to type: {type}, name: {name}");
-                    JToken resp = baserowClient.UpdateField(tableId, fieldId, name, type);
+                    JToken resp = baserowClient.UpdateField(fieldId, name, type);
                     return (new JObject
                     {
                         ["content"] = resp,
