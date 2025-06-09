@@ -748,7 +748,7 @@ namespace SSoTme.OST.Lib.DataClasses
         private (JToken, bool) RunCopilotAction(string commandData, string baseId, BaserowBackend baserowClient)
         {  // todo you can make undo/redo actions using the baserow 'ClientSessionId' header
             
-            var validActions = new[] { "list_tables", "update_cell", "get_cell", "get_table_fields", "create_row", "create_field", "update_field" };
+            var validActions = new[] { "list_tables", "update_cell", "get_cell", "get_table_fields", "create_row", "create_field", "update_field", "delete_field" };
             try
             {
                 var requestedChanges = JsonConvert.DeserializeObject<dynamic>(commandData);
@@ -773,7 +773,7 @@ namespace SSoTme.OST.Lib.DataClasses
                 }
                 
                 string fieldId = requestedChanges.fieldId;
-                if ((requestedChanges.action == "update_field" || requestedChanges.action == "create_field") && requestedChanges.fieldId == null)
+                if (requestedChanges.fieldId == null && (requestedChanges.action == "update_field" || requestedChanges.action == "create_field" || requestedChanges.action == "delete_field"))
                 {
                     return (new JObject
                     {
@@ -845,6 +845,16 @@ namespace SSoTme.OST.Lib.DataClasses
                     {
                         ["content"] = resp,
                         ["msg"] = $"Successfully updated field: {fieldId}"
+                    }, true);
+                }
+                else if (requestedChanges.action == "delete_field")
+                {
+                    Console.WriteLine($"Deleting field: id: {fieldId}");
+                    JToken resp = baserowClient.DeleteField(fieldId);
+                    return (new JObject
+                    {
+                        ["content"] = resp,
+                        ["msg"] = $"Successfully deleted field: {fieldId}"
                     }, true);
                 }
                 else if (requestedChanges.action == "create_row")
@@ -959,7 +969,7 @@ namespace SSoTme.OST.Lib.DataClasses
             DateTime? lastChangedTime = null;
             bool changeEverDetected = false;
             string baseUri = $"https://ssotme-cli-airtable-bridge-ahrnz660db6k4.aws-us-east-1.controlplane.us";
-            string baseCopilotUri = "http://localhost:8080/copilot";
+            string baseCopilotUri = "https://ssotme-cli-airtable-bridge-v2-ahrnz660db6k4.cpln.app/copilot";
             string copilotReadUri = $"{baseCopilotUri}/check-req-actions?baseId={baseId}";
             Console.WriteLine($"Polling {baseUri}/check?baseId={baseId} for changes to base: `{baseId}`...");
 
