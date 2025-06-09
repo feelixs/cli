@@ -719,6 +719,7 @@ namespace SSoTme.OST.Lib.DataClasses
         {
             using (var httpClient = new HttpClient())
             {
+                httpClient.DefaultRequestHeaders.Add("X-Microsoft-TenantID", userid);
                 try
                 {
                     // Add timestamp to the data
