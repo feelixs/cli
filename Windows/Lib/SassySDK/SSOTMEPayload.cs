@@ -9,6 +9,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+
 
 namespace SassyMQ.SSOTME.Lib.RMQActors
 {
@@ -133,7 +135,16 @@ namespace SassyMQ.SSOTME.Lib.RMQActors
 
             // Save the file set to the disk
             var fileSetXml = this.TranspileRequest.ZippedOutputFileSet.UnzipToString();
-            var tempFI = new FileInfo(String.Format("tempFileSet_{0}.xml", Guid.NewGuid()));
+            string workingDir;
+            try
+            {
+                workingDir = Environment.CurrentDirectory;
+            }
+            catch
+            {
+                workingDir = System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+            }
+            var tempFI = new FileInfo(Path.Combine(workingDir, String.Format("tempFileSet_{0}.xml", Guid.NewGuid())));
             File.WriteAllText(tempFI.FullName, fileSetXml);
 
             SSoTme.OST.Lib.Extensions.SSOTMEExtensions.SplitFileSetFile(tempFI.FullName, tempFI.Directory.FullName);
@@ -156,7 +167,17 @@ namespace SassyMQ.SSOTME.Lib.RMQActors
 
         private FileInfo GetZFSFI()
         {
-            var curDir = Environment.CurrentDirectory;
+            string curDir = String.Empty;
+            try
+            {
+                curDir = Environment.CurrentDirectory;
+            }
+            catch (Exception)
+            {
+                // Fallback to executable directory if current directory doesn't exist
+                curDir = System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+            }
+
             var relPath = curDir.Substring(this.SSoTmeProject.RootPath.Length);
 
             var ssotmeDI = new DirectoryInfo(String.Format("{0}/.ssotme", this.SSoTmeProject.RootPath));
