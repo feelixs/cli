@@ -17,6 +17,7 @@ using System.Diagnostics;
 using System.Collections.Generic;
 //using System.Windows.Forms;
 using System.Threading;
+using System.Runtime.InteropServices;
 using EnumList;
 using Newtonsoft.Json.Linq;
 using System.Threading.Tasks;
@@ -846,7 +847,16 @@ namespace SSoTme.OST.Lib.DataClasses
         {
             if (File.Exists("../ssotme.json"))
             {
-                var p = Process.Start(new ProcessStartInfo("cmd.exe", $"/c ssotme -buildLocal -tg ssot") { WorkingDirectory = ".." });
+                ProcessStartInfo psi;
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    psi = new ProcessStartInfo("cmd.exe", $"/c ssotme -buildLocal -tg ssot") { WorkingDirectory = ".." };
+                }
+                else
+                {
+                    psi = new ProcessStartInfo("/bin/bash", $"-c \"ssotme -buildLocal -tg ssot\"") { WorkingDirectory = ".." };
+                }
+                var p = Process.Start(psi);
                 p.WaitForExit(300000);
             }
         }
