@@ -39,7 +39,7 @@ namespace SSoTme.OST.Lib.CLIOptions
         [CommandLineOption(Description = "Builds whenever a trigger is invoked (see readme for URL)", MinOccurs = 0, Aliases = "bot")]
         public string buildOnTrigger { get; set; }
         
-        [CommandLineOption(Description = "Connect to copilot SSoTme agent for with the baseId given to buildOnTrigger", MinOccurs = 0, Aliases = "cc")]
+        [CommandLineOption(Description = "Use with buildOnTrigger to connect the baseId to the SSoTme Copilot Agent", MinOccurs = 0, Aliases = "cc")]
         public bool copilotConnect { get; set; }
         
         [CommandLineOption(Description = "Describes the current SSoT.me Project (and all transpilers)", MinOccurs = 0, Aliases = "d")]
