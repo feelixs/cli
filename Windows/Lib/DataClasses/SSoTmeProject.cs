@@ -757,7 +757,7 @@ namespace SSoTme.OST.Lib.DataClasses
             {
                 var requestedChanges = JsonConvert.DeserializeObject<dynamic>(commandData);
                 
-                Console.WriteLine(requestedChanges.reason); // copilot will provide this with every request
+                Console.WriteLine($"{requestedChanges.reason} (action: '{requestedChanges.action}')"); // copilot will provide this with every request
                 
                 // match copilot's requested action to the right baserow endpoint
                 string tableId = requestedChanges.tableId;
@@ -802,7 +802,7 @@ namespace SSoTme.OST.Lib.DataClasses
                 if (requestedChanges.action == "list_tables")
                 {
                     // table ids are globally unique across all databases
-                    this.LogMessage("Fetching tables for base: {0}", baseId);
+                    // this.LogMessage("Fetching tables for base: {0}", baseId);
                     var tablesData = baserowClient.FetchTablesForBase(baseId);
                     return (new JObject
                     {
@@ -812,7 +812,7 @@ namespace SSoTme.OST.Lib.DataClasses
                 }
                 else if (requestedChanges.action == "get_table_fields")
                 {
-                    Console.WriteLine($"Fetching table data with field mappings for tableId: {tableId}");
+                    // Console.WriteLine($"Fetching table data with field mappings for tableId: {tableId}");
                     JToken tableSchema = baserowClient.GetTableSchema(tableId);
                     return (new JObject
                     {
@@ -836,7 +836,7 @@ namespace SSoTme.OST.Lib.DataClasses
                 {
                     string name = requestedChanges.content.fieldName;
                     string type = requestedChanges.content.fieldType;
-                    Console.WriteLine($"Updating field: id: {fieldId}, to type: {type}, name: {name}");
+                    // Console.WriteLine($"Updating field: id: {fieldId}, to type: {type}, name: {name}");
                     JToken resp = baserowClient.UpdateField(fieldId, name, type);
                     return (new JObject
                     {
@@ -887,7 +887,7 @@ namespace SSoTme.OST.Lib.DataClasses
                 }
                 else if (requestedChanges.action == "get_cell")
                 {
-                    Console.WriteLine($"Fetching cell data for field x row: {fieldId}x{rowId}");
+                    // Console.WriteLine($"Fetching cell data for field x row: {fieldId}x{rowId}");
                     JToken fieldResp = baserowClient.GetCell(tableId, rowId, fieldId);
                     return (new JObject
                     {
@@ -898,7 +898,7 @@ namespace SSoTme.OST.Lib.DataClasses
                 else if (requestedChanges.action == "update_cell")
                 {
                     string newValue = requestedChanges.content;
-                    Console.WriteLine($"Updating cell data for field x row: {fieldId}x{rowId} to {newValue}");
+                    // Console.WriteLine($"Updating cell data for field x row: {fieldId}x{rowId} to {newValue}");
                     JToken resp = baserowClient.UpdateCell(tableId, rowId, fieldId, newValue);
                     return (new JObject
                     {
@@ -975,7 +975,7 @@ namespace SSoTme.OST.Lib.DataClasses
             if (isCopilot)
             {
                 microsoftTenantUserId = "test";  // todo actually use the user's microsoft account tenant id somehow
-                Console.WriteLine($"Polling {copilotReadUri} for read requests...");
+                Console.WriteLine($"Polling {copilotReadUri} for copilot actions...");
                 // get baserow client from ~/.ssotme/ssotme.key file -> "baserow" api
                 baserowClient.InitFromHomeFile();
                 JToken userBaserowBases = PostAvailableBases($"{baseCopilotUri}/available-bases", baserowClient, microsoftTenantUserId);
