@@ -18,6 +18,7 @@ using System.Diagnostics;
 using System.Collections.Generic;
 //using System.Windows.Forms;
 using System.Threading;
+using System.Runtime.InteropServices;
 using EnumList;
 using Newtonsoft.Json.Linq;
 using System.Threading.Tasks;
@@ -26,6 +27,7 @@ using SSoTme.OST.Core.Lib.Extensions;
 using System.Net.Http;
 using System.Text.Json;
 using SSoTme.OST.Core.Lib.External;
+using Formatting = Newtonsoft.Json.Formatting;
 
 namespace SSoTme.OST.Lib.DataClasses
 {
@@ -695,10 +697,11 @@ namespace SSoTme.OST.Lib.DataClasses
             }
         }
         
-        private (bool, string, string) GetLastCopilotRequestedRead(string readReqUri)
+        private (bool, string, string) GetLastCopilotRequestedRead(string readReqUri, string userid)
         {
             using (var httpClient = new HttpClient())
             {
+                httpClient.DefaultRequestHeaders.Add("X-Microsoft-TenantID", userid);
                 string response = httpClient.GetStringAsync(readReqUri).Result;
                 var json = JsonDocument.Parse(response);
                 var changedVal = json.RootElement.GetProperty("changed").GetRawText();
@@ -713,17 +716,18 @@ namespace SSoTme.OST.Lib.DataClasses
             }
         }
 
-        private string PostDataToBridge(JToken data, string uri, string dataTimestamp)
+        private string PostDataToBridge(JToken data, string uri, string dataTimestamp, string userid)
         {
             using (var httpClient = new HttpClient())
             {
+                httpClient.DefaultRequestHeaders.Add("X-Microsoft-TenantID", userid);
                 try
                 {
                     // Add timestamp to the data
                     data["timestamp"] = dataTimestamp;
                     
                     var jsonString = data.ToString(Newtonsoft.Json.Formatting.None);
-                    Console.WriteLine($"Posting to bridge: {uri} - {data}");
+                    // Console.WriteLine($"Posting to bridge: {uri} - {data}");
                     var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
                     var response = httpClient.PostAsync(uri, content).Result;
 
@@ -748,32 +752,25 @@ namespace SSoTme.OST.Lib.DataClasses
         private (JToken, bool) RunCopilotAction(string commandData, string baseId, BaserowBackend baserowClient)
         {  // todo you can make undo/redo actions using the baserow 'ClientSessionId' header
             
-            var validActions = new[] { "list_tables", "update_cell", "get_cell", "get_table_fields", "create_row", "create_field", "update_field" };
+            var validActions = new[] { "list_tables", "update_cell", "get_cell", "get_table_fields", "create_row", "create_field", "update_field", "delete_field" };
             try
             {
                 var requestedChanges = JsonConvert.DeserializeObject<dynamic>(commandData);
                 
-                Console.WriteLine($"Running Copilot Action: {requestedChanges} on base: {baseId}");
+                Console.WriteLine($"{requestedChanges.reason} (action: '{requestedChanges.action}')"); // copilot will provide this with every request
                 
                 // match copilot's requested action to the right baserow endpoint
                 string tableId = requestedChanges.tableId;
-                if (requestedChanges.action != "list_tables" && string.IsNullOrEmpty(tableId)) {
+                if ((requestedChanges.action != "list_tables" && requestedChanges.action != "update_field" && requestedChanges.action != "delete_field") && requestedChanges.tableId == null) {
                     return (new JObject
                     {
                         ["content"] = null,
-                        ["msg"] = "Error applying changes: This endpoint requires the tableId field"
-                    }, false);
-                }
-                if (requestedChanges.action != "list_tables" && requestedChanges.tableId == null) {
-                    return (new JObject
-                    {
-                        ["content"] = null,
-                        ["msg"] = "Error applying changes: table ID was null!"
+                        ["msg"] = "Error applying changes: This endpoint requires tableId!"
                     }, false);
                 }
                 
                 string fieldId = requestedChanges.fieldId;
-                if ((requestedChanges.action == "update_field" || requestedChanges.action == "create_field") && requestedChanges.fieldId == null)
+                if (requestedChanges.fieldId == null && (requestedChanges.action == "update_field" || requestedChanges.action == "delete_field"))
                 {
                     return (new JObject
                     {
@@ -805,7 +802,7 @@ namespace SSoTme.OST.Lib.DataClasses
                 if (requestedChanges.action == "list_tables")
                 {
                     // table ids are globally unique across all databases
-                    this.LogMessage("Fetching tables for base: {0}", baseId);
+                    // this.LogMessage("Fetching tables for base: {0}", baseId);
                     var tablesData = baserowClient.FetchTablesForBase(baseId);
                     return (new JObject
                     {
@@ -815,7 +812,7 @@ namespace SSoTme.OST.Lib.DataClasses
                 }
                 else if (requestedChanges.action == "get_table_fields")
                 {
-                    Console.WriteLine($"Fetching table data with field mappings for tableId: {tableId}");
+                    // Console.WriteLine($"Fetching table data with field mappings for tableId: {tableId}");
                     JToken tableSchema = baserowClient.GetTableSchema(tableId);
                     return (new JObject
                     {
@@ -839,12 +836,22 @@ namespace SSoTme.OST.Lib.DataClasses
                 {
                     string name = requestedChanges.content.fieldName;
                     string type = requestedChanges.content.fieldType;
-                    Console.WriteLine($"Updating field: id: {fieldId}, to type: {type}, name: {name}");
-                    JToken resp = baserowClient.UpdateField(tableId, fieldId, name, type);
+                    // Console.WriteLine($"Updating field: id: {fieldId}, to type: {type}, name: {name}");
+                    JToken resp = baserowClient.UpdateField(fieldId, name, type);
                     return (new JObject
                     {
                         ["content"] = resp,
                         ["msg"] = $"Successfully updated field: {fieldId}"
+                    }, true);
+                }
+                else if (requestedChanges.action == "delete_field")
+                {
+                    Console.WriteLine($"Deleting field: id: {fieldId}");
+                    JToken resp = baserowClient.DeleteField(fieldId);
+                    return (new JObject
+                    {
+                        ["content"] = resp,
+                        ["msg"] = $"Successfully deleted field: {fieldId}"
                     }, true);
                 }
                 else if (requestedChanges.action == "create_row")
@@ -880,7 +887,7 @@ namespace SSoTme.OST.Lib.DataClasses
                 }
                 else if (requestedChanges.action == "get_cell")
                 {
-                    Console.WriteLine($"Fetching cell data for field x row: {fieldId}x{rowId}");
+                    // Console.WriteLine($"Fetching cell data for field x row: {fieldId}x{rowId}");
                     JToken fieldResp = baserowClient.GetCell(tableId, rowId, fieldId);
                     return (new JObject
                     {
@@ -891,7 +898,7 @@ namespace SSoTme.OST.Lib.DataClasses
                 else if (requestedChanges.action == "update_cell")
                 {
                     string newValue = requestedChanges.content;
-                    Console.WriteLine($"Updating cell data for field x row: {fieldId}x{rowId} to {newValue}");
+                    // Console.WriteLine($"Updating cell data for field x row: {fieldId}x{rowId} to {newValue}");
                     JToken resp = baserowClient.UpdateCell(tableId, rowId, fieldId, newValue);
                     return (new JObject
                     {
@@ -959,17 +966,19 @@ namespace SSoTme.OST.Lib.DataClasses
             DateTime? lastChangedTime = null;
             bool changeEverDetected = false;
             string baseUri = $"https://ssotme-cli-airtable-bridge-ahrnz660db6k4.aws-us-east-1.controlplane.us";
-            string baseCopilotUri = "http://localhost:8080/copilot";
+            string baseCopilotUri = "https://ssotme-cli-airtable-bridge-v2-ahrnz660db6k4.cpln.app/copilot";
             string copilotReadUri = $"{baseCopilotUri}/check-req-actions?baseId={baseId}";
             Console.WriteLine($"Polling {baseUri}/check?baseId={baseId} for changes to base: `{baseId}`...");
 
             BaserowBackend baserowClient = new SSoTme.OST.Core.Lib.External.BaserowBackend();
+            string microsoftTenantUserId = String.Empty;
             if (isCopilot)
             {
-                Console.WriteLine($"Polling {copilotReadUri} for read requests...");
+                microsoftTenantUserId = "test";  // todo actually use the user's microsoft account tenant id somehow
+                Console.WriteLine($"Polling {copilotReadUri} for copilot actions...");
                 // get baserow client from ~/.ssotme/ssotme.key file -> "baserow" api
                 baserowClient.InitFromHomeFile();
-                JToken userBaserowBases = PostAvailableBases($"{baseCopilotUri}/available-bases", baserowClient);
+                JToken userBaserowBases = PostAvailableBases($"{baseCopilotUri}/available-bases", baserowClient, microsoftTenantUserId);
                 if (userBaserowBases == null)
                 {
                     throw new Exception("Couldn't post to the remote server");
@@ -981,13 +990,12 @@ namespace SSoTme.OST.Lib.DataClasses
             }
             while (true) {
                 if (isCopilot) {
-                    var (newCopilotActionRequest, copilotProvidedData, timestamp) = GetLastCopilotRequestedRead(copilotReadUri);
+                    var (newCopilotActionRequest, copilotProvidedData, timestamp) = GetLastCopilotRequestedRead(copilotReadUri, microsoftTenantUserId);
                     if (newCopilotActionRequest) {
-                        Console.WriteLine($"Copilot requested action: {copilotProvidedData}");
                         if (!string.IsNullOrEmpty(copilotProvidedData))
                         {
                             var (response, contentWasUpdated) = RunCopilotAction(copilotProvidedData, baseId, baserowClient);
-                            PostDataToBridge(response, $"{baseCopilotUri}/put-action-result?baseId={baseId}", timestamp);
+                            PostDataToBridge(response, $"{baseCopilotUri}/put-action-result?baseId={baseId}", timestamp, microsoftTenantUserId);
                             if (contentWasUpdated) PostChange(baseUri, baseId);  // signal a rebuild is necessary
                         }
                     }
@@ -1069,18 +1077,15 @@ namespace SSoTme.OST.Lib.DataClasses
             }
         }
 
-        private JToken PostAvailableBases(string uri, BaserowBackend baserowClient)
+        private JToken PostAvailableBases(string uri, BaserowBackend baserowClient, string userid)
         {
-            string microsoftTenantUserId = "test"; 
             JToken availableBases = baserowClient.GetAvailableBases();
 
             try
             {
                 using (var httpClient = new HttpClient())
                 {
-                    // Add the user ID to the request headers
-                    httpClient.DefaultRequestHeaders.Add("microsoftTenantUserId", microsoftTenantUserId);
-
+                    httpClient.DefaultRequestHeaders.Add("X-Microsoft-TenantID", userid);
                     var payload = new JObject
                     {
                         ["bases"] = availableBases
@@ -1088,7 +1093,7 @@ namespace SSoTme.OST.Lib.DataClasses
 
                     var json = JsonConvert.SerializeObject(payload);
                     var content = new StringContent(json, Encoding.UTF8, "application/json");
-
+                    Console.WriteLine($"Posting available bases: {availableBases.ToString(Formatting.None)} for user: {userid}");
                     var response = httpClient.PostAsync(uri, content).Result;
 
                     if (!response.IsSuccessStatusCode)
@@ -1198,7 +1203,16 @@ namespace SSoTme.OST.Lib.DataClasses
         {
             if (File.Exists("../ssotme.json"))
             {
-                var p = Process.Start(new ProcessStartInfo("cmd.exe", $"/c ssotme -buildLocal -tg ssot") { WorkingDirectory = ".." });
+                ProcessStartInfo psi;
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    psi = new ProcessStartInfo("cmd.exe", $"/c ssotme -buildLocal -tg ssot") { WorkingDirectory = ".." };
+                }
+                else
+                {
+                    psi = new ProcessStartInfo("/bin/bash", $"-c \"ssotme -buildLocal -tg ssot\"") { WorkingDirectory = ".." };
+                }
+                var p = Process.Start(psi);
                 p.WaitForExit(300000);
             }
         }

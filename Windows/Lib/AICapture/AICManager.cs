@@ -16,6 +16,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -409,18 +410,35 @@ namespace SSoTme.OST.Lib.CLIOptions
 
         private void ExecuteCommand(string workingDirectory, string command)
         {
-
-            var process = new Process
+            ProcessStartInfo startInfo;
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                StartInfo = new ProcessStartInfo
+                startInfo = new ProcessStartInfo
                 {
                     FileName = "cmd.exe",
                     RedirectStandardInput = true,
-                    RedirectStandardOutput = true, // Added to redirect output
+                    RedirectStandardOutput = true,
                     UseShellExecute = false,
                     CreateNoWindow = true,
                     WorkingDirectory = workingDirectory
-                }
+                };
+            }
+            else
+            {
+                startInfo = new ProcessStartInfo
+                {
+                    FileName = "/bin/bash",
+                    RedirectStandardInput = true,
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    WorkingDirectory = workingDirectory
+                };
+            }
+
+            var process = new Process
+            {
+                StartInfo = startInfo
             };
             var result = process.Start();
             using (var sw = process.StandardInput)
