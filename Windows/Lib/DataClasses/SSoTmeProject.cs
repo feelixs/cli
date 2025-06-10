@@ -27,6 +27,7 @@ using SSoTme.OST.Core.Lib.Extensions;
 using System.Net.Http;
 using System.Text.Json;
 using SSoTme.OST.Core.Lib.External;
+using Formatting = Newtonsoft.Json.Formatting;
 
 namespace SSoTme.OST.Lib.DataClasses
 {
@@ -756,7 +757,7 @@ namespace SSoTme.OST.Lib.DataClasses
             {
                 var requestedChanges = JsonConvert.DeserializeObject<dynamic>(commandData);
                 
-                // Console.WriteLine($"Running Copilot Action: {requestedChanges} on base: {baseId}");
+                Console.WriteLine(requestedChanges.reason); // copilot will provide this with every request
                 
                 // match copilot's requested action to the right baserow endpoint
                 string tableId = requestedChanges.tableId;
@@ -991,7 +992,6 @@ namespace SSoTme.OST.Lib.DataClasses
                 if (isCopilot) {
                     var (newCopilotActionRequest, copilotProvidedData, timestamp) = GetLastCopilotRequestedRead(copilotReadUri, microsoftTenantUserId);
                     if (newCopilotActionRequest) {
-                        Console.WriteLine($"Copilot requested action: {copilotProvidedData}");
                         if (!string.IsNullOrEmpty(copilotProvidedData))
                         {
                             var (response, contentWasUpdated) = RunCopilotAction(copilotProvidedData, baseId, baserowClient);
@@ -1093,7 +1093,7 @@ namespace SSoTme.OST.Lib.DataClasses
 
                     var json = JsonConvert.SerializeObject(payload);
                     var content = new StringContent(json, Encoding.UTF8, "application/json");
-
+                    Console.WriteLine($"Posting available bases: {availableBases.ToString(Formatting.None)} for user: {userid}");
                     var response = httpClient.PostAsync(uri, content).Result;
 
                     if (!response.IsSuccessStatusCode)
