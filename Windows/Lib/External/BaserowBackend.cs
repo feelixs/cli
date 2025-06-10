@@ -389,7 +389,7 @@ namespace SSoTme.OST.Core.Lib.External
             {
                 httpClient.DefaultRequestHeaders.Add("Authorization", $"JWT {token}");
                 
-                Console.WriteLine($"Updating field: {fieldId} to: \"{newValue}\"");
+                // Console.WriteLine($"Updating cell: {fieldId} to: \"{newValue}\"");
 
                 JObject valueJson = new JObject
                 {

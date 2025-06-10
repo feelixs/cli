@@ -161,4 +161,9 @@ echo "$SCRIPT_DIR/notarize.sh" "$BIN_DIR/signed/$THE_INSTALLER_FILENAME" $APPLE_
 /bin/bash "$SCRIPT_DIR/notarize.sh" "$BIN_DIR/signed/$THE_INSTALLER_FILENAME" $APPLE_EMAIL $NOTARYPASS
 
 cp "$BIN_DIR/signed/$THE_INSTALLER_FILENAME" "$RELEASE_FOLDER/$THE_INSTALLER_FILENAME"
+
+# run on the x86 one too
+echo "$SCRIPT_DIR/notarize.sh" "$RELEASE_FOLDER/SSoTme-Installer-x86_64.pkg" $APPLE_EMAIL $NOTARYPASS
+/bin/bash "$SCRIPT_DIR/notarize.sh" "$RELEASE_FOLDER/SSoTme-Installer-x86_64.pkg" $APPLE_EMAIL $NOTARYPASS
+
 open "$RELEASE_FOLDER" -a Finder
