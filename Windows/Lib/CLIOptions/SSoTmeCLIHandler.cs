@@ -30,11 +30,11 @@ using System.Drawing.Drawing2D;
 using OfficeOpenXml.FormulaParsing.Excel.Functions.Information;
 using HtmlAgilityPack;
 using System.ComponentModel;
-using Newtonsoft.Json;
-using OfficeOpenXml.FormulaParsing.Exceptions;
 
 namespace SSoTme.OST.Lib.CLIOptions
 {
+
+
     public partial class SSoTmeCLIHandler
     {
         private SSOTMEPayload result;
@@ -76,6 +76,7 @@ namespace SSoTme.OST.Lib.CLIOptions
         {
             try
             {
+
                 CommandLineParser parser = new CommandLineParser(this);
                 if (!String.IsNullOrEmpty(this.commandLine)) parser.Parse(this.commandLine, false);
                 else parser.Parse(this.args, false);
@@ -116,12 +117,6 @@ namespace SSoTme.OST.Lib.CLIOptions
                     Console.ReadKey();
                     this.SuppressTranspile = true;
                 }
-                //else if (this.info)
-                //{
-                //    // handled by the python cli wrapper:
-                //    // code execution will never get here since the python cli catches this case before running the cs cli
-                //    // WHY? -> because if dotnet isn't found the python cli can still run and print debugging stuff
-                //}
                 else if (this.init)
                 {
                     if (String.IsNullOrEmpty(this.projectName))
@@ -129,7 +124,8 @@ namespace SSoTme.OST.Lib.CLIOptions
                         this.projectName = Path.GetFileName(Environment.CurrentDirectory);
                     }
 
-                    var force = this.args.Count() == 2 && this.args[1] == "force";
+                    var force = this.args.Count() == 2 &&
+                                this.args[1] == "force";
 
                     DataClasses.AICaptureProject.Init(force, this.projectName);
 
@@ -158,20 +154,16 @@ namespace SSoTme.OST.Lib.CLIOptions
                     if (String.IsNullOrEmpty(this.setAccountAPIKey) && !this.help && !this.authenticate && !this.listSeeds && !this.cloneSeed)
                     {
                         this.AICaptureProject = SSoTmeProject.LoadOrFail(new DirectoryInfo(Environment.CurrentDirectory), false, this.clean || this.cleanAll);
-                        if (this.AICaptureProject is null) {
-                            // warn user for clarity
-                            ShowError("WARN: SSoTme project is null. Run `ssotme -init` to create a new one in this directory.", ConsoleColor.Yellow);
-                        }
-                        
-                        // still can continue with basic transpilers
-                        foreach (var projectSetting in this.AICaptureProject?.ProjectSettings ?? new BindingList<ProjectSetting>())
+                        if (!(this.AICaptureProject is null))
                         {
-                            if (!this.parameters.Any(anyParam => anyParam.StartsWith(String.Format("{0}=", projectSetting.Name))))
+                            foreach (var projectSetting in this.AICaptureProject?.ProjectSettings ?? new BindingList<ProjectSetting>())
                             {
-                                this.parameters.Add(String.Format("{0}={1}", projectSetting.Name, projectSetting.Value));
+                                if (!this.parameters.Any(anyParam => anyParam.StartsWith(String.Format("{0}=", projectSetting.Name))))
+                                {
+                                    this.parameters.Add(String.Format("{0}={1}", projectSetting.Name, projectSetting.Value));
+                                }
                             }
                         }
-                        
                     }
                     this.LoadInputFiles();
 
@@ -465,15 +457,12 @@ Seed Url: ");
                     break;
 
                 case "build":
-                case "buildLocal":
                 case "rebuild":
-                case "pull":
                     this.build = true;
                     break;
 
                 case "buildall":
                 case "rebuildall":
-                case "pullAll":
                     this.buildAll = true;
                     break;
 
@@ -560,28 +549,8 @@ Seed Url: ");
                     if (ReferenceEquals(key.APIKeys, null)) key.APIKeys = new Dictionary<String, String>();
                     var apiKey = this.setAccountAPIKey.SafeToString().Replace("=", "/");
                     var values = apiKey.Split("/".ToCharArray());
-
-                    if (values[0].Equals("baserow", StringComparison.OrdinalIgnoreCase))
-                    { // special case for baserow, where we need the username and password
-                        // -setAccountAPIKey=baserow/username/password
-                        if (values.Length < 3)
-                        {
-                            ShowError("Syntax for \"baserow\": -setAccountAPIKey=baserow/username/password");
-                            return -1;
-                        }
-
-                        var baserowConf = new { username = values[1], password = values[2] };
-                        key.APIKeys["baserow"] = JsonConvert.SerializeObject(baserowConf);
-                    }
-                    else
-                    {
-                        if (!values.Skip(1).Any())
-                        {
-                            ShowError("Default Syntax: -setAccountAPIKey=account/KEY");
-                            return -1;
-                        }
-                        key.APIKeys[values[0]] = values[1];
-                    }
+                    if (!values.Skip(1).Any()) throw new Exception("Sytnax: -setAccountAPIKey=account/KEY");
+                    key.APIKeys[values[0]] = values[1];
                     SSOTMEKey.SetSSoTmeKey(key, this.runAs);
                 }
                 else if (!String.IsNullOrEmpty(this.execute))
@@ -599,13 +568,16 @@ Seed Url: ");
                         this.AICaptureProject.Install(result, this.transpilerGroup);
                     }
                 }
-                else if (this.build || this.buildLocal)
+                else if (this.build)
                 {
-                    this.AICaptureProject.Rebuild(Environment.CurrentDirectory, this.includeDisabled, this.transpilerGroup, this.buildOnTrigger, this.copilotConnect, this.buildLocal);
+                    this.AICaptureProject.Rebuild(Environment.CurrentDirectory, this.includeDisabled, this.transpilerGroup);
+                    this.AICaptureProject.CreateDocs(this.checkResults);
                 }
                 else if (this.buildAll)
                 {
-                    this.AICaptureProject.RebuildAll(this.AICaptureProject.RootPath, this.includeDisabled, this.transpilerGroup, this.buildOnTrigger, this.copilotConnect, this.buildLocal);
+                    this.AICaptureProject.RebuildAll(this.AICaptureProject.RootPath, this.includeDisabled, this.transpilerGroup);
+                    this.AICaptureProject.CreateDocs(this.checkResults);
+
                 }
                 else if (this.discuss)
                 {
