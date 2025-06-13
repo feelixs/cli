@@ -570,12 +570,12 @@ Seed Url: ");
                 }
                 else if (this.build)
                 {
-                    this.AICaptureProject.Rebuild(Environment.CurrentDirectory, this.includeDisabled, this.transpilerGroup);
+                    this.AICaptureProject.Rebuild(Environment.CurrentDirectory, this.includeDisabled, this.transpilerGroup, this.buildOnTrigger, this.copilotConnect, this.buildLocal);
                     this.AICaptureProject.CreateDocs(this.checkResults);
                 }
                 else if (this.buildAll)
                 {
-                    this.AICaptureProject.RebuildAll(this.AICaptureProject.RootPath, this.includeDisabled, this.transpilerGroup);
+                    this.AICaptureProject.RebuildAll(this.AICaptureProject.RootPath, this.includeDisabled, this.transpilerGroup, this.buildOnTrigger, this.copilotConnect, this.buildLocal);
                     this.AICaptureProject.CreateDocs(this.checkResults);
 
                 }
