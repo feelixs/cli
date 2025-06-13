@@ -513,6 +513,8 @@ Seed Url: ");
 
         public int TranspileProject(ProjectTranspiler projectTranspiler = null)
         {
+            Console.WriteLine($"SkipCLean: {this.skipClean}");
+            
             bool updateProject = false;
             try
             {
