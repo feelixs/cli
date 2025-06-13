@@ -1,0 +1,28 @@
+﻿> ssotme -build 
+SkipCLean: False
+
+
+ **** /ODXML: AirtableToODXML ****
+CommandLine:> ssotme airtable/airtable-to-odxml -p baseId=appWRZKTMAlzfzenD
+SkipCLean: False
+SSoTme Cleaning C:\Users\mmh\AgentsToolkitProjects\test-copilot-extension\tictactoe-mini\ODXML\DataSchema.odxml
+SSoTme Cleaning C:\Users\mmh\AgentsToolkitProjects\test-copilot-extension\tictactoe-mini\SMQL\SassyMQLexicon.smql
+
+
+ **** /dotnet: ODXMLToDotNetSDK ****
+CommandLine:> ssotme odxml-to-dotnetsdk -i ../ODXML/DataSchema.odxml
+SkipCLean: False
+SSoTme Cleaning C:\Users\mmh\AgentsToolkitProjects\test-copilot-extension\tictactoe-mini\dotnet\DataClasses\SoAEntityBase.cs
+SSoTme Cleaning C:\Users\mmh\AgentsToolkitProjects\test-copilot-extension\tictactoe-mini\dotnet\DataClasses\BaseClasses\LanguageTokenBase.cs
+SSoTme Cleaning C:\Users\mmh\AgentsToolkitProjects\test-copilot-extension\tictactoe-mini\dotnet\DataClasses\LanguageToken.cs
+SSoTme Cleaning C:\Users\mmh\AgentsToolkitProjects\test-copilot-extension\tictactoe-mini\dotnet\DataClasses\BaseClasses\GameBase.cs
+SSoTme Cleaning C:\Users\mmh\AgentsToolkitProjects\test-copilot-extension\tictactoe-mini\dotnet\DataClasses\Game.cs
+SSoTme Cleaning C:\Users\mmh\AgentsToolkitProjects\test-copilot-extension\tictactoe-mini\dotnet\DataClasses\BaseClasses\AILevelBase.cs
+SSoTme Cleaning C:\Users\mmh\AgentsToolkitProjects\test-copilot-extension\tictactoe-mini\dotnet\DataClasses\AILevel.cs
+SSoTme Cleaning C:\Users\mmh\AgentsToolkitProjects\test-copilot-extension\tictactoe-mini\dotnet\DataClasses\BaseClasses\CellBase.cs
+SSoTme Cleaning C:\Users\mmh\AgentsToolkitProjects\test-copilot-extension\tictactoe-mini\dotnet\DataClasses\Cell.cs
+SSoTme Cleaning C:\Users\mmh\AgentsToolkitProjects\test-copilot-extension\tictactoe-mini\dotnet\DataClasses\BaseClasses\CellStateBase.cs
+SSoTme Cleaning C:\Users\mmh\AgentsToolkitProjects\test-copilot-extension\tictactoe-mini\dotnet\DataClasses\CellState.cs
+SSoTme Cleaning C:\Users\mmh\AgentsToolkitProjects\test-copilot-extension\tictactoe-mini\dotnet\DataClasses\BaseClasses\TicTacToeUserBase.cs
+SSoTme Cleaning C:\Users\mmh\AgentsToolkitProjects\test-copilot-extension\tictactoe-mini\dotnet\DataClasses\TicTacToeUser.cs
+SSoTme Cleaning C:\Users\mmh\AgentsToolkitProjects\test-copilot-extension\tictactoe-mini\dotnet\DataClasses\SoAEFContext.cs
