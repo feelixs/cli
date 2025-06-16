@@ -36,6 +36,12 @@ namespace SSoTme.OST.Lib.CLIOptions
             : base("No ssotme project is configured in this directory.") { }
     }
     
+    public class NoStackException : Exception
+    {
+        public NoStackException(string msg)
+            : base(msg) { }
+    }
+    
     public partial class SSoTmeCLIHandler
     {
         private SSOTMEPayload result;
@@ -849,14 +855,20 @@ Seed Url: ");
             var executable = cmd.Substring(0, cmd.IndexOf(" "));
             var args = cmd.Substring(executable.Length + 1);
             var psi = new ProcessStartInfo(executable, args);
-            var process = Process.Start(psi);
-            process.WaitForExit(this.waitTimeout);
-            if (!process.HasExited)
+            try
             {
-                process.Close();
-                throw new Exception(String.Format("Timed out waiting for process to complete: {0}", commandLine));
+                var process = Process.Start(psi);
+                process.WaitForExit(this.waitTimeout);
+                if (!process.HasExited)
+                {
+                    process.Close();
+                    throw new NoStackException(String.Format("Timed out waiting for process to complete: {0}", commandLine));
+                }
             }
-
+            catch (System.ComponentModel.Win32Exception ex)
+            {
+                throw new NoStackException($"The system couldn't find the command \"{executable}\"");
+            }
         }
 
         internal void LoadOutputFiles(String lowerHyphoneName, String basePath, bool includeContents)

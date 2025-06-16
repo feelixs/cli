@@ -38,9 +38,22 @@ namespace SSoTme.OST.ConApp
             }
             catch (ProjectNotConfiguredException ex)
             {
-                return -1; // don't print stack trace
+                return -1;
+            }
+            catch (NoStackException ex)
+            {
+                ShowError(ex.Message);  // don't print stack trace
+                return -1;
             }
             // other exceptions throw normally
+        }
+        
+        private static void ShowError(string msg, ConsoleColor color = ConsoleColor.Red)
+        {
+            var curColor = Console.ForegroundColor;
+            Console.ForegroundColor = color;
+            Console.WriteLine(msg);
+            Console.ForegroundColor = curColor;
         }
     }
 }
