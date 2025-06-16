@@ -60,7 +60,7 @@ jobs:
         run: |
           git clone https://github.com/feelixs/tictactoe-mini.git
           cd tictactoe-mini
-          ssotme -build
+          ssotme touppercase test
 
   pip-install-linux:
 
@@ -96,7 +96,7 @@ jobs:
         run: |
           git clone https://github.com/feelixs/tictactoe-mini.git
           cd tictactoe-mini
-          ssotme -build
+          ssotme describe
 
   pip-install-windows:
 
@@ -132,4 +132,4 @@ jobs:
         run: |
           git clone https://github.com/feelixs/tictactoe-mini.git
           cd tictactoe-mini
-          ssotme -build
+          ssotme -cr
