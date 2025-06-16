@@ -71,6 +71,17 @@ foreach ($Dir in $Directories) {
     }
 }
 
+$packageJsonTxt = Get-Content (Join-Path $RootDir "package.json") -Raw | ConvertFrom-Json
+$ssotmeVersionOriginal = $packageJsonTxt.version
+$ssotmeVersion = $ssotmeVersionOriginal -replace "0", ""  #  Invalid product version '2024.08.23'. Product version must have a major version less than 256, a minor version less than 256
+Write-Host "Using version: $ssotmeVersion from package.json"
+
+# update csproj version
+$CSPROJ_CONTENT = Get-Content "$SourceDir/SSoTme.OST.CLI.csproj" -Raw
+$CSPROJ_CONTENT_new = $CSPROJ_CONTENT -replace "<Version>.*?</Version>", "<Version>$ssotmeVersionOriginal</Version>"
+Set-Content "$SourceDir/SSoTme.OST.CLI.csproj" $CSPROJ_CONTENT_new -NoNewline
+Write-Host "Updated version of $SourceDir/SSoTme.OST.CLI.csproj to $ssotmeVersionOriginal"
+
 # copy LICENSE from the root dir into Resources/ (this will be included in the app, while Assets/LICENSE.rtf is only showed at install time)
 Write-Host "`nCopying license and documentation files..." -ForegroundColor Yellow
 $licenseSrc = Join-Path $RootDir "LICENSE"
@@ -230,10 +241,6 @@ finally {
 }
 
 Set-Location $InstallerDir
-
-$packageJsonTxt = Get-Content (Join-Path $RootDir "package.json") -Raw | ConvertFrom-Json
-$ssotmeVersion = $packageJsonTxt.version -replace "0", ""  #  Invalid product version '2024.08.23'. Product version must have a major version less than 256, a minor version less than 256
-Write-Host "Using version: $ssotmeVersion from package.json"
 
 # Update versions in all files if needed
 $installerProj = Join-Path $InstallerDir "SSoTmeInstaller.wixproj"
