@@ -139,7 +139,7 @@ jobs:
         run: |
           pip install . -v
 
-      - name: Run ssotme -h and check output
+      - name: Clone test repo and run ssotme -build
         shell: pwsh
         run: |
           git clone https://github.com/feelixs/tictactoe-mini.git
