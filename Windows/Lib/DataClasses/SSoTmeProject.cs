@@ -451,7 +451,7 @@ namespace SSoTme.OST.Lib.DataClasses
             return zfsDI;
         }
 
-        private DirectoryInfo GetSSoTmeDI()
+        public DirectoryInfo GetSSoTmeDI()
         {
             var ssotmeDI = new DirectoryInfo(Path.Combine(this.RootPath, ".ssotme"));
             if (ssotmeDI.Exists)
