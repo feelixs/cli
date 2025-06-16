@@ -55,12 +55,13 @@ jobs:
         run: |
           pip install . -v
 
-      - name: Clone test repo and run ssotme -build
+      - name: Clone test repo and run some tests
         shell: pwsh
         run: |
           git clone https://github.com/feelixs/tictactoe-mini.git
           cd tictactoe-mini
           ssotme touppercase test
+          cat output.txt
 
   pip-install-linux:
 
@@ -91,7 +92,7 @@ jobs:
         run: |
           pip install . -v
 
-      - name: Clone test repo and run ssotme -build
+      - name: Clone test repo and run some tests
         shell: pwsh
         run: |
           git clone https://github.com/feelixs/tictactoe-mini.git
@@ -127,7 +128,7 @@ jobs:
         run: |
           pip install . -v
 
-      - name: Clone test repo and run ssotme -build
+      - name: Clone test repo and run some tests
         shell: pwsh
         run: |
           git clone https://github.com/feelixs/tictactoe-mini.git
