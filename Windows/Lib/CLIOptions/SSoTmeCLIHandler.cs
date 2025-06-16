@@ -25,16 +25,23 @@ using System.Runtime.InteropServices;
 using Newtonsoft.Json.Linq;
 using System.Net.Http;
 using SSoTme.OST.Core.Lib.Extensions;
-using System.ComponentModel.DataAnnotations;
-using System.Drawing.Drawing2D;
-using OfficeOpenXml.FormulaParsing.Excel.Functions.Information;
-using HtmlAgilityPack;
 using System.ComponentModel;
 using Newtonsoft.Json;
-using OfficeOpenXml.FormulaParsing.Exceptions;
 
 namespace SSoTme.OST.Lib.CLIOptions
 {
+    public class ProjectNotConfiguredException : Exception
+    {
+        public ProjectNotConfiguredException()
+            : base("No ssotme project is configured in this directory.") { }
+    }
+    
+    public class NoStackException : Exception
+    {
+        public NoStackException(string msg)
+            : base(msg) { }
+    }
+    
     public partial class SSoTmeCLIHandler
     {
         private SSOTMEPayload result;
@@ -53,7 +60,16 @@ namespace SSoTme.OST.Lib.CLIOptions
             this.addSetting = new List<string>();
             this.removeSetting = new List<string>();
         }
-
+        
+        private SSoTmeProject GetProjectOrThrow()
+        {
+            if (this.AICaptureProject == null)
+            {
+                throw new ProjectNotConfiguredException();
+            }
+            return this.AICaptureProject;
+        }
+        
         public static SSoTmeCLIHandler CreateHandler(string commandLine)
         {
             var cliHandler = new SSoTmeCLIHandler();
@@ -517,21 +533,21 @@ Seed Url: ");
                 }
                 else if (this.describe)
                 {
-                    this.AICaptureProject.Describe(Environment.CurrentDirectory);
+                    GetProjectOrThrow().Describe(Environment.CurrentDirectory);
                 }
                 else if (this.descibeAll)
                 {
-                    this.AICaptureProject.Describe();
+                    GetProjectOrThrow().Describe();
                 }
                 else if (this.listSettings)
                 {
-                    this.AICaptureProject.ListSettings();
+                    GetProjectOrThrow().ListSettings();
                 }
                 else if (this.addSetting.Any())
                 {
                     foreach (var setting in this.addSetting)
                     {
-                        this.AICaptureProject.AddSetting(setting);
+                        GetProjectOrThrow().AddSetting(setting);
                     }
 
                     this.AICaptureProject.Save();
@@ -550,7 +566,7 @@ Seed Url: ");
                 {
                     foreach (var setting in this.removeSetting)
                     {
-                        this.AICaptureProject.RemoveSetting(setting);
+                        GetProjectOrThrow().RemoveSetting(setting);
                     }
                     this.AICaptureProject.Save();
                 }
@@ -601,11 +617,11 @@ Seed Url: ");
                 }
                 else if (this.build || this.buildLocal)
                 {
-                    this.AICaptureProject.Rebuild(Environment.CurrentDirectory, this.includeDisabled, this.transpilerGroup, this.buildOnTrigger, this.copilotConnect, this.buildLocal);
+                    GetProjectOrThrow().Rebuild(Environment.CurrentDirectory, this.includeDisabled, this.transpilerGroup, this.buildOnTrigger, this.copilotConnect, this.buildLocal);
                 }
                 else if (this.buildAll)
                 {
-                    this.AICaptureProject.RebuildAll(this.AICaptureProject.RootPath, this.includeDisabled, this.transpilerGroup, this.buildOnTrigger, this.copilotConnect, this.buildLocal);
+                    GetProjectOrThrow().RebuildAll(this.AICaptureProject.RootPath, this.includeDisabled, this.transpilerGroup, this.buildOnTrigger, this.copilotConnect, this.buildLocal);
                 }
                 else if (this.discuss)
                 {
@@ -614,7 +630,7 @@ Seed Url: ");
                 }
                 else if (this.checkResults || this.createDocs && !hasRemainingArguments)
                 {
-                    this.AICaptureProject.CreateDocs(this.checkResults);
+                    GetProjectOrThrow().CreateDocs(this.checkResults);
                     updateProject = true;
                 }
                 else if (this.clean && !ReferenceEquals(zfsFileSetFile, null))
@@ -689,7 +705,7 @@ Seed Url: ");
                     if (this.install) this.AICaptureProject.Install(result, this.transpilerGroup);
                     else if (!ReferenceEquals(projectTranspiler, null))
                     {
-                        this.AICaptureProject.Update(projectTranspiler, result);
+                        GetProjectOrThrow().Update(projectTranspiler, result);
                     }
                 }
             }
@@ -839,14 +855,20 @@ Seed Url: ");
             var executable = cmd.Substring(0, cmd.IndexOf(" "));
             var args = cmd.Substring(executable.Length + 1);
             var psi = new ProcessStartInfo(executable, args);
-            var process = Process.Start(psi);
-            process.WaitForExit(this.waitTimeout);
-            if (!process.HasExited)
+            try
             {
-                process.Close();
-                throw new Exception(String.Format("Timed out waiting for process to complete: {0}", commandLine));
+                var process = Process.Start(psi);
+                process.WaitForExit(this.waitTimeout);
+                if (!process.HasExited)
+                {
+                    process.Close();
+                    throw new NoStackException(String.Format("Timed out waiting for process to complete: {0}", commandLine));
+                }
             }
-
+            catch (System.ComponentModel.Win32Exception ex)
+            {
+                throw new NoStackException($"The system couldn't find the command \"{executable}\"");
+            }
         }
 
         internal void LoadOutputFiles(String lowerHyphoneName, String basePath, bool includeContents)

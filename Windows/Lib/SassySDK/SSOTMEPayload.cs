@@ -16,9 +16,17 @@ namespace SassyMQ.SSOTME.Lib.RMQActors
 {
     public class SSOTMEPayload : StandardPayload<SSOTMEPayload>, ISSOTMEPayload
     {
+        private string _cleanFileSetRelativePath;
+
         static SSOTMEPayload()
         {
             //SSOTMEExtensions.FileWritten += CDVExtensions_FileWritten;
+        }
+
+        private string GetSSoTmeDirName()
+        {
+            var d = this.SSoTmeProject.GetSSoTmeDI();
+            return d.ToString();
         }
 
         private static void CDVExtensions_FileWritten(object sender, EventArgs e)
@@ -113,6 +121,8 @@ namespace SassyMQ.SSOTME.Lib.RMQActors
             if (this.SSoTmeProject is null) return;
             
             FileInfo zfsFI = GetZFSFI();
+            // Store the relative path from CleanFileSet for use in SavePreviousFileSet
+            _cleanFileSetRelativePath = GetCurrentRelativePath();
             if (zfsFI.Exists)
             {
                 var previousFileSet = File.ReadAllBytes(zfsFI.FullName);
@@ -121,8 +131,25 @@ namespace SassyMQ.SSOTME.Lib.RMQActors
 
         }
 
+        private string GetCurrentRelativePath()
+        {
+            string curDir = String.Empty;
+            curDir = Environment.CurrentDirectory;
 
-
+            string relPath;
+            if (curDir.StartsWith(this.SSoTmeProject.RootPath, StringComparison.OrdinalIgnoreCase))
+            {
+                relPath = curDir.Substring(this.SSoTmeProject.RootPath.Length);
+                // Normalize path separators and remove leading separators
+                relPath = relPath.Replace('\\', '/').TrimStart('/');
+            }
+            else
+            {
+                // If current directory is not under project root, use empty relative path
+                relPath = "";
+            }
+            return relPath;
+        }
 
         public override string ToString()
         {
@@ -135,19 +162,18 @@ namespace SassyMQ.SSOTME.Lib.RMQActors
 
             // Save the file set to the disk
             var fileSetXml = this.TranspileRequest.ZippedOutputFileSet.UnzipToString();
-            string workingDir;
-            try
-            {
-                workingDir = Environment.CurrentDirectory;
-            }
-            catch
-            {
-                workingDir = System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-            }
+            string workingDir = GetSSoTmeDirName();
+
             var tempFI = new FileInfo(Path.Combine(workingDir, String.Format("tempFileSet_{0}.xml", Guid.NewGuid())));
             File.WriteAllText(tempFI.FullName, fileSetXml);
 
-            SSoTme.OST.Lib.Extensions.SSOTMEExtensions.SplitFileSetFile(tempFI.FullName, tempFI.Directory.FullName);
+            // Use the stored relative path to determine where files should be extracted
+            string extractToDir = this.SSoTmeProject?.RootPath ?? workingDir;
+            if (!string.IsNullOrEmpty(_cleanFileSetRelativePath))
+            {
+                extractToDir = Path.Combine(this.SSoTmeProject.RootPath, _cleanFileSetRelativePath);
+            }
+            SSoTme.OST.Lib.Extensions.SSOTMEExtensions.SplitFileSetFile(tempFI.FullName, extractToDir);
             tempFI.Delete();
 
             this.SavePreviousFileSet(fileSetXml);
@@ -168,18 +194,23 @@ namespace SassyMQ.SSOTME.Lib.RMQActors
         private FileInfo GetZFSFI()
         {
             string curDir = String.Empty;
-            try
-            {
+            string relPath;
+            try {
                 curDir = Environment.CurrentDirectory;
+                if (curDir.StartsWith(this.SSoTmeProject.RootPath, StringComparison.OrdinalIgnoreCase))
+                {
+                    relPath = curDir.Substring(this.SSoTmeProject.RootPath.Length);
+                    // Normalize path separators and remove leading separators
+                    relPath = relPath.Replace('\\', '/').TrimStart('/');
+                }
+                else
+                {
+                    // If current directory is not under project root, use stored relative path from CleanFileSet
+                    relPath = _cleanFileSetRelativePath ?? "";
+                }
+            } catch (Exception) {
+                relPath = _cleanFileSetRelativePath;
             }
-            catch (Exception)
-            {
-                // Fallback to executable directory if current directory doesn't exist
-                curDir = System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-            }
-
-            var relPath = curDir.Substring(this.SSoTmeProject.RootPath.Length);
-
             var ssotmeDI = new DirectoryInfo(String.Format("{0}/.ssotme", this.SSoTmeProject.RootPath));
             if (!ssotmeDI.Exists)
             {
@@ -187,7 +218,7 @@ namespace SassyMQ.SSOTME.Lib.RMQActors
                 ssotmeDI.Attributes = FileAttributes.Directory | FileAttributes.Hidden;
             }
 
-            var zfsFileName = String.Format("{0}/{1}/{2}.zfs", ssotmeDI.FullName, relPath, this.Transpiler.LowerHyphenName, "", "");
+            var zfsFileName = String.Format("{0}/{1}/{2}.zfs", ssotmeDI.FullName, relPath, this.Transpiler.LowerHyphenName);
             //var zfsFileName = String.Format("{0}.zfs", this.Transpiler.LowerHyphenName);
             var zfsFI = new FileInfo(zfsFileName);
             return zfsFI;

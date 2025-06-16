@@ -93,7 +93,7 @@ def main():
 
         args = sys.argv[1:]
         code = 0
-        if len(args) > 0 and (args[0] == "-info"):
+        if len(args) > 0 and (args[0] == "-info" or args[0] == "info"):
             # print debugging info
             print(f"SSOTME Version: {dotnet_info['ssotme_version']}\n"
                   f"Configured to use .NET SDK {version}\n"

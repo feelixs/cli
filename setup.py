@@ -445,3 +445,5 @@ if __name__ == "__main__":
 else:
     # when imported (not ran) we don't want to run the installer
     print("Note: setup.py imported as a module, installation process will run when setup() is called.")
+
+# if it throws "dotnet is already installed -> dotnet wasn't installed successfully" then do rm -rf ~/.dotnet and try again

@@ -451,7 +451,7 @@ namespace SSoTme.OST.Lib.DataClasses
             return zfsDI;
         }
 
-        private DirectoryInfo GetSSoTmeDI()
+        public DirectoryInfo GetSSoTmeDI()
         {
             var ssotmeDI = new DirectoryInfo(Path.Combine(this.RootPath, ".ssotme"));
             if (ssotmeDI.Exists)
@@ -581,16 +581,18 @@ namespace SSoTme.OST.Lib.DataClasses
 
                 Environment.CurrentDirectory = di.FullName;
 
-                ProcessStartInfo psi = new ProcessStartInfo("cmd");
+                string proc = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "cmd" : "/bin/bash";
+                ProcessStartInfo psi = new ProcessStartInfo(proc);
                 psi.WorkingDirectory = di.FullName;
 
-                psi.Arguments = "/C ssotme spxml-to-detailed-spxml -i \"./SSoTmeProject.spxml\"";
+                string c = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "/C " : "-c ";
+                psi.Arguments = c + "\"ssotme spxml-to-detailed-spxml -i ./SSoTmeProject.spxml\"";
                 var p = Process.Start(psi);
                 p.WaitForExit(100000);
                 if (!p.HasExited) throw new Exception("Failed waiting for Detailed SP Xml to be created.");
                 else
                 {
-                    psi.Arguments = "/C ssotme detailed-spxml-to-html-docs -i \"./SSoTmeProject.dspxml\"";
+                    psi.Arguments = c + "\"ssotme detailed-spxml-to-html-docs -i ./SSoTmeProject.dspxml\"";
                     p = Process.Start(psi);
 
                     p.WaitForExit(100000);
