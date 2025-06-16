@@ -95,10 +95,16 @@ jobs:
       - name: Clone test repo and run some tests
         shell: pwsh
         run: |
-          git clone https://github.com/feelixs/tictactoe-mini.git
-          cd tictactoe-mini
           ssotme touppercase test
-          cat output.txt
+          $output = cat output.txt
+          if ($output -eq "TEST") {
+            Write-Host "✅ ssotme CLI ran successfully"
+            exit 0
+          } else {
+            Write-Host "❌ ssotme CLI failed unexpectedly. Expected TEST, got: "
+            Write-Host $output
+            exit 1
+          }
 
   pip-install-windows:
 
@@ -132,7 +138,13 @@ jobs:
       - name: Clone test repo and run some tests
         shell: pwsh
         run: |
-          git clone https://github.com/feelixs/tictactoe-mini.git
-          cd tictactoe-mini
           ssotme touppercase test
-          cat output.txt
+          $output = cat output.txt
+          if ($output -eq "TEST") {
+            Write-Host "✅ ssotme CLI ran successfully"
+            exit 0
+          } else {
+            Write-Host "❌ ssotme CLI failed unexpectedly. Expected TEST, got: "
+            Write-Host $output
+            exit 1
+          }
