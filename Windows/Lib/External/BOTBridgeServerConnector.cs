@@ -210,7 +210,7 @@ public class BOTBridgeServerConnector
     public (JToken, bool) RunCopilotAction(string commandData)
     {  // todo you can make undo/redo actions using the baserow 'ClientSessionId' header
         
-        var validActions = new[] { "list_tables", "update_cell", "get_cell", "get_table_fields", "create_row", "create_field", "update_field", "delete_field" };
+        var validActions = new[] { "list_tables", "update_cell", "get_cell", "get_table_fields", "get_table_rows", "create_row", "create_field", "update_field", "delete_field" };
         try
         {
             var requestedChanges = JsonConvert.DeserializeObject<dynamic>(commandData);
@@ -270,12 +270,20 @@ public class BOTBridgeServerConnector
             }
             else if (requestedChanges.action == "get_table_fields")
             {
-                // Console.WriteLine($"Fetching table data with field mappings for tableId: {tableId}");
-                JToken tableSchema = _baserowClient.GetTableSchema(tableId);
+                JToken tableSchema = _baserowClient.GetTableFields(tableId);
                 return (new JObject
                 {
                     ["content"] = tableSchema,
                     ["msg"] = $"Successfully retrieved table fields for: {tableId}"
+                }, false);
+            }
+            else if (requestedChanges.action == "get_table_rows")
+            {
+                JToken tableSchema = _baserowClient.GetTableRows(tableId);
+                return (new JObject
+                {
+                    ["content"] = tableSchema,
+                    ["msg"] = $"Successfully retrieved table rows for: {tableId}"
                 }, false);
             }
             else if (requestedChanges.action == "create_field")

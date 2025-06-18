@@ -479,28 +479,21 @@ namespace SSoTme.OST.Core.Lib.External
             }
         }
 
-        public JToken GetTableSchema(string tableId)
+        public JToken GetTableFields(string tableId)
         {
-            var dataTask = GetTableSchemaAsync(tableId, false);
-            dataTask.Wait();
-            JToken tableData = dataTask.Result;
-            
-            var readableTask = GetTableSchemaAsync(tableId, true);
-            readableTask.Wait();
-            JToken readableData = readableTask.Result;
-            
-            // Transform the data to include field objects with columnName, value, and id
-            return TransformTableDataWithFields(tableData, readableData);
+            var task = GetTableFieldsAsync(tableId);
+            task.Wait();
+            return task.Result;
         }
-
-        private async Task<JToken> GetTableSchemaAsync(string tableId, bool userReadable)
+        
+        private async Task<JToken> GetTableFieldsAsync(string tableId)
         {
             var token = await GetValidTokenAsync();
             
             using (var httpClient = new HttpClient())
             {
                 httpClient.DefaultRequestHeaders.Add("Authorization", $"JWT {token}");
-                var response = await httpClient.GetAsync($"{_baseUrl}/database/rows/table/{tableId}/?user_field_names={userReadable}");
+                var response = await httpClient.GetAsync($"{_baseUrl}/database/fields/table/{tableId}/");
                 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -515,7 +508,50 @@ namespace SSoTme.OST.Core.Lib.External
                 }
                 catch (JsonReaderException ex)
                 {
-                    Console.WriteLine($"JSON parsing error in GetTableSchemaAsync: {ex.Message}");
+                    Console.WriteLine($"JSON parsing error in GetTableFieldsAsync: {ex.Message}");
+                    Console.WriteLine($"Response content (first 200 chars): {strRes.Substring(0, Math.Min(200, strRes.Length))}");
+                    throw new Exception($"Failed to parse JSON response from Baserow: {ex.Message}");
+                }
+            }
+        }
+        
+        public JToken GetTableRows(string tableId)
+        {
+            var dataTask = GetTableRowsAsync(tableId, false);
+            dataTask.Wait();
+            JToken tableData = dataTask.Result;
+            
+            var readableTask = GetTableRowsAsync(tableId, true);
+            readableTask.Wait();
+            JToken readableData = readableTask.Result;
+            
+            // Transform the data to include field objects with columnName, value, and id
+            return TransformTableDataWithFields(tableData, readableData);
+        }
+
+        private async Task<JToken> GetTableRowsAsync(string tableId, bool userReadable)
+        {
+            var token = await GetValidTokenAsync();
+            
+            using (var httpClient = new HttpClient())
+            {
+                httpClient.DefaultRequestHeaders.Add("Authorization", $"JWT {token}");
+                var response = await httpClient.GetAsync($"{_baseUrl}/database/rows/table/{tableId}/?user_field_names={userReadable}");
+                
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    throw new Exception($"Failed to get Baserow table rows: {response.StatusCode} - {errorContent}");
+                }
+                
+                string strRes = await response.Content.ReadAsStringAsync();
+                try 
+                {
+                    return JToken.Parse(strRes);
+                }
+                catch (JsonReaderException ex)
+                {
+                    Console.WriteLine($"JSON parsing error in GetTableRowsAsync: {ex.Message}");
                     Console.WriteLine($"Response content (first 200 chars): {strRes.Substring(0, Math.Min(200, strRes.Length))}");
                     throw new Exception($"Failed to parse JSON response from Baserow: {ex.Message}");
                 }
