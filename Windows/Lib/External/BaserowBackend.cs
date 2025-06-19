@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SSoTme.OST.Lib.SassySDK.Derived;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SSoTme.OST.Core.Lib.External
 {
@@ -439,6 +440,88 @@ namespace SSoTme.OST.Core.Lib.External
             }
         }
 
+        public JToken UpdateRow(string tableId, string rowId, string fieldsJson)
+        {
+            var task = UpdateRowAsync(tableId, rowId, fieldsJson);
+            task.Wait();
+            return task.Result;
+        }
+
+        private async Task<JToken> UpdateRowAsync(string tableId, string rowId, string fieldsJson)
+        {
+            // this is the same endpoint as update_cell, except we're including multiple cells in the json object. 
+            var token = await GetValidTokenAsync();
+            
+            using (var httpClient = new HttpClient())
+            {
+                httpClient.DefaultRequestHeaders.Add("Authorization", $"JWT {token}");
+                
+                // fieldsJson looks like: [{"fieldId": int, "content": string}]
+                var originalFields = JArray.Parse(fieldsJson);
+                if (originalFields.Count == 0)
+                {
+                    throw new Exception("The Json-String input was parsed into an empty array");
+                }
+                
+                var results = new JObject();
+                var serverResponses = new JObject();
+                foreach (var item in originalFields)
+                {  
+                    // baserow supports multiple field ids in the same call, but if one fails (invalid type, etc) it won't update anything
+                    // so lets just do multiple patch calls (one per cell)
+                    if (item is not JObject entry)
+                    {
+                        throw new Exception("Expected each item in the array to be a JSON object.");
+                    }
+
+                    var newJson = new JObject();
+                    var fieldIdToken = entry["fieldId"];
+                    var fieldContent = entry["content"];
+    
+                    var fieldIdStr = fieldIdToken?.ToString();
+                    if (int.TryParse(fieldIdStr, out _))
+                    {
+                        newJson = new JObject()
+                        {
+                            [$"field_{fieldIdStr}"] = fieldContent
+                        };
+                    }
+                    else
+                    {
+                        results[$"field_{fieldIdStr}"] = $"Failed: {fieldIdToken} is not a valid int (Baserow fieldIds are numbers)";
+                        continue;
+                    }
+                    
+                    var content = new StringContent(newJson.ToString(), Encoding.UTF8, "application/json");
+                    var response = await httpClient.PatchAsync($"{_baseUrl}/database/rows/table/{tableId}/{rowId}/", content);
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        var errorContent = await response.Content.ReadAsStringAsync();
+                        serverResponses[$"field_{fieldIdStr}"] = $"Failed to update Baserow row: {response.StatusCode} - {errorContent}";
+                        continue;
+                    }
+                    results[$"field_{fieldIdStr}"] = "success";
+                    string strResp = await response.Content.ReadAsStringAsync();
+                    serverResponses[$"field_{fieldIdStr}"] = strResp;
+                }
+                
+                try
+                {
+                    var theresp = new JObject()
+                    {
+                        ["serverData"] = serverResponses,
+                        ["editData"] = results
+                    };
+                    return theresp;
+                }
+                catch (JsonReaderException ex)
+                {
+                    Console.WriteLine($"JSON parsing error in UpdateRowAsync: {ex.Message}");
+                    throw new Exception($"Failed to parse JSON response from Baserow: {ex.Message}");
+                }
+            }
+        }
+        
         public JToken CreateField(string tableId, string fieldName, string fieldType)
         {
             var task = CreateFieldAsync(tableId, fieldName, fieldType);
@@ -502,9 +585,13 @@ namespace SSoTme.OST.Core.Lib.External
                 }
                 
                 string strRes = await response.Content.ReadAsStringAsync();
-                try 
+                var jtoken = JToken.Parse(strRes);
+
+                // Recursively rename all "id" properties to "field_id"
+                RenameIdKeys(jtoken);
+                try
                 {
-                    return JToken.Parse(strRes);
+                    return jtoken;
                 }
                 catch (JsonReaderException ex)
                 {
@@ -595,6 +682,9 @@ namespace SSoTme.OST.Core.Lib.External
                         var readableRow = readableRowsById[rowId];
                         var rawProperties = rawRow.ToObject<JObject>().Properties();
 
+                        // Get field mapping by position
+                        var fieldMapping = GetFieldMapping(rawRow, readableRow);
+
                         int cellIndex = 0;
                         foreach (var property in rawProperties)
                         {
@@ -604,11 +694,11 @@ namespace SSoTme.OST.Core.Lib.External
                                 if (int.TryParse(fieldIdStr, out int fieldId))
                                 {
                                     var fieldValue = property.Value;
-                                    var fieldName = FindColumnNameForField(readableRow, fieldValue?.ToString());
+                                    var fieldName = fieldMapping.ContainsKey(fieldId) ? fieldMapping[fieldId] : "Unknown";
 
                                     var cell = new JObject
                                     {
-                                        ["fieldName"] = fieldName ?? "Unknown",
+                                        ["fieldName"] = fieldName,
                                         ["fieldId"] = fieldId,
                                         ["value"] = fieldValue
                                     };
@@ -644,19 +734,61 @@ namespace SSoTme.OST.Core.Lib.External
             };
         }
 
-        
-        private string FindColumnNameForField(JToken readableRow, string fieldValue)
+        private Dictionary<int, string> GetFieldMapping(JToken rawRow, JToken readableRow)
         {
-            // Find which column in the readable row has the same value as the field
-            foreach (var property in readableRow.ToObject<JObject>().Properties())
+            var mapping = new Dictionary<int, string>();
+            
+            // Get field properties from raw data (preserve JSON order - don't sort!)
+            var rawFields = rawRow.ToObject<JObject>().Properties()
+                .Where(p => p.Name.StartsWith("field_"))
+                .ToList();
+            
+            // Get non-system properties from readable data (preserve JSON order - don't sort!)
+            var readableFields = readableRow.ToObject<JObject>().Properties()
+                .Where(p => p.Name != "id" && p.Name != "order")
+                .ToList();
+            
+            // Map by actual position in JSON
+            for (int i = 0; i < Math.Min(rawFields.Count, readableFields.Count); i++)
             {
-                if (property.Name != "id" && property.Name != "order" && 
-                    string.Equals(property.Value?.ToString(), fieldValue, StringComparison.OrdinalIgnoreCase))
+                string fieldIdStr = rawFields[i].Name.Substring(6);
+                if (int.TryParse(fieldIdStr, out int fieldId))
                 {
-                    return property.Name;
+                    mapping[fieldId] = readableFields[i].Name;
+                    Console.WriteLine($"Mapping field_{fieldId} -> {readableFields[i].Name}");
                 }
             }
-            return null;
+            
+            return mapping;
         }
+        
+        void RenameIdKeys(JToken token)
+        {
+            if (token.Type == JTokenType.Object)
+            {
+                var obj = (JObject)token;
+                var propertiesToRename = obj.Properties().Where(p => p.Name == "id").ToList();
+
+                foreach (var prop in propertiesToRename)
+                {
+                    var value = prop.Value;
+                    prop.Remove();
+                    obj.Add("field_id", value);
+                }
+
+                foreach (var property in obj.Properties())
+                {
+                    RenameIdKeys(property.Value);
+                }
+            }
+            else if (token.Type == JTokenType.Array)
+            {
+                foreach (var item in token.Children())
+                {
+                    RenameIdKeys(item);
+                }
+            }
+        }
+
     }
 }

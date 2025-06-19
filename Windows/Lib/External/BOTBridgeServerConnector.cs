@@ -210,7 +210,7 @@ public class BOTBridgeServerConnector
     public (JToken, bool) RunCopilotAction(string commandData)
     {  // todo you can make undo/redo actions using the baserow 'ClientSessionId' header
         
-        var validActions = new[] { "list_tables", "update_cell", "get_cell", "get_table_fields", "get_table_rows", "create_row", "create_field", "update_field", "delete_field" };
+        var validActions = new[] { "list_tables", "update_cell", "get_cell", "get_table_fields", "get_table_rows", "create_row", "move_row", "update_row", "create_field", "update_field", "delete_field" };
         try
         {
             var requestedChanges = JsonConvert.DeserializeObject<dynamic>(commandData);
@@ -238,7 +238,7 @@ public class BOTBridgeServerConnector
             }
             
             string rowId = requestedChanges.rowId;
-            if (requestedChanges.action == "move_row" && requestedChanges.rowId == null)
+            if ((requestedChanges.action == "move_row" || requestedChanges.action == "update_row") && requestedChanges.rowId == null)
             {
                 return (new JObject
                 {
@@ -255,7 +255,11 @@ public class BOTBridgeServerConnector
                     ["msg"] = "Error applying changes: this endpoint requires rowId and fieldId!"
                 }, false);
             }
-
+            
+            try { tableId = tableId.Replace("/", ""); } catch {}
+            try { fieldId = fieldId.Replace("/", ""); } catch {}
+            try { rowId = rowId.Replace("/", ""); } catch {}
+            
             // MARK START action definitions
             if (requestedChanges.action == "list_tables")
             {
@@ -349,6 +353,16 @@ public class BOTBridgeServerConnector
                 {
                     ["content"] = resp,
                     ["msg"] = $"Successfully moved row {rowId} to the end of the table"
+                }, true);
+            }
+            else if (requestedChanges.action == "update_row")
+            {
+                string fields = JsonConvert.SerializeObject(requestedChanges.content);
+                JToken resp = _baserowClient.UpdateRow(tableId, rowId, fields);
+                return (new JObject
+                {
+                    ["content"] = resp,
+                    ["msg"] = $"Successfully updated row: {rowId}"
                 }, true);
             }
             else if (requestedChanges.action == "get_cell")
