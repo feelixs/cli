@@ -129,8 +129,13 @@ else
     echo "No such file: $SCRIPT_DIR/uninstall.sh"
 fi
 
+if [ "$TARGET_ARCH" = "x86_64" ]; then
+    PUB_ARCH="x64"
+else
+    PUB_ARCH=$TARGET_ARCH  # amd64 -> already valid for dotnet publish
+fi
 
-dotnet publish $CSPROJ_FILE -r osx-$TARGET_ARCH -c Release /p:PublishSingleFile=true \
+dotnet publish $CSPROJ_FILE -r osx-$PUB_ARCH -c Release /p:PublishSingleFile=true \
   --self-contained true -o "$RESOURCES_DIR"
 mv "$RESOURCES_DIR/SSoTme.OST.CLI" "$RESOURCES_DIR/ssotme"
 
@@ -183,6 +188,6 @@ echo "$SCRIPT_DIR/notarize.sh" "$BIN_DIR/signed/$THE_INSTALLER_FILENAME" $APPLE_
 cp "$BIN_DIR/signed/$THE_INSTALLER_FILENAME" "$RELEASE_FOLDER/$THE_INSTALLER_FILENAME"
 
 # run on the x86 one too
-#echo "$SCRIPT_DIR/notarize.sh" "$RELEASE_FOLDER/SSoTme-Installer-x86_64.pkg" $APPLE_EMAIL $NOTARYPASS
-#/bin/bash "$SCRIPT_DIR/notarize.sh" "$RELEASE_FOLDER/SSoTme-Installer-x86_64.pkg" $APPLE_EMAIL $NOTARYPASS
+echo "$SCRIPT_DIR/notarize.sh" "$RELEASE_FOLDER/SSoTme-Installer-x86_64.pkg" $APPLE_EMAIL $NOTARYPASS
+/bin/bash "$SCRIPT_DIR/notarize.sh" "$RELEASE_FOLDER/SSoTme-Installer-x86_64.pkg" $APPLE_EMAIL $NOTARYPASS
 open "$RELEASE_FOLDER" -a Finder
