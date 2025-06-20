@@ -92,14 +92,14 @@ You can also install this tool using pip:
 
 `pip install -U git+https://github.com/ssotme/cli`
 
-This will also attempt to automatically install the required .NET version into your system.
+**Note:** a pip +git installation will clone the repo and run a dotnet build on the product, so you'll need both `dotnet>=8.0` and `python>=3.7`
 
 After installation, the commands `ssotme`, `aicapture`, and `aic` will be usable in your terminal, and you can continue
 following the setup listed above in the **Auth** section.
 
 ### Troubleshooting the PIP install
 
-- To use PIP, you must have Python installed on your system. To make things as consistent as possible it's recommended to download & install Python directly from https://python.org instead of using an external package manager. **Make sure to check off the box that says "Add Python to your PATH"**
+- To install the ssotme CLI via PIP, you must have dotnet & Python installed on your system. To make things as consistent as possible it's recommended to download & install Python directly from https://python.org instead of using an external package manager. **Make sure to check off the box that says "Add Python to your PATH"**
 - For Linux and MacOS, in some versions of pip you may need to use `pip install git+https://github.com/ssotme/cli --break-system-packages`
 - After the installer finishes, it may give a warning:
         ```WARNING: The scripts aic, aicapture and ssotme are installed in '<home directory>' which is not on PATH.```
@@ -116,7 +116,11 @@ If you've installed through pip, you can uninstall by simply running: `pip unins
 
 ### MacOS Uninstaller
 
-To uninstall a Mac .pkg installation, run the uninstall script by entering `/Applications/ssotme/uninstall`
+To uninstall a Mac .pkg installation, run the uninstall script by entering `/Applications/ssotme/uninstall` in the terminal.
+
+### Windows Uninstaller
+
+For windows, uninstall ssotme by re-running the Windows installer executable, and select 'Uninstall'.
 
 ## Syntax: `ssotme -help`
 This command will show the following help.
