@@ -712,6 +712,7 @@ namespace SSoTme.OST.Lib.DataClasses
             bool changeEverDetected = false;
             string baseUri = $"https://ssotme-cli-airtable-bridge-ahrnz660db6k4.aws-us-east-1.controlplane.us";
             string baseCopilotUri = "https://ssotme-cli-airtable-bridge-v2-ahrnz660db6k4.cpln.app/copilot";
+            //string baseCopilotUri = "http://localhost:8080/copilot";
             Console.WriteLine($"Polling {baseUri}/check?baseId={baseId} for changes to base: `{baseId}`...");
 
             string microsoftTenantUserId = "test";  // todo actually use the user's microsoft account tenant id somehow
@@ -736,8 +737,8 @@ namespace SSoTme.OST.Lib.DataClasses
                     if (newCopilotActionRequest) {
                         if (!string.IsNullOrEmpty(copilotProvidedData))
                         {
-                            var (response, contentWasUpdated) = conn.RunCopilotAction(copilotProvidedData);
-                            conn.PostDataToBridge(response, timestamp);
+                            var (response, success, contentWasUpdated) = conn.RunCopilotAction(copilotProvidedData);
+                            conn.PostDataToBridge(response, timestamp, success);
                             if (contentWasUpdated)
                             {
                                 conn.PostChange(baseUri);  // signal a rebuild is necessary

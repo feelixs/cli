@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
@@ -174,7 +175,7 @@ public class BOTBridgeServerConnector
         return false;
     }
     
-    public string PostDataToBridge(JToken data, string dataTimestamp)
+    public string PostDataToBridge(JToken data, string dataTimestamp, bool success)
     {
         using (var httpClient = new HttpClient())
         {
@@ -183,7 +184,8 @@ public class BOTBridgeServerConnector
             {
                 // Add timestamp to the data
                 data["timestamp"] = dataTimestamp;
-                    
+                data["success"] = success;
+                
                 var jsonString = data.ToString(Newtonsoft.Json.Formatting.None);
                 // Console.WriteLine($"Posting to bridge: {uri} - {data}");
                 var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
@@ -207,55 +209,38 @@ public class BOTBridgeServerConnector
         }
     }
     
-    public (JToken, bool) RunCopilotAction(string commandData)
+    private void ValidateRequiredParameters(string action, string param, string paramName, string[] actionsWhereParamIsRequired)
+    {
+        if (string.IsNullOrEmpty(param) && actionsWhereParamIsRequired.Contains(action))
+        {
+            throw new ArgumentException($"Action '{action}' requires a '{paramName}' but none was provided");
+        }
+    }
+    
+    public (JToken, bool, bool) RunCopilotAction(string commandData)
+    // return: {data, was_success, was_changed}
     {  // todo you can make undo/redo actions using the baserow 'ClientSessionId' header
         
-        var validActions = new[] { "list_tables", "update_cell", "get_cell", "get_table_fields", "get_table_rows", "create_row", "move_row", "update_row", "create_field", "update_field", "delete_field" };
+        var validActions = new[] { "list_tables", "update_cell", "get_cell", "get_field", "get_table_fields", "get_table_rows", "create_row", "move_row", "update_row", "create_field", "update_field", "delete_field" };
         try
         {
             var requestedChanges = JsonConvert.DeserializeObject<dynamic>(commandData);
             
             Console.WriteLine($"{requestedChanges.reason} (action: '{requestedChanges.action}')"); // copilot will provide this with every request
             
+            string[] actionsRequireTableid = { "get_field", "update_field", "delete_field", "get_table_fields", "get_table_rows", "create_row" };
+            string[] actionsRequireFieldid = { "get_field", "update_field", "delete_field", "update_cell", "get_cell" };
+            string[] actionsRequireRowid = { "move_row", "update_row", "update_cell", "get_cell" };
             // match copilot's requested action to the right baserow endpoint
+            string action = requestedChanges.action;
             string tableId = requestedChanges.tableId;
-            if ((requestedChanges.action != "list_tables" && requestedChanges.action != "update_field" && requestedChanges.action != "delete_field") && requestedChanges.tableId == null) {
-                return (new JObject
-                {
-                    ["content"] = null,
-                    ["msg"] = "Error applying changes: This endpoint requires tableId!"
-                }, false);
-            }
-            
             string fieldId = requestedChanges.fieldId;
-            if (requestedChanges.fieldId == null && (requestedChanges.action == "update_field" || requestedChanges.action == "delete_field"))
-            {
-                return (new JObject
-                {
-                    ["content"] = null,
-                    ["msg"] = "Error applying changes: this endpoint requires fieldId!"
-                }, false);
-            }
-            
             string rowId = requestedChanges.rowId;
-            if ((requestedChanges.action == "move_row" || requestedChanges.action == "update_row") && requestedChanges.rowId == null)
-            {
-                return (new JObject
-                {
-                    ["content"] = null,
-                    ["msg"] = "Error applying changes: this endpoint requires rowId!"
-                }, false);
-            }
-            else if ((requestedChanges.action == "update_cell" || requestedChanges.action == "get_cell") &&
-                (requestedChanges.rowId == null || requestedChanges.fieldId == null)) 
-            {
-                return (new JObject
-                {
-                    ["content"] = null,
-                    ["msg"] = "Error applying changes: this endpoint requires rowId and fieldId!"
-                }, false);
-            }
+            ValidateRequiredParameters(action, tableId, "tableId", actionsRequireTableid);
+            ValidateRequiredParameters(action, fieldId, "fieldId", actionsRequireFieldid);
+            ValidateRequiredParameters(action, rowId, "rowId", actionsRequireRowid);
             
+            // normalize incase they contain slashes
             try { tableId = tableId.Replace("/", ""); } catch {}
             try { fieldId = fieldId.Replace("/", ""); } catch {}
             try { rowId = rowId.Replace("/", ""); } catch {}
@@ -270,7 +255,16 @@ public class BOTBridgeServerConnector
                 {
                     ["content"] = tablesData,
                     ["msg"] = $"Successfully retrieved tables for base: {_baseId}"
-                }, false);
+                }, true, false);
+            }
+            else if (requestedChanges.action == "get_field")
+            {
+                JToken fieldSchema = _baserowClient.GetTableSingleField(tableId, fieldId);
+                return (new JObject
+                {
+                    ["content"] = fieldSchema,
+                    ["msg"] = $"Successfully retrieved table field {fieldId} for: {tableId}"
+                }, true, false);
             }
             else if (requestedChanges.action == "get_table_fields")
             {
@@ -279,7 +273,7 @@ public class BOTBridgeServerConnector
                 {
                     ["content"] = tableSchema,
                     ["msg"] = $"Successfully retrieved table fields for: {tableId}"
-                }, false);
+                }, true, false);
             }
             else if (requestedChanges.action == "get_table_rows")
             {
@@ -288,7 +282,7 @@ public class BOTBridgeServerConnector
                 {
                     ["content"] = tableSchema,
                     ["msg"] = $"Successfully retrieved table rows for: {tableId}"
-                }, false);
+                }, true, false);
             }
             else if (requestedChanges.action == "create_field")
             {
@@ -300,7 +294,7 @@ public class BOTBridgeServerConnector
                 {
                     ["content"] = resp,
                     ["msg"] = $"Successfully created field on tableId: {tableId}"
-                }, true);
+                }, true, true);
             }
             else if (requestedChanges.action == "update_field")
             {
@@ -312,7 +306,7 @@ public class BOTBridgeServerConnector
                 {
                     ["content"] = resp,
                     ["msg"] = $"Successfully updated field: {fieldId}"
-                }, true);
+                }, true, true);
             }
             else if (requestedChanges.action == "delete_field")
             {
@@ -322,7 +316,7 @@ public class BOTBridgeServerConnector
                 {
                     ["content"] = resp,
                     ["msg"] = $"Successfully deleted field: {fieldId}"
-                }, true);
+                }, true, true);
             }
             else if (requestedChanges.action == "create_row")
             {
@@ -333,7 +327,7 @@ public class BOTBridgeServerConnector
                 {
                     ["content"] = resp,
                     ["msg"] = $"Successfully created row"
-                }, true);
+                }, true, true);
             }
             else if (requestedChanges.action == "move_row")
             {
@@ -346,7 +340,7 @@ public class BOTBridgeServerConnector
                     {
                         ["content"] = resp,
                         ["msg"] = $"Successfully moved row {rowId} to position before {requestedChanges.relativeRowId}"
-                    }, true);
+                    }, true, true);
                 }
                 resp = _baserowClient.MoveRow(tableId, rowId);
                 Console.WriteLine($"Moved row {rowId} to the end of the table");
@@ -354,7 +348,7 @@ public class BOTBridgeServerConnector
                 {
                     ["content"] = resp,
                     ["msg"] = $"Successfully moved row {rowId} to the end of the table"
-                }, true);
+                }, true, true);
             }
             else if (requestedChanges.action == "update_row")
             {
@@ -364,7 +358,7 @@ public class BOTBridgeServerConnector
                 {
                     ["content"] = resp,
                     ["msg"] = $"Successfully updated row: {rowId}"
-                }, true);
+                }, true, true);
             }
             else if (requestedChanges.action == "get_cell")
             {
@@ -374,7 +368,7 @@ public class BOTBridgeServerConnector
                 {
                     ["content"] = fieldResp,
                     ["msg"] = $"Successfully retrieved cell: {fieldId}x{rowId}"
-                }, false);
+                }, true, false);
             }
             else if (requestedChanges.action == "update_cell")
             {
@@ -385,14 +379,14 @@ public class BOTBridgeServerConnector
                 {
                     ["content"] = resp,
                     ["msg"] = $"Successfully updated cell contents: {fieldId}x{rowId}"
-                }, true);
+                }, true, true);
             }
             
             return (new JObject
             {
                 ["content"] = null,
                 ["msg"] = $"Action was not matched to any of the following for base {_baseId}: {string.Join(", ", validActions)}"
-            }, false);
+            }, false, false);
         }
         catch (Exception ex)
         {
@@ -401,7 +395,7 @@ public class BOTBridgeServerConnector
             {
                 ["content"] = null,
                 ["msg"] = $"Error running copilot action: {ex.Message}"
-            }, false);
+            }, false, false);
         }
     }
 }

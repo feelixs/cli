@@ -7,6 +7,7 @@ using Newtonsoft.Json.Linq;
 using SSoTme.OST.Lib.SassySDK.Derived;
 using System.Collections.Generic;
 using System.Linq;
+using SSoTme.OST.Lib.CLIOptions;
 
 namespace SSoTme.OST.Core.Lib.External
 {
@@ -37,7 +38,7 @@ namespace SSoTme.OST.Core.Lib.External
             var key = SSOTMEKey.GetSSoTmeKey(runAs);
             if (!key.APIKeys.ContainsKey("baserow"))
             {
-                throw new Exception("Baserow credentials not found. Run: ssotme -setAccountAPIKey=baserow/username/password");
+                throw new NoStackException("Baserow credentials not found. Run: ssotme -setAccountAPIKey=baserow/username/password");
             }
 
             var baserowConfigJson = key.APIKeys["baserow"];
@@ -582,6 +583,26 @@ namespace SSoTme.OST.Core.Lib.External
             }
         }
 
+        public JToken GetTableSingleField(string tableid, string fieldId)
+        {
+            var task = GetTableFieldsAsync(tableid);
+            task.Wait();
+            JToken tableSchema = task.Result;
+            if (tableSchema == null)
+            {
+                throw new Exception($"Failed to retrieve schema for table {tableid}");
+            }
+            foreach (JToken entry in tableSchema)
+            {
+                var currentFieldId = entry["field_id"]?.ToString();
+                if (string.Equals(currentFieldId, fieldId, StringComparison.OrdinalIgnoreCase))
+                {
+                    return entry;
+                }
+            }
+            throw new Exception($"Failed to find field '{fieldId}' in table '{tableid}'");
+        }
+        
         public JToken GetTableFields(string tableId)
         {
             var task = GetTableFieldsAsync(tableId);
