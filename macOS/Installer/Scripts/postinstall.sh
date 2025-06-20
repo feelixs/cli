@@ -24,42 +24,5 @@ ln -sf "/Applications/SSoTme/ssotme" "/usr/local/bin/ssotme"
 ln -sf "/Applications/SSoTme/aic" "/usr/local/bin/aic"
 ln -sf "/Applications/SSoTme/aicapture" "/usr/local/bin/aicapture"
 
-echo "[INFO] Copying dotnet_info.json if present..."
-if [ -f "/Applications/SSoTme/dotnet_info.json" ]; then
-    cp "/Applications/SSoTme/dotnet_info.json" "$TARGETHOMEDIR/"
-    rm "/Applications/SSoTme/dotnet_info.json"
-else
-    echo "[WARN] dotnet_info.json not found in /Applications/SSoTme"
-fi
-
-DOTNET_INFO="$TARGETHOMEDIR/dotnet_info.json"
-DOTNET_SCRIPT="$TARGETHOMEDIR/dotnet-install.sh"
-
-echo "[INFO] Checking for curl..."
-if ! command -v curl >/dev/null 2>&1; then
-    echo "[ERROR] curl is not available"
-    exit 1
-fi
-
-echo "[INFO] Downloading dotnet install script..."
-curl -sSL https://dot.net/v1/dotnet-install.sh -o "$DOTNET_SCRIPT"
-chmod +x "$DOTNET_SCRIPT"
-
-if [ ! -f "$DOTNET_INFO" ]; then
-    echo "[ERROR] Missing $DOTNET_INFO"
-    exit 1
-fi
-
-echo "[INFO] Parsing version from $DOTNET_INFO"
-THEVERSION=$(grep -o '"using_version": "[^"]*"' "$DOTNET_INFO" | cut -d'"' -f4)
-
-if [ -z "$THEVERSION" ]; then
-    echo "[ERROR] Version not found in dotnet_info.json"
-    exit 1
-fi
-
-echo "[INFO] Installing .NET version $THEVERSION"
-"$DOTNET_SCRIPT" --version "$THEVERSION"
-
 echo "[INFO] Postinstall script completed successfully."
 exit 0
