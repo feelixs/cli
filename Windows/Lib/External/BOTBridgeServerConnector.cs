@@ -326,8 +326,9 @@ public class BOTBridgeServerConnector
             }
             else if (requestedChanges.action == "create_row")
             {
-                Console.WriteLine($"Creating new row");
-                JToken resp = _baserowClient.CreateRow(tableId);
+                string fields = JsonConvert.SerializeObject(requestedChanges.content);
+                Console.WriteLine($"Creating new row with fields: {fields}");
+                JToken resp = _baserowClient.CreateRow(tableId, fields);
                 return (new JObject
                 {
                     ["content"] = resp,

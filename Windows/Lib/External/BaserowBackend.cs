@@ -25,7 +25,7 @@ namespace SSoTme.OST.Core.Lib.External
             _username = username;
             _password = password;
         }
-            
+
         public BaserowBackend()
         {
             // base init -> return null client -> must manually run InitFromHomeFile()
@@ -47,7 +47,7 @@ namespace SSoTme.OST.Core.Lib.External
             _username = baserowConfig.username;
             _password = baserowConfig.password;
         }
-        
+
         private async Task<string> GetValidTokenAsync()
         {
             if (!string.IsNullOrEmpty(_authToken) && DateTime.UtcNow < _tokenExpiry)
@@ -149,7 +149,7 @@ namespace SSoTme.OST.Core.Lib.External
     
             return allBases;
         }
-        
+
         public JToken FetchTablesForBase(string baseId)
         {
             var task = FetchTablesAsync(baseId);
@@ -227,11 +227,26 @@ namespace SSoTme.OST.Core.Lib.External
             }
         }
 
-        public JToken CreateRow(string tableId)
+        public JToken CreateRow(string tableId, string fieldsJson = null)
         {
             var task = CreateRowAsync(tableId);
             task.Wait();
-            return task.Result;
+            var resp = task.Result;
+            
+            // if they supplied content here
+            if (fieldsJson != null)
+            {
+                var rowid = resp["row_id"];
+                if (rowid == null)
+                {  // if the create row failed
+                    return resp;
+                }
+                
+                task = UpdateRowAsync(tableId, rowid.Value<string>(), fieldsJson);
+                task.Wait();
+                return task.Result;
+            }
+            return resp;
         }
 
         private async Task<JToken> CreateRowAsync(string tableId)
@@ -253,7 +268,11 @@ namespace SSoTme.OST.Core.Lib.External
                 }
 
                 var content = await response.Content.ReadAsStringAsync();
-                return JToken.Parse(content);
+                var jtoken = JToken.Parse(content);
+
+                // Recursively rename all "id" properties to "row_id"
+                ReplaceKeys(jtoken, "id", "row_id");
+                return jtoken;
             }
         }
 
@@ -310,7 +329,7 @@ namespace SSoTme.OST.Core.Lib.External
             task.Wait();
             return task.Result;
         }
-        
+
         private async Task<JToken> DeleteFieldAsync(string fieldId)
         {
             var token = await GetValidTokenAsync();
@@ -342,7 +361,7 @@ namespace SSoTme.OST.Core.Lib.External
                 }
             }
         }
-        
+
         public JToken UpdateField(string fieldId, string newName, string newType)
         {
             var task = UpdateFieldAsync(fieldId, newName, newType);
@@ -393,7 +412,7 @@ namespace SSoTme.OST.Core.Lib.External
                 }
             }
         }
-        
+
         public JToken UpdateCell(string tableId, string rowId, string fieldId, string newValue)
         {
             var task = UpdateCellAsync(tableId, rowId, fieldId, newValue);
@@ -489,6 +508,7 @@ namespace SSoTme.OST.Core.Lib.External
                     else
                     {
                         results[$"field_{fieldIdStr}"] = $"Failed: {fieldIdToken} is not a valid int (Baserow fieldIds are numbers)";
+                        serverResponses[$"field_{fieldIdStr}"] = "Skipped server call because of invalid content";
                         continue;
                     }
                     
@@ -521,7 +541,7 @@ namespace SSoTme.OST.Core.Lib.External
                 }
             }
         }
-        
+
         public JToken CreateField(string tableId, string fieldName, string fieldType)
         {
             var task = CreateFieldAsync(tableId, fieldName, fieldType);
@@ -568,7 +588,7 @@ namespace SSoTme.OST.Core.Lib.External
             task.Wait();
             return task.Result;
         }
-        
+
         private async Task<JToken> GetTableFieldsAsync(string tableId)
         {
             var token = await GetValidTokenAsync();
@@ -588,7 +608,8 @@ namespace SSoTme.OST.Core.Lib.External
                 var jtoken = JToken.Parse(strRes);
 
                 // Recursively rename all "id" properties to "field_id"
-                RenameIdKeys(jtoken);
+                ReplaceKeys(jtoken, "id", "field_id");
+                ReplaceKeys(jtoken, "name", "fieldName");
                 try
                 {
                     return jtoken;
@@ -601,7 +622,7 @@ namespace SSoTme.OST.Core.Lib.External
                 }
             }
         }
-        
+
         public JToken GetTableRows(string tableId)
         {
             var dataTask = GetTableRowsAsync(tableId, false);
@@ -644,7 +665,7 @@ namespace SSoTme.OST.Core.Lib.External
                 }
             }
         }
-        
+
         private JToken TransformTableDataWithFields(JToken rawData, JToken readableData)
         {
             var transformedRows = new JArray();
@@ -755,37 +776,37 @@ namespace SSoTme.OST.Core.Lib.External
                 if (int.TryParse(fieldIdStr, out int fieldId))
                 {
                     mapping[fieldId] = readableFields[i].Name;
-                    Console.WriteLine($"Mapping field_{fieldId} -> {readableFields[i].Name}");
+                    // Console.WriteLine($"Mapping field_{fieldId} -> {readableFields[i].Name}");
                 }
             }
             
             return mapping;
         }
-        
-        void RenameIdKeys(JToken token)
+
+        void ReplaceKeys(JToken token, string find, string replaceWith)
         {
             if (token.Type == JTokenType.Object)
             {
                 var obj = (JObject)token;
-                var propertiesToRename = obj.Properties().Where(p => p.Name == "id").ToList();
+                var propertiesToRename = obj.Properties().Where(p => p.Name == find).ToList();
 
                 foreach (var prop in propertiesToRename)
                 {
                     var value = prop.Value;
                     prop.Remove();
-                    obj.Add("field_id", value);
+                    obj.Add(replaceWith, value);
                 }
 
                 foreach (var property in obj.Properties())
                 {
-                    RenameIdKeys(property.Value);
+                    ReplaceKeys(property.Value, find, replaceWith);
                 }
             }
             else if (token.Type == JTokenType.Array)
             {
                 foreach (var item in token.Children())
                 {
-                    RenameIdKeys(item);
+                    ReplaceKeys(item, find, replaceWith);
                 }
             }
         }
