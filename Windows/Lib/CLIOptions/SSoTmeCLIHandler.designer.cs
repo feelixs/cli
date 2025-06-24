@@ -140,6 +140,10 @@ namespace SSoTme.OST.Lib.CLIOptions
         
         [CommandLineOption(Description = "Show configured settings & CLI version", MinOccurs = 0, Aliases = "")]
         public bool info { get; set; }
+
+        [CommandLineOption(Description = "target url", MinOccurs = 0, Aliases = "t")]
+        public string TargetUrl { get; set; }
+
         
     }
 }

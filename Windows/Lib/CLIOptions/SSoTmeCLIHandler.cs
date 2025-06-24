@@ -27,6 +27,7 @@ using System.Net.Http;
 using SSoTme.OST.Core.Lib.Extensions;
 using System.ComponentModel;
 using Newtonsoft.Json;
+using System.Net.Http.Json;
 
 namespace SSoTme.OST.Lib.CLIOptions
 {
@@ -655,7 +656,7 @@ Seed Url: ");
                     this.AICaptureProject?.CleanAll(this.preserveZFS);
                     Task.Run(() => new DirectoryInfo(Environment.CurrentDirectory).ApplySeedReplacementsAsync(true)).Wait();
                 }
-                else if (!hasRemainingArguments && !this.clean)
+                else if (!hasRemainingArguments && !this.clean && String.IsNullOrEmpty(this.TargetUrl))
                 {
                     ShowError("Missing argument name of transpiler");
                     return -1;
@@ -1072,16 +1073,29 @@ Seed Url: ");
             }
         }
 
-
-
-        private void AccountHolder_ReplyTo(object sender, SassyMQ.Lib.RabbitMQ.PayloadEventArgs<SSOTMEPayload> e)
+        private async void AccountHolder_ReplyTo(object sender, SassyMQ.Lib.RabbitMQ.PayloadEventArgs<SSOTMEPayload> e)
         {
+            var payload = AccountHolder.CreatePayload();
+            payload.SaveCLIOptions(this);
+            if (!String.IsNullOrEmpty(this.TargetUrl))
+            {
+                using var client = new HttpClient();
+                payload.TranspileRequest = new TranspileRequest();
+                payload.TranspileRequest.ZippedInputFileSet = this.inputFileSetXml.Zip();
+                File.WriteAllText(@"C:\temp\payload.json", payload.ToJSonString());
+                File.WriteAllBytes(@"C:\temp\zippedinputfs.gzip", payload.TranspileRequest.ZippedInputFileSet);
+                var response = await client.PostAsJsonAsync($"{this.TargetUrl}", payload);
+                if (response != null)
+                {
+                    var responseContent = await response.Content.ReadAsStringAsync();
+                    
+                }
+            }
             if (e.Payload.IsLexiconTerm(LexiconTermEnum.accountholder_ping_ssotmecoordinator))
             {
                 CoordinatorProxy = new DMProxy(e.Payload.DirectMessageQueue);
                 //Console.WriteLine("Got ping response");
-                var payload = AccountHolder.CreatePayload();
-                payload.SaveCLIOptions(this);
+
                 payload.TranspileRequest = new TranspileRequest();
                 payload.TranspileRequest.ZippedInputFileSet = this.inputFileSetXml.Zip();
                 payload.CLIInputFileContents = String.Empty;
