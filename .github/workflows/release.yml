@@ -22,6 +22,28 @@ jobs:
           persist-credentials: true
           fetch-depth: 0
 
+      - name: Configure git remote with token
+        run: |
+          git remote set-url origin \
+          "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+
+      - name: Get PR Description
+        id: pr_info
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_BODY="${{ github.event.pull_request.body }}"
+          
+          # Write PR description to file for release notes
+          echo "$PR_BODY" > notes.txt
+          
+          # Set it as a step output for later steps
+          {
+            echo "description<<EOF"
+            echo "$PR_BODY"
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
+
       - name: Fetch Package Version
         id: version
         run: |
