@@ -2,7 +2,7 @@
 # Integrates with setup.py for Python CLI building via PyInstaller
 #
 # Generates:
-#           - bin/Release/CLI_Installer.msi -> installs just ssotme
+#           - bin/Release/SSoTme-Installer.msi -> installs just ssotme
 
 param (
     [string]$Configuration = "Release",
@@ -34,7 +34,6 @@ function Update-VersionIfChanged {
     return $false
 }
 
-
 $ErrorActionPreference = "Stop"
 
 # Ensure we're running from the Scripts directory
@@ -59,7 +58,6 @@ $ResourcesDir = Join-Path $InstallerDir "Resources"
 $AssetsDir = Join-Path $InstallerDir "Assets"
 $binFolder = Join-Path $InstallerDir "bin"
 $OutputDir = Join-Path $binFolder "$Configuration"
-$releaseDir = Join-Path $RootDir "release"
 
 Write-Host "=== SSoTme WiX v6 Build Script ===" -ForegroundColor Green
 Write-Host "Configuration: $Configuration" -ForegroundColor Cyan
@@ -79,11 +77,8 @@ Write-Host "Creating necessary directories..." -ForegroundColor Yellow
 $Directories = @(
     $ResourcesDir,
     $OutputDir,
-    $AssetsDir,
-    $releaseDir
+    $AssetsDir
 )
-
-Remove-Item -Path "$releaseDir\*.exe" -Force -ErrorAction SilentlyContinue
 
 foreach ($Dir in $Directories) {
     if (-not (Test-Path $Dir)) {
@@ -135,6 +130,12 @@ $rid = switch ($arch) {
     default { "win-x64" }  # fallback
 }
 
+# Update version in the cli handler file so ssotme -version works
+$CLIHandlerFile = "$RootDir/Windows/Lib/CLIOptions/SSoTmeCLIHandler.cs"
+Update-VersionIfChanged -FilePath $CLIHandlerFile -NewVersion $ssotmeVersionOriginal `
+    -Pattern 'public string CLI_VERSION = ".*?";' `
+    -Replacement "public string CLI_VERSION = `"$ssotmeVersionOriginal`";"
+
 Write-Host "`nBuilding .NET CLI project..." -ForegroundColor Yellow
 
 try {
@@ -174,6 +175,8 @@ finally {
 }
 
 Set-Location $InstallerDir
+$MsiName = "SSoTme-Installer_$rid"
+$MsiPath = Join-Path $OutputDir "$MsiName.msi"
 
 # Update versions in all files if needed
 $installerProj = Join-Path $InstallerDir "SSoTmeInstaller.wixproj"
@@ -188,6 +191,11 @@ Update-VersionIfChanged -FilePath $productwxs -NewVersion $ssotmeVersion `
 Update-VersionIfChanged -FilePath $productwxs -NewVersion $ssotmeVersion `
     -Pattern '<RegistryValue([^>]*?)Name="Version" Value="([^"]*)"([^>]*?)>' `
     -Replacement "<RegistryValue`$1Name=`"Version`" Value=`"$ssotmeVersion`"`$3>"
+
+# Rename the target file for the installer
+Update-VersionIfChanged -FilePath $installerProj -NewVersion $MsiName `
+    -Pattern '<OutputName>[^"]*</OutputName>' `
+    -Replacement "<OutputName>$MsiName</OutputName>"
 
 # Build the WiX projects using dotnet build
 Write-Host "Building WiX installer projects..."
@@ -214,17 +222,13 @@ try {
         return
     }
 
-    $MsiPath = Join-Path $OutputDir "CLI_Installer.msi"
     if (-Not (Test-Path $MsiPath)) {
-        Write-Host "ERROR: CLI_Installer.msi not found at expected location: $MsiPath"
+        Write-Host "ERROR: installer file not found at expected location: $MsiPath"
         Write-Host "Contents of output directory:" -ForegroundColor Yellow
         Get-ChildItem $OutputDir -ErrorAction SilentlyContinue | ForEach-Object { Write-Host "  $_" -ForegroundColor Yellow }
         exit 1
     }
     Write-Host "MSI built successfully: $MsiPath" -ForegroundColor Green
-
-    Move-Item -Path $MsiPath -Destination (Join-Path (Split-Path -Parent $MsiPath) "CLI_Installer_$rid.msi") -Force
-    Write-Host "Renamed msi to CLI_Installer_$rid.msi"
 }
 catch {
     Write-Error "Failed to build WiX installer: $_"
