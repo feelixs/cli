@@ -9,13 +9,13 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-		<OutputPath>bin\cli-installer\Debug\</OutputPath>
-		<IntermediateOutputPath>obj\cli-installer\Debug\</IntermediateOutputPath>
+		<OutputPath>bin\Debug\</OutputPath>
+		<IntermediateOutputPath>obj\Debug\</IntermediateOutputPath>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
-		<OutputPath>bin\cli-installer\Release\</OutputPath>
-		<IntermediateOutputPath>obj\cli-installer\Release\</IntermediateOutputPath>
+		<OutputPath>bin\Release\</OutputPath>
+		<IntermediateOutputPath>obj\Release\</IntermediateOutputPath>
 	</PropertyGroup>
 
 	<ItemGroup>
