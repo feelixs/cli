@@ -22,19 +22,6 @@ jobs:
           persist-credentials: true
           fetch-depth: 0
 
-      - name: Get PR Description
-        id: pr_info
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          echo -e '${{ github.event.pull_request.body }}' > "notes.txt"
-          if [ -z "$PR_BODY" ]; then
-            PR_BODY="No description provided"
-          fi
-          echo "description<<EOF" >> $GITHUB_OUTPUT
-          echo "$PR_BODY" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-
       - name: Fetch Package Version
         id: version
         run: |
