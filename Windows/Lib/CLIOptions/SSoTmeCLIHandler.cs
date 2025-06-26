@@ -87,6 +87,43 @@ namespace SSoTme.OST.Lib.CLIOptions
             return cliOptions;
         }
 
+        private void HandleInfoCommand()
+        {
+            try
+            {
+                var key = SSOTMEKey.GetSSoTmeKey(this.runAs);
+                string runas = this.runAs;
+                if (String.IsNullOrEmpty(runas))
+                {
+                    runas = "ssotme.key";
+                }
+                else
+                {
+                    runas += ".key";
+                }
+                Console.WriteLine($"\nSSoTme Configuration for `{runas}`:");
+                Console.WriteLine($"Email Address: {key.EmailAddress}");
+                Console.WriteLine($"Secret: {key.Secret}");
+                
+                // Display API keys if they exist
+                if (key.APIKeys != null && key.APIKeys.Count > 0)
+                {
+                    Console.WriteLine("Configured API keys:");
+                    foreach (var kvp in key.APIKeys)
+                    {
+                        Console.WriteLine($"  {kvp.Key}: {kvp.Value}");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("No API keys configured.");
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error retrieving configuration: {e.Message}");
+            }
+        }
 
         private void ParseCommand()
         {
@@ -132,12 +169,12 @@ namespace SSoTme.OST.Lib.CLIOptions
                     Console.ReadKey();
                     this.SuppressTranspile = true;
                 }
-                //else if (this.info)
-                //{
-                //    // handled by the python cli wrapper:
-                //    // code execution will never get here since the python cli catches this case before running the cs cli
-                //    // WHY? -> because if dotnet isn't found the python cli can still run and print debugging stuff
-                //}
+                else if (this.info)
+                {
+                    this.HandleInfoCommand();
+                    continueToLoad = false;
+                    this.SuppressTranspile = true;
+                }
                 else if (this.init)
                 {
                     if (String.IsNullOrEmpty(this.projectName))
