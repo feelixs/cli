@@ -36,6 +36,7 @@ echo "Using version: $SSOTME_VERSION from package.json"
 
 # Update the version in the .csproj file
 CSPROJ_FILE="$ROOT_DIR/Windows/CLI/SSoTme.OST.CLI.csproj"
+CLIHANDLER_FILE="$ROOT_DIR/Windows/Lib/CLIOptions/SSoTmeCLIHandler.cs"
 if [ -f "$CSPROJ_FILE" ]; then
     echo "Current package.json version: $SSOTME_VERSION"
     read -p "Enter new csproj version (leave blank to inherit): " NEW_CSPROJ_VERSION
@@ -53,6 +54,9 @@ fi
 
 echo "Updating version in $CSPROJ_FILE to $NEW_CSPROJ_VERSION"
 sed -i '' "s/<Version>[^<]*<\/Version>/<Version>$NEW_CSPROJ_VERSION<\/Version>/g" "$CSPROJ_FILE"
+
+echo "Updating version in $CLIHANDLER_FILE to $NEW_CSPROJ_VERSION"
+sed -i '' "s/public string CLI_VERSION = \".*\";/public string CLI_VERSION = \"$NEW_CSPROJ_VERSION\";/g" "$CLIHANDLER_FILE"
 
 # Clean previous builds
 sudo rm -rf "$DIST_DIR"
