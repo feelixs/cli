@@ -28,7 +28,7 @@ namespace SSoTme.OST.ConApp
                 var handler = SSoTmeCLIHandler.CreateHandler(args);
                 if (!handler.SuppressTranspile) returnValue = handler.TranspileProject();
 
-                if (returnValue != 0)
+                if (returnValue != 0 && !handler.SuppressKeyPress)
                 {
                     Console.WriteLine("\n\nPress any key to continue.");
                     Console.ReadKey();

@@ -4,6 +4,7 @@ import json
 import os
 import platform
 import subprocess
+import re
 
 from ssotme.cli import BASE_SUPPORTED_DOTNET, get_release_path, get_base_version_str, get_home_ssotme_dir
 
@@ -36,6 +37,14 @@ class Installer:
     @property
     def is_linux(self):
         return platform.system() == "Linux"
+
+    @staticmethod
+    def get_cli_handler_path():
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        the_path = os.path.join(base_dir, "Windows", "Lib", "CLIOptions", "SSoTmeCLIHandler.cs")
+        if not os.path.exists(the_path):
+            raise FileNotFoundError(f"Could not find {the_path}")
+        return the_path
 
     def get_dotnet_executable_path(self):
         """Get the absolute path to the dotnet executable."""
@@ -332,7 +341,24 @@ class Installer:
             # save dotnet info json
             self.save_dotnet_info(supported_version)
 
-            # create global.json, which tells dotnet commands ran in this dir to use the specific sdk version
+            # change cli version in cs file so `ssotme -version` works
+            print("Updating CLI version in the CLI handler...")
+            try:
+                fp = self.get_cli_handler_path()
+                with open(fp, "r") as f:
+                    contents = f.read()
+
+                pattern = r'public string CLI_VERSION = ".*?";'
+                replacement = f'public string CLI_VERSION = "{self.get_package_version()}";'
+
+                new_contents = re.sub(pattern, replacement, contents)
+
+                with open(fp, "w") as f:
+                    f.write(new_contents)
+
+                print("CLI version updated successfully.")
+            except Exception:
+                print("WARNING: Failed to get CLI handler path to update version - CLI may print incorrect version")
 
             # build dotnet project
             build_result = self.build_dotnet_project()

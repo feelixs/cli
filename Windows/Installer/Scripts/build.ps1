@@ -34,7 +34,6 @@ function Update-VersionIfChanged {
     return $false
 }
 
-
 $ErrorActionPreference = "Stop"
 
 # Ensure we're running from the Scripts directory
@@ -130,6 +129,12 @@ $rid = switch ($arch) {
     "ARM 64-bit" { "win-arm64" }
     default { "win-x64" }  # fallback
 }
+
+# Update version in the cli handler file so ssotme -version works
+$CLIHandlerFile = "$RootDir/Windows/Lib/CLIOptions/SSoTmeCLIHandler.cs"
+Update-VersionIfChanged -FilePath $CLIHandlerFile -NewVersion $ssotmeVersionOriginal `
+    -Pattern 'public string CLI_VERSION = ".*?";' `
+    -Replacement "public string CLI_VERSION = `"$ssotmeVersionOriginal`";"
 
 Write-Host "`nBuilding .NET CLI project..." -ForegroundColor Yellow
 
