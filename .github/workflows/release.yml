@@ -41,6 +41,9 @@ jobs:
             echo "EOF"
           } >> $GITHUB_OUTPUT
 
+      - name: Who am I
+        run: git config --list && git remote -v
+
       - name: Fetch Package Version
         id: version
         env:
