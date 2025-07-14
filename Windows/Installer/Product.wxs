@@ -1,8 +1,8 @@
-﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
 	xmlns:util="http://wixtoolset.org/schemas/v4/wxs/util"
 	xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
 
-	<Package Name="SSoTme CLI" Language="1033" Version="1.0.16" Manufacturer="EffortlessAPI" UpgradeCode="EB59dEFF-B979-464F-B36A-57F272E872A1" Scope="perMachine">
+	<Package Name="SSoTme CLI" Language="1033" Version="225.6.26" Manufacturer="EffortlessAPI" UpgradeCode="EB59dEFF-B979-464F-B36A-57F272E872A1" Scope="perMachine">
 
 		<SummaryInformation Description="SSoTme Command Line Interface" Comments="Installs the SSoTme CLI tool" />
 
@@ -58,17 +58,13 @@
 			<Component Id="CLILicense" Guid="{F5A6B7C8-D9E0-41F2-3A4B-5C6D7E8F9A0B}">
 				<File Id="LicenseTxtFile" Name="LICENSE.txt" Source="Resources\LICENSE.txt" KeyPath="yes" />
 			</Component>
-
-			<Component Id="CLIConfig" Guid="{A6B7C8D9-E0F1-42A3-4B5C-6D7E8F9A0B1C}">
-				<File Id="DefaultConfig" Name="dotnet_info.json" Source="Resources\dotnet_info.json" KeyPath="yes" />
-			</Component>
 		</ComponentGroup>
 
 		<!-- Registry Entries -->
 		<Component Id="RegistryEntries" Directory="INSTALLFOLDER" Guid="{C8D9E0F1-A2B3-44C5-6D7E-8F9A0B1C2D3E}">
 			<RegistryKey Root="HKLM" Key="Software\SSoTme\CLI">
 				<RegistryValue Type="string" Name="InstallPath" Value="[INSTALLFOLDER]" KeyPath="yes" />
-				<RegistryValue Type="string" Name="Version" Value="1.0.16" />
+				<RegistryValue Type="string" Name="Version" Value="225.6.26" />
 			</RegistryKey>
 		</Component>
 
@@ -80,7 +76,7 @@
 		</Component>
 
 		<!-- Custom Actions for Home Directory Script -->
-		<CustomAction Id="SetHomeSsotmeScriptData" Property="HomeSsotmeScript" Value="&quot;[SystemFolder]WindowsPowerShell\v1.0\powershell.exe&quot; -NoProfile -ExecutionPolicy Bypass -File &quot;[INSTALLFOLDER]CreateSsotmeHomedir.ps1&quot; &quot;[INSTALLFOLDER]&quot;" Execute="immediate" />
+		<CustomAction Id="SetHomeSsotmeScriptData" Property="HomeSsotmeScript" Value="&quot;[SystemFolder]WindowsPowerShell\v1.0\powershell.exe&quot; -NoProfile -ExecutionPolicy Bypass -File &quot;[INSTALLFOLDER]CreateSsotmeHomedir.ps1&quot;" Execute="immediate" />
 
 		<CustomAction Id="HomeSsotmeScript" DllEntry="WixQuietExec" BinaryRef="Wix4UtilCA_X86" Execute="deferred" Return="check" Impersonate="no" />
 

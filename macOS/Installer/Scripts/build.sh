@@ -31,15 +31,12 @@ ASSETS_DIR="$INSTALLER_DIR/Assets"
 BUILD_DIR="$INSTALLER_DIR/build"
 DIST_DIR="$ROOT_DIR/dist"
 BIN_DIR="$INSTALLER_DIR/bin"
-RELEASE_FOLDER="$ROOT_DIR/release"
-SSOTME_DIR="$HOME/.ssotme"
 SSOTME_VERSION=$(grep -o '"version": "[^"]*"' "$ROOT_DIR/package.json" | cut -d'"' -f4)
-
-
 echo "Using version: $SSOTME_VERSION from package.json"
 
 # Update the version in the .csproj file
 CSPROJ_FILE="$ROOT_DIR/Windows/CLI/SSoTme.OST.CLI.csproj"
+CLIHANDLER_FILE="$ROOT_DIR/Windows/Lib/CLIOptions/SSoTmeCLIHandler.cs"
 if [ -f "$CSPROJ_FILE" ]; then
     echo "Current package.json version: $SSOTME_VERSION"
     read -p "Enter new csproj version (leave blank to inherit): " NEW_CSPROJ_VERSION
@@ -58,13 +55,15 @@ fi
 echo "Updating version in $CSPROJ_FILE to $NEW_CSPROJ_VERSION"
 sed -i '' "s/<Version>[^<]*<\/Version>/<Version>$NEW_CSPROJ_VERSION<\/Version>/g" "$CSPROJ_FILE"
 
+echo "Updating version in $CLIHANDLER_FILE to $NEW_CSPROJ_VERSION"
+sed -i '' "s/public string CLI_VERSION = \".*\";/public string CLI_VERSION = \"$NEW_CSPROJ_VERSION\";/g" "$CLIHANDLER_FILE"
+
 # Clean previous builds
 sudo rm -rf "$DIST_DIR"
 sudo rm -rf "$BUILD_DIR"
 sudo rm -rf "$BIN_DIR"
 sudo rm -rf "$RESOURCES_DIR"
 sudo rm -rf "$ROOT_DIR/build"
-sudo rm -f release/*.pkg
 
 echo "Creating necessary directories..."
 mkdir -p "$RESOURCES_DIR" "$BUILD_DIR" "$ASSETS_DIR" "$BIN_DIR" "$BIN_DIR/signed" "$BIN_DIR/unsigned"
@@ -77,29 +76,6 @@ if [ -f "$README_SRC" ]; then
 else
     echo "WARNING: README.md not found at root."
 fi
-
-#echo "Building cli.py..."
-#/bin/bash "$SOURCE_DIR/build-cli.sh" "$PYTHON_VENVPATH"
-#echo "Copy executable file ssotme into Resources under aliases: ssotme, aic, aicapture..."
-#cp "$DIST_DIR/ssotme" "$RESOURCES_DIR/ssotme"
-#cp "$DIST_DIR/ssotme" "$RESOURCES_DIR/aic"
-#cp "$DIST_DIR/ssotme" "$RESOURCES_DIR/aicapture"
-## sign the executables
-#codesign --force --timestamp --options runtime \
-#  --entitlements "$SOURCE_DIR/entitlements.plist" \
-#  --sign "$DEV_EXECUTABLE_KEYCHAIN_ID" "$RESOURCES_DIR/ssotme" --identifier "com.effortlessapi.ssotme"
-#codesign --force --timestamp --options runtime \
-#  --entitlements "$SOURCE_DIR/entitlements.plist" \
-#  --sign "$DEV_EXECUTABLE_KEYCHAIN_ID" "$RESOURCES_DIR/aic" --identifier "com.effortlessapi.aic"
-#codesign --force --timestamp --options runtime \
-#  --entitlements "$SOURCE_DIR/entitlements.plist" \
-#  --sign "$DEV_EXECUTABLE_KEYCHAIN_ID" "$RESOURCES_DIR/aicapture" --identifier "com.effortlessapi.aicapture"
-## this will exist because we just ran the python build (setup.py will generate this json in the home directory)
-#if [ -f "$SSOTME_DIR/dotnet_info.json" ]; then
-#    cp "$SSOTME_DIR/dotnet_info.json" "$RESOURCES_DIR/dotnet_info.json"
-#else
-#    echo "$SSOTME_DIR/dotnet_info.json does not exist (pyinstaller should have generated this!)"
-#fi
 
 # copy the postinstall script to the build
 mkdir -p "$BUILD_DIR/scripts"
@@ -135,7 +111,7 @@ else
     PUB_ARCH=$TARGET_ARCH  # amd64 -> already valid for dotnet publish
 fi
 
-dotnet publish $CSPROJ_FILE -r osx-$PUB_ARCH -c Release /p:PublishSingleFile=true \
+dotnet publish "$CSPROJ_FILE" -r "osx-$PUB_ARCH" -c Release /p:PublishSingleFile=true \
   --self-contained true -o "$RESOURCES_DIR"
 mv "$RESOURCES_DIR/SSoTme.OST.CLI" "$RESOURCES_DIR/ssotme"
 
@@ -185,9 +161,7 @@ echo ""
 echo "$SCRIPT_DIR/notarize.sh" "$BIN_DIR/signed/$THE_INSTALLER_FILENAME" $APPLE_EMAIL $NOTARYPASS
 /bin/bash "$SCRIPT_DIR/notarize.sh" "$BIN_DIR/signed/$THE_INSTALLER_FILENAME" $APPLE_EMAIL $NOTARYPASS
 
-cp "$BIN_DIR/signed/$THE_INSTALLER_FILENAME" "$RELEASE_FOLDER/$THE_INSTALLER_FILENAME"
-
 # run on the x86 one too
-echo "$SCRIPT_DIR/notarize.sh" "$RELEASE_FOLDER/SSoTme-Installer-x86_64.pkg" $APPLE_EMAIL $NOTARYPASS
-/bin/bash "$SCRIPT_DIR/notarize.sh" "$RELEASE_FOLDER/SSoTme-Installer-x86_64.pkg" $APPLE_EMAIL $NOTARYPASS
-open "$RELEASE_FOLDER" -a Finder
+echo "$SCRIPT_DIR/notarize.sh" "$HOME/Downloads/SSoTme-Installer-x86_64.pkg" $APPLE_EMAIL $NOTARYPASS
+/bin/bash "$SCRIPT_DIR/notarize.sh" "$HOME/Downloads/SSoTme-Installer-x86_64.pkg" $APPLE_EMAIL $NOTARYPASS
+open "$BIN_DIR/signed" -a Finder

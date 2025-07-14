@@ -138,12 +138,15 @@ namespace SSoTme.OST.Lib.CLIOptions
         [CommandLineOption(Description = "Skips the build part of cloning a Seed repository", MinOccurs = 0, Aliases = "")]
         public bool skipBuild { get; set; }
         
-        [CommandLineOption(Description = "Show configured settings & CLI version", MinOccurs = 0, Aliases = "")]
+        [CommandLineOption(Description = "Show configured settings", MinOccurs = 0, Aliases = "")]
         public bool info { get; set; }
 
         [CommandLineOption(Description = "target url", MinOccurs = 0, Aliases = "t")]
         public string TargetUrl { get; set; }
 
+        
+        [CommandLineOption(Description = "Show CLI version", MinOccurs = 0, Aliases = "v")]
+        public bool version { get; set; }
         
     }
 }

@@ -89,37 +89,9 @@ def main():
         if dotnet_info and "using_version" in dotnet_info:
             version = dotnet_info["using_version"]
 
-        dll_path = get_dll_path(version)
-
-        args = sys.argv[1:]
-        code = 0
-        if len(args) > 0 and (args[0] == "-info" or args[0] == "info"):
-            # print debugging info
-            print(f"SSOTME Version: {dotnet_info['ssotme_version']}\n"
-                  f"Configured to use .NET SDK {version}\n"
-                  f"Configured to use .NET executable: {dotnet}\n"
-                  f"Using config file: {info_filepath}\n")
-
-            # print api keys that were configured with `ssotme -api ...` if the key file exists in ~/.ssotme/ssotme.key
-            try:
-                configured_keys = get_api_keys()
-                if configured_keys is not None:
-                    keys = ""
-                    for key in configured_keys:
-                        keys += f"{key}: {configured_keys[key]}\n"
-                    print(f"Configured API keys:\n{keys}")
-            except Exception as e:
-                print(e)
-
-            # verify the dotnet version being used
-            result = subprocess.run([dotnet, "--version"], stdout=subprocess.PIPE)
-            dotnet_version = result.stdout.decode().strip()
-            if dotnet_version != version:
-                print(f"WARNING: .NET SDK version does not match .NET executable - configured to use .NET SDK {version}, but `{dotnet} --version` returned {dotnet_version}\n")
-        else:
-            # run the actual cli
-            result = subprocess.run([dotnet, dll_path] + args)
-            code = result.returncode
+        # run the actual cli
+        result = subprocess.run([dotnet, get_dll_path(version)] + sys.argv[1:])
+        code = result.returncode
     except CustomException as e:
         print(e)
         code = 1
