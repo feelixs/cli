@@ -1131,13 +1131,21 @@ Seed Url: ");
                 using var client = new HttpClient();
                 payload.TranspileRequest = new TranspileRequest();
                 payload.TranspileRequest.ZippedInputFileSet = this.inputFileSetXml.Zip();
-                File.WriteAllText(@"C:\temp\payload.json", payload.ToJSonString());
-                File.WriteAllBytes(@"C:\temp\zippedinputfs.gzip", payload.TranspileRequest.ZippedInputFileSet);
                 var response = await client.PostAsJsonAsync($"{this.TargetUrl}", payload);
                 if (response != null)
                 {
                     var responseContent = await response.Content.ReadAsStringAsync();
-                    
+                    var responsePayload = JsonConvert.DeserializeObject<SSOTMEPayload>(responseContent);
+                    result = responsePayload;
+                    if (result != null)
+                    {
+                        result.SSoTmeProject = this.AICaptureProject;
+                        if (this.clean) result.CleanFileSet();
+                        else
+                        {
+                            var finalResult = result.SaveFileSet(this.skipClean);
+                        }
+                    }
                 }
             }
             if (e.Payload.IsLexiconTerm(LexiconTermEnum.accountholder_ping_ssotmecoordinator))
